@@ -146,7 +146,8 @@ _ROLE_BASE_WEIGHTS: dict[str, float] = {
 
 
 def _pick_dungeon_theme(rng: random.Random) -> dict[str, Any]:
-    return dict(rng.choice(_THEME_CATALOG))
+    # Keep theme selection deterministic without relying on a module-global catalog.
+    return pick_theme_by_index(rng.randrange(1024))
 
 
 def _room_neighbors(adj: dict[int, set[int]], room_id: int) -> int:

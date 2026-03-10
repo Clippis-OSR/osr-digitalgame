@@ -91,3 +91,42 @@ def opportunity_attackers_for_move(state: GridBattleState, unit: UnitState, old_
 
     enemies.sort(key=lambda u: u.unit_id)
     return enemies
+
+
+# Back-compat helpers used by non-grid combat/tests.
+def is_melee_engaged(combat_distance_ft: int) -> bool:
+    try:
+        return int(combat_distance_ft) <= 10
+    except Exception:
+        return False
+
+
+def can_use_missile(combat_distance_ft: int) -> bool:
+    try:
+        return int(combat_distance_ft) >= 20
+    except Exception:
+        return False
+
+
+def shooting_into_melee_penalty(combat_distance_ft: int) -> int:
+    
+    try:
+        return -4 if int(combat_distance_ft) < 10 else 0
+    except Exception:
+        return 0
+
+
+def foe_frontage_limit(combat_distance_ft: int, defenders_in_front: int) -> int | None:
+    return 1 if is_melee_engaged(combat_distance_ft) else None
+
+
+def apply_forced_retreat(actor) -> str:
+    if bool(getattr(actor, 'is_pc', False)):
+        return 'cower'
+    effects = getattr(actor, 'effects', None)
+    if not isinstance(effects, list):
+        effects = []
+        setattr(actor, 'effects', effects)
+    if 'fled' not in effects:
+        effects.append('fled')
+    return 'flee'
