@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-
+from .combat_rules import (
+    validate_attack,
+    validate_step,
+    can_take_cover,
+    opportunity_attackers_for_move,
+)
 from .grid_map import GridMap, has_line_of_sight, manhattan
 from .grid_state import GridBattleState, UnitState
 from .battle_events import BattleEvent, evt
