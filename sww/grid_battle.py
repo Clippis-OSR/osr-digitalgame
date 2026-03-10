@@ -7,6 +7,7 @@ from .grid_state import GridBattleState, UnitState
 from .battle_events import BattleEvent, evt
 from .commands import CmdAttack, CmdCastSpell, CmdDoorAction, CmdDungeonAction, CmdEndTurn, CmdHide, CmdMove, CmdTakeCover, CmdThrowItem, CmdParley, Command
 from .targeting import is_valid_melee_pair, is_valid_missile_pair, adjacent as positions_adjacent
+from .combat_legality import grid_pair_is_attack_legal
 
 
 @dataclass
@@ -737,12 +738,15 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
         t_hp_before = int(getattr(t.actor, "hp", 0) or 0)
 
         kind = "melee" if cmd.mode == "melee" else "missile"
-        if kind == "melee":
-            if not is_valid_melee_pair(u.pos, t.pos):
-                return events
-        else:
-            if not is_valid_missile_pair(state.gm, u.pos, t.pos, max_tiles=12, lit_tiles=None):
-                return events
+        if not grid_pair_is_attack_legal(
+            gm=state.gm,
+            attacker_pos=u.pos,
+            target_pos=t.pos,
+            mode=kind,
+            lit_tiles=None,
+            max_tiles=12,
+        ):
+            return events
 
         to_hit_mod = 0
         # Apply cover penalty to hit target.

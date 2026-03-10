@@ -14,11 +14,13 @@ ACTION_BLOCKING_STATUSES = {
     "held",
     "confused",
 }
+ACTION_BLOCKING_ORDER = ("asleep", "held", "confused")
 
 CAST_BLOCKING_STATUSES = ACTION_BLOCKING_STATUSES | {
     "silence",
     "fear",
 }
+CAST_BLOCKING_ORDER = ("asleep", "held", "confused", "silence", "fear")
 
 
 TRANSIENT_BATTLE_STATUS_KEYS = {
@@ -90,7 +92,7 @@ def has_status(actor: Any, key: str) -> bool:
 
 
 def action_block_reason(actor: Any, *, for_casting: bool = False) -> str | None:
-    keys = CAST_BLOCKING_STATUSES if for_casting else ACTION_BLOCKING_STATUSES
+    keys = CAST_BLOCKING_ORDER if for_casting else ACTION_BLOCKING_ORDER
     for k in keys:
         if has_status(actor, k):
             return k

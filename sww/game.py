@@ -27,9 +27,10 @@ from .effects import EffectsManager, Hook
 from .replay import ReplayLog
 from .validation import validate_state
 from .monster_ai import coerce_profile, choose_target, party_role
-from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat, is_active_hostile_target
+from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat
 from .status_lifecycle import apply_status, tick_round_statuses, cleanup_actor_battle_status, action_block_reason
 from .ai_capabilities import detect_capabilities, choose_attack_mode, morale_behavior
+from .combat_legality import theater_target_is_valid
 from .commands import (
     Command,
     CommandResult,
@@ -1261,7 +1262,7 @@ class Game:
 
     def _combat_target_is_valid(self, target: Any, enemies: list[Any]) -> bool:
         """Return True when target is still a legal hostile target among `enemies`."""
-        return is_active_hostile_target(target, enemies)
+        return theater_target_is_valid(target, enemies)
 
     def _combat_retarget_or_clear(self, actor: Any, plan: dict, enemies: list[Any], *, reason: str = 'stale_target') -> dict:
         """Deterministically retarget a declared attack, or clear it when no enemies remain.
