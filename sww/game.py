@@ -3143,6 +3143,9 @@ class Game:
         else:
             return CommandResult(status="error", messages=("Invalid stairs direction.",))
 
+        # Keep legacy depth-scaled systems coherent with active dungeon level.
+        self.dungeon_depth = int(self.dungeon_level)
+
         # Instance-driven (P6.1): do not swap per-level room caches.
         # Rooms are keyed by id in the blueprint, and 'level' maps to blueprint floors.
         if getattr(self, "dungeon_instance", None) is not None:
