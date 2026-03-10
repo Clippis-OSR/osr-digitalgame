@@ -224,7 +224,6 @@ class Game:
         self.world_hexes: dict[str, dict[str, Any]] = {}
         self.party_hex = (0, 0)  # axial (q,r)
         self.travel_state = TravelState(location="town")
-        self._ensure_canonical_dungeon_entrance()
         # Dedicated RNG for wilderness generation and rumor POI seeding.
         # Deterministic-ish replay log (non-persistent)
         self.replay = ReplayLog(dice_seed=self.dice_seed, wilderness_seed=self.wilderness_seed)
@@ -2329,7 +2328,6 @@ class Game:
             self.travel_state.travel_turns = int(getattr(self.travel_state, "travel_turns", 0)) + 1
             self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
 
-        self._ensure_canonical_dungeon_entrance()
         hx = self._ensure_current_hex()
         poi = hx.get("poi") if isinstance(hx, dict) else None
         at_entrance = tuple(getattr(self, "party_hex", TOWN_HEX)) == tuple(DUNGEON_ENTRANCE_HEX)
@@ -2947,7 +2945,6 @@ class Game:
 
     def _cmd_dungeon_leave(self) -> CommandResult:
         self.party_hex = tuple(DUNGEON_ENTRANCE_HEX)
-        self._ensure_canonical_dungeon_entrance()
         self.travel_state.location = "wilderness"
         self.emit("dungeon_left", room_id=int(self.current_room_id))
         return CommandResult(status="ok", messages=("leave",))
