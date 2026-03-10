@@ -28,9 +28,8 @@ from .replay import ReplayLog
 from .validation import validate_state
 from .monster_ai import coerce_profile, choose_target, party_role
 from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat
-from .status_lifecycle import apply_status, tick_round_statuses, cleanup_actor_battle_status, action_block_reason, leave_combat
-from .ai_capabilities import detect_capabilities, choose_attack_mode, morale_behavior
-from .combat_legality import theater_target_is_valid
+from .status_lifecycle import tick_round_statuses, cleanup_actor_battle_status
+from .ai_capabilities import detect_capabilities, choose_attack_mode
 from .commands import (
     Command,
     CommandResult,
@@ -11210,10 +11209,6 @@ class Game:
                         # legacy strict-replay fixtures.
                         caps = detect_capabilities(f, self)
                         mode = choose_attack_mode(capabilities=caps, combat_distance_ft=combat_distance_ft, prefer_ranged=bool(prof.use_missile_if_available))
-                        try:
-                            self.emit("ai_capabilities", actor=getattr(f, "name", "?"), capabilities=sorted(list(caps)), mode=str(mode), morale_behavior=morale_behavior(prof.aggression))
-                        except Exception:
-                            pass
                         action_plan[id(f)] = {"type": mode, "actor": f, "target": target}
 
                     # ---- Action selection / declaration (party first, then foes AI) ----
@@ -12354,6 +12349,12 @@ class Game:
 
 
     def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
+        try:
+            if int(getattr(target, "hp", 0) or 0) <= 0:
+                cleanup_actor_battle_status(target)
+        except Exception:
+            pass
+
         """Hardening: centralized death cleanup.
 
         Removes sticky control effects (grapple/engulf/swallow) so combat state
@@ -13322,7 +13323,6 @@ class Game:
         def _mark_turned(u: Actor):
             u.status = getattr(u, "status", {}) or {}
             apply_status(u, "turned", duration, mode="max")
-            leave_combat(u, marker="fled")
             u.effects = list(getattr(u, "effects", []) or [])
             if "turned" not in u.effects:
                 u.effects.append("turned")
