@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-
-from .grid_map import GridMap, manhattan
+from .combat_rules import (
+    validate_attack,
+    validate_step,
+    can_take_cover,
+    opportunity_attackers_for_move,
+)
+from .grid_map import GridMap, has_line_of_sight, manhattan
 from .grid_state import GridBattleState, UnitState
 from .battle_events import BattleEvent, evt
 from .commands import CmdAttack, CmdCastSpell, CmdDoorAction, CmdDungeonAction, CmdEndTurn, CmdHide, CmdMove, CmdTakeCover, CmdThrowItem, CmdParley, Command
 from .targeting import is_valid_melee_pair, is_valid_missile_pair, adjacent as positions_adjacent
 from .combat_legality import grid_pair_is_attack_legal
-from .combat_rules import opportunity_attackers_on_leave
-from .status_lifecycle import apply_status, clear_status
 
 
 @dataclass
@@ -409,8 +412,11 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
             if u.move_remaining <= 0:
                 break
             nx, ny = int(nx), int(ny)
-            if not state.gm.in_bounds(nx, ny) or state.gm.blocks_movement(nx, ny):
+            step = validate_step(state, u, (nx, ny), blocked)
+            if not step.ok:
                 break
+
+            step_cost = step.step_cost
             if (nx, ny) in blocked:
                 break
             if manhattan(u.pos, (nx, ny)) != 1:
@@ -721,16 +727,14 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
 
         t_hp_before = int(getattr(t.actor, "hp", 0) or 0)
 
-        kind = "melee" if cmd.mode == "melee" else "missile"
-        if not grid_pair_is_attack_legal(
-            gm=state.gm,
-            attacker_pos=u.pos,
-            target_pos=t.pos,
-            mode=kind,
-            lit_tiles=None,
-            max_tiles=12,
-        ):
-            return events
+        check = validate_attack(state, u, t, cmd.mode)
+        if not check.ok:
+        return events
+
+        kind = check.kind
+        to_hit_mod = int(check.to_hit_mod)
+            if manhattan(u.pos, t.pos) > 12:
+                return events
 
         to_hit_mod = 0
         # Apply cover penalty to hit target.

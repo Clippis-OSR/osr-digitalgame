@@ -1,99 +1,93 @@
-from __future__ import annotations
-
-from typing import Any
-
-from .status_lifecycle import leave_combat
+from dataclasses import dataclass
+from .grid_map import has_line_of_sight, manhattan
+from .grid_state import GridBattleState, UnitState
 
 
-def is_melee_engaged(combat_distance_ft: int | None) -> bool:
-    """Central melee-engagement authority for theater-of-the-mind combat."""
-    if combat_distance_ft is None:
-        return False
-    return int(combat_distance_ft) <= 10
+@dataclass
+class AttackCheck:
+    ok: bool
+    kind: str = "melee"
+    to_hit_mod: int = 0
 
 
-def can_use_missile(combat_distance_ft: int | None) -> bool:
-    """Missiles are disallowed when lines are fully closed into melee."""
-    if combat_distance_ft is None:
-        return True
-    return int(combat_distance_ft) > 10
+@dataclass
+class StepCheck:
+    ok: bool
+    step_cost: int = 0
 
 
-def shooting_into_melee_penalty(combat_distance_ft: int | None) -> int:
-    """Penalty for firing into fully entangled melee."""
-    if combat_distance_ft is None:
-        return 0
-    return -4 if int(combat_distance_ft) <= 0 else 0
+def validate_attack(state: GridBattleState, attacker: UnitState, target: UnitState, mode: str) -> AttackCheck:
+    """Central rule authority for attack validation."""
+
+    if not target.is_alive():
+        return AttackCheck(False)
+
+    kind = "melee" if mode == "melee" else "missile"
+
+    if kind == "melee":
+        if manhattan(attacker.pos, target.pos) != 1:
+            return AttackCheck(False)
+    else:
+        if not has_line_of_sight(state.gm, attacker.pos, target.pos):
+            return AttackCheck(False)
+
+    to_hit_mod = 0
+    st = getattr(target.actor, "status", {}) or {}
+    to_hit_mod += int(st.get("cover", 0) or 0)
+
+    return AttackCheck(True, kind, to_hit_mod)
 
 
-def foe_frontage_limit(combat_distance_ft: int | None, party_living_count: int) -> int | None:
-    """Maximum simultaneous foe melee attackers when lines are engaged."""
-    if not is_melee_engaged(combat_distance_ft):
-        return None
-    return max(1, int(party_living_count))
+def validate_step(state: GridBattleState, unit: UnitState, dest: tuple[int, int], blocked: set):
+    x, y = dest
+
+    if not state.gm.in_bounds(x, y):
+        return StepCheck(False)
+
+    if state.gm.blocks_movement(x, y):
+        return StepCheck(False)
+
+    if dest in blocked:
+        return StepCheck(False)
+
+    if manhattan(unit.pos, dest) != 1:
+        return StepCheck(False)
+
+    cost = int(state.gm.move_cost(x, y))
+
+    if cost > unit.move_remaining:
+        return StepCheck(False)
+
+    return StepCheck(True, cost)
 
 
-def apply_forced_retreat(actor: Any) -> str:
-    """Apply morale-driven flee transition and return resolved state.
+def can_take_cover(state: GridBattleState, unit: UnitState):
 
-    Returns one of: 'flee', 'cower'.
-    """
-    if bool(getattr(actor, "is_pc", False)):
-        return "cower"
-    leave_combat(actor, marker="fled")
-    return "flee"
+    x, y = unit.pos
 
+    for dx, dy in ((1,0),(-1,0),(0,1),(0,-1)):
+        if state.gm.is_cover(x+dx, y+dy):
+            return True
 
-def is_active_hostile_target(target: Any, enemies: list[Any]) -> bool:
-    """Shared theater target legality for hostile attack declarations/execution."""
-    if target is None:
-        return False
-    try:
-        if int(getattr(target, "hp", 0) or 0) <= 0:
-            return False
-    except Exception:
-        return False
-    try:
-        if "fled" in (getattr(target, "effects", []) or []):
-            return False
-    except Exception:
-        return False
-    return any(e is target for e in (enemies or []))
+    return False
 
 
+def opportunity_attackers_for_move(state: GridBattleState, unit: UnitState, old_pos, new_pos):
 
-def opportunity_attackers_on_leave(
-    *,
-    mover_side: str,
-    old_pos: tuple[int, int],
-    new_pos: tuple[int, int],
-    candidates: list[Any],
-) -> list[str]:
-    """Return sorted threatening enemy unit_ids that lose adjacency when mover leaves.
+    enemies = []
 
-    Shared disengage/opportunity determination primitive for grid execution-time use.
-    """
-    def _adj(a: tuple[int, int], b: tuple[int, int]) -> bool:
-        return abs(int(a[0]) - int(b[0])) + abs(int(a[1]) - int(b[1])) == 1
-
-    old_adj: set[str] = set()
-    new_adj: set[str] = set()
-    for c in list(candidates or []):
-        try:
-            if not bool(getattr(c, "is_alive")()):
-                continue
-        except Exception:
+    for u in state.units.values():
+        if not u.is_alive():
             continue
-        if str(getattr(c, "side", "")) == str(mover_side):
+
+        if u.side == unit.side:
             continue
-        uid = str(getattr(c, "unit_id", "") or "")
-        if not uid:
-            continue
-        pos = getattr(c, "pos", None)
-        if not isinstance(pos, tuple) or len(pos) != 2:
-            continue
-        if _adj(old_pos, pos):
-            old_adj.add(uid)
-        if _adj(new_pos, pos):
-            new_adj.add(uid)
-    return sorted(list(old_adj - new_adj))
+
+        old_adj = manhattan(old_pos, u.pos) == 1
+        new_adj = manhattan(new_pos, u.pos) == 1
+
+        if old_adj and not new_adj:
+            enemies.append(u)
+
+    enemies.sort(key=lambda u: u.unit_id)
+    return enemies

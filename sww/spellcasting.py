@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Iterable
 
 from .rules import saving_throw, saving_throw_detail
-from .status_lifecycle import apply_status, clear_status, leave_combat
+from .status_lifecycle import apply_status
 
 
 
