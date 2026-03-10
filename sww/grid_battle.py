@@ -741,13 +741,12 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
 
         t_hp_before = int(getattr(t.actor, "hp", 0) or 0)
 
-        kind = "melee" if cmd.mode == "melee" else "missile"
-        if kind == "melee":
-            if manhattan(u.pos, t.pos) != 1:
-                return events
-        else:
-            if not has_line_of_sight(state.gm, u.pos, t.pos):
-                return events
+        check = validate_attack(state, u, t, cmd.mode)
+        if not check.ok:
+        return events
+
+        kind = check.kind
+        to_hit_mod = int(check.to_hit_mod)
             if manhattan(u.pos, t.pos) > 12:
                 return events
 
