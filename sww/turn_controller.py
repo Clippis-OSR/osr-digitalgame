@@ -19,6 +19,7 @@ from .intents import (
 )
 from .pathing import bfs_movement_range, dijkstra_shortest_path
 from .targeting import valid_melee_targets, valid_missile_targets, spell_aoe_preview_tiles
+from .combat_legality import grid_target_is_attackable
 
 from .rules import morale_check
 
@@ -303,13 +304,27 @@ class TurnController:
         pcs.sort(key=lambda it: abs(it[1][0] - a.x) + abs(it[1][1] - a.y))
         tgt_id, tgt_pos = pcs[0]
 
-        melee_targets = valid_melee_targets(a.unit_id, a.pos, a.side, living)
-        if tgt_id in melee_targets and a.actions_remaining > 0:
+        if a.actions_remaining > 0 and grid_target_is_attackable(
+            gm=self.state.gm,
+            attacker_id=a.unit_id,
+            attacker_pos=a.pos,
+            attacker_side=a.side,
+            target_id=tgt_id,
+            living=living,
+            mode="melee",
+        ):
             self._declare(a.unit_id, CmdAttack(unit_id=a.unit_id, target_id=tgt_id, mode="melee"), events)
             return events
 
-        missile_targets = valid_missile_targets(self.state.gm, a.unit_id, a.pos, a.side, living)
-        if tgt_id in missile_targets and a.actions_remaining > 0:
+        if a.actions_remaining > 0 and grid_target_is_attackable(
+            gm=self.state.gm,
+            attacker_id=a.unit_id,
+            attacker_pos=a.pos,
+            attacker_side=a.side,
+            target_id=tgt_id,
+            living=living,
+            mode="missile",
+        ):
             self._declare(a.unit_id, CmdAttack(unit_id=a.unit_id, target_id=tgt_id, mode="missile"), events)
             return events
 
@@ -920,13 +935,27 @@ class TurnController:
             return None
         living = self._living_map()
         if action_id == "MELEE":
-            valid = valid_melee_targets(u.unit_id, u.pos, u.side, living)
-            if target_id not in valid:
+            if not grid_target_is_attackable(
+                gm=self.state.gm,
+                attacker_id=u.unit_id,
+                attacker_pos=u.pos,
+                attacker_side=u.side,
+                target_id=target_id,
+                living=living,
+                mode="melee",
+            ):
                 return None
             return CmdAttack(unit_id=unit_id, target_id=target_id, mode="melee")
         if action_id == "MISSILE":
-            valid = valid_missile_targets(self.state.gm, u.unit_id, u.pos, u.side, living)
-            if target_id not in valid:
+            if not grid_target_is_attackable(
+                gm=self.state.gm,
+                attacker_id=u.unit_id,
+                attacker_pos=u.pos,
+                attacker_side=u.side,
+                target_id=target_id,
+                living=living,
+                mode="missile",
+            ):
                 return None
             return CmdAttack(unit_id=unit_id, target_id=target_id, mode="missile")
         return None
