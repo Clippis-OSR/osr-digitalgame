@@ -2325,8 +2325,6 @@ class Game:
         floors = max(1, min(12, int(floors)))
         self.max_dungeon_levels = int(floors)
         self.dungeon_level = max(1, min(int(self.max_dungeon_levels), int(getattr(self, "dungeon_level", 1) or 1)))
-        # Keep legacy dungeon_depth in sync with active blueprint level for deterministic depth scaling.
-        self.dungeon_depth = int(self.dungeon_level)
 
         # Ensure per-level dictionaries exist.
         if not isinstance(getattr(self, "dungeon_alarm_by_level", None), dict):
