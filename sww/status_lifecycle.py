@@ -4,6 +4,8 @@ from typing import Any
 
 
 BLOCKED_STATUS_KEYS = {"asleep", "held", "paralyzed", "paralysis", "silence", "confused", "fear"}
+# Transient battle-only status keys removed at combat end/save sanitization.
+TRANSIENT_BATTLE_STATUS_KEYS = {"casting", "cover", "parry", "flee_pending"}
 
 
 def status_dict(actor: Any) -> dict:
@@ -42,6 +44,15 @@ def apply_status(actor: Any, key: str, value: Any, *, mode: str = "replace") -> 
     old = st.get(k)
     st[k] = value
     return st.get(k) != old
+
+
+def clear_status(actor: Any, key: str) -> bool:
+    """Remove a status key, returning True if it existed."""
+    st = status_dict(actor)
+    k = str(key)
+    existed = k in st
+    st.pop(k, None)
+    return existed
 
 
 def tick_round_statuses(actors: list[Any], *, phase: str = "start") -> None:
