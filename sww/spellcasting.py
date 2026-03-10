@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Iterable
 
 from .rules import saving_throw, saving_throw_detail
+from .status_lifecycle import apply_status
 
 
 
@@ -520,7 +521,7 @@ def apply_spell_in_combat(
             hd = int(getattr(f, 'hd', 1) or 1)
             if hd <= hd_budget and hd > 0:
                 hd_budget -= hd
-                f.status["asleep"] = max(int(f.status.get("asleep", 0) or 0), 6)
+                apply_status(f, "asleep", 6, mode="max")
                 _be(game, "EFFECT_APPLIED", tgt=getattr(f, "name", str(f)), kind="asleep")
                 affected += 1
         _be(game, "AOE_AFFECTS", spell=spell_name, count=int(affected), kind="sleep")
@@ -585,7 +586,7 @@ def apply_spell_in_combat(
             target.effects.append('fled')  # treated as out of fight
             game.ui.log(f"{target.name} is charmed and stops fighting!")
         else:
-            target.status["held"] = 6
+            apply_status(target, "held", 6, mode="max")
             _be(game, "EFFECT_APPLIED", tgt=target.name, kind="held")
             game.ui.log(f"{target.name} is held!")
         return True
@@ -652,7 +653,7 @@ def apply_spell_in_combat(
             st_ok = _emit_save(game, dice, f, spell_name=spell_name, tags={"spell", "magic"})
             if st_ok:
                 continue
-            f.status["held"] = max(int(f.status.get("held", 0) or 0), 3)
+            apply_status(f, "held", 3, mode="max")
             _be(game, "EFFECT_APPLIED", tgt=f.name, kind="held")
             hits += 1
         _be(game, "AOE_AFFECTS", spell=spell_name, count=int(hits), kind="web")

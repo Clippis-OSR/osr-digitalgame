@@ -10636,7 +10636,7 @@ class Game:
                     for f in foes:
                         f.status = getattr(f, "status", {}) or {}
                         # We tick durations at the *start* of the round, so use 2 to cover round 1.
-                        f.status["surprised"] = 2
+                        apply_status(f, "surprised", 2, mode="max")
                     self.ui.log("You catch them off-guard! (foes surprised)")
                 # Consume the flag regardless.
                 self.party_stealth_success = False
@@ -10653,12 +10653,12 @@ class Game:
                     if party_surprise:
                         for a in self.party.living():
                             a.status = getattr(a, "status", {}) or {}
-                            a.status["surprised"] = 2
+                            apply_status(a, "surprised", 2, mode="max")
                         self.ui.log("Surprise! Your party is caught off-guard.")
                     if foes_surprise:
                         for f in foes:
                             f.status = getattr(f, "status", {}) or {}
-                            f.status["surprised"] = 2
+                            apply_status(f, "surprised", 2, mode="max")
                         self.ui.log("Surprise! The enemies are caught off-guard.")
 
                 # P1.4: Abstract engagement distance (feet). Used to gate missile range and apply range penalties.
@@ -10674,10 +10674,10 @@ class Game:
                         a.status = getattr(a, "status", {}) or {}
                         roll = self.dice.d(6)
                         if roll <= 3:
-                            a.status["cover"] = -2
+                            apply_status(a, "cover", -2)
                             any_cover = True
                         elif roll <= 5:
-                            a.status["cover"] = -4
+                            apply_status(a, "cover", -4)
                             any_cover = True
                         else:
                             a.status.pop("cover", None)
@@ -10784,7 +10784,7 @@ class Game:
                                     for f in fled:
                                         f.effects = [e for e in (getattr(f, 'effects', []) or []) if e != 'fled']
                                         f.status = getattr(f, 'status', {}) or {}
-                                        f.status["surprised"] = 2
+                                        apply_status(f, "surprised", 2, mode="max")
                                     combat_distance_ft = 40
                                 else:
                                     self.ui.log("They escape into the darkness.")
@@ -10970,7 +10970,7 @@ class Game:
                                 pen = 2
                             else:
                                 pen = 1
-                            a.status["parry"] = {"rounds": 1, "penalty": int(pen)}
+                            apply_status(a, "parry", {"rounds": 1, "penalty": int(pen)})
                             self.ui.log(f"{a.name} fights defensively (parry {pen}).")
                             action_plan[id(a)] = {"type": "none"}
                             return
@@ -10993,10 +10993,10 @@ class Game:
                             # Set or improve cover: none -> -2, -2 -> -4, -4 stays.
                             cur = int(a.status.get("cover", 0) or 0)
                             if cur == 0:
-                                a.status["cover"] = -2
+                                apply_status(a, "cover", -2)
                                 self.ui.log(f"{a.name} takes partial cover (-2 to be hit).")
                             elif cur == -2:
-                                a.status["cover"] = -4
+                                apply_status(a, "cover", -4)
                                 self.ui.log(f"{a.name} takes good cover (-4 to be hit).")
                             else:
                                 self.ui.log(f"{a.name} is already in good cover.")
@@ -11196,6 +11196,7 @@ class Game:
                                             "use_missile_if_available": bool(prof.use_missile_if_available),
                                             "flee_hp_pct": float(prof.flee_hp_pct),
                                             "morale_mod": int(prof.morale_mod),
+                                            "morale_behavior": morale_behavior(prof.aggression),
                                         },
                                         "has_grab": bool(has_grab),
                                         "target": getattr(target, "name", "?"),
@@ -11335,7 +11336,7 @@ class Game:
                                     self.ui.log("They catch you as you flee!")
                                     for a in self.party.living():
                                         a.status = getattr(a, "status", {}) or {}
-                                        a.status["surprised"] = 2
+                                        apply_status(a, "surprised", 2, mode="max")
                                     combat_distance_ft = 30
                                 else:
                                     self.ui.log("You evade pursuit.")
@@ -11446,7 +11447,11 @@ class Game:
                             if plan.get("type") != "missile":
                                 continue
 
-                            # P2.2: centralized status effects can prevent actions (e.g., paralysis).
+                            # P2.2/A2: centralized status effects can prevent actions.
+                            block_reason = action_block_reason(actor, for_casting=False)
+                            if block_reason is not None:
+                                self.ui.log(f"{actor.name} cannot act ({block_reason}).")
+                                continue
                             try:
                                 mb = self.effects_mgr.query_modifiers(actor)
                                 if mb.forced_retreat:
@@ -11631,7 +11636,13 @@ class Game:
                                     _entry["skip"] = "plan_not_melee"
                                 continue
 
-                            # P2.2: centralized status effects can prevent actions (e.g., paralysis).
+                            # P2.2/A2: centralized status effects can prevent actions.
+                            block_reason = action_block_reason(actor, for_casting=False)
+                            if block_reason is not None and plan.get("type") not in ("escape", "inside_attack"):
+                                self.ui.log(f"{actor.name} cannot act ({block_reason}).")
+                                if melee_diag is not None:
+                                    _entry["skip"] = f"status:{block_reason}"
+                                continue
                             try:
                                 mb = self.effects_mgr.query_modifiers(actor)
                                 if mb.forced_retreat:
@@ -12371,6 +12382,11 @@ class Game:
         Removes sticky control effects (grapple/engulf/swallow) so combat state
         cannot remain "stuck" after a death.
         """
+        try:
+            if int(getattr(target, "hp", 0) or 0) <= 0:
+                cleanup_actor_battle_status(target)
+        except Exception:
+            pass
 
         ctx = dict(ctx or {})
         try:
@@ -13131,7 +13147,7 @@ class Game:
                 pass
             if bool(params.get("stun_swallower_on_escape", False)):
                 sw.status = getattr(sw, "status", {}) or {}
-                sw.status["held"] = max(int(sw.status.get("held", 0) or 0), 1)
+                apply_status(sw, "held", 1, mode="max")
 
     def _resolve_grapple_special(self, attacker: Actor, defender: Actor, spec: dict, *, round_no: int = 1) -> None:
         """Apply a grapple-style hold (constrict/pin) via EffectsManager."""
@@ -13328,7 +13344,7 @@ class Game:
 
         def _mark_turned(u: Actor):
             u.status = getattr(u, "status", {}) or {}
-            u.status["turned"] = max(int(u.status.get("turned", 0) or 0), duration)
+            apply_status(u, "turned", duration, mode="max")
             u.effects = list(getattr(u, "effects", []) or [])
             if "turned" not in u.effects:
                 u.effects.append("turned")
@@ -13488,7 +13504,13 @@ class Game:
             except Exception:
                 pass
 
-            # P2.2: effects such as paralysis can prevent spellcasting.
+            # P2.2/A2: centralized status/effect blockers for spellcasting.
+            block_reason = action_block_reason(caster, for_casting=True)
+            if block_reason is not None:
+                self.ui.log(f"{caster.name} cannot cast due to {block_reason}!")
+                st.pop("casting", None)
+                caster.status = st
+                continue
             try:
                 mb = self.effects_mgr.query_modifiers(caster)
                 if mb.forced_retreat:
