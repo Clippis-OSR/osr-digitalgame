@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from .models import Actor, Party, Stats
+from .travel_state import TravelState
 
 # Increment whenever the on-disk schema changes.
 # We write both "save_version" and the legacy "version" key for compatibility.
@@ -194,6 +195,12 @@ def validate_and_guard_save_data(data: Any, strict: bool) -> Dict[str, Any]:
         if strict:
             _schema_fail("wilderness.world_hexes", f"expected object, got {_type_name(wild.get('world_hexes'))}")
         wild["world_hexes"] = {}
+
+    ts = wild.get("travel_state")
+    if ts is not None and not isinstance(ts, dict):
+        if strict:
+            _schema_fail("wilderness.travel_state", f"expected object, got {_type_name(ts)}")
+        wild["travel_state"] = {}
 
     # Dungeon essentials
     dung = data["dungeon"]
@@ -495,6 +502,7 @@ def game_to_dict(game: Any) -> Dict[str, Any]:
             "world_hexes": getattr(game, "world_hexes", {}) or {},
             "travel_mode": str(getattr(game, "wilderness_travel_mode", "normal") or "normal"),
             "forward_anchor": getattr(game, "forward_anchor", None),
+            "travel_state": (getattr(game, "travel_state", TravelState()).to_dict() if hasattr(getattr(game, "travel_state", None), "to_dict") else TravelState().to_dict()),
         },
         "journal": {
             "discoveries": list(getattr(game, "discovery_log", []) or []),
@@ -1162,6 +1170,7 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     setattr(game, "world_hexes", wild.get("world_hexes", {}) or {})
     fa = wild.get("forward_anchor", None)
     setattr(game, "forward_anchor", fa if isinstance(fa, dict) else None)
+    setattr(game, "travel_state", TravelState.from_dict(wild.get("travel_state", {})))
 
     j = data.get("journal", {}) or {}
     setattr(game, "discovery_log", list(j.get("discoveries", []) or []))
