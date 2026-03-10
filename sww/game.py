@@ -5388,7 +5388,39 @@ class Game:
             if victim:
                 victim.hp = max(-1, victim.hp - 1)
 
+    def _ensure_canonical_dungeon_entrance(self) -> dict[str, Any]:
+        """Ensure a stable canonical dungeon entrance POI exists near town.
+
+        Minimal P6.2 pass: deterministic destination ownership only.
+        """
+        if not hasattr(self, "wilderness_rng"):
+            self.wilderness_rng = LoggedRandom(self.wilderness_seed, channel="wilderness", log_fn=self._log_rng)
+
+        hx = ensure_hex(self.world_hexes, tuple(DUNGEON_ENTRANCE_HEX), self.wilderness_rng)
+        existing = hx.poi if isinstance(getattr(hx, "poi", None), dict) else {}
+        canonical_id = "poi:canonical:dungeon_entrance"
+
+        discovered = bool(existing.get("discovered", False))
+        resolved = bool(existing.get("resolved", False))
+
+        if str(existing.get("id") or "") == canonical_id:
+            discovered = bool(existing.get("discovered", False))
+            resolved = bool(existing.get("resolved", False))
+
+        hx.poi = {
+            "id": canonical_id,
+            "type": "dungeon_entrance",
+            "name": "Dungeon Entrance",
+            "notes": "A known stair descending into the depths near town.",
+            "discovered": discovered,
+            "resolved": resolved,
+            "canonical": True,
+        }
+        self.world_hexes[hx.key()] = hx.to_dict()
+        return self.world_hexes[hx.key()]
+
     def _ensure_current_hex(self) -> dict[str, Any]:
+        self._ensure_canonical_dungeon_entrance()
         # Use a dedicated RNG for wilderness generation to avoid odd coupling.
         if not hasattr(self, "wilderness_rng"):
             self.wilderness_rng = LoggedRandom(self.wilderness_seed, channel="wilderness", log_fn=self._log_rng)
