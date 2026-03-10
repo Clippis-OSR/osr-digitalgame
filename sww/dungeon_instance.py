@@ -237,6 +237,9 @@ def _quota_assignments(*, rooms: dict[int, dict[str, Any]], adj: dict[int, set[i
     mandatory.pop("entrance", None)
     mandatory.pop("boss", None)
     mandatory.pop("treasury", None)
+    conditional.pop("entrance", None)
+    conditional.pop("boss", None)
+    conditional.pop("treasury", None)
 
     quota_roles: list[str] = []
     for role, count in sorted(mandatory.items()):

@@ -9314,6 +9314,10 @@ class Game:
             room["cleared"] = True
             if isinstance(room.get("_delta"), dict):
                 room["_delta"]["cleared"] = True
+            try:
+                self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
+            except Exception:
+                pass
             return
         # P6.1.0.5: deterministic pre-rolled treasure from dungeon_instance.stocking if present.
         if "treasure_gp" in room and "treasure_items" in room:
@@ -9333,6 +9337,10 @@ class Game:
         if isinstance(room.get("_delta"), dict):
             room["_delta"]["treasure_taken"] = True
             room["_delta"]["cleared"] = True
+        try:
+            self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
+        except Exception:
+            pass
         self.ui.log(f"You recover {gp} gp and {len(items)} item(s).")
 
     
