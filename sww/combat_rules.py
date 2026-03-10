@@ -1,62 +1,93 @@
-from __future__ import annotations
-
-from typing import Any
-
-
-def is_melee_engaged(combat_distance_ft: int | None) -> bool:
-    """Central melee-engagement authority for theater-of-the-mind combat."""
-    if combat_distance_ft is None:
-        return False
-    return int(combat_distance_ft) <= 10
+from dataclasses import dataclass
+from .grid_map import has_line_of_sight, manhattan
+from .grid_state import GridBattleState, UnitState
 
 
-def can_use_missile(combat_distance_ft: int | None) -> bool:
-    """Missiles are disallowed when lines are fully closed into melee."""
-    if combat_distance_ft is None:
-        return True
-    return int(combat_distance_ft) > 10
+@dataclass
+class AttackCheck:
+    ok: bool
+    kind: str = "melee"
+    to_hit_mod: int = 0
 
 
-def shooting_into_melee_penalty(combat_distance_ft: int | None) -> int:
-    """Penalty for firing into fully entangled melee."""
-    if combat_distance_ft is None:
-        return 0
-    return -4 if int(combat_distance_ft) <= 0 else 0
+@dataclass
+class StepCheck:
+    ok: bool
+    step_cost: int = 0
 
 
-def foe_frontage_limit(combat_distance_ft: int | None, party_living_count: int) -> int | None:
-    """Maximum simultaneous foe melee attackers when lines are engaged."""
-    if not is_melee_engaged(combat_distance_ft):
-        return None
-    return max(1, int(party_living_count))
+def validate_attack(state: GridBattleState, attacker: UnitState, target: UnitState, mode: str) -> AttackCheck:
+    """Central rule authority for attack validation."""
+
+    if not target.is_alive():
+        return AttackCheck(False)
+
+    kind = "melee" if mode == "melee" else "missile"
+
+    if kind == "melee":
+        if manhattan(attacker.pos, target.pos) != 1:
+            return AttackCheck(False)
+    else:
+        if not has_line_of_sight(state.gm, attacker.pos, target.pos):
+            return AttackCheck(False)
+
+    to_hit_mod = 0
+    st = getattr(target.actor, "status", {}) or {}
+    to_hit_mod += int(st.get("cover", 0) or 0)
+
+    return AttackCheck(True, kind, to_hit_mod)
 
 
-def apply_forced_retreat(actor: Any) -> str:
-    """Apply morale-driven flee transition and return resolved state.
+def validate_step(state: GridBattleState, unit: UnitState, dest: tuple[int, int], blocked: set):
+    x, y = dest
 
-    Returns one of: 'flee', 'cower'.
-    """
-    if bool(getattr(actor, "is_pc", False)):
-        return "cower"
-    effects = list(getattr(actor, "effects", []) or [])
-    if "fled" not in effects:
-        effects.append("fled")
-    actor.effects = effects
-    return "flee"
+    if not state.gm.in_bounds(x, y):
+        return StepCheck(False)
+
+    if state.gm.blocks_movement(x, y):
+        return StepCheck(False)
+
+    if dest in blocked:
+        return StepCheck(False)
+
+    if manhattan(unit.pos, dest) != 1:
+        return StepCheck(False)
+
+    cost = int(state.gm.move_cost(x, y))
+
+    if cost > unit.move_remaining:
+        return StepCheck(False)
+
+    return StepCheck(True, cost)
 
 
-def is_active_hostile_target(target: Any, enemies: list[Any]) -> bool:
-    """Shared theater target legality for hostile attack declarations/execution."""
-    if target is None:
-        return False
-    try:
-        if int(getattr(target, "hp", 0) or 0) <= 0:
-            return False
-    except Exception:
-        return False
-    try:
-        if "fled" in (getattr(target, "effects", []) or []):
-            return False
-    except Exception:
-        return False
-    return any(e is target for e in (enemies or []))
+def can_take_cover(state: GridBattleState, unit: UnitState):
+
+    x, y = unit.pos
+
+    for dx, dy in ((1,0),(-1,0),(0,1),(0,-1)):
+        if state.gm.is_cover(x+dx, y+dy):
+            return True
+
+    return False
+
+
+def opportunity_attackers_for_move(state: GridBattleState, unit: UnitState, old_pos, new_pos):
+
+    enemies = []
+
+    for u in state.units.values():
+        if not u.is_alive():
+            continue
+
+        if u.side == unit.side:
+            continue
+
+        old_adj = manhattan(old_pos, u.pos) == 1
+        new_adj = manhattan(new_pos, u.pos) == 1
+
+        if old_adj and not new_adj:
+            enemies.append(u)
+
+    enemies.sort(key=lambda u: u.unit_id)
+    return enemies
