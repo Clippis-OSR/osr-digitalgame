@@ -408,17 +408,6 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
         moved_points = 0
         moved_tiles = 0
 
-        def adj_enemies(pos: tuple[int, int]) -> list[UnitState]:
-            outl: list[UnitState] = []
-            for ou in state.units.values():
-                if not ou.is_alive() or ou.side == u.side:
-                    continue
-                if manhattan(pos, ou.pos) == 1:
-                    outl.append(ou)
-            # stable order
-            outl.sort(key=lambda uu: uu.unit_id)
-            return outl
-
         for (nx, ny) in steps:
             if u.move_remaining <= 0:
                 break
@@ -438,7 +427,6 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
                 break
 
             old_pos = u.pos
-            old_adj = {e.unit_id for e in adj_enemies(old_pos)}
 
             # Apply movement.
             state.occupancy.pop(u.pos, None)
@@ -451,8 +439,12 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
             clear_status(u.actor, "cover")
 
             # Opportunity attacks: enemies that were adjacent to old_pos but are no longer adjacent now.
-            new_adj = {e.unit_id for e in adj_enemies(u.pos)}
-            leavers = sorted(list(old_adj - new_adj))
+            leavers = opportunity_attackers_on_leave(
+                mover_side=u.side,
+                old_pos=old_pos,
+                new_pos=u.pos,
+                candidates=list(state.units.values()),
+            )
             for attacker_id in leavers:
                 atk = state.units.get(attacker_id)
                 if not atk or not atk.is_alive():
