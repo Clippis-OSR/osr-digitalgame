@@ -426,8 +426,11 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
             if u.move_remaining <= 0:
                 break
             nx, ny = int(nx), int(ny)
-            if not state.gm.in_bounds(nx, ny) or state.gm.blocks_movement(nx, ny):
+            step = validate_step(state, u, (nx, ny), blocked)
+            if not step.ok:
                 break
+
+            step_cost = step.step_cost
             if (nx, ny) in blocked:
                 break
             if manhattan(u.pos, (nx, ny)) != 1:
