@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from .status_lifecycle import TRANSIENT_BATTLE_STATUS_KEYS
+
 
 def validate_content_schemas(*, monsters: Any, spells: Any, monster_damage_profiles: Any, monster_specials: Any, monster_ai_profiles: Any, strict: bool = True) -> list[ValidationIssue]:
     """Lightweight schema validation for JSON-backed content.
@@ -298,6 +300,9 @@ def validate_state(game: Any) -> list[ValidationIssue]:
     # ---- Party / character creation ----
     issues.extend(validate_party(game))
 
+    # ---- Combat participation invariants ----
+    issues.extend(validate_combat_participation_state(game))
+
     # ---- Factions / clocks ----
     faction_ids = set((game.factions or {}).keys())
     for cid, clk in (game.conflict_clocks or {}).items():
@@ -449,6 +454,70 @@ def validate_state(game: Any) -> list[ValidationIssue]:
                     issues.append(ValidationIssue('warn', 'dungeon_instance has unexpected type', {'type': type(di).__name__}))
     except Exception:
         pass
+
+    return issues
+
+
+def validate_combat_participation_state(game: Any) -> list[ValidationIssue]:
+    """Validate tactical combat participation invariants.
+
+    Read-only checks only; this function reports potentially illegal combat
+    state without mutating game objects.
+    """
+
+    issues: list[ValidationIssue] = []
+
+    def _candidate_states() -> list[tuple[str, Any]]:
+        out: list[tuple[str, Any]] = []
+        for attr in ("grid_battle_state", "grid_state", "battle_state", "tactical_state", "_grid_state"):
+            st = getattr(game, attr, None)
+            if st is not None and hasattr(st, "units") and hasattr(st, "occupancy"):
+                out.append((attr, st))
+        tc = getattr(game, "turn_controller", None)
+        tc_state = getattr(tc, "state", None)
+        if tc_state is not None and hasattr(tc_state, "units") and hasattr(tc_state, "occupancy"):
+            out.append(("turn_controller.state", tc_state))
+        return out
+
+    for label, state in _candidate_states():
+        units = getattr(state, "units", None)
+        occupancy = getattr(state, "occupancy", None)
+        if not isinstance(units, dict) or not isinstance(occupancy, dict):
+            continue
+
+        occ_values = set(occupancy.values())
+        declare_order = list(getattr(state, "declare_order", []) or [])
+        initiative = list(getattr(state, "initiative", []) or [])
+
+        for pos, uid in occupancy.items():
+            u = units.get(uid)
+            if u is None:
+                issues.append(ValidationIssue("error", f"{label} occupancy references missing unit", {"pos": pos, "unit_id": uid}))
+                continue
+            if not bool(getattr(u, "is_alive")()):
+                issues.append(ValidationIssue("error", f"{label} dead unit occupies active tile", {"unit_id": uid, "pos": pos}))
+                continue
+            fx = set(getattr(getattr(u, "actor", None), "effects", []) or [])
+            if "fled" in fx or "surrendered" in fx or "removed" in fx or str(getattr(u, "morale_state", "")) == "surrender":
+                issues.append(ValidationIssue("error", f"{label} non-active unit remains in occupancy", {"unit_id": uid, "pos": pos, "effects": sorted(list(fx))}))
+
+        for uid, u in units.items():
+            actor = getattr(u, "actor", None)
+            fx = set(getattr(actor, "effects", []) or [])
+            st = getattr(actor, "status", {}) or {}
+
+            if "fled" in fx and "flee_pending" in fx:
+                issues.append(ValidationIssue("warn", f"{label} unit has contradictory flee markers", {"unit_id": uid, "effects": ["fled", "flee_pending"]}))
+
+            out_of_combat = ("fled" in fx) or ("surrendered" in fx) or ("removed" in fx) or str(getattr(u, "morale_state", "")) == "surrender"
+            if out_of_combat:
+                if uid in occ_values:
+                    issues.append(ValidationIssue("error", f"{label} out-of-combat unit still occupies tile", {"unit_id": uid}))
+                if uid in declare_order or uid in initiative:
+                    issues.append(ValidationIssue("warn", f"{label} out-of-combat unit remains in active turn order", {"unit_id": uid}))
+                stale_keys = sorted(k for k in TRANSIENT_BATTLE_STATUS_KEYS if k in st)
+                if stale_keys:
+                    issues.append(ValidationIssue("warn", f"{label} removed/out-of-combat unit retains transient combat statuses", {"unit_id": uid, "status_keys": stale_keys}))
 
     return issues
 

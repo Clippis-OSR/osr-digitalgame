@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Iterable
 
 from .rules import saving_throw, saving_throw_detail
+from .status_lifecycle import apply_status, clear_status, leave_combat
 
 
 
@@ -520,7 +521,7 @@ def apply_spell_in_combat(
             hd = int(getattr(f, 'hd', 1) or 1)
             if hd <= hd_budget and hd > 0:
                 hd_budget -= hd
-                f.status["asleep"] = max(int(f.status.get("asleep", 0) or 0), 6)
+                apply_status(f, "asleep", 6, mode="max")
                 _be(game, "EFFECT_APPLIED", tgt=getattr(f, "name", str(f)), kind="asleep")
                 affected += 1
         _be(game, "AOE_AFFECTS", spell=spell_name, count=int(affected), kind="sleep")
@@ -580,12 +581,12 @@ def apply_spell_in_combat(
             game.ui.log(f"{target.name} resists!")
             return True
         if s == "charm person":
-            target.status["charmed"] = 999
+            apply_status(target, "charmed", 999)
             _be(game, "EFFECT_APPLIED", tgt=target.name, kind="charmed")
-            target.effects.append('fled')  # treated as out of fight
+            leave_combat(target, marker='fled')  # treated as out of fight
             game.ui.log(f"{target.name} is charmed and stops fighting!")
         else:
-            target.status["held"] = 6
+            apply_status(target, "held", 6, mode="max")
             _be(game, "EFFECT_APPLIED", tgt=target.name, kind="held")
             game.ui.log(f"{target.name} is held!")
         return True
@@ -627,7 +628,7 @@ def apply_spell_in_combat(
         return True
 
     if s == "shield":
-        caster.status["shield"] = {"rounds": 6, "ac_bonus": 2}
+        apply_status(caster, "shield", {"rounds": 6, "ac_bonus": 2})
         _be(game, "EFFECT_APPLIED", tgt=caster.name, kind="shield")
         game.ui.log(f"{caster.name} is protected by a shimmering shield.")
         return True
@@ -637,7 +638,7 @@ def apply_spell_in_combat(
         if not target:
             game.ui.log("No target.")
             return
-        target.status["invisible"] = 6
+        apply_status(target, "invisible", 6)
         _be(game, "EFFECT_APPLIED", tgt=target.name, kind="invisible")
         game.ui.log(f"{target.name} fades from sight!")
         return True
@@ -652,7 +653,7 @@ def apply_spell_in_combat(
             st_ok = _emit_save(game, dice, f, spell_name=spell_name, tags={"spell", "magic"})
             if st_ok:
                 continue
-            f.status["held"] = max(int(f.status.get("held", 0) or 0), 3)
+            apply_status(f, "held", 3, mode="max")
             _be(game, "EFFECT_APPLIED", tgt=f.name, kind="held")
             hits += 1
         _be(game, "AOE_AFFECTS", spell=spell_name, count=int(hits), kind="web")
@@ -704,7 +705,7 @@ def apply_spell_in_combat(
         if not target:
             game.ui.log("No target.")
             return
-        target.status["prot_evil"] = {"rounds": 6, "enemy_to_hit": -2}
+        apply_status(target, "prot_evil", {"rounds": 6, "enemy_to_hit": -2})
         _be(game, "EFFECT_APPLIED", tgt=target.name, kind="prot_evil")
         game.ui.log(f"{target.name} is protected from evil.")
         return True
@@ -714,7 +715,7 @@ def apply_spell_in_combat(
         if not target:
             game.ui.log("No target.")
             return
-        target.status["sanctuary"] = {"rounds": 6}
+        apply_status(target, "sanctuary", {"rounds": 6})
         _be(game, "EFFECT_APPLIED", tgt=target.name, kind="sanctuary")
         game.ui.log(f"{target.name} is under sanctuary.")
         return True
@@ -810,10 +811,8 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
             game.ui.log("No target.")
             return
         try:
-            st = getattr(target, "status", {}) or {}
-            st.pop("cursed_bound_slots", None)
-            st.pop("curse_ac_penalty", None)
-            target.status = st
+            clear_status(target, "cursed_bound_slots")
+            clear_status(target, "curse_ac_penalty")
             if hasattr(game, "_recompute_equipped_stats"):
                 game._recompute_equipped_stats(target)
         except Exception:
@@ -913,7 +912,7 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
             game.ui.log("No target.")
             return
         # S&W: 6 turns (1 hour)
-        target.status["prot_evil"] = {"turns": 6, "enemy_to_hit": -2}
+        apply_status(target, "prot_evil", {"turns": 6, "enemy_to_hit": -2})
         game.ui.log(f"{target.name} is protected from evil.")
         return
 
@@ -923,7 +922,7 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
             game.ui.log("No target.")
             return
         # S&W: 2 turns (classic). If the spell data differs, we still keep a short duration.
-        target.status["sanctuary"] = {"turns": 2}
+        apply_status(target, "sanctuary", {"turns": 2})
         game.ui.log(f"{target.name} is under sanctuary.")
         return
 
@@ -933,14 +932,14 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
             game.ui.log("No target.")
             return
         # S&W: 24 turns (4 hours) for invisibility.
-        target.status["invisible"] = {"turns": 24}
+        apply_status(target, "invisible", {"turns": 24})
         game.ui.log(f"{target.name} fades from sight!")
         return
 
     if s == "bless":
         # S&W: Bless lasts 6 turns (1 hour) and must be cast before combat.
         for a in game.party.living():
-            a.status["bless"] = {"turns": 6, "to_hit": 1}
+            apply_status(a, "bless", {"turns": 6, "to_hit": 1})
         game.ui.log("Bless grants +1 to hit to the party for 1 hour.")
         return
 
