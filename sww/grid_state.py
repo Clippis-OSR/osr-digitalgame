@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 
 from .grid_map import GridMap
 from .battle_events import BattleEvent, evt
+from .status_lifecycle import apply_status, clear_status
 
 
 @dataclass
@@ -134,26 +135,24 @@ class GridBattleState:
             st = getattr(u.actor, "status", {}) or {}
             if int(st.get("burning", 0) or 0) > 0:
                 u.actor.hp = int(getattr(u.actor, "hp", 0)) - 1
-                st["burning"] = int(st.get("burning", 0)) - 1
+                next_burning = int(st.get("burning", 0)) - 1
+                apply_status(u.actor, "burning", next_burning)
                 ev.append(evt("DAMAGE", src="burning", tgt=u.unit_id, amount=1, kind="fire"))
-                if int(st.get("burning", 0)) <= 0:
-                    st.pop("burning", None)
+                if int(next_burning) <= 0:
+                    clear_status(u.actor, "burning")
                     ev.append(evt("EFFECT_EXPIRED", tgt=u.unit_id, kind="burning"))
             if int(st.get("entangled", 0) or 0) > 0:
-                st["entangled"] = int(st.get("entangled", 0)) - 1
-                if int(st.get("entangled", 0)) <= 0:
-                    st.pop("entangled", None)
+                next_entangled = int(st.get("entangled", 0)) - 1
+                apply_status(u.actor, "entangled", next_entangled)
+                if int(next_entangled) <= 0:
+                    clear_status(u.actor, "entangled")
                     ev.append(evt("EFFECT_EXPIRED", tgt=u.unit_id, kind="entangled"))
-            u.actor.status = st
 
         # Clear any previous "casting" markers.
         for u in self.units.values():
             if not u.is_alive():
                 continue
-            st = getattr(u.actor, "status", {}) or {}
-            if "casting" in st:
-                st.pop("casting", None)
-                u.actor.status = st
+            clear_status(u.actor, "casting")
 
         self.side_first = self._roll_side_initiative(game)
         self.phase = "DECLARE"

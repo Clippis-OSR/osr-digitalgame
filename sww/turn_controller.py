@@ -263,9 +263,7 @@ class TurnController:
                 cmd = self._try_build_cast(active.unit_id, sp, (tx, ty))
                 if cmd:
                     # Mark caster as casting so missile damage can disrupt.
-                    st = getattr(active.actor, "status", {}) or {}
-                    st["casting"] = {"spell": sp, "disrupted": False, "round": int(self.state.round_no)}
-                    active.actor.status = st
+                    apply_status(active.actor, "casting", {"spell": sp, "disrupted": False, "round": int(self.state.round_no)})
                     self._declare(active.unit_id, cmd, events)
                 return events
 
