@@ -224,7 +224,6 @@ class Game:
         self.world_hexes: dict[str, dict[str, Any]] = {}
         self.party_hex = (0, 0)  # axial (q,r)
         self.travel_state = TravelState(location="town")
-        self._ensure_canonical_dungeon_entrance()
         # Dedicated RNG for wilderness generation and rumor POI seeding.
         # Deterministic-ish replay log (non-persistent)
         self.replay = ReplayLog(dice_seed=self.dice_seed, wilderness_seed=self.wilderness_seed)
@@ -1982,6 +1981,8 @@ class Game:
 
         self.emit("traveled", mode="direction", direction=direction, src=src, dest=dest, travel_mode=str(getattr(self,'wilderness_travel_mode','normal')))
         self.travel_state.location = "wilderness"
+        self.travel_state.travel_turns = int(getattr(self.travel_state, "travel_turns", 0)) + 1
+        self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
 
         return CommandResult(status="ok")
 
@@ -2028,6 +2029,8 @@ class Game:
 
         self.emit("traveled", mode="to_hex", src=src, dest=dest, travel_mode=str(getattr(self,'wilderness_travel_mode','normal')))
         self.travel_state.location = "wilderness"
+        self.travel_state.travel_turns = int(getattr(self.travel_state, "travel_turns", 0)) + 1
+        self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
 
         return CommandResult(status="ok")
 
@@ -2107,6 +2110,8 @@ class Game:
 
         self.emit("traveled", mode="toward_town", src=src, dest=tuple(self.party_hex), travel_mode=str(getattr(self,'wilderness_travel_mode','normal')))
         self.travel_state.location = "wilderness" if tuple(self.party_hex) != TOWN_HEX else "town"
+        self.travel_state.travel_turns = int(getattr(self.travel_state, "travel_turns", 0)) + 1
+        self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
 
         if self.party_hex == (0, 0):
 
@@ -2313,7 +2318,7 @@ class Game:
             modifiers=[{"reason": str(name), "delta": int(delta)} for (name, delta) in list(plan.get("modifiers", []))],
         )
         self.travel_state.location = "town"
-        self._advance_wilderness_clock(travel_turns=int(max(1, day_cost)), watch_turns=int(max(1, day_cost)) * int(self.WATCHES_PER_DAY), encounter_ticks=int(max(1, day_cost)))
+        self.travel_state.travel_turns = int(getattr(self.travel_state, "travel_turns", 0)) + int(max(1, day_cost))
         self.travel_state.route_progress = 0
         day_txt = f"{day_cost} day" + ("s" if day_cost != 1 else "")
         return CommandResult(status="ok", messages=(f"You return to Town. ({day_txt})",))
@@ -2336,10 +2341,9 @@ class Game:
         if tuple(getattr(self, "party_hex", TOWN_HEX)) == TOWN_HEX:
             self.party_hex = tuple(DUNGEON_ENTRANCE_HEX)
             self.travel_state.location = "wilderness"
-            self._advance_wilderness_clock(travel_turns=1, watch_turns=1, encounter_ticks=0)
+            self.travel_state.travel_turns = int(getattr(self.travel_state, "travel_turns", 0)) + 1
             self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
 
-        self._ensure_canonical_dungeon_entrance()
         hx = self._ensure_current_hex()
         poi = hx.get("poi") if isinstance(hx, dict) else None
         at_entrance = tuple(getattr(self, "party_hex", TOWN_HEX)) == tuple(DUNGEON_ENTRANCE_HEX)
@@ -2957,7 +2961,6 @@ class Game:
 
     def _cmd_dungeon_leave(self) -> CommandResult:
         self.party_hex = tuple(DUNGEON_ENTRANCE_HEX)
-        self._ensure_canonical_dungeon_entrance()
         self.travel_state.location = "wilderness"
         self.emit("dungeon_left", room_id=int(self.current_room_id))
         return CommandResult(status="ok", messages=("leave",))
