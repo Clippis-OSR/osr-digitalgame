@@ -20,6 +20,7 @@ from .equipment import EquipmentDB
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
+from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
 from .contracts import generate_contracts, Contract
 from .events import EventLog
@@ -222,6 +223,8 @@ class Game:
         # world hexes stored as dicts keyed by "q,r" for easy JSON save.
         self.world_hexes: dict[str, dict[str, Any]] = {}
         self.party_hex = (0, 0)  # axial (q,r)
+        self.travel_state = TravelState(location="town")
+        self._ensure_canonical_dungeon_entrance()
         # Dedicated RNG for wilderness generation and rumor POI seeding.
         # Deterministic-ish replay log (non-persistent)
         self.replay = ReplayLog(dice_seed=self.dice_seed, wilderness_seed=self.wilderness_seed)
@@ -1826,6 +1829,16 @@ class Game:
     # Wilderness command handlers
     # -----------------
 
+    def _advance_wilderness_clock(self, *, travel_turns: int = 0, watch_turns: int = 0, encounter_ticks: int = 0) -> None:
+        ts = getattr(self, "travel_state", None)
+        if ts is None:
+            self.travel_state = TravelState(location="wilderness")
+            ts = self.travel_state
+        if hasattr(ts, "advance_clock"):
+            ts.advance_clock(travel_turns=int(travel_turns), watch_turns=int(watch_turns), encounter_ticks=int(encounter_ticks))
+        else:
+            ts.travel_turns = int(getattr(ts, "travel_turns", 0) or 0) + max(0, int(travel_turns))
+
     def _cmd_advance_watch(self, watches: int) -> CommandResult:
         w = max(0, int(watches))
         if w <= 0:
@@ -1950,6 +1963,8 @@ class Game:
 
             self._consume_rations(1)
             self._advance_watch(int(wps_eff))
+            self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
+            self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
             self._wilderness_encounter_check(hx2, encounter_mod=int(enc_mod) + int(terr_enc_mod))
 
 
@@ -1966,7 +1981,7 @@ class Game:
 
 
         self.emit("traveled", mode="direction", direction=direction, src=src, dest=dest, travel_mode=str(getattr(self,'wilderness_travel_mode','normal')))
-
+        self.travel_state.location = "wilderness"
 
         return CommandResult(status="ok")
 
@@ -2006,11 +2021,13 @@ class Game:
 
         self._consume_rations(1)
         self._advance_watch(int(wps_eff))
+        self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
+        self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
         self._wilderness_encounter_check(hx2, encounter_mod=int(enc_mod) + int(terr_enc_mod))
 
 
         self.emit("traveled", mode="to_hex", src=src, dest=dest, travel_mode=str(getattr(self,'wilderness_travel_mode','normal')))
-
+        self.travel_state.location = "wilderness"
 
         return CommandResult(status="ok")
 
@@ -2077,6 +2094,8 @@ class Game:
 
             self._consume_rations(1)
             self._advance_watch(int(wps_eff))
+            self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
+            self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
             self._wilderness_encounter_check(hx2, encounter_mod=int(enc_mod) + int(terr_enc_mod))
 
 
@@ -2087,7 +2106,7 @@ class Game:
 
 
         self.emit("traveled", mode="toward_town", src=src, dest=tuple(self.party_hex), travel_mode=str(getattr(self,'wilderness_travel_mode','normal')))
-
+        self.travel_state.location = "wilderness" if tuple(self.party_hex) != TOWN_HEX else "town"
 
         if self.party_hex == (0, 0):
 
@@ -2293,6 +2312,9 @@ class Game:
             distance=int(plan.get("distance", 0) or 0),
             modifiers=[{"reason": str(name), "delta": int(delta)} for (name, delta) in list(plan.get("modifiers", []))],
         )
+        self.travel_state.location = "town"
+        self._advance_wilderness_clock(travel_turns=int(max(1, day_cost)), watch_turns=int(max(1, day_cost)) * int(self.WATCHES_PER_DAY), encounter_ticks=int(max(1, day_cost)))
+        self.travel_state.route_progress = 0
         day_txt = f"{day_cost} day" + ("s" if day_cost != 1 else "")
         return CommandResult(status="ok", messages=(f"You return to Town. ({day_txt})",))
 
@@ -2310,6 +2332,21 @@ class Game:
     # -----------------
 
     def _cmd_enter_dungeon(self) -> CommandResult:
+        # Minimal deterministic overworld leg: town <-> canonical dungeon entrance.
+        if tuple(getattr(self, "party_hex", TOWN_HEX)) == TOWN_HEX:
+            self.party_hex = tuple(DUNGEON_ENTRANCE_HEX)
+            self.travel_state.location = "wilderness"
+            self._advance_wilderness_clock(travel_turns=1, watch_turns=1, encounter_ticks=0)
+            self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
+
+        self._ensure_canonical_dungeon_entrance()
+        hx = self._ensure_current_hex()
+        poi = hx.get("poi") if isinstance(hx, dict) else None
+        at_entrance = tuple(getattr(self, "party_hex", TOWN_HEX)) == tuple(DUNGEON_ENTRANCE_HEX)
+        poi_entrance = isinstance(poi, dict) and str(poi.get("type") or "") == "dungeon_entrance"
+        if not (at_entrance or poi_entrance):
+            return CommandResult(status="error", messages=("You must be at a dungeon entrance to enter.",))
+
         self.ui.title("Dungeon Entrance")
         self.expeditions += 1
 
@@ -2354,6 +2391,7 @@ class Game:
             # Passive checks on initial room entry do not cost time.
             self._passive_room_entry_checks(r0)
 
+        self.travel_state.location = "dungeon"
         self.emit("dungeon_entered", room_id=int(self.current_room_id), expeditions=int(self.expeditions))
         return CommandResult(status="ok")
 
@@ -2918,6 +2956,9 @@ class Game:
         return CommandResult(status="ok")
 
     def _cmd_dungeon_leave(self) -> CommandResult:
+        self.party_hex = tuple(DUNGEON_ENTRANCE_HEX)
+        self._ensure_canonical_dungeon_entrance()
+        self.travel_state.location = "wilderness"
         self.emit("dungeon_left", room_id=int(self.current_room_id))
         return CommandResult(status="ok", messages=("leave",))
 
@@ -5360,7 +5401,39 @@ class Game:
             if victim:
                 victim.hp = max(-1, victim.hp - 1)
 
+    def _ensure_canonical_dungeon_entrance(self) -> dict[str, Any]:
+        """Ensure a stable canonical dungeon entrance POI exists near town.
+
+        Minimal P6.2 pass: deterministic destination ownership only.
+        """
+        if not hasattr(self, "wilderness_rng"):
+            self.wilderness_rng = LoggedRandom(self.wilderness_seed, channel="wilderness", log_fn=self._log_rng)
+
+        hx = ensure_hex(self.world_hexes, tuple(DUNGEON_ENTRANCE_HEX), self.wilderness_rng)
+        existing = hx.poi if isinstance(getattr(hx, "poi", None), dict) else {}
+        canonical_id = "poi:canonical:dungeon_entrance"
+
+        discovered = bool(existing.get("discovered", False))
+        resolved = bool(existing.get("resolved", False))
+
+        if str(existing.get("id") or "") == canonical_id:
+            discovered = bool(existing.get("discovered", False))
+            resolved = bool(existing.get("resolved", False))
+
+        hx.poi = {
+            "id": canonical_id,
+            "type": "dungeon_entrance",
+            "name": "Dungeon Entrance",
+            "notes": "A known stair descending into the depths near town.",
+            "discovered": discovered,
+            "resolved": resolved,
+            "canonical": True,
+        }
+        self.world_hexes[hx.key()] = hx.to_dict()
+        return self.world_hexes[hx.key()]
+
     def _ensure_current_hex(self) -> dict[str, Any]:
+        self._ensure_canonical_dungeon_entrance()
         # Use a dedicated RNG for wilderness generation to avoid odd coupling.
         if not hasattr(self, "wilderness_rng"):
             self.wilderness_rng = LoggedRandom(self.wilderness_seed, channel="wilderness", log_fn=self._log_rng)
