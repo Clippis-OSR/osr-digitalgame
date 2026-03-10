@@ -1261,19 +1261,7 @@ class Game:
 
     def _combat_target_is_valid(self, target: Any, enemies: list[Any]) -> bool:
         """Return True when target is still a legal hostile target among `enemies`."""
-        if target is None:
-            return False
-        try:
-            if int(getattr(target, "hp", 0) or 0) <= 0:
-                return False
-        except Exception:
-            return False
-        try:
-            if 'fled' in (getattr(target, 'effects', []) or []):
-                return False
-        except Exception:
-            return False
-        return any(e is target for e in (enemies or []))
+        return theater_target_is_valid(target, enemies)
 
     def _combat_retarget_or_clear(self, actor: Any, plan: dict, enemies: list[Any], *, reason: str = 'stale_target') -> dict:
         """Deterministically retarget a declared attack, or clear it when no enemies remain.

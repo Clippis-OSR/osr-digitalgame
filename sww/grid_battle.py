@@ -11,6 +11,8 @@ from .grid_map import GridMap, has_line_of_sight, manhattan
 from .grid_state import GridBattleState, UnitState
 from .battle_events import BattleEvent, evt
 from .commands import CmdAttack, CmdCastSpell, CmdDoorAction, CmdDungeonAction, CmdEndTurn, CmdHide, CmdMove, CmdTakeCover, CmdThrowItem, CmdParley, Command
+from .targeting import is_valid_melee_pair, is_valid_missile_pair, adjacent as positions_adjacent
+from .combat_legality import grid_pair_is_attack_legal
 
 
 @dataclass
@@ -86,8 +88,7 @@ class GridBattle:
         cur = self.entities.get(eid)
         if not cur:
             return False
-        dist = manhattan(cur.pos, (x, y))
-        return dist == 1 and self.move_points_left.get(eid, 0) > 0
+        return positions_adjacent(cur.pos, (x, y)) and self.move_points_left.get(eid, 0) > 0
 
     def move(self, eid: str, x: int, y: int) -> bool:
         if not self.can_move_to(eid, x, y):
@@ -102,11 +103,11 @@ class GridBattle:
         return True
 
     def adjacent(self, a: GridEntity, b: GridEntity) -> bool:
-        return manhattan(a.pos, b.pos) == 1
+        return is_valid_melee_pair(a.pos, b.pos)
 
     def in_missile_range(self, a: GridEntity, b: GridEntity) -> bool:
         # Prototype: 12 tiles max (~60ft) if LOS.
-        return manhattan(a.pos, b.pos) <= 12
+        return is_valid_missile_pair(self.map, a.pos, b.pos, max_tiles=12, lit_tiles=None)
 
     def cover_penalty_to_hit(self, target: GridEntity) -> int:
         # If actor used Take Cover we store cover in status as -2/-4.
