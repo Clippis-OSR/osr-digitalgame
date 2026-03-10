@@ -20,6 +20,30 @@ def in_missile_range(a: tuple[int, int], b: tuple[int, int], max_tiles: int = 12
     return manhattan(a, b) <= max_tiles
 
 
+
+
+def is_valid_melee_pair(attacker_pos: tuple[int, int], target_pos: tuple[int, int]) -> bool:
+    """Shared melee legality check for two occupied tiles."""
+    return adjacent(attacker_pos, target_pos)
+
+
+def is_valid_missile_pair(
+    gm: GridMap,
+    attacker_pos: tuple[int, int],
+    target_pos: tuple[int, int],
+    *,
+    max_tiles: int = 12,
+    lit_tiles: set[tuple[int, int]] | None = None,
+) -> bool:
+    """Shared missile legality check for two occupied tiles."""
+    if not in_missile_range(attacker_pos, target_pos, max_tiles=max_tiles):
+        return False
+    if not has_line_of_sight(gm, attacker_pos, target_pos):
+        return False
+    if not tile_is_visible(lit_tiles, attacker_pos, target_pos):
+        return False
+    return True
+
 def valid_melee_targets(
     unit_id: str,
     unit_pos: tuple[int, int],
@@ -49,11 +73,7 @@ def valid_missile_targets(
     for tid, (side, pos) in living.items():
         if tid == unit_id or side == unit_side:
             continue
-        if not in_missile_range(unit_pos, pos, max_tiles=max_tiles):
-            continue
-        if not has_line_of_sight(gm, unit_pos, pos):
-            continue
-        if not tile_is_visible(lit_tiles, unit_pos, pos):
+        if not is_valid_missile_pair(gm, unit_pos, pos, max_tiles=max_tiles, lit_tiles=lit_tiles):
             continue
         out.add(tid)
     return out
