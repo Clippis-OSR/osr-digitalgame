@@ -2324,6 +2324,10 @@ class Game:
             floors = 1
         floors = max(1, min(12, int(floors)))
         self.max_dungeon_levels = int(floors)
+        self.dungeon_level = max(1, min(int(self.max_dungeon_levels), int(getattr(self, "dungeon_level", 1) or 1)))
+        # Keep legacy dungeon_depth in sync with active blueprint level for deterministic depth scaling.
+        self.dungeon_depth = int(self.dungeon_level)
+
         # Ensure per-level dictionaries exist.
         if not isinstance(getattr(self, "dungeon_alarm_by_level", None), dict):
             self.dungeon_alarm_by_level = {}
@@ -2331,11 +2335,25 @@ class Game:
             self.dungeon_alarm_by_level.setdefault(lvl, 0)
             self._ensure_level_specials(lvl)
 
-        if self.current_room_id == 0:
+        # Runtime room cache is non-authoritative; rebuild on entry to avoid stale cache drift.
+        self.dungeon_rooms = {}
+
+        if int(getattr(self, "current_room_id", 0) or 0) <= 0:
             self.current_room_id = 1
-            self.dungeon_rooms = {}
-            r0 = self._ensure_room(1)
-            # Passive checks on initial entry do not cost time.
+        else:
+            rid = int(self.current_room_id)
+            room_floor = self._bp_room_floor(rid)
+            want_floor = int(self.dungeon_level - 1)
+            if room_floor is None or int(room_floor) != int(want_floor):
+                landing = self._bp_pick_room_with_tag_on_level(tag="stairs_up", level=int(self.dungeon_level))
+                if landing is None:
+                    ids = self._bp_room_ids_on_level(int(self.dungeon_level))
+                    landing = ids[0] if ids else 1
+                self.current_room_id = int(landing)
+
+        r0 = self._ensure_room(int(self.current_room_id))
+        if not bool(r0.get("entered", False)):
+            # Passive checks on initial room entry do not cost time.
             self._passive_room_entry_checks(r0)
 
         self.emit("dungeon_entered", room_id=int(self.current_room_id), expeditions=int(self.expeditions))
@@ -2368,6 +2386,23 @@ class Game:
                 out.append(rid)
         out.sort()
         return out
+
+    def _bp_room_floor(self, room_id: int) -> int | None:
+        """Blueprint helper: return 0-indexed floor for a room id."""
+        inst = getattr(self, "dungeon_instance", None)
+        if not inst or not getattr(inst, "blueprint", None):
+            return None
+        bp = getattr(inst.blueprint, "data", None) or {}
+        rooms = bp.get("rooms")
+        if not isinstance(rooms, dict):
+            return None
+        rec = rooms.get(str(int(room_id)))
+        if not isinstance(rec, dict):
+            return None
+        try:
+            return int(rec.get("floor", 0) or 0)
+        except Exception:
+            return None
 
     def _bp_pick_room_with_tag_on_level(self, *, tag: str, level: int) -> int | None:
         """Blueprint helper: pick a deterministic room on level that contains tag."""
@@ -3109,6 +3144,9 @@ class Game:
             self.dungeon_level = int(self.dungeon_level) - 1
         else:
             return CommandResult(status="error", messages=("Invalid stairs direction.",))
+
+        # Keep legacy depth-scaled systems coherent with active dungeon level.
+        self.dungeon_depth = int(self.dungeon_level)
 
         # Instance-driven (P6.1): do not swap per-level room caches.
         # Rooms are keyed by id in the blueprint, and 'level' maps to blueprint floors.
@@ -9281,6 +9319,10 @@ class Game:
             room["cleared"] = True
             if isinstance(room.get("_delta"), dict):
                 room["_delta"]["cleared"] = True
+            try:
+                self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
+            except Exception:
+                pass
             return
         # P6.1.0.5: deterministic pre-rolled treasure from dungeon_instance.stocking if present.
         if "treasure_gp" in room and "treasure_items" in room:
@@ -9300,6 +9342,10 @@ class Game:
         if isinstance(room.get("_delta"), dict):
             room["_delta"]["treasure_taken"] = True
             room["_delta"]["cleared"] = True
+        try:
+            self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
+        except Exception:
+            pass
         self.ui.log(f"You recover {gp} gp and {len(items)} item(s).")
 
     
@@ -9891,30 +9937,37 @@ class Game:
         rooms[str(int(room_id))] = dict(rec)
 
     def _sync_room_to_delta(self, room_id: int, room: dict[str, Any]) -> None:
-        """Persist mutable room state into dungeon_instance.delta.
-
-        P6.1.0.4 stores only the minimum needed to prevent regeneration/drift.
-        """
+        """Persist mutable room state into dungeon_instance.delta."""
         if not getattr(self, "dungeon_instance", None):
             return
         rec: dict[str, Any] = dict(self._get_dungeon_delta_room(room_id) or {})
-        rec["cleared"] = bool(room.get("cleared", False))
-        if "treasure_taken" in room:
-            rec["treasure_taken"] = bool(room.get("treasure_taken", False))
-        if "boss_loot_taken" in room:
-            rec["boss_loot_taken"] = bool(room.get("boss_loot_taken", False))
-        if "trap_disarmed" in room:
-            rec["trap_disarmed"] = bool(room.get("trap_disarmed", False))
-        if "trap_found" in room:
-            rec["trap_found"] = bool(room.get("trap_found", False))
-        if "trap_triggered" in room:
-            rec["trap_triggered"] = bool(room.get("trap_triggered", False))
-        if "secret_found" in room:
-            rec["secret_found"] = bool(room.get("secret_found", False))
-        if "entered" in room:
-            rec["entered"] = bool(room.get("entered", False))
+
+        # Preserve already-captured local delta hints when present.
+        if isinstance(room.get("_delta"), dict):
+            rec.update(dict(room.get("_delta") or {}))
+
+        bool_fields = (
+            "cleared",
+            "treasure_taken",
+            "boss_loot_taken",
+            "trap_disarmed",
+            "trap_found",
+            "trap_triggered",
+            "secret_found",
+            "entered",
+            "event_done",
+            "feature_done",
+            "shrine_done",
+            "puzzle_done",
+            "container_looted",
+        )
+        for key in bool_fields:
+            if key in room or key in rec:
+                rec[key] = bool(room.get(key, rec.get(key, False)))
+
         if isinstance(room.get("doors"), dict):
             rec["doors"] = dict(room.get("doors") or {})
+
         self._set_dungeon_delta_room(room_id, rec)
 
     def _get_dungeon_stocking_room(self, room_id: int) -> dict[str, Any]:
