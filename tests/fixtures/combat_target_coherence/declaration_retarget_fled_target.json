@@ -1,0 +1,7 @@
+{
+  "dice_seed": 1402,
+  "action_type": "missile",
+  "stale_target_state": "fled",
+  "available_targets": ["Bandit B", "Bandit C"],
+  "expect": "retarget"
+}

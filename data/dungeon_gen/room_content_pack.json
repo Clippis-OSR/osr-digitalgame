@@ -1,0 +1,617 @@
+{
+  "room_features": [
+    {
+      "id": "collapsed_chamber",
+      "name": "Collapsed Chamber",
+      "category": "environmental",
+      "desc": "A chamber has partly caved in. Rubble chokes one wall and a cold draft seeps through the stones.",
+      "mode": "search",
+      "gp": 18,
+      "items": [
+        "Mason's prybar"
+      ],
+      "hint": "There may be a crawlspace hidden in the rubble."
+    },
+    {
+      "id": "flooded_room",
+      "name": "Flooded Room",
+      "category": "environmental",
+      "desc": "Black water stands knee-deep here, hiding the floor and muffling every footfall.",
+      "mode": "cross",
+      "noise": -1,
+      "damage": "1d4",
+      "hint": "Something glints beneath the water."
+    },
+    {
+      "id": "fungus_garden",
+      "name": "Fungus Garden",
+      "category": "environmental",
+      "desc": "Pale shelves of fungus climb the walls, some glowing faintly in the dark.",
+      "mode": "harvest",
+      "items": [
+        "Glowing fungus"
+      ],
+      "gp": 10,
+      "hint": "Useful alchemical growth can be gathered here."
+    },
+    {
+      "id": "bat_roost",
+      "name": "Bat Roost",
+      "category": "environmental",
+      "desc": "The ceiling writhes with disturbed bats hanging above a floor of old guano.",
+      "mode": "cross",
+      "noise": 2,
+      "hint": "A sudden noise here will be carried far."
+    },
+    {
+      "id": "underground_stream",
+      "name": "Underground Stream",
+      "category": "environmental",
+      "desc": "A narrow stream cuts through the room, leaving slick stones and a constant murmur.",
+      "mode": "cross",
+      "noise": 0,
+      "gp": 12
+    },
+    {
+      "id": "ancient_barracks",
+      "name": "Ancient Barracks",
+      "category": "treasure",
+      "desc": "Rotting bunks and broken weapon racks suggest soldiers once slept here.",
+      "mode": "search",
+      "gp": 22,
+      "items": [
+        "Serviceable spear"
+      ],
+      "hint": "There may still be intact kit under the straw."
+    },
+    {
+      "id": "sealed_treasury",
+      "name": "Sealed Treasury",
+      "category": "treasure",
+      "desc": "Iron-bound chests sit behind a secondary grille door crusted with age.",
+      "mode": "search",
+      "gp": 40,
+      "items": [
+        "Silver idol fragment"
+      ],
+      "hint": "This place was meant to protect real wealth."
+    },
+    {
+      "id": "forgotten_armory",
+      "name": "Forgotten Armory",
+      "category": "treasure",
+      "desc": "Weapon racks line the walls, most empty, some still holding rusted iron.",
+      "mode": "search",
+      "gp": 16,
+      "items": [
+        "Bundle of arrows"
+      ],
+      "hint": "One or two pieces may still be fit for use."
+    },
+    {
+      "id": "burial_chamber",
+      "name": "Burial Chamber",
+      "category": "treasure",
+      "desc": "Stone biers and cracked funerary urns fill this burial chamber.",
+      "mode": "search",
+      "gp": 28,
+      "items": [
+        "Funerary mask"
+      ],
+      "hint": "Disturbing the dead here feels dangerous."
+    },
+    {
+      "id": "noble_tomb",
+      "name": "Noble Tomb",
+      "category": "treasure",
+      "desc": "An ornate sarcophagus dominates the room, attended by faded murals of conquest.",
+      "mode": "search",
+      "gp": 45,
+      "items": [
+        "Jeweled signet"
+      ],
+      "hint": "Rich grave goods may remain, if you dare."
+    },
+    {
+      "id": "monster_nest",
+      "name": "Monster Nest",
+      "category": "social",
+      "desc": "The room is piled with bones, torn bedding, and the signs of some creature's den.",
+      "mode": "search",
+      "gp": 14,
+      "items": [
+        "Odd egg"
+      ],
+      "noise": 1
+    },
+    {
+      "id": "guard_post",
+      "name": "Guard Post",
+      "category": "social",
+      "desc": "A rough guard post watches the approach, complete with signal gong and murder holes.",
+      "mode": "study",
+      "noise": 1,
+      "hint": "Whatever held this post expected trouble from the halls beyond."
+    },
+    {
+      "id": "prison_cells",
+      "name": "Prison Cells",
+      "category": "social",
+      "desc": "Rusting bars divide a line of cramped cells, one of them hanging open.",
+      "mode": "search",
+      "gp": 9,
+      "items": [
+        "Lockring keys"
+      ],
+      "rumor": true
+    },
+    {
+      "id": "hermit_chamber",
+      "name": "Hermit Chamber",
+      "category": "social",
+      "desc": "Someone has lived here recently: a bedroll, a cookpot, and chalk sigils cover the walls.",
+      "mode": "talk",
+      "rumor": true,
+      "hint": "A wary hermit may know more than they first admit."
+    },
+    {
+      "id": "hidden_library",
+      "name": "Hidden Library",
+      "category": "exploration",
+      "desc": "Dusty shelves survive behind a concealed panel, holding damp but legible books.",
+      "mode": "study",
+      "gp": 18,
+      "items": [
+        "Spell fragment"
+      ],
+      "reveal_secret": true
+    },
+    {
+      "id": "map_room",
+      "name": "Map Room",
+      "category": "exploration",
+      "desc": "A cracked stone table bears an etched survey of tunnels and chambers.",
+      "mode": "study",
+      "reveal_map": true,
+      "hint": "Useful routes can be learned here."
+    },
+    {
+      "id": "secret_workshop",
+      "name": "Secret Workshop",
+      "category": "exploration",
+      "desc": "A hidden workshop holds bent tools, crucibles, and the smell of long-dried oil.",
+      "mode": "search",
+      "gp": 24,
+      "items": [
+        "Alchemist's tools"
+      ],
+      "hint": "There may be something valuable under the benches."
+    },
+    {
+      "id": "hidden_vault",
+      "name": "Hidden Vault",
+      "category": "exploration",
+      "desc": "A concealed vault waits behind a stone seam, its fittings better made than the rest of the dungeon.",
+      "mode": "search",
+      "gp": 38,
+      "items": [
+        "Locked strongbox"
+      ],
+      "reveal_secret": true
+    },
+    {
+      "id": "arcane_circle",
+      "name": "Arcane Circle",
+      "category": "strange",
+      "desc": "A faded circle of sigils glows faintly when approached, as if the room remembers old rites.",
+      "mode": "study",
+      "magic": true,
+      "hint": "Arcane residue still clings to the floor."
+    },
+    {
+      "id": "crystal_cavern",
+      "name": "Crystal Cavern",
+      "category": "strange",
+      "desc": "Needles of crystal catch every glimmer of light and throw it back in ghostly colors.",
+      "mode": "harvest",
+      "items": [
+        "Resonant crystal"
+      ],
+      "gp": 14
+    },
+    {
+      "id": "timeworn_shrine",
+      "name": "Time-Worn Shrine",
+      "category": "strange",
+      "desc": "An eroded idol sits in a niche, watched by hundreds of spent votive stubs.",
+      "mode": "approach",
+      "hint": "This old shrine may still answer prayer."
+    },
+    {
+      "id": "whispering_hall",
+      "name": "Whispering Hall",
+      "category": "strange",
+      "desc": "The corridor beyond carries whispers that sound almost like your own voices.",
+      "mode": "study",
+      "rumor": true,
+      "noise": 1
+    },
+    {
+      "id": "gas_chamber",
+      "name": "Gas Chamber",
+      "category": "hazard",
+      "desc": "A sour smell hangs in the still air, and your torchlight gutters dangerously.",
+      "mode": "hazard",
+      "damage": "1d4",
+      "light_risk": true
+    },
+    {
+      "id": "razorvine_growth",
+      "name": "Razorvine Growth",
+      "category": "hazard",
+      "desc": "Thick black vines armed with hooked thorns crawl across the walls and floor.",
+      "mode": "hazard",
+      "damage": "1d4",
+      "gp": 8,
+      "items": [
+        "Bundle of razorvine"
+      ]
+    }
+  ],
+  "traps": [
+    {
+      "id": "arrow_slit_trap",
+      "name": "Arrow Slit Trap",
+      "desc": "Hidden slits crack open in the wall and a volley of arrows lashes the corridor.",
+      "dc": 11,
+      "damage": "1d6"
+    },
+    {
+      "id": "falling_block",
+      "name": "Falling Block",
+      "desc": "A stone block drops from above with a murderous crash.",
+      "dc": 12,
+      "damage": "2d6"
+    },
+    {
+      "id": "pit_trap",
+      "name": "Pit Trap",
+      "desc": "The floor drops away into a concealed pit.",
+      "dc": 10,
+      "damage": "1d6"
+    },
+    {
+      "id": "spiked_pit",
+      "name": "Spiked Pit",
+      "desc": "The floor collapses into a pit lined with rusted spikes.",
+      "dc": 12,
+      "damage": "2d6"
+    },
+    {
+      "id": "deep_pit",
+      "name": "Deep Pit",
+      "desc": "A stone lip gives way underfoot and someone plunges into darkness below.",
+      "dc": 13,
+      "damage": "2d6"
+    },
+    {
+      "id": "crushing_walls",
+      "name": "Crushing Walls",
+      "desc": "Stone panels grind inward, threatening to pulp anything in their path.",
+      "dc": 13,
+      "damage": "2d6"
+    },
+    {
+      "id": "swinging_blade",
+      "name": "Swinging Blade",
+      "desc": "A blade scythes out from a hidden recess at waist height.",
+      "dc": 12,
+      "damage": "1d8"
+    },
+    {
+      "id": "rune_explosion",
+      "name": "Rune Explosion",
+      "desc": "A warding rune flares and bursts in a wash of force.",
+      "dc": 14,
+      "damage": "2d6"
+    },
+    {
+      "id": "teleport_trap",
+      "name": "Teleport Trap",
+      "desc": "Space twists, dumping the victim bruised and disoriented a short distance away.",
+      "dc": 13,
+      "damage": "1d4"
+    },
+    {
+      "id": "fear_rune",
+      "name": "Fear Rune",
+      "desc": "A sigil flashes in the mind, filling the victim with primal dread.",
+      "dc": 12,
+      "damage": "1d4"
+    },
+    {
+      "id": "poison_needle_chest",
+      "name": "Poison Needle Chest",
+      "desc": "A fine needle darts from the lock as the mechanism is touched.",
+      "dc": 11,
+      "damage": "1d6"
+    },
+    {
+      "id": "gas_vent",
+      "name": "Gas Vent",
+      "desc": "A hidden vent belches noxious fumes into the room.",
+      "dc": 12,
+      "damage": "1d6"
+    },
+    {
+      "id": "acid_spray",
+      "name": "Acid Spray",
+      "desc": "A clay ampoule shatters overhead, showering the victim in hissing acid.",
+      "dc": 13,
+      "damage": "1d8"
+    },
+    {
+      "id": "alarm_trap",
+      "name": "Alarm Trap",
+      "desc": "A concealed bell-hammer snaps free and rings through the dungeon.",
+      "dc": 10,
+      "damage": "1d4",
+      "alarm": true
+    }
+  ],
+  "events": [
+    {
+      "id": "sudden_cave_in",
+      "name": "Sudden Cave-In",
+      "desc": "Fresh stone cracks and a shower of grit spills from above.",
+      "effect": "noise",
+      "noise": 2
+    },
+    {
+      "id": "strange_wind",
+      "name": "Strange Wind",
+      "desc": "A chill wind snakes through the room, making torches dance and shadows lurch.",
+      "effect": "light"
+    },
+    {
+      "id": "echoing_noise",
+      "name": "Echoing Noise",
+      "desc": "A distant clang echoes through the halls, then answers itself from farther in.",
+      "effect": "noise",
+      "noise": 1
+    },
+    {
+      "id": "wandering_patrol_signs",
+      "name": "Wandering Patrol Signs",
+      "desc": "Boot prints and scraps of fresh torch soot suggest a patrol passed recently.",
+      "effect": "rumor"
+    },
+    {
+      "id": "monster_feeding_time",
+      "name": "Monster Feeding Time",
+      "desc": "Half-chewed carrion and fresh spoor suggest the room's denizens were only just here.",
+      "effect": "loot",
+      "gp": 8
+    },
+    {
+      "id": "monster_migration",
+      "name": "Monster Migration",
+      "desc": "Something large has recently moved through, dragging nests and debris with it.",
+      "effect": "noise",
+      "noise": 1,
+      "clue_text": "Something has stirred the usual patterns; creatures are on the move."
+    },
+    {
+      "id": "ghostly_apparition",
+      "name": "Ghostly Apparition",
+      "desc": "A pale apparition drifts across the room and fades before it reaches the far wall.",
+      "effect": "none",
+      "clue_text": "The apparition repeats the same path, hinting at a place of importance nearby."
+    },
+    {
+      "id": "temporal_flicker",
+      "name": "Temporal Flicker",
+      "desc": "For a heartbeat the room seems new again, then old dust settles back into place.",
+      "effect": "heal",
+      "heal": 1
+    },
+    {
+      "id": "magic_surge",
+      "name": "Magic Surge",
+      "desc": "Dormant enchantments crackle awake for an instant, leaving the air tingling.",
+      "effect": "magic"
+    },
+    {
+      "id": "hidden_compartment",
+      "name": "Hidden Compartment",
+      "desc": "A loosened stone reveals a narrow compartment tucked into the wall.",
+      "effect": "loot",
+      "gp": 16,
+      "items": [
+        "Hidden cache"
+      ],
+      "clue_text": "Someone concealed goods here for a reason; valuables or danger may lie close by."
+    },
+    {
+      "id": "ancient_cache",
+      "name": "Ancient Cache",
+      "desc": "A sealed crock survives in a corner niche, filled with old but still spendable coins.",
+      "effect": "loot",
+      "gp": 28
+    },
+    {
+      "id": "lost_adventurer_pack",
+      "name": "Lost Adventurer Pack",
+      "desc": "A moldy backpack lies forgotten in the dust, its straps long since rotted through.",
+      "effect": "loot",
+      "gp": 10,
+      "items": [
+        "Old adventurer's notes"
+      ],
+      "clue_text": "The pack owner likely died nearby; their route may still be followed."
+    },
+    {
+      "id": "unstable_floor",
+      "name": "Unstable Floor",
+      "desc": "Flagstones shift ominously underfoot, as though a void waits below them.",
+      "effect": "hazard",
+      "damage": "1d4"
+    },
+    {
+      "id": "strange_idol",
+      "name": "Strange Idol",
+      "desc": "A squat idol watches from a plinth, warm to the touch despite the cold room.",
+      "effect": "rumor",
+      "clue_text": "The idol depicts a power still honored somewhere in these halls."
+    },
+    {
+      "id": "whispering_statue",
+      "name": "Whispering Statue",
+      "desc": "A cracked statue murmurs one phrase over and over in a voice like dry leaves.",
+      "effect": "reveal",
+      "clue_text": "The statue points to a deeper secret if you heed its muttering."
+    },
+    {
+      "id": "adventurer_skeleton",
+      "name": "Adventurer Skeleton",
+      "desc": "An old adventurer's bones lie where they fell, one hand still clutching a journal scrap.",
+      "effect": "loot",
+      "gp": 12,
+      "items": [
+        "Journal scrap"
+      ],
+      "rumor": true,
+      "clue_text": "The remains suggest previous delvers reached this far and failed beyond this point."
+    },
+    {
+      "id": "faded_mural",
+      "name": "Faded Mural",
+      "desc": "A mural, almost lost to mildew, depicts sacrifices and hidden doors.",
+      "effect": "reveal",
+      "clue_text": "The mural preserves a fragment of the dungeon\u2019s purpose and warns what lies below."
+    },
+    {
+      "id": "blood_trail",
+      "name": "Blood Trail",
+      "desc": "A dark, half-dried blood trail leads deeper into the level.",
+      "effect": "noise",
+      "noise": 1,
+      "clue_text": "Whatever made this trail was wounded, but it went deeper rather than out."
+    }
+  ],
+  "shrines": [
+    {
+      "id": "shrine_light",
+      "name": "Shrine of Light",
+      "desc": "A white-stone shrine gleams softly despite the grime around it.",
+      "boon": "heal",
+      "heal": 4,
+      "curse": "glare"
+    },
+    {
+      "id": "shrine_war",
+      "name": "Shrine of War",
+      "desc": "An iron idol of conquest looms over an altar scarred by weapon blows.",
+      "boon": "valor",
+      "curse": "noise"
+    },
+    {
+      "id": "shrine_fate",
+      "name": "Shrine of Fate",
+      "desc": "Threads and carved bones lie at this weathered altar of uncertain fortune.",
+      "boon": "luck",
+      "curse": "drain",
+      "clue_text": "Offerings suggest others came here before taking dangerous chances deeper in."
+    },
+    {
+      "id": "shrine_shadows",
+      "name": "Shrine of Shadows",
+      "desc": "A soot-darkened niche swallows light and sound around it.",
+      "boon": "stealth",
+      "curse": "fear"
+    },
+    {
+      "id": "forgotten_god",
+      "name": "Forgotten God Shrine",
+      "desc": "No script remains legible on this ancient altar, only the feeling of age.",
+      "boon": "random",
+      "curse": "random",
+      "clue_text": "This cult\u2019s traces appear abandoned, but not entirely dead."
+    },
+    {
+      "id": "blood_altar",
+      "name": "Blood Altar",
+      "desc": "A block of black stone bears old stains and a channel for sacrifice.",
+      "boon": "blood",
+      "curse": "pain"
+    },
+    {
+      "id": "knowledge_shrine",
+      "name": "Knowledge Shrine",
+      "desc": "Ink-black bowls and a carved eye adorn this shrine to hidden lore.",
+      "boon": "reveal",
+      "curse": "noise",
+      "clue_text": "Symbols here hint that hidden paths and buried lore reward careful study."
+    },
+    {
+      "id": "trickster_shrine",
+      "name": "Trickster Shrine",
+      "desc": "The idol here smiles with chipped teeth and mismatched gem eyes.",
+      "boon": "trickster",
+      "curse": "trickster"
+    }
+  ],
+  "puzzles": [
+    {
+      "id": "rotating_pillars",
+      "name": "Rotating Pillars",
+      "desc": "Stone pillars covered in symbols can be rotated with great effort.",
+      "check": "INT",
+      "reward": "loot",
+      "gp": 20,
+      "items": [
+        "Ivory token"
+      ],
+      "clue_text": "The mechanism likely guards more than a simple door."
+    },
+    {
+      "id": "weight_plate",
+      "name": "Weight Plate Puzzle",
+      "desc": "A series of plates and counterweights bars the way to a narrow alcove.",
+      "check": "DEX",
+      "reward": "loot",
+      "gp": 16
+    },
+    {
+      "id": "mirror_beam",
+      "name": "Mirror Beam Puzzle",
+      "desc": "Bronze mirrors surround a socket waiting for a beam of light to be aligned.",
+      "check": "INT",
+      "reward": "reveal",
+      "clue_text": "The mirrors were arranged to reveal or unlock something hidden."
+    },
+    {
+      "id": "water_level",
+      "name": "Water Level Puzzle",
+      "desc": "Old sluice gates and stone channels suggest the room once flooded on command.",
+      "check": "WIS",
+      "reward": "loot",
+      "gp": 22
+    },
+    {
+      "id": "lever_maze",
+      "name": "Lever Maze",
+      "desc": "A bank of levers controls hidden catches somewhere in the walls.",
+      "check": "INT",
+      "reward": "reveal",
+      "clue_text": "Repeated wear suggests explorers used this puzzle as a route marker."
+    },
+    {
+      "id": "statue_alignment",
+      "name": "Statue Alignment",
+      "desc": "Heavy statues can be turned to face different alcoves and markings.",
+      "check": "CHA",
+      "reward": "rumor"
+    }
+  ]
+}

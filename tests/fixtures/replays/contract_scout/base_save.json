@@ -1,0 +1,1544 @@
+{
+  "boons": {
+    "blessed_until_day": 0,
+    "guild_favor_until_day": 0,
+    "safe_passage": {}
+  },
+  "campaign": {
+    "arrows": 0,
+    "bolts": 0,
+    "campaign_day": 1,
+    "darts": 0,
+    "day_watch": 0,
+    "expeditions": 0,
+    "gold": 0,
+    "hand_axes": 0,
+    "javelins": 0,
+    "party": {
+      "members": [
+        {
+          "ac_desc": 4,
+          "alignment": "Neutrality",
+          "armor": null,
+          "cls": "Fighter",
+          "effect_instances": {},
+          "effects": [],
+          "hd": 2,
+          "hp": 22,
+          "hp_max": 22,
+          "is_pc": true,
+          "is_retainer": false,
+          "level": 2,
+          "loyalty": 7,
+          "monster_id": null,
+          "morale": null,
+          "name": "Fighter",
+          "on_expedition": false,
+          "save": 13,
+          "shield": false,
+          "shield_name": null,
+          "special_text": "",
+          "spells_known": [],
+          "spells_prepared": [],
+          "stats": {
+            "CHA": 10,
+            "CON": 14,
+            "DEX": 12,
+            "INT": 10,
+            "STR": 16,
+            "WIS": 10
+          },
+          "status": {},
+          "tags": [],
+          "treasure_share": 1,
+          "wage_gp": 0,
+          "weapon": "sword",
+          "xp": 0
+        },
+        {
+          "ac_desc": 5,
+          "alignment": "Neutrality",
+          "armor": null,
+          "cls": "Cleric",
+          "effect_instances": {},
+          "effects": [],
+          "hd": 2,
+          "hp": 18,
+          "hp_max": 18,
+          "is_pc": true,
+          "is_retainer": false,
+          "level": 2,
+          "loyalty": 7,
+          "monster_id": null,
+          "morale": null,
+          "name": "Cleric",
+          "on_expedition": false,
+          "save": 13,
+          "shield": false,
+          "shield_name": null,
+          "special_text": "",
+          "spells_known": [],
+          "spells_prepared": [
+            "cure_light_wounds_lcleric_1st_level_druid_2nd_level",
+            "bless_lcleric_2nd_level"
+          ],
+          "stats": {
+            "CHA": 10,
+            "CON": 12,
+            "DEX": 10,
+            "INT": 10,
+            "STR": 12,
+            "WIS": 15
+          },
+          "status": {},
+          "tags": [],
+          "treasure_share": 1,
+          "wage_gp": 0,
+          "weapon": "mace",
+          "xp": 0
+        },
+        {
+          "ac_desc": 7,
+          "alignment": "Neutrality",
+          "armor": null,
+          "cls": "Magic-User",
+          "effect_instances": {},
+          "effects": [],
+          "hd": 2,
+          "hp": 12,
+          "hp_max": 12,
+          "is_pc": true,
+          "is_retainer": false,
+          "level": 2,
+          "loyalty": 7,
+          "monster_id": null,
+          "morale": null,
+          "name": "Magic-User",
+          "on_expedition": false,
+          "save": 14,
+          "shield": false,
+          "shield_name": null,
+          "special_text": "",
+          "spells_known": [],
+          "spells_prepared": [
+            "sleep_lmagic_user_1st_level",
+            "magic_missile_lmagic_user_1st_level"
+          ],
+          "stats": {
+            "CHA": 10,
+            "CON": 10,
+            "DEX": 12,
+            "INT": 16,
+            "STR": 10,
+            "WIS": 10
+          },
+          "status": {},
+          "tags": [],
+          "treasure_share": 1,
+          "wage_gp": 0,
+          "weapon": "dagger",
+          "xp": 0
+        },
+        {
+          "ac_desc": 6,
+          "alignment": "Neutrality",
+          "armor": null,
+          "cls": "Thief",
+          "effect_instances": {},
+          "effects": [],
+          "hd": 2,
+          "hp": 16,
+          "hp_max": 16,
+          "is_pc": true,
+          "is_retainer": false,
+          "level": 2,
+          "loyalty": 7,
+          "monster_id": null,
+          "morale": null,
+          "name": "Thief",
+          "on_expedition": false,
+          "save": 14,
+          "shield": false,
+          "shield_name": null,
+          "special_text": "",
+          "spells_known": [],
+          "spells_prepared": [],
+          "stats": {
+            "CHA": 12,
+            "CON": 12,
+            "DEX": 15,
+            "INT": 10,
+            "STR": 12,
+            "WIS": 10
+          },
+          "status": {},
+          "tags": [],
+          "treasure_share": 1,
+          "wage_gp": 0,
+          "weapon": "shortsword",
+          "xp": 0
+        }
+      ]
+    },
+    "party_items": [],
+    "rations": 24,
+    "stones": 0,
+    "terrain": "clear",
+    "throwing_daggers": 0,
+    "throwing_spears": 0,
+    "torches": 3
+  },
+  "clocks": {
+    "conflict_clocks": [
+      {
+        "a": "M1",
+        "b": "G1",
+        "cid": "M1_vs_G1",
+        "name": "Raids on the roads",
+        "progress": 0,
+        "threshold": 6
+      },
+      {
+        "a": "M2",
+        "b": "G1",
+        "cid": "M2_vs_G1",
+        "name": "Caravans under threat",
+        "progress": 0,
+        "threshold": 6
+      },
+      {
+        "a": "M2",
+        "b": "R1",
+        "cid": "M2_vs_R1",
+        "name": "Desecration of shrines",
+        "progress": 0,
+        "threshold": 6
+      },
+      {
+        "a": "W1",
+        "b": "M1",
+        "cid": "W1_vs_M1",
+        "name": "Shadow games",
+        "progress": 0,
+        "threshold": 6
+      }
+    ],
+    "last_clock_day": 1
+  },
+  "content": {
+    "engine_version": "P4.3.0",
+    "hashes": {
+      "equipment_general.json": "847e1e5cd01dd94f0c9f82921fd71c4321c68f324ccd8dc4300f90c7c6d07131",
+      "monster_ai_profiles.json": "787c1be320c920883a27562571f5af0d6fefca5afb2527b7106ea6449e6112cc",
+      "monster_damage_profiles.json": "bb75fec40fe45655c7bb61e7c7c8df8dbcb52677d638addace5c9cade73fa2d7",
+      "monster_saves.json": "823991e54cb027d21132ec790dcde0e94439d4bbb3c01d6043182b69093d8fcb",
+      "monster_specials.json": "7ed35300288a76bbb2ef5b2e9db45ed82266b4dc6d00fdd9fb73bebce8bb719f",
+      "monsters.json": "d248bd0f1f5c1b708359559f97bb4a8b3582568298aa75d3c9a39ebc0a4216bf",
+      "races.json": "ee61e0587c833dedd831f6a3fc61804b31fa0acf06b184075c2ca4d190af7d7a",
+      "spell_lists_compiled_v1.json": "5de44f4ecef37c451942fc84423824236a59b16a7e704701324c289d1a4a3cef",
+      "spells.json": "982c77c8eae689ed43a4d05c688185e104d63fd3d232bba74707c4d2fc9519fd",
+      "turn_undead.json": "8872ce35d175309a531b642e7cc70bec629ec699e395884911d6d935c3145207",
+      "turn_undead_compiled.json": "249c285b721a42c90ddbaf070024ae161df65a8fbc9a6c54b837ceed7398a492"
+    }
+  },
+  "contracts": {
+    "active": [],
+    "last_contract_day": 1,
+    "offers": [
+      {
+        "accepted_day": null,
+        "cid": "C1-0-5621",
+        "deadline_day": 10,
+        "desc": "Travel to hex (12, -1) and report what you find. Return before day 10.",
+        "faction_id": "G1",
+        "kind": "scout",
+        "rep_fail": -8,
+        "rep_success": 8,
+        "reward_gp": 145,
+        "status": "offered",
+        "target_enemy_faction": null,
+        "target_hex": [
+          12,
+          -1
+        ],
+        "target_poi_type": null,
+        "title": "Scout the frontier",
+        "visited_target": false
+      },
+      {
+        "accepted_day": null,
+        "cid": "C1-1-2260",
+        "deadline_day": 8,
+        "desc": "Travel to hex (9, -2) and report what you find. Return before day 8.",
+        "faction_id": "M1",
+        "kind": "scout",
+        "rep_fail": -8,
+        "rep_success": 8,
+        "reward_gp": 115,
+        "status": "offered",
+        "target_enemy_faction": null,
+        "target_hex": [
+          9,
+          -2
+        ],
+        "target_poi_type": null,
+        "title": "Scout the frontier",
+        "visited_target": false
+      },
+      {
+        "accepted_day": null,
+        "cid": "C1-2-2398",
+        "deadline_day": 6,
+        "desc": "Travel to hex (-1, 4) and report what you find. Return before day 6.",
+        "faction_id": "R1",
+        "kind": "scout",
+        "rep_fail": -8,
+        "rep_success": 8,
+        "reward_gp": 65,
+        "status": "offered",
+        "target_enemy_faction": null,
+        "target_hex": [
+          -1,
+          4
+        ],
+        "target_poi_type": null,
+        "title": "Scout the frontier",
+        "visited_target": false
+      }
+    ]
+  },
+  "dungeon": {
+    "current_room_id": 0,
+    "dungeon_depth": 1,
+    "dungeon_instance": null,
+    "dungeon_level": 1,
+    "dungeon_rooms": {},
+    "dungeon_turn": 0,
+    "magical_light_turns": 0,
+    "noise_level": 0,
+    "torch_turns_left": 0,
+    "wandering_chance": 1
+  },
+  "factions": {
+    "factions": [
+      {
+        "alignment": "Chaos",
+        "controlled_hexes": [
+          [
+            2,
+            -6
+          ],
+          [
+            3,
+            -6
+          ],
+          [
+            2,
+            -7
+          ],
+          [
+            3,
+            -7
+          ],
+          [
+            4,
+            -7
+          ],
+          [
+            3,
+            -8
+          ],
+          [
+            4,
+            -8
+          ]
+        ],
+        "encounter_keywords": [
+          "goblin",
+          "hobgoblin",
+          "orc",
+          "kobold"
+        ],
+        "fid": "M1",
+        "ftype": "monster",
+        "home_hex": [
+          3,
+          -7
+        ],
+        "is_town_guild": false,
+        "name": "The Blacktusk Goblins",
+        "rep": 0
+      },
+      {
+        "alignment": "Chaos",
+        "controlled_hexes": [
+          [
+            4,
+            0
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            -1
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            4,
+            2
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            6,
+            -2
+          ],
+          [
+            6,
+            -1
+          ],
+          [
+            6,
+            0
+          ],
+          [
+            5,
+            2
+          ],
+          [
+            6,
+            1
+          ],
+          [
+            7,
+            -2
+          ],
+          [
+            7,
+            -1
+          ],
+          [
+            7,
+            0
+          ],
+          [
+            6,
+            2
+          ],
+          [
+            7,
+            1
+          ],
+          [
+            8,
+            -2
+          ],
+          [
+            8,
+            -1
+          ],
+          [
+            8,
+            0
+          ]
+        ],
+        "encounter_keywords": [
+          "ogre",
+          "troll",
+          "giant"
+        ],
+        "fid": "M2",
+        "ftype": "monster",
+        "home_hex": [
+          6,
+          0
+        ],
+        "is_town_guild": false,
+        "name": "The Stone-Eye Ogres",
+        "rep": 0
+      },
+      {
+        "alignment": "Neutrality",
+        "controlled_hexes": [
+          [
+            4,
+            0
+          ],
+          [
+            4,
+            1
+          ],
+          [
+            5,
+            -1
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            5,
+            1
+          ],
+          [
+            6,
+            -1
+          ],
+          [
+            6,
+            0
+          ]
+        ],
+        "encounter_keywords": [
+          "cleric",
+          "human"
+        ],
+        "fid": "R1",
+        "ftype": "religious",
+        "home_hex": [
+          5,
+          0
+        ],
+        "is_town_guild": false,
+        "name": "Wardens of the Green",
+        "rep": 0
+      },
+      {
+        "alignment": "Law",
+        "controlled_hexes": [
+          [
+            0,
+            0
+          ]
+        ],
+        "encounter_keywords": [
+          "human",
+          "bandit"
+        ],
+        "fid": "G1",
+        "ftype": "guild",
+        "home_hex": [
+          0,
+          0
+        ],
+        "is_town_guild": true,
+        "name": "Caravan League",
+        "rep": 0
+      },
+      {
+        "alignment": "Chaos",
+        "controlled_hexes": [
+          [
+            12,
+            -7
+          ],
+          [
+            12,
+            -6
+          ],
+          [
+            12,
+            -5
+          ],
+          [
+            13,
+            -8
+          ],
+          [
+            13,
+            -7
+          ],
+          [
+            13,
+            -6
+          ],
+          [
+            13,
+            -5
+          ],
+          [
+            14,
+            -9
+          ],
+          [
+            14,
+            -8
+          ],
+          [
+            14,
+            -7
+          ],
+          [
+            14,
+            -6
+          ],
+          [
+            14,
+            -5
+          ],
+          [
+            15,
+            -9
+          ],
+          [
+            15,
+            -8
+          ],
+          [
+            15,
+            -7
+          ],
+          [
+            15,
+            -6
+          ],
+          [
+            16,
+            -9
+          ],
+          [
+            16,
+            -8
+          ],
+          [
+            16,
+            -7
+          ]
+        ],
+        "encounter_keywords": [
+          "wizard",
+          "human"
+        ],
+        "fid": "W1",
+        "ftype": "guild",
+        "home_hex": [
+          14,
+          -7
+        ],
+        "is_town_guild": false,
+        "name": "Arcane Circle",
+        "rep": 0
+      }
+    ]
+  },
+  "journal": {
+    "discoveries": [],
+    "rumors": []
+  },
+  "meta": {
+    "created_utc": "2026-03-02T12:40:28+00:00",
+    "engine": "SWW Text CRPG",
+    "summary": {
+      "day": 1,
+      "dungeon_depth": 1,
+      "dungeon_level": 1,
+      "gold": 0,
+      "hex": [
+        0,
+        0
+      ],
+      "pcs": [
+        "Fighter",
+        "Cleric",
+        "Magic-User",
+        "Thief"
+      ],
+      "watch": 0
+    }
+  },
+  "replay": {
+    "ai_events": [],
+    "commands": [],
+    "dice_seed": 11111,
+    "rng_events": [
+      {
+        "a": 1,
+        "b": 6,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 3
+      },
+      {
+        "a": -2,
+        "b": 2,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": -2
+      },
+      {
+        "a": 0,
+        "b": 10,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 5
+      },
+      {
+        "a": 1,
+        "b": 6,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 3
+      },
+      {
+        "a": -2,
+        "b": 2,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 1
+      },
+      {
+        "a": 0,
+        "b": 10,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 1
+      },
+      {
+        "a": 1,
+        "b": 6,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 5
+      },
+      {
+        "a": -2,
+        "b": 2,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": -1
+      },
+      {
+        "a": 0,
+        "b": 10,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 2
+      },
+      {
+        "a": 1,
+        "b": 6,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 6
+      },
+      {
+        "a": -2,
+        "b": 2,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 0
+      },
+      {
+        "a": 0,
+        "b": 10,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 5
+      },
+      {
+        "a": 1,
+        "b": 6,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 6
+      },
+      {
+        "a": -2,
+        "b": 2,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 0
+      },
+      {
+        "a": 0,
+        "b": 10,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 1
+      },
+      {
+        "a": 1,
+        "b": 6,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 4
+      },
+      {
+        "a": -2,
+        "b": 2,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 2
+      },
+      {
+        "a": 0,
+        "b": 10,
+        "channel": "dice",
+        "name": "rng_randint",
+        "value": 4
+      },
+      {
+        "channel": "wilderness",
+        "len": 5,
+        "name": "rng_shuffle"
+      },
+      {
+        "channel": "wilderness",
+        "len": 3,
+        "name": "rng_shuffle"
+      },
+      {
+        "channel": "wilderness",
+        "len": 3,
+        "name": "rng_shuffle"
+      },
+      {
+        "channel": "wilderness",
+        "index": 0,
+        "len": 2,
+        "name": "rng_choice",
+        "value": "'Chaos'"
+      },
+      {
+        "channel": "wilderness",
+        "index": 0,
+        "len": 2,
+        "name": "rng_choice",
+        "value": "'Chaos'"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 3,
+        "name": "rng_choice",
+        "value": "('guild', 'Arcane Circle', ['wizard', 'human'])"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 3,
+        "name": "rng_choice",
+        "value": "'Chaos'"
+      },
+      {
+        "a": 3,
+        "b": 8,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 4
+      },
+      {
+        "channel": "wilderness",
+        "index": 11,
+        "len": 24,
+        "name": "rng_choice",
+        "value": "(3, -7)"
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.4734045463463551
+      },
+      {
+        "a": 3,
+        "b": 8,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 6
+      },
+      {
+        "channel": "wilderness",
+        "index": 0,
+        "len": 36,
+        "name": "rng_choice",
+        "value": "(6, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.7382911814539133
+      },
+      {
+        "a": 3,
+        "b": 8,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 8
+      },
+      {
+        "channel": "wilderness",
+        "index": 3,
+        "len": 48,
+        "name": "rng_choice",
+        "value": "(5, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.10682816813424867
+      },
+      {
+        "a": 3,
+        "b": 8,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 7
+      },
+      {
+        "channel": "wilderness",
+        "index": 35,
+        "len": 42,
+        "name": "rng_choice",
+        "value": "(14, -7)"
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.9613358429072886
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.25416408582399097
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.5005230174834339
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.6433528089982843
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.6284014628947299
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.012148847921781725
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.9318977182510659
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.4815889381815124
+      },
+      {
+        "channel": "wilderness",
+        "name": "rng_random",
+        "value": 0.3053645829605377
+      },
+      {
+        "channel": "wilderness",
+        "len": 5,
+        "name": "rng_shuffle"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 3,
+        "name": "rng_choice",
+        "value": "'scout'"
+      },
+      {
+        "a": 2,
+        "b": 10,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 10
+      },
+      {
+        "a": 0,
+        "b": 60,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 11
+      },
+      {
+        "channel": "wilderness",
+        "index": 1,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 3,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 4,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 0,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 5,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 0,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 1,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 4,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, 0)"
+      },
+      {
+        "a": 1000,
+        "b": 9999,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 5621
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 3,
+        "name": "rng_choice",
+        "value": "'scout'"
+      },
+      {
+        "a": 2,
+        "b": 10,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 4
+      },
+      {
+        "a": 0,
+        "b": 24,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 20
+      },
+      {
+        "channel": "wilderness",
+        "index": 5,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 3,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 1,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 1,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 4,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 5,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 3,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 0,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 1,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 1,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 0,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 3,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 0,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, -1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 3,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 3,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 2,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 0,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, -1)"
+      },
+      {
+        "a": 1000,
+        "b": 9999,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 2260
+      },
+      {
+        "channel": "wilderness",
+        "index": 1,
+        "len": 2,
+        "name": "rng_choice",
+        "value": "'scout'"
+      },
+      {
+        "a": 2,
+        "b": 10,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 3
+      },
+      {
+        "a": 0,
+        "b": 18,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 5
+      },
+      {
+        "channel": "wilderness",
+        "index": 3,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(0, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 4,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 4,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 1)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 5,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 0)"
+      },
+      {
+        "channel": "wilderness",
+        "index": 4,
+        "len": 6,
+        "name": "rng_choice",
+        "value": "(-1, 1)"
+      },
+      {
+        "a": 1000,
+        "b": 9999,
+        "channel": "wilderness",
+        "name": "rng_randint",
+        "value": 2398
+      }
+    ],
+    "wilderness_seed": 22222
+  },
+  "retainers": {
+    "active_retainers": [],
+    "hired_retainers": [],
+    "last_board_day": 1,
+    "retainer_board": [
+      {
+        "ac_desc": 8,
+        "alignment": "Neutrality",
+        "armor": null,
+        "effect_instances": {},
+        "effects": [],
+        "hd": 1,
+        "hp": 3,
+        "hp_max": 3,
+        "is_pc": false,
+        "is_retainer": true,
+        "loyalty": 5,
+        "monster_id": null,
+        "morale": 7,
+        "name": "Retainer1",
+        "on_expedition": false,
+        "save": 15,
+        "shield": false,
+        "shield_name": null,
+        "special_text": "",
+        "spells_known": [],
+        "spells_prepared": [],
+        "status": {},
+        "tags": [],
+        "treasure_share": 1,
+        "wage_gp": 10,
+        "weapon": null
+      },
+      {
+        "ac_desc": 8,
+        "alignment": "Neutrality",
+        "armor": null,
+        "effect_instances": {},
+        "effects": [],
+        "hd": 1,
+        "hp": 3,
+        "hp_max": 3,
+        "is_pc": false,
+        "is_retainer": true,
+        "loyalty": 8,
+        "monster_id": null,
+        "morale": 7,
+        "name": "Retainer2",
+        "on_expedition": false,
+        "save": 15,
+        "shield": false,
+        "shield_name": null,
+        "special_text": "",
+        "spells_known": [],
+        "spells_prepared": [],
+        "status": {},
+        "tags": [],
+        "treasure_share": 1,
+        "wage_gp": 6,
+        "weapon": null
+      },
+      {
+        "ac_desc": 8,
+        "alignment": "Neutrality",
+        "armor": null,
+        "effect_instances": {},
+        "effects": [],
+        "hd": 1,
+        "hp": 5,
+        "hp_max": 5,
+        "is_pc": false,
+        "is_retainer": true,
+        "loyalty": 6,
+        "monster_id": null,
+        "morale": 7,
+        "name": "Retainer3",
+        "on_expedition": false,
+        "save": 15,
+        "shield": false,
+        "shield_name": null,
+        "special_text": "",
+        "spells_known": [],
+        "spells_prepared": [],
+        "status": {},
+        "tags": [],
+        "treasure_share": 1,
+        "wage_gp": 7,
+        "weapon": null
+      },
+      {
+        "ac_desc": 8,
+        "alignment": "Neutrality",
+        "armor": null,
+        "effect_instances": {},
+        "effects": [],
+        "hd": 1,
+        "hp": 6,
+        "hp_max": 6,
+        "is_pc": false,
+        "is_retainer": true,
+        "loyalty": 7,
+        "monster_id": null,
+        "morale": 7,
+        "name": "Retainer4",
+        "on_expedition": false,
+        "save": 15,
+        "shield": false,
+        "shield_name": null,
+        "special_text": "",
+        "spells_known": [],
+        "spells_prepared": [],
+        "status": {},
+        "tags": [],
+        "treasure_share": 1,
+        "wage_gp": 10,
+        "weapon": null
+      },
+      {
+        "ac_desc": 8,
+        "alignment": "Neutrality",
+        "armor": null,
+        "effect_instances": {},
+        "effects": [],
+        "hd": 1,
+        "hp": 6,
+        "hp_max": 6,
+        "is_pc": false,
+        "is_retainer": true,
+        "loyalty": 7,
+        "monster_id": null,
+        "morale": 7,
+        "name": "Retainer5",
+        "on_expedition": false,
+        "save": 15,
+        "shield": false,
+        "shield_name": null,
+        "special_text": "",
+        "spells_known": [],
+        "spells_prepared": [],
+        "status": {},
+        "tags": [],
+        "treasure_share": 1,
+        "wage_gp": 6,
+        "weapon": null
+      },
+      {
+        "ac_desc": 8,
+        "alignment": "Neutrality",
+        "armor": null,
+        "effect_instances": {},
+        "effects": [],
+        "hd": 1,
+        "hp": 4,
+        "hp_max": 4,
+        "is_pc": false,
+        "is_retainer": true,
+        "loyalty": 9,
+        "monster_id": null,
+        "morale": 7,
+        "name": "Retainer6",
+        "on_expedition": false,
+        "save": 15,
+        "shield": false,
+        "shield_name": null,
+        "special_text": "",
+        "spells_known": [],
+        "spells_prepared": [],
+        "status": {},
+        "tags": [],
+        "treasure_share": 1,
+        "wage_gp": 9,
+        "weapon": null
+      }
+    ],
+    "retainer_roster": []
+  },
+  "save_version": 10,
+  "version": 10,
+  "wilderness": {
+    "party_hex": [
+      0,
+      0
+    ],
+    "world_hexes": {
+      "14,-7": {
+        "discovered": false,
+        "faction_id": "W1",
+        "heat": 0,
+        "lair": null,
+        "poi": {
+          "dungeon_state": null,
+          "faction_id": "W1",
+          "name": "Arcane Circle Stronghold",
+          "resolved": false,
+          "type": "stronghold"
+        },
+        "q": 14,
+        "r": -7,
+        "terrain": "forest",
+        "visited": 0
+      },
+      "3,-7": {
+        "discovered": false,
+        "faction_id": "M1",
+        "heat": 0,
+        "lair": null,
+        "poi": {
+          "dungeon_state": null,
+          "faction_id": "M1",
+          "name": "The Blacktusk Goblins Stronghold",
+          "resolved": false,
+          "type": "stronghold"
+        },
+        "q": 3,
+        "r": -7,
+        "terrain": "clear",
+        "visited": 0
+      },
+      "5,0": {
+        "discovered": false,
+        "faction_id": "M2",
+        "heat": 0,
+        "lair": null,
+        "poi": {
+          "dungeon_state": null,
+          "faction_id": "R1",
+          "name": "Wardens of the Green Stronghold",
+          "resolved": false,
+          "type": "stronghold"
+        },
+        "q": 5,
+        "r": 0,
+        "terrain": "clear",
+        "visited": 0
+      },
+      "6,0": {
+        "discovered": false,
+        "faction_id": "M2",
+        "heat": 0,
+        "lair": null,
+        "poi": {
+          "dungeon_state": null,
+          "faction_id": "M2",
+          "name": "The Stone-Eye Ogres Stronghold",
+          "resolved": false,
+          "type": "stronghold"
+        },
+        "q": 6,
+        "r": 0,
+        "terrain": "forest",
+        "visited": 0
+      }
+    }
+  }
+}

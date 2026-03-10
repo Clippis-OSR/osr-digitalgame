@@ -1,0 +1,247 @@
+[
+  {
+    "name": "Backpack (30-pound capacity)",
+    "cost_gp": 5.0,
+    "notes": null
+  },
+  {
+    "name": "Barrel",
+    "cost_gp": 2.0,
+    "notes": null
+  },
+  {
+    "name": "Bedroll",
+    "cost_gp": 0.2,
+    "notes": null
+  },
+  {
+    "name": "Bell",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Block and tackle",
+    "cost_gp": 5.0,
+    "notes": null
+  },
+  {
+    "name": "Bottle of wine, glass",
+    "cost_gp": 2.0,
+    "notes": null
+  },
+  {
+    "name": "Candle",
+    "cost_gp": 0.01,
+    "notes": null
+  },
+  {
+    "name": "Canvas (per square yard)",
+    "cost_gp": 0.1,
+    "notes": null
+  },
+  {
+    "name": "Case (map or scroll)",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Chain (10 feet)",
+    "cost_gp": 30.0,
+    "notes": null
+  },
+  {
+    "name": "Chalk, 1 piece",
+    "cost_gp": 0.05,
+    "notes": null
+  },
+  {
+    "name": "Chest",
+    "cost_gp": 2.0,
+    "notes": null
+  },
+  {
+    "name": "Crowbar",
+    "cost_gp": 0.2,
+    "notes": null
+  },
+  {
+    "name": "Fishing net (25 square feet)",
+    "cost_gp": 4.0,
+    "notes": null
+  },
+  {
+    "name": "Flask, leather",
+    "cost_gp": 0.03,
+    "notes": null
+  },
+  {
+    "name": "Flint & steel",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Garlic, charmed",
+    "cost_gp": 10.0,
+    "notes": null
+  },
+  {
+    "name": "Grappling hook",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Hammer",
+    "cost_gp": 0.5,
+    "notes": null
+  },
+  {
+    "name": "Holy symbol, silver",
+    "cost_gp": 25.0,
+    "notes": null
+  },
+  {
+    "name": "Holy symbol, wooden",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Holy water (flask)",
+    "cost_gp": 25.0,
+    "notes": null
+  },
+  {
+    "name": "Ink (1-ounce bottle)",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Ladder (10 foot)",
+    "cost_gp": 0.05,
+    "notes": null
+  },
+  {
+    "name": "Lamp, bronze",
+    "cost_gp": 0.1,
+    "notes": null
+  },
+  {
+    "name": "Lantern, bullseye",
+    "cost_gp": 12.0,
+    "notes": null
+  },
+  {
+    "name": "Lantern, hooded",
+    "cost_gp": 7.0,
+    "notes": null
+  },
+  {
+    "name": "Lock",
+    "cost_gp": 20.0,
+    "notes": "or more"
+  },
+  {
+    "name": "Manacles",
+    "cost_gp": 15.0,
+    "notes": null
+  },
+  {
+    "name": "Mirror, small steel",
+    "cost_gp": 20.0,
+    "notes": null
+  },
+  {
+    "name": "Musical instrument",
+    "cost_gp": 5.0,
+    "notes": null
+  },
+  {
+    "name": "Oil, lamp (1 pint)",
+    "cost_gp": 0.1,
+    "notes": null
+  },
+  {
+    "name": "Parchment (sheet)",
+    "cost_gp": 0.2,
+    "notes": null
+  },
+  {
+    "name": "Pole (10 foot)",
+    "cost_gp": 0.2,
+    "notes": null
+  },
+  {
+    "name": "Pot, iron",
+    "cost_gp": 0.5,
+    "notes": null
+  },
+  {
+    "name": "Rations, dried (per day)",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Rations, trail (per day)",
+    "cost_gp": 0.5,
+    "notes": null
+  },
+  {
+    "name": "Rope, hemp (50 feet)",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Rope, silk (50 feet)",
+    "cost_gp": 10.0,
+    "notes": null
+  },
+  {
+    "name": "Sack (15 pounds capacity)",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Sack (30 pounds capacity)",
+    "cost_gp": 2.0,
+    "notes": null
+  },
+  {
+    "name": "Shovel",
+    "cost_gp": 2.0,
+    "notes": null
+  },
+  {
+    "name": "Signal whistle",
+    "cost_gp": 0.5,
+    "notes": null
+  },
+  {
+    "name": "Spellbook, blank",
+    "cost_gp": 25.0,
+    "notes": null
+  },
+  {
+    "name": "Spike, iron",
+    "cost_gp": 0.05,
+    "notes": null
+  },
+  {
+    "name": "Tent",
+    "cost_gp": 10.0,
+    "notes": null
+  },
+  {
+    "name": "Torch",
+    "cost_gp": 0.01,
+    "notes": null
+  },
+  {
+    "name": "Waterskin",
+    "cost_gp": 1.0,
+    "notes": null
+  },
+  {
+    "name": "Wolfsbane",
+    "cost_gp": 0.1,
+    "notes": null
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "ai_events": [],
+  "commands": [],
+  "dice_seed": 11111,
+  "meta": {
+    "auto_combat": true
+  },
+  "rng_events": [],
+  "wilderness_seed": 22222
+}

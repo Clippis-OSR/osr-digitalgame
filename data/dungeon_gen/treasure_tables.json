@@ -1,0 +1,52 @@
+{
+  "schema_version": "P4.9.0",
+  "tables": {
+    "treasure.l1.coins": {
+      "dice": "1d6",
+      "entries": [
+        {
+          "range": [
+            1,
+            2
+          ],
+          "result": {
+            "kind": "coins",
+            "amount_gp": "1d6*10"
+          }
+        },
+        {
+          "range": [
+            3,
+            4
+          ],
+          "result": {
+            "kind": "coins",
+            "amount_sp": "1d10*50"
+          }
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "result": {
+            "kind": "gems",
+            "count": "1d4"
+          }
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "result": {
+            "kind": "item",
+            "item_tag_pick": [
+              "mundane_gear"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

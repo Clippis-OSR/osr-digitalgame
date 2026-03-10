@@ -1,0 +1,1638 @@
+{
+  "ai_events": [
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 100,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Cleric",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 100,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Cleric",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 70,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Thief",
+      "target_role": "other"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 70,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Thief",
+      "target_role": "other"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 40,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Fighter",
+      "target_role": "frontline"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 40,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Magic-User",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 0,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Magic-User",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 0,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Thief",
+      "target_role": "other"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 0,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Thief",
+      "target_role": "other"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 0,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Fighter",
+      "target_role": "frontline"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 0,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Fighter",
+      "target_role": "frontline"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 0,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Cleric",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Orc",
+      "combat_distance_ft": 0,
+      "has_grab": false,
+      "monster_id": "orc",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Magic-User",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Goblin",
+      "combat_distance_ft": 10,
+      "has_grab": false,
+      "monster_id": "goblin",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Thief",
+      "target_role": "other"
+    },
+    {
+      "actor": "Goblin",
+      "combat_distance_ft": 10,
+      "has_grab": false,
+      "monster_id": "goblin",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Fighter",
+      "target_role": "frontline"
+    },
+    {
+      "actor": "Goblin",
+      "combat_distance_ft": 10,
+      "has_grab": false,
+      "monster_id": "goblin",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Cleric",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Goblin",
+      "combat_distance_ft": 10,
+      "has_grab": false,
+      "monster_id": "goblin",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Magic-User",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Goblin",
+      "combat_distance_ft": 10,
+      "has_grab": false,
+      "monster_id": "goblin",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Magic-User",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Goblin",
+      "combat_distance_ft": 10,
+      "has_grab": false,
+      "monster_id": "goblin",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Fighter",
+      "target_role": "frontline"
+    },
+    {
+      "actor": "Goblin",
+      "combat_distance_ft": 10,
+      "has_grab": false,
+      "monster_id": "goblin",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Magic-User",
+      "target_role": "caster"
+    },
+    {
+      "actor": "Goblin",
+      "combat_distance_ft": 10,
+      "has_grab": false,
+      "monster_id": "goblin",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Thief",
+      "target_role": "other"
+    },
+    {
+      "actor": "Goblin",
+      "combat_distance_ft": 10,
+      "has_grab": false,
+      "monster_id": "goblin",
+      "name": "ai_target_chosen",
+      "profile": {
+        "aggression": "normal",
+        "flee_hp_pct": 0.0,
+        "morale_mod": 0,
+        "target_priority": "random",
+        "use_missile_if_available": true
+      },
+      "target": "Magic-User",
+      "target_role": "caster"
+    }
+  ],
+  "commands": [
+    {
+      "at": {
+        "day": 1,
+        "dungeon_turn": 0,
+        "room_id": 0,
+        "watch": 0
+      },
+      "cmd": {
+        "count": 2,
+        "monster_id": "orc",
+        "type": "TestCombat"
+      }
+    },
+    {
+      "at": {
+        "day": 1,
+        "dungeon_turn": 0,
+        "room_id": 0,
+        "watch": 0
+      },
+      "cmd": {
+        "count": 3,
+        "monster_id": "goblin",
+        "type": "TestCombat"
+      }
+    }
+  ],
+  "dice_seed": 31009,
+  "meta": {
+    "auto_combat": true,
+    "save_load_split_after": 1
+  },
+  "rng_events": [
+    {
+      "a": 1,
+      "b": 8,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "a": 1,
+      "b": 8,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 8
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 10
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 6
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 6
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Cleric', hp=18, hp_max=18, ac_desc=5, hd=2, save=13, race='Human', monster_id=None, morale=None, alignment='Neu"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Cleric', hp=18, hp_max=18, ac_desc=5, hd=2, save=13, race='Human', monster_id=None, morale=None, alignment='Neu"
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 6
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 12
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=5, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=5, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=8, hp_max=8, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=8, hp_max=8, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 3,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Thief', hp=16, hp_max=16, ac_desc=6, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment='Neut"
+    },
+    {
+      "channel": "dice",
+      "index": 3,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Thief', hp=16, hp_max=16, ac_desc=6, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment='Neut"
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=8, hp_max=8, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=5, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=5, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=8, hp_max=8, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Fighter', hp=22, hp_max=22, ac_desc=4, hd=2, save=13, race='Human', monster_id=None, morale=None, alignment='Ne"
+    },
+    {
+      "channel": "dice",
+      "index": 2,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Magic-User', hp=12, hp_max=12, ac_desc=7, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment="
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 9
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=5, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=8, hp_max=8, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=8, hp_max=8, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=8, hp_max=8, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 2,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Magic-User', hp=12, hp_max=12, ac_desc=7, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment="
+    },
+    {
+      "channel": "dice",
+      "index": 3,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Thief', hp=16, hp_max=16, ac_desc=6, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment='Neut"
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 8
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 18
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 16
+    },
+    {
+      "a": 1,
+      "b": 4,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 13
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 16
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=5, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=5, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=5, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=5, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 3,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Thief', hp=15, hp_max=16, ac_desc=6, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment='Neut"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Fighter', hp=22, hp_max=22, ac_desc=4, hd=2, save=13, race='Human', monster_id=None, morale=None, alignment='Ne"
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 12
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 13
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 9
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 19
+    },
+    {
+      "a": 1,
+      "b": 4,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=2, hp_max=8, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=3, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=3, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=2, hp_max=8, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Fighter', hp=22, hp_max=22, ac_desc=4, hd=2, save=13, race='Human', monster_id=None, morale=None, alignment='Ne"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Cleric', hp=18, hp_max=18, ac_desc=5, hd=2, save=13, race='Human', monster_id=None, morale=None, alignment='Neu"
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 11
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 7
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 8
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 19
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 6
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 12
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 14
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 1,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=3, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 1,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=3, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 1,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=3, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 1,
+      "name": "rng_choice",
+      "value": "Actor(name='Orc', hp=3, hp_max=5, ac_desc=6, hd=1, save=17, race='Human', monster_id='orc', morale=8, alignment='Chaos',"
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "channel": "dice",
+      "index": 2,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Magic-User', hp=12, hp_max=12, ac_desc=7, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment="
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 8
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 13
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 18
+    },
+    {
+      "a": 1,
+      "b": 4,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 8,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 8,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 8,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 3,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=3, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 2,
+      "len": 3,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=2, hp_max=2, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 3,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=3, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 3,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=3, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 3,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Thief', hp=11, hp_max=16, ac_desc=6, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment='Neut"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Fighter', hp=19, hp_max=22, ac_desc=4, hd=2, save=13, race='Human', monster_id=None, morale=None, alignment='Ne"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Cleric', hp=18, hp_max=18, ac_desc=5, hd=2, save=13, race='Human', monster_id=None, morale=None, alignment='Neu"
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 9
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 6
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 9
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 6
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 13
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 20
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 3,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=1, hp_max=1, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 3,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=1, hp_max=1, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 3,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=3, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 3,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=1, hp_max=1, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 2,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Magic-User', hp=12, hp_max=12, ac_desc=7, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment="
+    },
+    {
+      "channel": "dice",
+      "index": 2,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Magic-User', hp=12, hp_max=12, ac_desc=7, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment="
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Fighter', hp=19, hp_max=22, ac_desc=4, hd=2, save=13, race='Human', monster_id=None, morale=None, alignment='Ne"
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 12
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 15
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 17
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 12
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 11
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 14
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=2, hp_max=2, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 9
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=3, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=3, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=2, hp_max=2, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 1,
+      "len": 2,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=2, hp_max=2, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 2,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Magic-User', hp=6, hp_max=12, ac_desc=7, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment='"
+    },
+    {
+      "channel": "dice",
+      "index": 3,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Thief', hp=9, hp_max=16, ac_desc=6, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment='Neutr"
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 19
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 13
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 16
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 1
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 1,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=2, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 9
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 1,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=2, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 1,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=2, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 1,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=2, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "channel": "dice",
+      "index": 0,
+      "len": 1,
+      "name": "rng_choice",
+      "value": "Actor(name='Goblin', hp=2, hp_max=3, ac_desc=6, hd=1, save=18, race='Human', monster_id='goblin', morale=8, alignment='C"
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 5
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 2
+    },
+    {
+      "channel": "dice",
+      "index": 2,
+      "len": 4,
+      "name": "rng_choice",
+      "value": "PC(name='Magic-User', hp=2, hp_max=12, ac_desc=7, hd=2, save=14, race='Human', monster_id=None, morale=None, alignment='"
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 12,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 12
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 19
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 3
+    },
+    {
+      "a": 1,
+      "b": 20,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 15
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "channel": "dice",
+      "name": "rng_randint",
+      "value": 4
+    }
+  ],
+  "wilderness_seed": 41009
+}

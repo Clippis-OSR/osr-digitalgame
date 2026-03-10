@@ -1,0 +1,447 @@
+{
+  "schema_version": "treasure_compiled.v1",
+  "generated_from": "data/treasure_tables_v1.json",
+  "tables_by_id": {
+    "HOARD_A": {
+      "table_id": "HOARD_A",
+      "kind": "hoard",
+      "dice": {
+        "count": 1,
+        "sides": 100
+      },
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 60,
+          "drops": [
+            {
+              "type": "coins",
+              "rolls": {
+                "cp": {
+                  "expr": "2d6*100"
+                },
+                "sp": {
+                  "expr": "1d6*100"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "lo": 61,
+          "hi": 90,
+          "drops": [
+            {
+              "type": "coins",
+              "rolls": {
+                "cp": {
+                  "expr": "2d6*100"
+                },
+                "sp": {
+                  "expr": "1d6*100"
+                },
+                "gp": {
+                  "expr": "1d6*10"
+                }
+              }
+            },
+            {
+              "type": "gems",
+              "count": {
+                "expr": "1d4"
+              },
+              "value_table_id": "GEM_VALUES_BASIC"
+            }
+          ]
+        },
+        {
+          "lo": 91,
+          "hi": 100,
+          "drops": [
+            {
+              "type": "coins",
+              "rolls": {
+                "sp": {
+                  "expr": "2d6*100"
+                },
+                "gp": {
+                  "expr": "2d6*10"
+                }
+              }
+            },
+            {
+              "type": "gems",
+              "count": {
+                "expr": "2d6"
+              },
+              "value_table_id": "GEM_VALUES_BASIC"
+            },
+            {
+              "type": "magic",
+              "picks": {
+                "expr": "1"
+              },
+              "magic_list_id": "MAGIC_MINOR",
+              "resolved": {
+                "mode": "lookup_item_ids",
+                "all_item_ids_resolved": false
+              }
+            }
+          ]
+        }
+      ],
+      "validation": {
+        "coverage_ok": true,
+        "overlap_ok": true
+      }
+    },
+    "HOARD_B": {
+      "table_id": "HOARD_B",
+      "kind": "hoard",
+      "dice": {
+        "count": 1,
+        "sides": 100
+      },
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 35,
+          "drops": [
+            {
+              "type": "coins",
+              "rolls": {
+                "sp": {
+                  "expr": "3d6*100"
+                },
+                "gp": {
+                  "expr": "2d6*100"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "lo": 36,
+          "hi": 75,
+          "drops": [
+            {
+              "type": "coins",
+              "rolls": {
+                "gp": {
+                  "expr": "4d6*100"
+                }
+              }
+            },
+            {
+              "type": "gems",
+              "count": {
+                "expr": "2d6"
+              },
+              "value_table_id": "GEM_VALUES_BASIC"
+            },
+            {
+              "type": "jewelry",
+              "count": {
+                "expr": "1d4"
+              },
+              "value_table_id": "JEWELRY_VALUES"
+            }
+          ]
+        },
+        {
+          "lo": 76,
+          "hi": 100,
+          "drops": [
+            {
+              "type": "coins",
+              "rolls": {
+                "gp": {
+                  "expr": "6d6*100"
+                },
+                "pp": {
+                  "expr": "1d6*10"
+                }
+              }
+            },
+            {
+              "type": "gems",
+              "count": {
+                "expr": "2d6"
+              },
+              "value_table_id": "GEM_VALUES_BASIC"
+            },
+            {
+              "type": "magic",
+              "picks": {
+                "expr": "1d2"
+              },
+              "magic_list_id": "MAGIC_MINOR",
+              "resolved": {
+                "mode": "lookup_item_ids",
+                "all_item_ids_resolved": false
+              }
+            }
+          ]
+        }
+      ],
+      "validation": {
+        "coverage_ok": true,
+        "overlap_ok": true
+      }
+    },
+    "HOARD_C": {
+      "table_id": "HOARD_C",
+      "kind": "hoard",
+      "dice": {
+        "count": 1,
+        "sides": 100
+      },
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 25,
+          "drops": [
+            {
+              "type": "coins",
+              "rolls": {
+                "gp": {
+                  "expr": "8d6*100"
+                },
+                "pp": {
+                  "expr": "2d6*10"
+                }
+              }
+            },
+            {
+              "type": "gems",
+              "count": {
+                "expr": "3d6"
+              },
+              "value_table_id": "GEM_VALUES_BASIC"
+            }
+          ]
+        },
+        {
+          "lo": 26,
+          "hi": 70,
+          "drops": [
+            {
+              "type": "coins",
+              "rolls": {
+                "gp": {
+                  "expr": "10d6*100"
+                },
+                "pp": {
+                  "expr": "3d6*10"
+                }
+              }
+            },
+            {
+              "type": "gems",
+              "count": {
+                "expr": "3d6"
+              },
+              "value_table_id": "GEM_VALUES_BASIC"
+            },
+            {
+              "type": "jewelry",
+              "count": {
+                "expr": "1d6"
+              },
+              "value_table_id": "JEWELRY_VALUES"
+            },
+            {
+              "type": "magic",
+              "picks": {
+                "expr": "1"
+              },
+              "magic_list_id": "MAGIC_MINOR",
+              "resolved": {
+                "mode": "lookup_item_ids",
+                "all_item_ids_resolved": false
+              }
+            }
+          ]
+        },
+        {
+          "lo": 71,
+          "hi": 100,
+          "drops": [
+            {
+              "type": "coins",
+              "rolls": {
+                "gp": {
+                  "expr": "12d6*100"
+                },
+                "pp": {
+                  "expr": "4d6*10"
+                }
+              }
+            },
+            {
+              "type": "gems",
+              "count": {
+                "expr": "4d6"
+              },
+              "value_table_id": "GEM_VALUES_BASIC"
+            },
+            {
+              "type": "jewelry",
+              "count": {
+                "expr": "2d6"
+              },
+              "value_table_id": "JEWELRY_VALUES"
+            },
+            {
+              "type": "magic",
+              "picks": {
+                "expr": "1"
+              },
+              "magic_list_id": "MAGIC_MAJOR",
+              "resolved": {
+                "mode": "lookup_item_ids",
+                "all_item_ids_resolved": false
+              }
+            }
+          ]
+        }
+      ],
+      "validation": {
+        "coverage_ok": true,
+        "overlap_ok": true
+      }
+    }
+  },
+  "value_tables_by_id": {
+    "GEM_VALUES_BASIC": {
+      "dice": {
+        "count": 1,
+        "sides": 100
+      },
+      "bands": [
+        {
+          "lo": 1,
+          "hi": 50,
+          "gp_value": 10
+        },
+        {
+          "lo": 51,
+          "hi": 80,
+          "gp_value": 50
+        },
+        {
+          "lo": 81,
+          "hi": 95,
+          "gp_value": 100
+        },
+        {
+          "lo": 96,
+          "hi": 100,
+          "gp_value": 500
+        }
+      ]
+    },
+    "JEWELRY_VALUES": {
+      "dice": {
+        "count": 1,
+        "sides": 100
+      },
+      "bands": [
+        {
+          "lo": 1,
+          "hi": 40,
+          "gp_value": 100
+        },
+        {
+          "lo": 41,
+          "hi": 70,
+          "gp_value": 500
+        },
+        {
+          "lo": 71,
+          "hi": 90,
+          "gp_value": 1000
+        },
+        {
+          "lo": 91,
+          "hi": 100,
+          "gp_value": 5000
+        }
+      ]
+    }
+  },
+  "magic_lists_by_id": {
+    "MAGIC_MINOR": {
+      "dice": {
+        "count": 1,
+        "sides": 100
+      },
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 40,
+          "item_id": "potion_healing",
+          "resolved": true
+        },
+        {
+          "lo": 41,
+          "hi": 70,
+          "item_id": "scroll_arcane_lvl1",
+          "resolved": true
+        },
+        {
+          "lo": 71,
+          "hi": 85,
+          "item_id": "ammo_plus1_1d6",
+          "resolved": true
+        },
+        {
+          "lo": 86,
+          "hi": 95,
+          "item_id": "ring_protection_plus1",
+          "resolved": true
+        },
+        {
+          "lo": 96,
+          "hi": 100,
+          "item_id": "weapon_plus1_any",
+          "resolved": true
+        }
+      ]
+    },
+    "MAGIC_MAJOR": {
+      "dice": {
+        "count": 1,
+        "sides": 100
+      },
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 40,
+          "item_id": "weapon_plus2_any",
+          "resolved": true
+        },
+        {
+          "lo": 41,
+          "hi": 70,
+          "item_id": "armor_plus2_any",
+          "resolved": true
+        },
+        {
+          "lo": 71,
+          "hi": 90,
+          "item_id": "wand_fireballs",
+          "resolved": true
+        },
+        {
+          "lo": 91,
+          "hi": 100,
+          "item_id": "ring_invisibility",
+          "resolved": true
+        }
+      ]
+    }
+  },
+  "unresolved": [],
+  "content_hash": "sha256:f56b85cdbccb8799207a5086998e72686e5a03b1ab4df7015d237df6b60cb597"
+}

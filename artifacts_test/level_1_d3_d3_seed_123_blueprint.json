@@ -1,0 +1,1046 @@
+{
+  "bounds": {
+    "height": 40,
+    "width": 50
+  },
+  "connectivity": {
+    "edges": [
+      {
+        "a": "N0004",
+        "b": "N0008",
+        "edge_id": "E0000",
+        "via": "door",
+        "via_id": "D0010",
+        "weight": 1.0
+      },
+      {
+        "a": "N0005",
+        "b": "N0008",
+        "edge_id": "E0001",
+        "via": "door",
+        "via_id": "D0012",
+        "weight": 1.0
+      },
+      {
+        "a": "N0001",
+        "b": "N0009",
+        "edge_id": "E0002",
+        "via": "door",
+        "via_id": "D0000",
+        "weight": 1.0
+      },
+      {
+        "a": "N0003",
+        "b": "N0009",
+        "edge_id": "E0003",
+        "via": "door",
+        "via_id": "D0004",
+        "weight": 1.2
+      },
+      {
+        "a": "N0000",
+        "b": "N0010",
+        "edge_id": "E0004",
+        "via": "door",
+        "via_id": "D0001",
+        "weight": 1.0
+      },
+      {
+        "a": "N0004",
+        "b": "N0010",
+        "edge_id": "E0005",
+        "via": "door",
+        "via_id": "D0005",
+        "weight": 1.0
+      },
+      {
+        "a": "N0000",
+        "b": "N0011",
+        "edge_id": "E0006",
+        "via": "door",
+        "via_id": "D0003",
+        "weight": 1.0
+      },
+      {
+        "a": "N0003",
+        "b": "N0011",
+        "edge_id": "E0007",
+        "via": "door",
+        "via_id": "D0008",
+        "weight": 1.0
+      },
+      {
+        "a": "N0002",
+        "b": "N0012",
+        "edge_id": "E0008",
+        "via": "door",
+        "via_id": "D0009",
+        "weight": 1.0
+      },
+      {
+        "a": "N0004",
+        "b": "N0012",
+        "edge_id": "E0009",
+        "via": "door",
+        "via_id": "D0007",
+        "weight": 1.0
+      },
+      {
+        "a": "N0003",
+        "b": "N0013",
+        "edge_id": "E0010",
+        "via": "door",
+        "via_id": "D0011",
+        "weight": 1.2
+      },
+      {
+        "a": "N0007",
+        "b": "N0013",
+        "edge_id": "E0011",
+        "via": "door",
+        "via_id": "D0015",
+        "weight": 1.2
+      },
+      {
+        "a": "N0005",
+        "b": "N0014",
+        "edge_id": "E0012",
+        "via": "door",
+        "via_id": "D0014",
+        "weight": 1.0
+      },
+      {
+        "a": "N0006",
+        "b": "N0014",
+        "edge_id": "E0013",
+        "via": "door",
+        "via_id": "D0016",
+        "weight": 2.0
+      },
+      {
+        "a": "N0003",
+        "b": "N0015",
+        "edge_id": "E0014",
+        "via": "corridor",
+        "via_id": "C0007",
+        "weight": 1.0
+      },
+      {
+        "a": "N0004",
+        "b": "N0015",
+        "edge_id": "E0015",
+        "via": "door",
+        "via_id": "D0006",
+        "weight": 1.0
+      },
+      {
+        "a": "N0002",
+        "b": "N0016",
+        "edge_id": "E0016",
+        "via": "corridor",
+        "via_id": "C0008",
+        "weight": 1.0
+      },
+      {
+        "a": "N0006",
+        "b": "N0016",
+        "edge_id": "E0017",
+        "via": "door",
+        "via_id": "D0013",
+        "weight": 2.0
+      },
+      {
+        "a": "N0001",
+        "b": "N0017",
+        "edge_id": "E0018",
+        "via": "corridor",
+        "via_id": "C0009",
+        "weight": 1.0
+      },
+      {
+        "a": "N0007",
+        "b": "N0017",
+        "edge_id": "E0019",
+        "via": "corridor",
+        "via_id": "C0009",
+        "weight": 1.0
+      },
+      {
+        "a": "N0002",
+        "b": "N0018",
+        "edge_id": "E0020",
+        "via": "door",
+        "via_id": "D0002",
+        "weight": 1.0
+      },
+      {
+        "a": "N0007",
+        "b": "N0018",
+        "edge_id": "E0021",
+        "via": "door",
+        "via_id": "D0017",
+        "weight": 1.0
+      },
+      {
+        "a": "N0002",
+        "b": "N0002",
+        "edge_id": "E0022",
+        "via": "stairs",
+        "via_id": "S0000",
+        "weight": 0.0
+      },
+      {
+        "a": "N0007",
+        "b": "N0007",
+        "edge_id": "E0023",
+        "via": "stairs",
+        "via_id": "S0001",
+        "weight": 0.0
+      }
+    ],
+    "loops_added": 4,
+    "nodes": [
+      {
+        "kind": "room",
+        "node_id": "N0000",
+        "ref_id": "R0000"
+      },
+      {
+        "kind": "room",
+        "node_id": "N0001",
+        "ref_id": "R0001"
+      },
+      {
+        "kind": "room",
+        "node_id": "N0002",
+        "ref_id": "R0002"
+      },
+      {
+        "kind": "room",
+        "node_id": "N0003",
+        "ref_id": "R0003"
+      },
+      {
+        "kind": "room",
+        "node_id": "N0004",
+        "ref_id": "R0004"
+      },
+      {
+        "kind": "room",
+        "node_id": "N0005",
+        "ref_id": "R0005"
+      },
+      {
+        "kind": "room",
+        "node_id": "N0006",
+        "ref_id": "R0006"
+      },
+      {
+        "kind": "room",
+        "node_id": "N0007",
+        "ref_id": "R0007"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0008",
+        "ref_id": "C0000"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0009",
+        "ref_id": "C0001"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0010",
+        "ref_id": "C0002"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0011",
+        "ref_id": "C0003"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0012",
+        "ref_id": "C0004"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0013",
+        "ref_id": "C0005"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0014",
+        "ref_id": "C0006"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0015",
+        "ref_id": "C0007"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0016",
+        "ref_id": "C0008"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0017",
+        "ref_id": "C0009"
+      },
+      {
+        "kind": "corridor",
+        "node_id": "N0018",
+        "ref_id": "C0010"
+      }
+    ]
+  },
+  "corridors": [
+    {
+      "corridor_id": "C0000",
+      "polyline": [
+        {
+          "x": 30,
+          "y": 14
+        },
+        {
+          "x": 30,
+          "y": 23
+        },
+        {
+          "x": 24,
+          "y": 23
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0001",
+      "polyline": [
+        {
+          "x": 6,
+          "y": 5
+        },
+        {
+          "x": 11,
+          "y": 5
+        },
+        {
+          "x": 11,
+          "y": 15
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0002",
+      "polyline": [
+        {
+          "x": 22,
+          "y": 5
+        },
+        {
+          "x": 30,
+          "y": 5
+        },
+        {
+          "x": 30,
+          "y": 14
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0003",
+      "polyline": [
+        {
+          "x": 22,
+          "y": 5
+        },
+        {
+          "x": 22,
+          "y": 15
+        },
+        {
+          "x": 11,
+          "y": 15
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0004",
+      "polyline": [
+        {
+          "x": 44,
+          "y": 8
+        },
+        {
+          "x": 44,
+          "y": 14
+        },
+        {
+          "x": 30,
+          "y": 14
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0005",
+      "polyline": [
+        {
+          "x": 11,
+          "y": 15
+        },
+        {
+          "x": 11,
+          "y": 31
+        },
+        {
+          "x": 7,
+          "y": 31
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0006",
+      "polyline": [
+        {
+          "x": 24,
+          "y": 23
+        },
+        {
+          "x": 41,
+          "y": 23
+        },
+        {
+          "x": 41,
+          "y": 29
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0007",
+      "polyline": [
+        {
+          "x": 11,
+          "y": 15
+        },
+        {
+          "x": 11,
+          "y": 14
+        },
+        {
+          "x": 30,
+          "y": 14
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0008",
+      "polyline": [
+        {
+          "x": 44,
+          "y": 8
+        },
+        {
+          "x": 44,
+          "y": 29
+        },
+        {
+          "x": 41,
+          "y": 29
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0009",
+      "polyline": [
+        {
+          "x": 6,
+          "y": 5
+        },
+        {
+          "x": 7,
+          "y": 5
+        },
+        {
+          "x": 7,
+          "y": 31
+        }
+      ],
+      "tags": [],
+      "width": 1
+    },
+    {
+      "corridor_id": "C0010",
+      "polyline": [
+        {
+          "x": 44,
+          "y": 8
+        },
+        {
+          "x": 7,
+          "y": 8
+        },
+        {
+          "x": 7,
+          "y": 31
+        }
+      ],
+      "tags": [],
+      "width": 1
+    }
+  ],
+  "doors": [
+    {
+      "connects": [
+        {
+          "id": "R0001",
+          "kind": "room"
+        },
+        {
+          "id": "C0001",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0000",
+      "door_type": "normal",
+      "orientation": "E",
+      "pos": {
+        "x": 11,
+        "y": 5
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0000",
+          "kind": "room"
+        },
+        {
+          "id": "C0002",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0001",
+      "door_type": "normal",
+      "orientation": "E",
+      "pos": {
+        "x": 27,
+        "y": 5
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0002",
+          "kind": "room"
+        },
+        {
+          "id": "C0010",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0002",
+      "door_type": "normal",
+      "orientation": "W",
+      "pos": {
+        "x": 39,
+        "y": 8
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0000",
+          "kind": "room"
+        },
+        {
+          "id": "C0003",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0003",
+      "door_type": "normal",
+      "orientation": "S",
+      "pos": {
+        "x": 22,
+        "y": 9
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0003",
+          "kind": "room"
+        },
+        {
+          "id": "C0001",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0004",
+      "door_type": "stuck",
+      "orientation": "N",
+      "pos": {
+        "x": 11,
+        "y": 10
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0004",
+          "kind": "room"
+        },
+        {
+          "id": "C0002",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0005",
+      "door_type": "normal",
+      "orientation": "N",
+      "pos": {
+        "x": 30,
+        "y": 10
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0004",
+          "kind": "room"
+        },
+        {
+          "id": "C0007",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0006",
+      "door_type": "normal",
+      "orientation": "W",
+      "pos": {
+        "x": 25,
+        "y": 14
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0004",
+          "kind": "room"
+        },
+        {
+          "id": "C0004",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0007",
+      "door_type": "normal",
+      "orientation": "E",
+      "pos": {
+        "x": 34,
+        "y": 14
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0003",
+          "kind": "room"
+        },
+        {
+          "id": "C0003",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0008",
+      "door_type": "normal",
+      "orientation": "E",
+      "pos": {
+        "x": 14,
+        "y": 15
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0002",
+          "kind": "room"
+        },
+        {
+          "id": "C0004",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0009",
+      "door_type": "normal",
+      "orientation": "S",
+      "pos": {
+        "x": 44,
+        "y": 15
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0004",
+          "kind": "room"
+        },
+        {
+          "id": "C0000",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0010",
+      "door_type": "normal",
+      "orientation": "S",
+      "pos": {
+        "x": 30,
+        "y": 18
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0003",
+          "kind": "room"
+        },
+        {
+          "id": "C0005",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0011",
+      "door_type": "stuck",
+      "orientation": "S",
+      "pos": {
+        "x": 11,
+        "y": 20
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0005",
+          "kind": "room"
+        },
+        {
+          "id": "C0000",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0012",
+      "door_type": "normal",
+      "orientation": "N",
+      "pos": {
+        "x": 24,
+        "y": 20
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0006",
+          "kind": "room"
+        },
+        {
+          "id": "C0008",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0013",
+      "door_type": "locked",
+      "lock": {
+        "difficulty": 8
+      },
+      "orientation": "N",
+      "pos": {
+        "x": 41,
+        "y": 22
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0005",
+          "kind": "room"
+        },
+        {
+          "id": "C0006",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0014",
+      "door_type": "normal",
+      "orientation": "E",
+      "pos": {
+        "x": 27,
+        "y": 23
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0007",
+          "kind": "room"
+        },
+        {
+          "id": "C0005",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0015",
+      "door_type": "stuck",
+      "orientation": "N",
+      "pos": {
+        "x": 7,
+        "y": 26
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0006",
+          "kind": "room"
+        },
+        {
+          "id": "C0006",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0016",
+      "door_type": "locked",
+      "lock": {
+        "difficulty": 8
+      },
+      "orientation": "W",
+      "pos": {
+        "x": 37,
+        "y": 29
+      },
+      "tags": []
+    },
+    {
+      "connects": [
+        {
+          "id": "R0007",
+          "kind": "room"
+        },
+        {
+          "id": "C0010",
+          "kind": "corridor"
+        }
+      ],
+      "door_id": "D0017",
+      "door_type": "normal",
+      "orientation": "E",
+      "pos": {
+        "x": 13,
+        "y": 31
+      },
+      "tags": []
+    }
+  ],
+  "features": [],
+  "grid": {
+    "cell_size": 1,
+    "origin": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "level_id": "level_1_d3",
+  "rng_streams": {
+    "gen.connectivity": "797375567",
+    "gen.doors": "2100166112",
+    "gen.geometry": "1787885225",
+    "gen.stairs": "1056310904"
+  },
+  "rooms": [
+    {
+      "bounds": {
+        "h": 8,
+        "w": 9,
+        "x": 18,
+        "y": 1
+      },
+      "centroid": {
+        "x": 22,
+        "y": 5
+      },
+      "depth_hint": 3,
+      "room_id": "R0000",
+      "tags": []
+    },
+    {
+      "bounds": {
+        "h": 7,
+        "w": 9,
+        "x": 2,
+        "y": 2
+      },
+      "centroid": {
+        "x": 6,
+        "y": 5
+      },
+      "depth_hint": 3,
+      "room_id": "R0001",
+      "tags": []
+    },
+    {
+      "bounds": {
+        "h": 13,
+        "w": 9,
+        "x": 40,
+        "y": 2
+      },
+      "centroid": {
+        "x": 44,
+        "y": 8
+      },
+      "depth_hint": 3,
+      "room_id": "R0002",
+      "tags": []
+    },
+    {
+      "bounds": {
+        "h": 9,
+        "w": 6,
+        "x": 8,
+        "y": 11
+      },
+      "centroid": {
+        "x": 11,
+        "y": 15
+      },
+      "depth_hint": 3,
+      "room_id": "R0003",
+      "tags": []
+    },
+    {
+      "bounds": {
+        "h": 7,
+        "w": 8,
+        "x": 26,
+        "y": 11
+      },
+      "centroid": {
+        "x": 30,
+        "y": 14
+      },
+      "depth_hint": 3,
+      "room_id": "R0004",
+      "tags": []
+    },
+    {
+      "bounds": {
+        "h": 5,
+        "w": 6,
+        "x": 21,
+        "y": 21
+      },
+      "centroid": {
+        "x": 24,
+        "y": 23
+      },
+      "depth_hint": 3,
+      "room_id": "R0005",
+      "tags": [
+        "small"
+      ]
+    },
+    {
+      "bounds": {
+        "h": 13,
+        "w": 7,
+        "x": 38,
+        "y": 23
+      },
+      "centroid": {
+        "x": 41,
+        "y": 29
+      },
+      "depth_hint": 3,
+      "room_id": "R0006",
+      "tags": []
+    },
+    {
+      "bounds": {
+        "h": 9,
+        "w": 11,
+        "x": 2,
+        "y": 27
+      },
+      "centroid": {
+        "x": 7,
+        "y": 31
+      },
+      "depth_hint": 3,
+      "room_id": "R0007",
+      "tags": []
+    }
+  ],
+  "schema_version": "P4.9.1",
+  "seed": "123",
+  "stairs": [
+    {
+      "connects_level_id": "level_1_d3:depth2",
+      "direction": "up",
+      "pos": {
+        "x": 44,
+        "y": 8
+      },
+      "stairs_id": "S0000",
+      "tags": [
+        "primary"
+      ]
+    },
+    {
+      "connects_level_id": "level_1_d3:depth4",
+      "direction": "down",
+      "pos": {
+        "x": 7,
+        "y": 31
+      },
+      "stairs_id": "S0001",
+      "tags": [
+        "primary"
+      ]
+    }
+  ]
+}

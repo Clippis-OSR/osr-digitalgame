@@ -1,0 +1,115 @@
+{
+  "schema_version": "races.v1",
+  "races": [
+    {
+      "race_id": "Human",
+      "darkvision_ft": 0,
+      "listen_in_6": 1,
+      "secret_door": {
+        "search_in_6": 2,
+        "passive_in_6": 0
+      },
+      "save_bonus": {
+        "tags": {
+          "magic": 0,
+          "spell": 0
+        }
+      },
+      "to_hit_bonus": {
+        "missile": 0,
+        "melee": 0
+      },
+      "immunities": [],
+      "stonework": null
+    },
+    {
+      "race_id": "Elf",
+      "darkvision_ft": 60,
+      "listen_in_6": 2,
+      "secret_door": {
+        "search_in_6": 4,
+        "passive_in_6": 1
+      },
+      "save_bonus": {
+        "tags": {
+          "magic": 0,
+          "spell": 0
+        }
+      },
+      "to_hit_bonus": {
+        "missile": 0,
+        "melee": 0
+      },
+      "immunities": [
+        "ghoul_paralysis"
+      ],
+      "stonework": null
+    },
+    {
+      "race_id": "Half-elf",
+      "darkvision_ft": 60,
+      "listen_in_6": 2,
+      "secret_door": {
+        "search_in_6": 4,
+        "passive_in_6": 0
+      },
+      "save_bonus": {
+        "tags": {
+          "magic": 0,
+          "spell": 0
+        }
+      },
+      "to_hit_bonus": {
+        "missile": 0,
+        "melee": 0
+      },
+      "immunities": [],
+      "stonework": null
+    },
+    {
+      "race_id": "Dwarf",
+      "darkvision_ft": 60,
+      "listen_in_6": 2,
+      "secret_door": {
+        "search_in_6": 2,
+        "passive_in_6": 0
+      },
+      "save_bonus": {
+        "tags": {
+          "magic": 0,
+          "spell": 0
+        }
+      },
+      "to_hit_bonus": {
+        "missile": 0,
+        "melee": 0
+      },
+      "immunities": [],
+      "stonework": {
+        "trap_notice_careful_in_6": 2,
+        "trap_notice_search_in_6": 2
+      }
+    },
+    {
+      "race_id": "Halfling",
+      "darkvision_ft": 0,
+      "listen_in_6": 2,
+      "secret_door": {
+        "search_in_6": 2,
+        "passive_in_6": 0
+      },
+      "save_bonus": {
+        "tags": {
+          "magic": 4,
+          "spell": 4
+        }
+      },
+      "to_hit_bonus": {
+        "missile": 1,
+        "melee": 0
+      },
+      "immunities": [],
+      "stonework": null
+    }
+  ]
+}

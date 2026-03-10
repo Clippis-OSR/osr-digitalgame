@@ -1,0 +1,8 @@
+{
+  "kind": "drop_invalid",
+  "dice_seed": 789,
+  "caster_side": "party",
+  "spell": "magic missile",
+  "caster_effects": ["fled"],
+  "expect": "drop"
+}

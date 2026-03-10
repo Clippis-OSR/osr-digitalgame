@@ -1,0 +1,54 @@
+[
+  {
+    "hit_dice": "<1HD",
+    "save_target": 18
+  },
+  {
+    "hit_dice": "1HD",
+    "save_target": 17
+  },
+  {
+    "hit_dice": "2HD",
+    "save_target": 16
+  },
+  {
+    "hit_dice": "3HD",
+    "save_target": 14
+  },
+  {
+    "hit_dice": "4HD",
+    "save_target": 13
+  },
+  {
+    "hit_dice": "5HD",
+    "save_target": 12
+  },
+  {
+    "hit_dice": "6HD",
+    "save_target": 11
+  },
+  {
+    "hit_dice": "7HD",
+    "save_target": 9
+  },
+  {
+    "hit_dice": "8HD",
+    "save_target": 8
+  },
+  {
+    "hit_dice": "9HD",
+    "save_target": 6
+  },
+  {
+    "hit_dice": "10HD",
+    "save_target": 5
+  },
+  {
+    "hit_dice": "11HD",
+    "save_target": 4
+  },
+  {
+    "hit_dice": "12+HD",
+    "save_target": 3
+  }
+]

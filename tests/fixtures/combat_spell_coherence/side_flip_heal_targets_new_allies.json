@@ -1,0 +1,9 @@
+{
+  "kind": "heal_target_pool",
+  "dice_seed": 456,
+  "caster_side": "party",
+  "side_override": "foe",
+  "spell": "cure light wounds",
+  "expect_healed": "Orc Shaman",
+  "expect_party_unchanged": "Hero"
+}

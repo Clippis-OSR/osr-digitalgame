@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "p44.schemas.spell_lists_canonical.v1",
+  "title": "Canonical Spell Lists (Raw)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "classes"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "spell_lists_canonical.v1"
+    },
+    "source": {
+      "type": "string"
+    },
+    "classes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,183 @@
+{
+  "level_id": "level_1",
+  "restock": {
+    "enabled": false,
+    "every_turns": 6,
+    "policy": "none"
+  },
+  "rng_streams": {
+    "gen.factions": "",
+    "gen.stocking": "1075234073",
+    "gen.wandering": ""
+  },
+  "room_contents": {
+    "R0000": {
+      "alertness": "calm",
+      "contents": {
+        "monsters": [
+          {
+            "count": 9,
+            "disposition": "lairing",
+            "monster_id": "zombie",
+            "tags": [
+              "CL:2"
+            ]
+          }
+        ],
+        "specials": [],
+        "traps": [],
+        "treasure": [
+          {
+            "amount_or_ref": "{\"item_tag_pick\": [\"mundane_gear\"], \"kind\": \"item\"}",
+            "kind": "item",
+            "tags": [],
+            "treasure_id": "T0000"
+          }
+        ]
+      },
+      "rolls": []
+    },
+    "R0001": {
+      "alertness": "calm",
+      "contents": {
+        "monsters": [],
+        "specials": [],
+        "traps": [],
+        "treasure": [
+          {
+            "amount_or_ref": 60,
+            "kind": "coins",
+            "tags": [
+              "gp"
+            ],
+            "treasure_id": "T0000"
+          }
+        ]
+      },
+      "rolls": []
+    },
+    "R0002": {
+      "alertness": "calm",
+      "contents": {
+        "monsters": [
+          {
+            "count": 13,
+            "disposition": "patrolling",
+            "monster_id": "ant_giant_worker",
+            "tags": [
+              "CL:2"
+            ]
+          }
+        ],
+        "specials": [],
+        "traps": [],
+        "treasure": []
+      },
+      "rolls": []
+    },
+    "R0003": {
+      "alertness": "wary",
+      "contents": {
+        "monsters": [],
+        "specials": [],
+        "traps": [],
+        "treasure": []
+      },
+      "rolls": []
+    },
+    "R0004": {
+      "alertness": "calm",
+      "contents": {
+        "monsters": [
+          {
+            "count": 67,
+            "disposition": "lairing",
+            "monster_id": "kobold",
+            "tags": [
+              "CL:A"
+            ]
+          }
+        ],
+        "specials": [],
+        "traps": [],
+        "treasure": [
+          {
+            "amount_or_ref": 100,
+            "kind": "coins",
+            "tags": [
+              "sp"
+            ],
+            "treasure_id": "T0000"
+          }
+        ]
+      },
+      "rolls": []
+    },
+    "R0005": {
+      "alertness": "calm",
+      "contents": {
+        "monsters": [],
+        "specials": [],
+        "traps": [],
+        "treasure": [
+          {
+            "amount_or_ref": 250,
+            "kind": "coins",
+            "tags": [
+              "sp"
+            ],
+            "treasure_id": "T0000"
+          }
+        ]
+      },
+      "rolls": []
+    },
+    "R0006": {
+      "alertness": "alert",
+      "contents": {
+        "monsters": [],
+        "specials": [
+          {
+            "params": {},
+            "special_id": "SP0000",
+            "special_type": "strange_mural"
+          }
+        ],
+        "traps": [],
+        "treasure": []
+      },
+      "rolls": []
+    },
+    "R0007": {
+      "alertness": "calm",
+      "contents": {
+        "monsters": [],
+        "specials": [],
+        "traps": [],
+        "treasure": []
+      },
+      "rolls": []
+    }
+  },
+  "schema_version": "P4.9.2.3",
+  "seed": "123",
+  "wandering": {
+    "chance_d6": 1,
+    "check_every_turns": 2,
+    "tables": [
+      {
+        "depth_max": 1,
+        "depth_min": 0,
+        "entries": [
+          {
+            "count_dice": "1d4",
+            "monster_id": "rat_giant",
+            "tags": [],
+            "weight": 1
+          }
+        ],
+        "table_id": "wandering.l1"
+      }
+    ]
+  }
+}

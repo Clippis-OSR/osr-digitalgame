@@ -1,0 +1,87 @@
+{
+  "schema_version": "class_restrictions.v1",
+  "notes": "Single-class equipment restrictions. Multi/dual-class ignored (P4.10.8).",
+  "classes": [
+    {
+      "class": "Assassin",
+      "armor_max": "leather",
+      "shield_allowed": true,
+      "weapons_mode": "ANY",
+      "weapons_allow": [],
+      "weapons_deny": []
+    },
+    {
+      "class": "Cleric",
+      "armor_max": "plate",
+      "shield_allowed": true,
+      "weapons_mode": "CLERIC",
+      "weapons_allow": [],
+      "weapons_deny": []
+    },
+    {
+      "class": "Druid",
+      "armor_max": "leather",
+      "shield_allowed": true,
+      "weapons_mode": "LIST",
+      "weapons_allow": [
+        "Dagger",
+        "Club",
+        "Spear",
+        "Sling"
+      ],
+      "weapons_deny": []
+    },
+    {
+      "class": "Fighter",
+      "armor_max": "plate",
+      "shield_allowed": true,
+      "weapons_mode": "ANY",
+      "weapons_allow": [],
+      "weapons_deny": []
+    },
+    {
+      "class": "Magic-User",
+      "armor_max": "none",
+      "shield_allowed": false,
+      "weapons_mode": "LIST",
+      "weapons_allow": [
+        "Dagger",
+        "Staff (two-handed)",
+        "Dart"
+      ],
+      "weapons_deny": []
+    },
+    {
+      "class": "Monk",
+      "armor_max": "none",
+      "shield_allowed": false,
+      "weapons_mode": "ANY",
+      "weapons_allow": [],
+      "weapons_deny": []
+    },
+    {
+      "class": "Paladin",
+      "armor_max": "plate",
+      "shield_allowed": true,
+      "weapons_mode": "ANY",
+      "weapons_allow": [],
+      "weapons_deny": []
+    },
+    {
+      "class": "Ranger",
+      "armor_max": "plate",
+      "shield_allowed": true,
+      "weapons_mode": "ANY",
+      "weapons_allow": [],
+      "weapons_deny": []
+    },
+    {
+      "class": "Thief",
+      "armor_max": "leather",
+      "shield_allowed": false,
+      "weapons_mode": "THIEF",
+      "weapons_allow": [],
+      "weapons_deny": []
+    }
+  ]
+}

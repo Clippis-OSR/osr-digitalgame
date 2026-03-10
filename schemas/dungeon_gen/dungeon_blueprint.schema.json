@@ -1,0 +1,534 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sww:dungeon_blueprint.schema.json",
+  "title": "DungeonBlueprint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "level_id",
+    "seed",
+    "rng_streams",
+    "bounds",
+    "grid",
+    "rooms",
+    "corridors",
+    "doors",
+    "stairs",
+    "features",
+    "connectivity"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^P4\\.9\\.[0-9]+$"
+    },
+    "level_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "seed": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rng_streams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gen.geometry",
+        "gen.doors",
+        "gen.features",
+        "gen.stairs",
+        "gen.connectivity"
+      ],
+      "properties": {
+        "gen.geometry": {
+          "type": "string"
+        },
+        "gen.doors": {
+          "type": "string"
+        },
+        "gen.features": {
+          "type": "string"
+        },
+        "gen.stairs": {
+          "type": "string"
+        },
+        "gen.connectivity": {
+          "type": "string"
+        }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "width",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_size",
+        "origin"
+      ],
+      "properties": {
+        "cell_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "origin": {
+          "$ref": "#/$defs/point"
+        }
+      }
+    },
+    "rooms": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/room"
+      }
+    },
+    "corridors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/corridor"
+      }
+    },
+    "doors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/door"
+      }
+    },
+    "stairs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/stairs"
+      }
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/feature"
+      }
+    },
+    "connectivity": {
+      "$ref": "#/$defs/connectivity"
+    },
+    "context": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "integer"
+        },
+        "y": {
+          "type": "integer"
+        }
+      }
+    },
+    "rect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "properties": {
+        "x": {
+          "type": "integer"
+        },
+        "y": {
+          "type": "integer"
+        },
+        "w": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "h": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "room": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "room_id",
+        "bounds",
+        "centroid",
+        "tags"
+      ],
+      "properties": {
+        "room_id": {
+          "type": "string",
+          "pattern": "^R[0-9]{4}$"
+        },
+        "bounds": {
+          "$ref": "#/$defs/rect"
+        },
+        "centroid": {
+          "$ref": "#/$defs/point"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "depth_hint": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "floor_type": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "theme_id": {
+          "type": "string"
+        },
+        "faction": {
+          "type": "string"
+        }
+      }
+    },
+    "corridor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "corridor_id",
+        "polyline",
+        "tags"
+      ],
+      "properties": {
+        "corridor_id": {
+          "type": "string",
+          "pattern": "^C[0-9]{4}$"
+        },
+        "polyline": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/point"
+          }
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "edge_endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "id"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "room",
+            "corridor"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "door": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "door_id",
+        "pos",
+        "orientation",
+        "connects",
+        "door_type",
+        "tags"
+      ],
+      "properties": {
+        "door_id": {
+          "type": "string",
+          "pattern": "^D[0-9]{4}$"
+        },
+        "pos": {
+          "$ref": "#/$defs/point"
+        },
+        "orientation": {
+          "type": "string",
+          "enum": [
+            "N",
+            "S",
+            "E",
+            "W"
+          ]
+        },
+        "connects": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/edge_endpoint"
+          }
+        },
+        "door_type": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "stuck",
+            "locked",
+            "barred",
+            "secret"
+          ]
+        },
+        "lock": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "difficulty"
+          ],
+          "properties": {
+            "difficulty": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "secret": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dc"
+          ],
+          "properties": {
+            "dc": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "stairs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stairs_id",
+        "pos",
+        "direction",
+        "connects_level_id",
+        "tags"
+      ],
+      "properties": {
+        "stairs_id": {
+          "type": "string",
+          "pattern": "^S[0-9]{4}$"
+        },
+        "pos": {
+          "$ref": "#/$defs/point"
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "up",
+            "down"
+          ]
+        },
+        "connects_level_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "connects_stairs_id": {
+          "type": "string",
+          "pattern": "^S[0-9]{4}$"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "feature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feature_id",
+        "feature_type",
+        "pos",
+        "tags"
+      ],
+      "properties": {
+        "feature_id": {
+          "type": "string",
+          "pattern": "^F[0-9]{4}$"
+        },
+        "feature_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pos": {
+          "$ref": "#/$defs/point"
+        },
+        "room_id": {
+          "type": "string",
+          "pattern": "^R[0-9]{4}$"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "params": {
+          "type": "object"
+        }
+      }
+    },
+    "connectivity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nodes",
+        "edges",
+        "loops_added"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "node_id",
+              "kind",
+              "ref_id"
+            ],
+            "properties": {
+              "node_id": {
+                "type": "string",
+                "pattern": "^N[0-9]{4}$"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "room",
+                  "corridor"
+                ]
+              },
+              "ref_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "edge_id",
+              "a",
+              "b",
+              "via"
+            ],
+            "properties": {
+              "edge_id": {
+                "type": "string",
+                "pattern": "^E[0-9]{4}$"
+              },
+              "a": {
+                "type": "string",
+                "pattern": "^N[0-9]{4}$"
+              },
+              "b": {
+                "type": "string",
+                "pattern": "^N[0-9]{4}$"
+              },
+              "via": {
+                "type": "string",
+                "enum": [
+                  "corridor",
+                  "door",
+                  "stairs",
+                  "open_boundary"
+                ]
+              },
+              "via_id": {
+                "type": "string"
+              },
+              "weight": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "loops_added": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

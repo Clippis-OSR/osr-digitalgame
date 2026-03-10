@@ -1,0 +1,727 @@
+{
+  "schema_version": "P4.9.2.3",
+  "tables": {
+    "A": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 10,
+          "monster_id": "rat_giant"
+        },
+        {
+          "lo": 11,
+          "hi": 20,
+          "monster_id": "kobold"
+        }
+      ]
+    },
+    "B": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 20,
+          "monster_id": "goblin"
+        }
+      ]
+    },
+    "1": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "name": "Beetles, Giant (Fire)"
+        },
+        {
+          "lo": 2,
+          "hi": 2,
+          "name": "Centipedes, Giant (Small, non-lethal)"
+        },
+        {
+          "lo": 3,
+          "hi": 3,
+          "name": "Dwarfs"
+        },
+        {
+          "lo": 4,
+          "hi": 4,
+          "name": "Elves"
+        },
+        {
+          "lo": 5,
+          "hi": 6,
+          "name": "Hobgoblins"
+        },
+        {
+          "lo": 7,
+          "hi": 9,
+          "name": "Human, Bandit"
+        },
+        {
+          "lo": 10,
+          "hi": 14,
+          "name": "Orcs"
+        },
+        {
+          "lo": 15,
+          "hi": 16,
+          "name": "Piercers (1 HD)"
+        },
+        {
+          "lo": 17,
+          "hi": 18,
+          "name": "Skeletons"
+        },
+        {
+          "lo": 19,
+          "hi": 20,
+          "name": "Stirges"
+        }
+      ]
+    },
+    "2": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "name": "Ants, Giant (Worker)"
+        },
+        {
+          "lo": 4,
+          "hi": 5,
+          "name": "Centipedes, Giant (Small, lethal)"
+        },
+        {
+          "lo": 6,
+          "hi": 8,
+          "name": "Gnolls"
+        },
+        {
+          "lo": 9,
+          "hi": 11,
+          "name": "Human, Berserker"
+        },
+        {
+          "lo": 12,
+          "hi": 14,
+          "name": "Lizardmen"
+        },
+        {
+          "lo": 15,
+          "hi": 15,
+          "name": "Demon, Manes"
+        },
+        {
+          "lo": 16,
+          "hi": 17,
+          "name": "Piercer (2 HD)"
+        },
+        {
+          "lo": 18,
+          "hi": 20,
+          "name": "Zombies"
+        }
+      ]
+    },
+    "3": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "name": "Badgers, Giant"
+        },
+        {
+          "lo": 2,
+          "hi": 3,
+          "name": "Bats, Giant (Vampire Bat)"
+        },
+        {
+          "lo": 4,
+          "hi": 7,
+          "name": "Bugbears"
+        },
+        {
+          "lo": 8,
+          "hi": 11,
+          "name": "Ghouls"
+        },
+        {
+          "lo": 12,
+          "hi": 13,
+          "name": "Piercers (3 HD)"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "name": "Ticks, Giant"
+        },
+        {
+          "lo": 16,
+          "hi": 17,
+          "name": "Shrieker"
+        },
+        {
+          "lo": 18,
+          "hi": 19,
+          "name": "Spiders, Giant (Smaller)"
+        }
+      ]
+    },
+    "4": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "name": "Ants, Giant (Warrior)"
+        },
+        {
+          "lo": 4,
+          "hi": 5,
+          "name": "Centipedes, Giant (Man-sized)"
+        },
+        {
+          "lo": 6,
+          "hi": 6,
+          "name": "Demon, Dretch"
+        },
+        {
+          "lo": 7,
+          "hi": 7,
+          "name": "Demon, Lemures"
+        },
+        {
+          "lo": 8,
+          "hi": 8,
+          "name": "Harpies"
+        },
+        {
+          "lo": 9,
+          "hi": 10,
+          "name": "Lycanthrope, Wererat"
+        },
+        {
+          "lo": 11,
+          "hi": 14,
+          "name": "Ogres"
+        },
+        {
+          "lo": 15,
+          "hi": 16,
+          "name": "Piercers (4 HD)"
+        },
+        {
+          "lo": 17,
+          "hi": 18,
+          "name": "Rats, Giant (Monstrously Huge)"
+        },
+        {
+          "lo": 19,
+          "hi": 20,
+          "name": "Shadows"
+        }
+      ]
+    },
+    "5": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 2,
+          "name": "Bats, Giant (Greater Bat)"
+        },
+        {
+          "lo": 3,
+          "hi": 3,
+          "name": "Dopplegangers"
+        },
+        {
+          "lo": 4,
+          "hi": 6,
+          "name": "Gelatinous Cubes"
+        },
+        {
+          "lo": 7,
+          "hi": 8,
+          "name": "Grey Oozes"
+        },
+        {
+          "lo": 9,
+          "hi": 9,
+          "name": "Hell Hounds (4HD)"
+        },
+        {
+          "lo": 10,
+          "hi": 11,
+          "name": "Lycanthrope, Werewolf"
+        },
+        {
+          "lo": 12,
+          "hi": 13,
+          "name": "Owlbears"
+        },
+        {
+          "lo": 14,
+          "hi": 17,
+          "name": "Spiders, Giant (Man-sized)"
+        },
+        {
+          "lo": 18,
+          "hi": 20,
+          "name": "Wights"
+        }
+      ]
+    },
+    "6": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 2,
+          "name": "Centipedes, Giant (Large)"
+        },
+        {
+          "lo": 3,
+          "hi": 5,
+          "name": "Gargoyles"
+        },
+        {
+          "lo": 6,
+          "hi": 6,
+          "name": "Hell Hounds (5HD)"
+        },
+        {
+          "lo": 7,
+          "hi": 8,
+          "name": "Lycanthrope, Wereboar"
+        },
+        {
+          "lo": 9,
+          "hi": 12,
+          "name": "Minotaurs"
+        },
+        {
+          "lo": 13,
+          "hi": 14,
+          "name": "Ochre Jelly"
+        },
+        {
+          "lo": 15,
+          "hi": 16,
+          "name": "Slithering Tracker"
+        },
+        {
+          "lo": 17,
+          "hi": 18,
+          "name": "Spiders, Giant (Phase)"
+        },
+        {
+          "lo": 19,
+          "hi": 20,
+          "name": "Wraiths"
+        }
+      ]
+    },
+    "7": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "name": "Cockatrices"
+        },
+        {
+          "lo": 4,
+          "hi": 4,
+          "name": "Demon, Quasit"
+        },
+        {
+          "lo": 5,
+          "hi": 7,
+          "name": "Dragon"
+        },
+        {
+          "lo": 8,
+          "hi": 8,
+          "name": "Hell Hounds (6HD)"
+        },
+        {
+          "lo": 9,
+          "hi": 9,
+          "name": "Hydrae (5HD)"
+        },
+        {
+          "lo": 10,
+          "hi": 13,
+          "name": "Mummies"
+        },
+        {
+          "lo": 14,
+          "hi": 16,
+          "name": "Ogre Mages"
+        },
+        {
+          "lo": 17,
+          "hi": 20,
+          "name": "Spiders, Giant (Greater)"
+        }
+      ]
+    },
+    "8": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "name": "Basilisks"
+        },
+        {
+          "lo": 4,
+          "hi": 6,
+          "name": "Dragon"
+        },
+        {
+          "lo": 7,
+          "hi": 7,
+          "name": "Hell Hounds (7HD)"
+        },
+        {
+          "lo": 8,
+          "hi": 10,
+          "name": "Hydrae (6HD)"
+        },
+        {
+          "lo": 11,
+          "hi": 12,
+          "name": "Manticores"
+        },
+        {
+          "lo": 13,
+          "hi": 14,
+          "name": "Medusae"
+        },
+        {
+          "lo": 15,
+          "hi": 15,
+          "name": "Salamanders"
+        },
+        {
+          "lo": 16,
+          "hi": 20,
+          "name": "Trolls"
+        }
+      ]
+    },
+    "9": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 2,
+          "name": "Bats, Giant (Bat Monster)"
+        },
+        {
+          "lo": 3,
+          "hi": 3,
+          "choose": {
+            "die": "1d2",
+            "options": [
+              "Demon, Succubus",
+              "Demon, Erinyes"
+            ]
+          }
+        },
+        {
+          "lo": 4,
+          "hi": 4,
+          "name": "Demon, Vrock"
+        },
+        {
+          "lo": 5,
+          "hi": 6,
+          "name": "Djinn"
+        },
+        {
+          "lo": 7,
+          "hi": 8,
+          "name": "Dragon"
+        },
+        {
+          "lo": 9,
+          "hi": 10,
+          "choose": {
+            "die": "1d4",
+            "options": [
+              "Elemental, Air",
+              "Elemental, Earth",
+              "Elemental, Fire",
+              "Elemental, Water"
+            ]
+          }
+        },
+        {
+          "lo": 11,
+          "hi": 13,
+          "name": "Giant, Hill"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "name": "Hydrae (7HD)"
+        },
+        {
+          "lo": 16,
+          "hi": 16,
+          "name": "Invisible Stalkers"
+        },
+        {
+          "lo": 17,
+          "hi": 18,
+          "name": "Specters"
+        },
+        {
+          "lo": 19,
+          "hi": 19,
+          "name": "Vampires (7HD)"
+        },
+        {
+          "lo": 20,
+          "hi": 20,
+          "name": "Wyverns"
+        }
+      ]
+    },
+    "10": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "name": "Demon, Balarochs"
+        },
+        {
+          "lo": 2,
+          "hi": 7,
+          "name": "Dragon"
+        },
+        {
+          "lo": 8,
+          "hi": 10,
+          "name": "Giant, Stone"
+        },
+        {
+          "lo": 11,
+          "hi": 12,
+          "name": "Gorgons"
+        },
+        {
+          "lo": 13,
+          "hi": 13,
+          "name": "Hydrae (8HD)"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "name": "Lurker, Ceiling"
+        },
+        {
+          "lo": 16,
+          "hi": 17,
+          "name": "Naga, Water"
+        },
+        {
+          "lo": 18,
+          "hi": 18,
+          "name": "Shambling Mound (7HD)"
+        },
+        {
+          "lo": 19,
+          "hi": 19,
+          "name": "Vampires (8HD)"
+        },
+        {
+          "lo": 20,
+          "hi": 20,
+          "name": "Will-o'-the-Wisps"
+        }
+      ]
+    },
+    "11": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "name": "Banshees"
+        },
+        {
+          "lo": 2,
+          "hi": 4,
+          "name": "Black Puddings"
+        },
+        {
+          "lo": 5,
+          "hi": 6,
+          "name": "Chimaerae"
+        },
+        {
+          "lo": 7,
+          "hi": 7,
+          "name": "Demon, Glabrezu"
+        },
+        {
+          "lo": 8,
+          "hi": 8,
+          "name": "Demon, Hezrou"
+        },
+        {
+          "lo": 9,
+          "hi": 11,
+          "name": "Dragon"
+        },
+        {
+          "lo": 12,
+          "hi": 15,
+          "name": "Giant, Frost"
+        },
+        {
+          "lo": 16,
+          "hi": 16,
+          "name": "Hydrae (9HD)"
+        },
+        {
+          "lo": 17,
+          "hi": 17,
+          "name": "Shambling Mound (8HD)"
+        },
+        {
+          "lo": 18,
+          "hi": 19,
+          "name": "Trapper Beast (10 HD)"
+        },
+        {
+          "lo": 20,
+          "hi": 20,
+          "name": "Vampires"
+        }
+      ]
+    },
+    "12": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "name": "Dragon"
+        },
+        {
+          "lo": 4,
+          "hi": 5,
+          "name": "Efreet"
+        },
+        {
+          "lo": 6,
+          "hi": 9,
+          "name": "Giant, Fire"
+        },
+        {
+          "lo": 10,
+          "hi": 11,
+          "name": "Golem, Flesh"
+        },
+        {
+          "lo": 12,
+          "hi": 13,
+          "name": "Hydrae (10HD)"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "name": "Rakshasa"
+        },
+        {
+          "lo": 16,
+          "hi": 17,
+          "name": "Shambling Mound (9HD)"
+        },
+        {
+          "lo": 18,
+          "hi": 20,
+          "name": "Trapper Beast (11 HD)"
+        }
+      ]
+    },
+    "13": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "name": "Demon, Marilith"
+        },
+        {
+          "lo": 2,
+          "hi": 3,
+          "name": "Demon, Nalfeshnee"
+        },
+        {
+          "lo": 4,
+          "hi": 5,
+          "name": "Dragon"
+        },
+        {
+          "lo": 6,
+          "hi": 7,
+          "choose": {
+            "die": "1d4",
+            "options": [
+              "Elemental, Air",
+              "Elemental, Earth",
+              "Elemental, Fire",
+              "Elemental, Water"
+            ]
+          }
+        },
+        {
+          "lo": 8,
+          "hi": 9,
+          "name": "Giant, Cloud"
+        },
+        {
+          "lo": 10,
+          "hi": 11,
+          "name": "Hydrae (11HD)"
+        },
+        {
+          "lo": 12,
+          "hi": 12,
+          "name": "Naga, Guardian"
+        },
+        {
+          "lo": 13,
+          "hi": 13,
+          "name": "Naga, Spirit"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "name": "Shambling Mound (10 HD)"
+        },
+        {
+          "lo": 16,
+          "hi": 18,
+          "name": "Slug, Giant"
+        },
+        {
+          "lo": 19,
+          "hi": 20,
+          "name": "Trapper Beast (12 HD)"
+        }
+      ]
+    }
+  }
+}

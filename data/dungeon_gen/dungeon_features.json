@@ -1,0 +1,95 @@
+{
+  "schema_version": "P4.9.0",
+  "features": [
+    {
+      "feature_type": "statue",
+      "weight": 10,
+      "tags": [
+        "setpiece"
+      ],
+      "params": {
+        "may_be_trapped": true
+      }
+    },
+    {
+      "feature_type": "fountain",
+      "weight": 6,
+      "tags": [
+        "water"
+      ],
+      "params": {
+        "effect_table_id": "feature.fountain.effects"
+      }
+    },
+    {
+      "feature_type": "altar",
+      "weight": 4,
+      "tags": [
+        "religious"
+      ],
+      "params": {
+        "alignment_bias": "any"
+      }
+    },
+    {
+      "feature_type": "pit",
+      "weight": 5,
+      "tags": [
+        "hazard"
+      ],
+      "params": {
+        "dc": 12,
+        "depth_ft": "1d6*10"
+      }
+    }
+  ],
+  "tables": {
+    "feature.fountain.effects": {
+      "dice": "1d6",
+      "entries": [
+        {
+          "range": [
+            1,
+            1
+          ],
+          "result": "fresh_water"
+        },
+        {
+          "range": [
+            2,
+            2
+          ],
+          "result": "healing_once"
+        },
+        {
+          "range": [
+            3,
+            3
+          ],
+          "result": "poisoned"
+        },
+        {
+          "range": [
+            4,
+            4
+          ],
+          "result": "illusions"
+        },
+        {
+          "range": [
+            5,
+            5
+          ],
+          "result": "cursed"
+        },
+        {
+          "range": [
+            6,
+            6
+          ],
+          "result": "teleport"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "run_idx": 4,
+  "profile": "spells",
+  "config": {
+    "runs": 10,
+    "seed0": 10000,
+    "dungeon_steps_per_leg": 60,
+    "dungeon_legs": 1,
+    "wilderness_steps_per_leg": 6,
+    "scripted_combats_per_leg": 1,
+    "save_reload_steps": [
+      30
+    ]
+  },
+  "seeds": {
+    "harness_seed": 10004,
+    "dice_seed": 100004,
+    "wilderness_seed": 200004
+  },
+  "env": {
+    "STRICT_CONTENT": null,
+    "STRICT_REPLAY": null,
+    "ASSERT_INVARIANTS": null,
+    "INVARIANTS_STRICT": null,
+    "EVENT_TRACE": null,
+    "EVENT_TRACE_PATH": null,
+    "EVENT_TRACE_LEVEL": null
+  },
+  "error": {
+    "type": "AttributeError",
+    "message": "'TreasureGenerator' object has no attribute 'dungeon_treasure'"
+  },
+  "last_ui_context": {
+    "kind": null,
+    "value": null
+  },
+  "transcript_tail": [
+    {
+      "kind": "title",
+      "value": {
+        "title": "Dungeon Entrance"
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 70 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 70 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Darkness!"
+      }
+    }
+  ],
+  "snapshot": {
+    "campaign_day": 2,
+    "day_watch": 0,
+    "party_hex": [
+      0,
+      0
+    ],
+    "dungeon_turn": 1,
+    "dungeon_level": 1,
+    "current_room_id": 1,
+    "gold": 0,
+    "torches": 3,
+    "torch_turns_left": 0,
+    "magical_light_turns": 0,
+    "noise_level": 1,
+    "encumbrance": null,
+    "party_members": [],
+    "party_items_count": 0
+  },
+  "transcript": [
+    {
+      "kind": "title",
+      "value": {
+        "title": "Dungeon Entrance"
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 70 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 70 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Darkness!"
+      }
+    }
+  ]
+}

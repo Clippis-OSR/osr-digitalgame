@@ -1,0 +1,147 @@
+{
+  "schema_version": "treasure_tables.v1",
+  "source": "Swords & Wizardry Complete (example hoard tables; compiler-ready)",
+
+  "tables": [
+    {
+      "table_id": "HOARD_A",
+      "kind": "hoard",
+      "dice": "d100",
+      "notes": "Low-value hoard: mostly coins, occasional gems; rare minor magic.",
+      "entries": [
+        {
+          "range": "01-60",
+          "drops": [
+            { "type": "coins", "cp": "2d6*100", "sp": "1d6*100" }
+          ]
+        },
+        {
+          "range": "61-90",
+          "drops": [
+            { "type": "coins", "cp": "2d6*100", "sp": "1d6*100", "gp": "1d6*10" },
+            { "type": "gems", "count": "1d4", "value_table": "GEM_VALUES_BASIC" }
+          ]
+        },
+        {
+          "range": "91-00",
+          "drops": [
+            { "type": "coins", "sp": "2d6*100", "gp": "2d6*10" },
+            { "type": "gems", "count": "2d6", "value_table": "GEM_VALUES_BASIC" },
+            { "type": "magic", "picks": 1, "list_id": "MAGIC_MINOR" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "table_id": "HOARD_B",
+      "kind": "hoard",
+      "dice": "d100",
+      "notes": "Mid-value hoard: coins + gems/jewelry; frequent minor magic.",
+      "entries": [
+        {
+          "range": "01-35",
+          "drops": [
+            { "type": "coins", "sp": "3d6*100", "gp": "2d6*100" }
+          ]
+        },
+        {
+          "range": "36-75",
+          "drops": [
+            { "type": "coins", "gp": "4d6*100" },
+            { "type": "gems", "count": "2d6", "value_table": "GEM_VALUES_BASIC" },
+            { "type": "jewelry", "count": "1d4", "value_table": "JEWELRY_VALUES" }
+          ]
+        },
+        {
+          "range": "76-00",
+          "drops": [
+            { "type": "coins", "gp": "6d6*100", "pp": "1d6*10" },
+            { "type": "gems", "count": "2d6", "value_table": "GEM_VALUES_BASIC" },
+            { "type": "magic", "picks": "1d2", "list_id": "MAGIC_MINOR" }
+          ]
+        }
+      ]
+    },
+
+    {
+      "table_id": "HOARD_C",
+      "kind": "hoard",
+      "dice": "d100",
+      "notes": "High-value hoard: lots of gp/pp, gems/jewelry; sometimes a major item.",
+      "entries": [
+        {
+          "range": "01-25",
+          "drops": [
+            { "type": "coins", "gp": "8d6*100", "pp": "2d6*10" },
+            { "type": "gems", "count": "3d6", "value_table": "GEM_VALUES_BASIC" }
+          ]
+        },
+        {
+          "range": "26-70",
+          "drops": [
+            { "type": "coins", "gp": "10d6*100", "pp": "3d6*10" },
+            { "type": "gems", "count": "3d6", "value_table": "GEM_VALUES_BASIC" },
+            { "type": "jewelry", "count": "1d6", "value_table": "JEWELRY_VALUES" },
+            { "type": "magic", "picks": 1, "list_id": "MAGIC_MINOR" }
+          ]
+        },
+        {
+          "range": "71-00",
+          "drops": [
+            { "type": "coins", "gp": "12d6*100", "pp": "4d6*10" },
+            { "type": "gems", "count": "4d6", "value_table": "GEM_VALUES_BASIC" },
+            { "type": "jewelry", "count": "2d6", "value_table": "JEWELRY_VALUES" },
+            { "type": "magic", "picks": 1, "list_id": "MAGIC_MAJOR" }
+          ]
+        }
+      ]
+    }
+  ],
+
+  "value_tables": {
+    "GEM_VALUES_BASIC": {
+      "dice": "d100",
+      "bands": [
+        { "range": "01-50", "gp_value": 10 },
+        { "range": "51-80", "gp_value": 50 },
+        { "range": "81-95", "gp_value": 100 },
+        { "range": "96-00", "gp_value": 500 }
+      ]
+    },
+    "JEWELRY_VALUES": {
+      "dice": "d100",
+      "bands": [
+        { "range": "01-40", "gp_value": 100 },
+        { "range": "41-70", "gp_value": 500 },
+        { "range": "71-90", "gp_value": 1000 },
+        { "range": "91-00", "gp_value": 5000 }
+      ]
+    }
+  },
+
+  "magic_lists": [
+    {
+      "list_id": "MAGIC_MINOR",
+      "notes": "Example list. If you later add item templates, 'weapon_plus1_any' can be expanded.",
+      "dice": "d100",
+      "entries": [
+        { "range": "01-40", "item_id": "potion_healing" },
+        { "range": "41-70", "item_id": "scroll_arcane_lvl1" },
+        { "range": "71-85", "item_id": "ammo_plus1_1d6" },
+        { "range": "86-95", "item_id": "ring_protection_plus1" },
+        { "range": "96-00", "item_id": "weapon_plus1_any" }
+      ]
+    },
+    {
+      "list_id": "MAGIC_MAJOR",
+      "dice": "d100",
+      "entries": [
+        { "range": "01-40", "item_id": "weapon_plus2_any" },
+        { "range": "41-70", "item_id": "armor_plus2_any" },
+        { "range": "71-90", "item_id": "wand_fireballs" },
+        { "range": "91-00", "item_id": "ring_invisibility" }
+      ]
+    }
+  ]
+}

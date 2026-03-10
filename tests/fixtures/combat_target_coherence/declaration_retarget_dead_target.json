@@ -1,0 +1,7 @@
+{
+  "dice_seed": 1401,
+  "action_type": "melee",
+  "stale_target_state": "dead",
+  "available_targets": ["Bandit B", "Bandit C"],
+  "expect": "retarget"
+}

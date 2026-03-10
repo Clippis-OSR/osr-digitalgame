@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Shield",
+    "ac_mod_desc": -1,
+    "ac_mod_asc": 1,
+    "weight_lb": 10,
+    "cost_gp": 15
+  },
+  {
+    "name": "Leather",
+    "ac_mod_desc": -2,
+    "ac_mod_asc": 2,
+    "weight_lb": 25,
+    "cost_gp": 5
+  },
+  {
+    "name": "Ring",
+    "ac_mod_desc": -3,
+    "ac_mod_asc": 3,
+    "weight_lb": 40,
+    "cost_gp": 30
+  },
+  {
+    "name": "Chain",
+    "ac_mod_desc": -4,
+    "ac_mod_asc": 4,
+    "weight_lb": 50,
+    "cost_gp": 75
+  },
+  {
+    "name": "Plate",
+    "ac_mod_desc": -6,
+    "ac_mod_asc": 6,
+    "weight_lb": 70,
+    "cost_gp": 100
+  }
+]

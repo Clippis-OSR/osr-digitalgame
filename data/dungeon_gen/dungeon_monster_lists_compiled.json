@@ -1,0 +1,727 @@
+{
+  "schema_version": "P4.9.2.5",
+  "tables": {
+    "A": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 10,
+          "monster_id": "rat_giant"
+        },
+        {
+          "lo": 11,
+          "hi": 20,
+          "monster_id": "kobold"
+        }
+      ]
+    },
+    "B": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 20,
+          "monster_id": "goblin"
+        }
+      ]
+    },
+    "1": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "monster_id": "beetle_giant_fire"
+        },
+        {
+          "lo": 2,
+          "hi": 2,
+          "monster_id": "centipede_giant_large_20_ft_long"
+        },
+        {
+          "lo": 3,
+          "hi": 3,
+          "monster_id": "dwarf"
+        },
+        {
+          "lo": 4,
+          "hi": 4,
+          "monster_id": "elf"
+        },
+        {
+          "lo": 5,
+          "hi": 6,
+          "monster_id": "hobgoblin"
+        },
+        {
+          "lo": 7,
+          "hi": 9,
+          "monster_id": "human_bandit"
+        },
+        {
+          "lo": 10,
+          "hi": 14,
+          "monster_id": "orc"
+        },
+        {
+          "lo": 15,
+          "hi": 16,
+          "monster_id": "piercer"
+        },
+        {
+          "lo": 17,
+          "hi": 18,
+          "monster_id": "skeleton"
+        },
+        {
+          "lo": 19,
+          "hi": 20,
+          "monster_id": "stirge"
+        }
+      ]
+    },
+    "2": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "monster_id": "ant_giant_queen"
+        },
+        {
+          "lo": 4,
+          "hi": 5,
+          "monster_id": "centipede_giant_large_20_ft_long"
+        },
+        {
+          "lo": 6,
+          "hi": 8,
+          "monster_id": "gnoll"
+        },
+        {
+          "lo": 9,
+          "hi": 11,
+          "monster_id": "human_berserker"
+        },
+        {
+          "lo": 12,
+          "hi": 14,
+          "monster_id": "lizardman"
+        },
+        {
+          "lo": 15,
+          "hi": 15,
+          "monster_id": "demon_manes"
+        },
+        {
+          "lo": 16,
+          "hi": 17,
+          "monster_id": "piercer"
+        },
+        {
+          "lo": 18,
+          "hi": 20,
+          "monster_id": "zombie"
+        }
+      ]
+    },
+    "3": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "monster_id": "badger_giant"
+        },
+        {
+          "lo": 2,
+          "hi": 3,
+          "monster_id": "bat_giant_bat_monster"
+        },
+        {
+          "lo": 4,
+          "hi": 7,
+          "monster_id": "bugbear"
+        },
+        {
+          "lo": 8,
+          "hi": 11,
+          "monster_id": "ghoul"
+        },
+        {
+          "lo": 12,
+          "hi": 13,
+          "monster_id": "piercer"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "monster_id": "tick_giant"
+        },
+        {
+          "lo": 16,
+          "hi": 17,
+          "monster_id": "shrieker"
+        },
+        {
+          "lo": 18,
+          "hi": 19,
+          "monster_id": "spider_giant_greater_6_foot_diameter"
+        }
+      ]
+    },
+    "4": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "monster_id": "ant_giant_queen"
+        },
+        {
+          "lo": 4,
+          "hi": 5,
+          "monster_id": "centipede_giant_large_20_ft_long"
+        },
+        {
+          "lo": 6,
+          "hi": 6,
+          "monster_id": "demon_dretch"
+        },
+        {
+          "lo": 7,
+          "hi": 7,
+          "monster_id": "demon_lemures"
+        },
+        {
+          "lo": 8,
+          "hi": 8,
+          "monster_id": "harpy"
+        },
+        {
+          "lo": 9,
+          "hi": 10,
+          "monster_id": "lycanthrope_wererat"
+        },
+        {
+          "lo": 11,
+          "hi": 14,
+          "monster_id": "ogre"
+        },
+        {
+          "lo": 15,
+          "hi": 16,
+          "monster_id": "piercer"
+        },
+        {
+          "lo": 17,
+          "hi": 18,
+          "monster_id": "rat_giant_monstrously_huge"
+        },
+        {
+          "lo": 19,
+          "hi": 20,
+          "monster_id": "shadow"
+        }
+      ]
+    },
+    "5": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 2,
+          "monster_id": "bat_giant_bat_monster"
+        },
+        {
+          "lo": 3,
+          "hi": 3,
+          "monster_id": "doppleganger"
+        },
+        {
+          "lo": 4,
+          "hi": 6,
+          "monster_id": "gelatinous_cube"
+        },
+        {
+          "lo": 7,
+          "hi": 8,
+          "monster_id": "grey_ooze"
+        },
+        {
+          "lo": 9,
+          "hi": 9,
+          "monster_id": "hell_hound"
+        },
+        {
+          "lo": 10,
+          "hi": 11,
+          "monster_id": "lycanthrope_werewolf"
+        },
+        {
+          "lo": 12,
+          "hi": 13,
+          "monster_id": "owlbear"
+        },
+        {
+          "lo": 14,
+          "hi": 17,
+          "monster_id": "spider_giant_greater_6_foot_diameter"
+        },
+        {
+          "lo": 18,
+          "hi": 20,
+          "monster_id": "wight"
+        }
+      ]
+    },
+    "6": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 2,
+          "monster_id": "centipede_giant_large_20_ft_long"
+        },
+        {
+          "lo": 3,
+          "hi": 5,
+          "monster_id": "gargoyle"
+        },
+        {
+          "lo": 6,
+          "hi": 6,
+          "monster_id": "hell_hound"
+        },
+        {
+          "lo": 7,
+          "hi": 8,
+          "monster_id": "lycanthrope_wereboar"
+        },
+        {
+          "lo": 9,
+          "hi": 12,
+          "monster_id": "minotaur"
+        },
+        {
+          "lo": 13,
+          "hi": 14,
+          "monster_id": "ochre_jelly"
+        },
+        {
+          "lo": 15,
+          "hi": 16,
+          "monster_id": "slithering_tracker"
+        },
+        {
+          "lo": 17,
+          "hi": 18,
+          "monster_id": "spider_giant_greater_6_foot_diameter"
+        },
+        {
+          "lo": 19,
+          "hi": 20,
+          "monster_id": "wraith"
+        }
+      ]
+    },
+    "7": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "monster_id": "cockatrice"
+        },
+        {
+          "lo": 4,
+          "hi": 4,
+          "monster_id": "demon_quasit"
+        },
+        {
+          "lo": 5,
+          "hi": 7,
+          "monster_id": "dragon"
+        },
+        {
+          "lo": 8,
+          "hi": 8,
+          "monster_id": "hell_hound"
+        },
+        {
+          "lo": 9,
+          "hi": 9,
+          "monster_id": "hydra"
+        },
+        {
+          "lo": 10,
+          "hi": 13,
+          "monster_id": "mummy"
+        },
+        {
+          "lo": 14,
+          "hi": 16,
+          "monster_id": "ogre_mage"
+        },
+        {
+          "lo": 17,
+          "hi": 20,
+          "monster_id": "spider_giant_greater_6_foot_diameter"
+        }
+      ]
+    },
+    "8": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "monster_id": "basilisk"
+        },
+        {
+          "lo": 4,
+          "hi": 6,
+          "monster_id": "dragon"
+        },
+        {
+          "lo": 7,
+          "hi": 7,
+          "monster_id": "hell_hound"
+        },
+        {
+          "lo": 8,
+          "hi": 10,
+          "monster_id": "hydra"
+        },
+        {
+          "lo": 11,
+          "hi": 12,
+          "monster_id": "manticore"
+        },
+        {
+          "lo": 13,
+          "hi": 14,
+          "monster_id": "medusa"
+        },
+        {
+          "lo": 15,
+          "hi": 15,
+          "monster_id": "salamander"
+        },
+        {
+          "lo": 16,
+          "hi": 20,
+          "monster_id": "troll"
+        }
+      ]
+    },
+    "9": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 2,
+          "monster_id": "bat_giant_bat_monster"
+        },
+        {
+          "lo": 3,
+          "hi": 3,
+          "choose": {
+            "die": "1d2",
+            "options": [
+              "Demon, Succubus",
+              "Demon, Erinyes"
+            ]
+          }
+        },
+        {
+          "lo": 4,
+          "hi": 4,
+          "monster_id": "demon_vrock_first_category_demon"
+        },
+        {
+          "lo": 5,
+          "hi": 6,
+          "monster_id": "djinni"
+        },
+        {
+          "lo": 7,
+          "hi": 8,
+          "monster_id": "dragon"
+        },
+        {
+          "lo": 9,
+          "hi": 10,
+          "choose": {
+            "die": "1d4",
+            "options": [
+              "Elemental, Air",
+              "Elemental, Earth",
+              "Elemental, Fire",
+              "Elemental, Water"
+            ]
+          }
+        },
+        {
+          "lo": 11,
+          "hi": 13,
+          "monster_id": "giant_hill"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "monster_id": "hydra"
+        },
+        {
+          "lo": 16,
+          "hi": 16,
+          "monster_id": "invisible_stalker"
+        },
+        {
+          "lo": 17,
+          "hi": 18,
+          "monster_id": "spectre"
+        },
+        {
+          "lo": 19,
+          "hi": 19,
+          "monster_id": "vampires"
+        },
+        {
+          "lo": 20,
+          "hi": 20,
+          "monster_id": "wyvern"
+        }
+      ]
+    },
+    "10": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "monster_id": "demon_baalroch_balor"
+        },
+        {
+          "lo": 2,
+          "hi": 7,
+          "monster_id": "dragon"
+        },
+        {
+          "lo": 8,
+          "hi": 10,
+          "monster_id": "giant_stone"
+        },
+        {
+          "lo": 11,
+          "hi": 12,
+          "monster_id": "gorgon"
+        },
+        {
+          "lo": 13,
+          "hi": 13,
+          "monster_id": "hydra"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "monster_id": "lurker_ceiling"
+        },
+        {
+          "lo": 16,
+          "hi": 17,
+          "monster_id": "naga_water"
+        },
+        {
+          "lo": 18,
+          "hi": 18,
+          "monster_id": "shambling_mound"
+        },
+        {
+          "lo": 19,
+          "hi": 19,
+          "monster_id": "vampires"
+        },
+        {
+          "lo": 20,
+          "hi": 20,
+          "monster_id": "will_o_the_wisp"
+        }
+      ]
+    },
+    "11": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "monster_id": "banshee"
+        },
+        {
+          "lo": 2,
+          "hi": 4,
+          "monster_id": "black_pudding"
+        },
+        {
+          "lo": 5,
+          "hi": 6,
+          "monster_id": "chimera"
+        },
+        {
+          "lo": 7,
+          "hi": 7,
+          "monster_id": "demon_glabrezu"
+        },
+        {
+          "lo": 8,
+          "hi": 8,
+          "monster_id": "demon_hezrou_second_category_demon"
+        },
+        {
+          "lo": 9,
+          "hi": 11,
+          "monster_id": "dragon"
+        },
+        {
+          "lo": 12,
+          "hi": 15,
+          "monster_id": "giant_frost"
+        },
+        {
+          "lo": 16,
+          "hi": 16,
+          "monster_id": "hydra"
+        },
+        {
+          "lo": 17,
+          "hi": 17,
+          "monster_id": "shambling_mound"
+        },
+        {
+          "lo": 18,
+          "hi": 19,
+          "monster_id": "trapper_beast"
+        },
+        {
+          "lo": 20,
+          "hi": 20,
+          "monster_id": "vampires"
+        }
+      ]
+    },
+    "12": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 3,
+          "monster_id": "dragon"
+        },
+        {
+          "lo": 4,
+          "hi": 5,
+          "monster_id": "efreeti"
+        },
+        {
+          "lo": 6,
+          "hi": 9,
+          "monster_id": "giant_fire"
+        },
+        {
+          "lo": 10,
+          "hi": 11,
+          "monster_id": "golem_flesh"
+        },
+        {
+          "lo": 12,
+          "hi": 13,
+          "monster_id": "hydra"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "monster_id": "rakshasa"
+        },
+        {
+          "lo": 16,
+          "hi": 17,
+          "monster_id": "shambling_mound"
+        },
+        {
+          "lo": 18,
+          "hi": 20,
+          "monster_id": "trapper_beast"
+        }
+      ]
+    },
+    "13": {
+      "die": "1d20",
+      "entries": [
+        {
+          "lo": 1,
+          "hi": 1,
+          "monster_id": "demon_marilith_fifth_category_demon"
+        },
+        {
+          "lo": 2,
+          "hi": 3,
+          "monster_id": "demon_nalfeshnee"
+        },
+        {
+          "lo": 4,
+          "hi": 5,
+          "monster_id": "dragon"
+        },
+        {
+          "lo": 6,
+          "hi": 7,
+          "choose": {
+            "die": "1d4",
+            "options": [
+              "Elemental, Air",
+              "Elemental, Earth",
+              "Elemental, Fire",
+              "Elemental, Water"
+            ]
+          }
+        },
+        {
+          "lo": 8,
+          "hi": 9,
+          "monster_id": "giant_cloud"
+        },
+        {
+          "lo": 10,
+          "hi": 11,
+          "monster_id": "hydra"
+        },
+        {
+          "lo": 12,
+          "hi": 12,
+          "monster_id": "naga_guardian"
+        },
+        {
+          "lo": 13,
+          "hi": 13,
+          "monster_id": "naga_spirit"
+        },
+        {
+          "lo": 14,
+          "hi": 15,
+          "monster_id": "shambling_mound"
+        },
+        {
+          "lo": 16,
+          "hi": 18,
+          "monster_id": "slug_giant"
+        },
+        {
+          "lo": 19,
+          "hi": 20,
+          "monster_id": "trapper_beast"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "ai_events": [],
+  "commands": [
+    {
+      "at": {
+        "day": 1,
+        "dungeon_turn": 0,
+        "room_id": 0,
+        "watch": 0
+      },
+      "cmd": {
+        "count": 3,
+        "monster_id": "bandit",
+        "type": "TestCombat"
+      }
+    }
+  ],
+  "dice_seed": 11111,
+  "meta": {
+    "auto_combat": true
+  },
+  "rng_events": [],
+  "wilderness_seed": 22222
+}

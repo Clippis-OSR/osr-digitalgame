@@ -1,0 +1,592 @@
+Folder PATH listing for volume M2
+Volume serial number is E4E5-7974
+C:.
+|   main.py
+|   make_patch.ps1
+|   MANIFEST.md
+|   project_tree.txt
+|   README.md
+|   regen_all_fixtures.ps1
+|   sww_complete.txt
+|   
++---.pytest_cache
+|   |   .gitignore
+|   |   CACHEDIR.TAG
+|   |   README.md
+|   |   
+|   \---v
+|       \---cache
+|               lastfailed
+|               nodeids
+|               
++---artifacts
+|   |   level_1_d3_seed_123_blueprint.json
+|   |   level_1_d3_seed_123_generation_report.json
+|   |   level_1_d3_seed_123_stocking.json
+|   |   
+|   \---campaign_sim
+|       |   fail_run_0000.json
+|       |   fail_run_0004.json
+|       |   repro_run_0004.py
+|       |   
+|       \---__pycache__
+|               repro_run_0004.cpython-311.pyc
+|               
++---artifacts_test
+|       level_1_d3_d3_seed_123_blueprint.json
+|       level_1_d3_d3_seed_123_generation_report.json
+|       level_1_d3_d3_seed_123_stocking.json
+|       
++---data
+|   |   armor_table_24.json
+|   |   attack_tables_29_32.json
+|   |   class_restrictions.json
+|   |   diseases.json
+|   |   encounter_tables_54_69.json
+|   |   equipment_general.json
+|   |   items_magic_v1.json
+|   |   monsters.json
+|   |   monster_ai_profiles.json
+|   |   monster_damage_profiles.json
+|   |   monster_saves.json
+|   |   monster_specials.json
+|   |   poisons.json
+|   |   races.json
+|   |   spells.json
+|   |   spell_lists_canonical_v1.json
+|   |   spell_lists_compiled_v1.json
+|   |   spell_lists_unresolved_v1.json
+|   |   treasure_compiled_v1.json
+|   |   treasure_formulas.json
+|   |   treasure_tables_79_107.json
+|   |   treasure_tables_v1.json
+|   |   treasure_unresolved_v1.json
+|   |   turn_undead.json
+|   |   turn_undead_compiled.json
+|   |   weapons_melee.json
+|   |   weapons_missile.json
+|   |   xp_tables_76_77.json
+|   |   
+|   +---dungeon_gen
+|   |       auto_monster_stubs.json
+|   |       dungeon_features.json
+|   |       dungeon_monster_lists.json
+|   |       dungeon_monster_lists_compiled.json
+|   |       dungeon_tables.json
+|   |       dungeon_themes.json
+|   |       encounter_generation_tables.json
+|   |       factions.json
+|   |       room_content_pack.json
+|   |       treasure_tables.json
+|   |       unresolved_cl_names.json
+|   |       
+|   \---towns
+|           threshold.json
+|           
++---schemas
+|   |   spell_lists_canonical.schema.json
+|   |   spell_lists_compiled.schema.json
+|   |   treasure_compiled.schema.json
+|   |   treasure_tables.schema.json
+|   |   
+|   \---dungeon_gen
+|           dungeon_blueprint.schema.json
+|           dungeon_instance_state.schema.json
+|           dungeon_stocking.schema.json
+|           generation_report.schema.json
+|           README.md
+|           
++---scripts
+|   |   audit_combat_intent_legality.py
+|   |   audit_rng_usage.py
+|   |   bless_fixture.py
+|   |   campaign_seed_suites.json
+|   |   compile_cl_lists.py
+|   |   compile_spell_lists.py
+|   |   compile_treasure_tables.py
+|   |   compile_turn_undead.py
+|   |   content_lint.py
+|   |   gen_dungeon.py
+|   |   make_all_fixtures.py
+|   |   make_fixture.py
+|   |   monster_audit.py
+|   |   regen_all_fixtures.py
+|   |   replay_verify.py
+|   |   run_campaign_sim.py
+|   |   run_fixtures.py
+|   |   stress_test.py
+|   |   validate_assassin_poison.py
+|   |   validate_autoheal.py
+|   |   validate_class_progressions.py
+|   |   validate_class_restrictions.py
+|   |   validate_combat_edge_cases.py
+|   |   validate_combat_target_coherence.py
+|   |   validate_dungeon.py
+|   |   validate_encumbrance.py
+|   |   validate_fighter_rules.py
+|   |   validate_levelup.py
+|   |   validate_pending_spell_coherence.py
+|   |   validate_race_bonuses.py
+|   |   validate_raise_dead_survival.py
+|   |   validate_save_load_equivalence.py
+|   |   validate_time_coupling.py
+|   |   validate_xp_split.py
+|   |   validate_xp_tables.py
+|   |   xp_economy_report.py
+|   |   xp_pacing_sim.py
+|   |   
+|   \---__pycache__
+|           audit_combat_intent_legality.cpython-313.pyc
+|           audit_rng_usage.cpython-313.pyc
+|           bless_fixture.cpython-311.pyc
+|           bless_fixture.cpython-313.pyc
+|           bless_fixture.cpython-314.pyc
+|           compile_cl_lists.cpython-311.pyc
+|           compile_cl_lists.cpython-313.pyc
+|           compile_spell_lists.cpython-311.pyc
+|           compile_spell_lists.cpython-313.pyc
+|           compile_treasure_tables.cpython-311.pyc
+|           compile_treasure_tables.cpython-313.pyc
+|           compile_turn_undead.cpython-311.pyc
+|           compile_turn_undead.cpython-313.pyc
+|           content_lint.cpython-311.pyc
+|           content_lint.cpython-313.pyc
+|           gen_dungeon.cpython-311.pyc
+|           gen_dungeon.cpython-313.pyc
+|           make_all_fixtures.cpython-311.pyc
+|           make_all_fixtures.cpython-313.pyc
+|           make_all_fixtures.cpython-314.pyc
+|           make_fixture.cpython-311.pyc
+|           make_fixture.cpython-313.pyc
+|           make_fixture.cpython-314.pyc
+|           monster_audit.cpython-311.pyc
+|           monster_audit.cpython-313.pyc
+|           regen_all_fixtures.cpython-311.pyc
+|           regen_all_fixtures.cpython-313.pyc
+|           regen_all_fixtures.cpython-314.pyc
+|           replay_verify.cpython-311.pyc
+|           replay_verify.cpython-313.pyc
+|           replay_verify.cpython-314.pyc
+|           run_campaign_sim.cpython-311.pyc
+|           run_campaign_sim.cpython-313.pyc
+|           run_fixtures.cpython-311.pyc
+|           run_fixtures.cpython-313.pyc
+|           run_fixtures.cpython-314.pyc
+|           stress_test.cpython-311.pyc
+|           stress_test.cpython-313-pytest-9.0.2.pyc
+|           stress_test.cpython-313.pyc
+|           stress_test.cpython-314-pytest-9.0.2.pyc
+|           validate_assassin_poison.cpython-311.pyc
+|           validate_assassin_poison.cpython-313.pyc
+|           validate_autoheal.cpython-311.pyc
+|           validate_autoheal.cpython-313.pyc
+|           validate_class_progressions.cpython-311.pyc
+|           validate_class_progressions.cpython-313.pyc
+|           validate_class_restrictions.cpython-311.pyc
+|           validate_class_restrictions.cpython-313.pyc
+|           validate_combat_edge_cases.cpython-313.pyc
+|           validate_combat_target_coherence.cpython-313.pyc
+|           validate_dungeon.cpython-311.pyc
+|           validate_dungeon.cpython-313.pyc
+|           validate_encumbrance.cpython-311.pyc
+|           validate_encumbrance.cpython-313.pyc
+|           validate_fighter_rules.cpython-311.pyc
+|           validate_fighter_rules.cpython-313.pyc
+|           validate_levelup.cpython-311.pyc
+|           validate_levelup.cpython-313.pyc
+|           validate_race_bonuses.cpython-311.pyc
+|           validate_race_bonuses.cpython-313.pyc
+|           validate_raise_dead_survival.cpython-311.pyc
+|           validate_raise_dead_survival.cpython-313.pyc
+|           validate_save_load_equivalence.cpython-313.pyc
+|           validate_time_coupling.cpython-311.pyc
+|           validate_time_coupling.cpython-313.pyc
+|           validate_xp_split.cpython-311.pyc
+|           validate_xp_split.cpython-313.pyc
+|           validate_xp_tables.cpython-311.pyc
+|           validate_xp_tables.cpython-313.pyc
+|           xp_economy_report.cpython-311.pyc
+|           xp_economy_report.cpython-313.pyc
+|           xp_pacing_sim.cpython-311.pyc
+|           xp_pacing_sim.cpython-313.pyc
+|           
++---sww
+|   |   attacktables.py
+|   |   attribute_rules.py
+|   |   battle_events.py
+|   |   classes.py
+|   |   class_eligibility.py
+|   |   class_rules.py
+|   |   commands.py
+|   |   content.py
+|   |   content_lint.py
+|   |   contracts.py
+|   |   damage.py
+|   |   data.py
+|   |   debug_diff.py
+|   |   dice.py
+|   |   dungeon_instance.py
+|   |   dungeon_themes.py
+|   |   effects.py
+|   |   encounters.py
+|   |   encumbrance.py
+|   |   equipment.py
+|   |   events.py
+|   |   event_types.py
+|   |   factions.py
+|   |   fixtures_runner.py
+|   |   game.py
+|   |   game.py.bak
+|   |   grid_battle.py
+|   |   grid_map.py
+|   |   grid_state.py
+|   |   intents.py
+|   |   items.py
+|   |   models.py
+|   |   monster_ai.py
+|   |   monster_audit.py
+|   |   monster_variants.py
+|   |   pathing.py
+|   |   ports.py
+|   |   races.py
+|   |   replay.py
+|   |   replay_equivalence.py
+|   |   replay_runner.py
+|   |   rng.py
+|   |   rules.py
+|   |   save_load.py
+|   |   scripted_runner.py
+|   |   scripted_ui.py
+|   |   selftest.py
+|   |   spellcasting.py
+|   |   spells_grid.py
+|   |   spell_lists_compile.py
+|   |   spell_tags.py
+|   |   stealth.py
+|   |   targeting.py
+|   |   treasure.py
+|   |   treasure_runtime.py
+|   |   turn_controller.py
+|   |   turn_undead_compile.py
+|   |   ui.py
+|   |   ui_headless.py
+|   |   ui_model.py
+|   |   validation.py
+|   |   version.py
+|   |   wilderness.py
+|   |   __init__.py
+|   |   
+|   +---dungeon_gen
+|   |   |   blueprint.py
+|   |   |   cl_compile.py
+|   |   |   connectivity.py
+|   |   |   doors.py
+|   |   |   generate.py
+|   |   |   instance_state.py
+|   |   |   layout.py
+|   |   |   rng_streams.py
+|   |   |   stairs.py
+|   |   |   stocking.py
+|   |   |   treasure_compile.py
+|   |   |   validate.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           blueprint.cpython-311.pyc
+|   |           blueprint.cpython-313.pyc
+|   |           cl_compile.cpython-311.pyc
+|   |           cl_compile.cpython-313.pyc
+|   |           connectivity.cpython-311.pyc
+|   |           connectivity.cpython-313.pyc
+|   |           doors.cpython-311.pyc
+|   |           doors.cpython-313.pyc
+|   |           generate.cpython-311.pyc
+|   |           generate.cpython-313.pyc
+|   |           instance_state.cpython-311.pyc
+|   |           instance_state.cpython-313.pyc
+|   |           layout.cpython-311.pyc
+|   |           layout.cpython-313.pyc
+|   |           rng_streams.cpython-311.pyc
+|   |           rng_streams.cpython-313.pyc
+|   |           stairs.cpython-311.pyc
+|   |           stairs.cpython-313.pyc
+|   |           stocking.cpython-311.pyc
+|   |           stocking.cpython-313.pyc
+|   |           treasure_compile.cpython-311.pyc
+|   |           treasure_compile.cpython-313.pyc
+|   |           validate.cpython-311.pyc
+|   |           validate.cpython-313.pyc
+|   |           __init__.cpython-311.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---systems
+|   |   |   contracts_system.py
+|   |   |   dungeon_system.py
+|   |   |   wilderness_system.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           contracts_system.cpython-311.pyc
+|   |           contracts_system.cpython-313.pyc
+|   |           contracts_system.cpython-314.pyc
+|   |           dungeon_system.cpython-311.pyc
+|   |           dungeon_system.cpython-313.pyc
+|   |           dungeon_system.cpython-314.pyc
+|   |           wilderness_system.cpython-311.pyc
+|   |           wilderness_system.cpython-313.pyc
+|   |           wilderness_system.cpython-314.pyc
+|   |           __init__.cpython-311.pyc
+|   |           __init__.cpython-313.pyc
+|   |           __init__.cpython-314.pyc
+|   |           
+|   \---__pycache__
+|           attacktables.cpython-311.pyc
+|           attacktables.cpython-313.pyc
+|           attacktables.cpython-314.pyc
+|           attribute_rules.cpython-311.pyc
+|           attribute_rules.cpython-313.pyc
+|           attribute_rules.cpython-314.pyc
+|           battle_events.cpython-311.pyc
+|           battle_events.cpython-313.pyc
+|           battle_events.cpython-314.pyc
+|           classes.cpython-311.pyc
+|           classes.cpython-313.pyc
+|           classes.cpython-314.pyc
+|           class_eligibility.cpython-311.pyc
+|           class_eligibility.cpython-313.pyc
+|           class_rules.cpython-311.pyc
+|           class_rules.cpython-313.pyc
+|           commands.cpython-311.pyc
+|           commands.cpython-313.pyc
+|           commands.cpython-314.pyc
+|           content.cpython-311.pyc
+|           content.cpython-313.pyc
+|           content.cpython-314.pyc
+|           content_lint.cpython-311.pyc
+|           content_lint.cpython-313.pyc
+|           contracts.cpython-311.pyc
+|           contracts.cpython-313.pyc
+|           contracts.cpython-314.pyc
+|           damage.cpython-311.pyc
+|           damage.cpython-313.pyc
+|           damage.cpython-314.pyc
+|           data.cpython-311.pyc
+|           data.cpython-313.pyc
+|           data.cpython-314.pyc
+|           debug_diff.cpython-311.pyc
+|           debug_diff.cpython-313.pyc
+|           debug_diff.cpython-314.pyc
+|           dice.cpython-311.pyc
+|           dice.cpython-313.pyc
+|           dice.cpython-314.pyc
+|           dungeon_instance.cpython-311.pyc
+|           dungeon_instance.cpython-313.pyc
+|           dungeon_instance.cpython-314.pyc
+|           dungeon_themes.cpython-313.pyc
+|           effects.cpython-311.pyc
+|           effects.cpython-313.pyc
+|           effects.cpython-314.pyc
+|           encounters.cpython-311.pyc
+|           encounters.cpython-313.pyc
+|           encounters.cpython-314.pyc
+|           encumbrance.cpython-311.pyc
+|           encumbrance.cpython-313.pyc
+|           equipment.cpython-311.pyc
+|           equipment.cpython-313.pyc
+|           equipment.cpython-314.pyc
+|           events.cpython-311.pyc
+|           events.cpython-313.pyc
+|           events.cpython-314.pyc
+|           event_types.cpython-311.pyc
+|           event_types.cpython-313.pyc
+|           event_types.cpython-314.pyc
+|           factions.cpython-311.pyc
+|           factions.cpython-313.pyc
+|           factions.cpython-314.pyc
+|           fixtures_runner.cpython-311.pyc
+|           fixtures_runner.cpython-313.pyc
+|           fixtures_runner.cpython-314.pyc
+|           game.cpython-311.pyc
+|           game.cpython-313.pyc
+|           game.cpython-314.pyc
+|           grid_battle.cpython-311.pyc
+|           grid_battle.cpython-313.pyc
+|           grid_map.cpython-311.pyc
+|           grid_map.cpython-313.pyc
+|           grid_state.cpython-311.pyc
+|           grid_state.cpython-313.pyc
+|           intents.cpython-311.pyc
+|           intents.cpython-313.pyc
+|           items.cpython-311.pyc
+|           items.cpython-313.pyc
+|           models.cpython-311.pyc
+|           models.cpython-313.pyc
+|           models.cpython-314.pyc
+|           monster_ai.cpython-311.pyc
+|           monster_ai.cpython-313.pyc
+|           monster_ai.cpython-314.pyc
+|           monster_audit.cpython-311.pyc
+|           monster_audit.cpython-313.pyc
+|           monster_variants.cpython-311.pyc
+|           monster_variants.cpython-313.pyc
+|           pathing.cpython-311.pyc
+|           pathing.cpython-313.pyc
+|           ports.cpython-311.pyc
+|           ports.cpython-313.pyc
+|           ports.cpython-314.pyc
+|           races.cpython-311.pyc
+|           races.cpython-313.pyc
+|           races.cpython-314.pyc
+|           replay.cpython-311.pyc
+|           replay.cpython-313.pyc
+|           replay.cpython-314.pyc
+|           replay_equivalence.cpython-313.pyc
+|           replay_runner.cpython-311.pyc
+|           replay_runner.cpython-313.pyc
+|           replay_runner.cpython-314.pyc
+|           rng.cpython-311.pyc
+|           rng.cpython-313.pyc
+|           rng.cpython-314.pyc
+|           rules.cpython-311.pyc
+|           rules.cpython-313.pyc
+|           rules.cpython-314.pyc
+|           save_load.cpython-311.pyc
+|           save_load.cpython-313.pyc
+|           save_load.cpython-314.pyc
+|           scripted_runner.cpython-311.pyc
+|           scripted_runner.cpython-313.pyc
+|           scripted_ui.cpython-311.pyc
+|           scripted_ui.cpython-313.pyc
+|           scripted_ui.cpython-314.pyc
+|           selftest.cpython-311.pyc
+|           selftest.cpython-313.pyc
+|           selftest.cpython-314.pyc
+|           spellcasting.cpython-311.pyc
+|           spellcasting.cpython-313.pyc
+|           spellcasting.cpython-314.pyc
+|           spells_grid.cpython-311.pyc
+|           spells_grid.cpython-313.pyc
+|           spell_lists_compile.cpython-311.pyc
+|           spell_lists_compile.cpython-313.pyc
+|           spell_tags.cpython-311.pyc
+|           spell_tags.cpython-313.pyc
+|           stealth.cpython-311.pyc
+|           stealth.cpython-313.pyc
+|           targeting.cpython-311.pyc
+|           targeting.cpython-313.pyc
+|           treasure.cpython-311.pyc
+|           treasure.cpython-313.pyc
+|           treasure.cpython-314.pyc
+|           treasure_runtime.cpython-311.pyc
+|           treasure_runtime.cpython-313.pyc
+|           turn_controller.cpython-311.pyc
+|           turn_controller.cpython-313.pyc
+|           turn_undead_compile.cpython-311.pyc
+|           turn_undead_compile.cpython-313.pyc
+|           ui.cpython-311.pyc
+|           ui.cpython-313.pyc
+|           ui.cpython-314.pyc
+|           ui_headless.cpython-311.pyc
+|           ui_headless.cpython-313.pyc
+|           ui_headless.cpython-314.pyc
+|           ui_model.cpython-311.pyc
+|           ui_model.cpython-313.pyc
+|           validation.cpython-311.pyc
+|           validation.cpython-313.pyc
+|           validation.cpython-314.pyc
+|           version.cpython-311.pyc
+|           version.cpython-313.pyc
+|           version.cpython-314.pyc
+|           wilderness.cpython-311.pyc
+|           wilderness.cpython-313.pyc
+|           wilderness.cpython-314.pyc
+|           __init__.cpython-311.pyc
+|           __init__.cpython-313.pyc
+|           __init__.cpython-314.pyc
+|           
++---tests
+|   \---fixtures
+|       +---combat_spell_coherence
+|       |       fled_caster_drops_pending_spell.json
+|       |       foe_heal_targets_foe_ally.json
+|       |       side_flip_heal_targets_new_allies.json
+|       |       
+|       +---combat_target_coherence
+|       |       declaration_clear_no_targets.json
+|       |       declaration_retarget_dead_target.json
+|       |       declaration_retarget_fled_target.json
+|       |       
+|       +---equivalence
+|       |   \---save_load_replay_equivalence
+|       |           base_save.json
+|       |           replay.json
+|       |           
+|       \---replays
+|           +---contract_scout
+|           |       base_save.json
+|           |       expected.json
+|           |       replay.json
+|           |       
+|           +---cover_take_cover_missile_duel
+|           |       base_save.json
+|           |       expected.json
+|           |       replay.json
+|           |       
+|           +---energy_drain_persistence
+|           |       base_save.json
+|           |       expected.json
+|           |       replay.json
+|           |       
+|           +---grapple_escape
+|           |       base_save.json
+|           |       expected.json
+|           |       replay.json
+|           |       
+|           +---magic_resistance
+|           |       base_save.json
+|           |       expected.json
+|           |       replay.json
+|           |       
+|           +---morale_retreat_pursuit
+|           |       base_save.json
+|           |       expected.json
+|           |       replay.json
+|           |       
+|           +---save_load_replay_equivalence
+|           |       base_save.json
+|           |       replay.json
+|           |       
+|           +---spell_disruption_edge
+|           |       base_save.json
+|           |       expected.json
+|           |       replay.json
+|           |       
+|           +---spell_immunity_tags
+|           |       base_save.json
+|           |       expected.json
+|           |       replay.json
+|           |       
+|           \---swallow_cut_out
+|                   base_save.json
+|                   expected.json
+|                   replay.json
+|                   
++---ui_pygame
+|   |   app.py
+|   |   hud.py
+|   |   input_router.py
+|   |   renderers.py
+|   |   widgets.py
+|   |   __init__.py
+|   |   
+|   \---__pycache__
+|           app.cpython-311.pyc
+|           hud.cpython-311.pyc
+|           input_router.cpython-311.pyc
+|           renderers.cpython-311.pyc
+|           widgets.cpython-311.pyc
+|           __init__.cpython-311.pyc
+|           
+\---__pycache__
+        main.cpython-311.pyc
+        

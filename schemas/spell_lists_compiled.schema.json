@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "p44.schemas.spell_lists_compiled.v1",
+  "title": "Canonical Spell Lists (Compiled)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "build",
+    "generated_from",
+    "content_hash",
+    "classes",
+    "unresolved"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "spell_lists_compiled.v1"
+    },
+    "build": {
+      "type": "string"
+    },
+    "generated_from": {
+      "type": "string"
+    },
+    "content_hash": {
+      "type": "string"
+    },
+    "classes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "spell_id",
+              "name"
+            ],
+            "properties": {
+              "spell_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "class",
+          "level",
+          "name",
+          "normalized",
+          "reason"
+        ],
+        "properties": {
+          "class": {
+            "type": "string"
+          },
+          "level": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "normalized": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

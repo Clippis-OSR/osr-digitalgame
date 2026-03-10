@@ -1,0 +1,535 @@
+{
+  "$defs": {
+    "monster_group": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "disposition": {
+          "enum": [
+            "lairing",
+            "patrolling",
+            "guarding",
+            "sleeping",
+            "fleeing",
+            "parleying"
+          ],
+          "type": "string"
+        },
+        "formation": {
+          "type": "string"
+        },
+        "leader": {
+          "default": false,
+          "type": "boolean"
+        },
+        "monster_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "treasure_link": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "monster_id",
+        "count",
+        "disposition"
+      ],
+      "type": "object"
+    },
+    "resolved_spawn": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "monster_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "resolved": {
+          "type": "object"
+        },
+        "room_id": {
+          "pattern": "^R[0-9]{4}$",
+          "type": "string"
+        },
+        "source_tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "spawn_id": {
+          "pattern": "^S[0-9]{4}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "spawn_id",
+        "room_id",
+        "monster_id",
+        "count",
+        "resolved"
+      ],
+      "type": "object"
+    },
+    "restock": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "every_turns": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "policy": {
+          "enum": [
+            "none",
+            "light",
+            "standard",
+            "aggressive"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "enabled",
+        "every_turns",
+        "policy"
+      ],
+      "type": "object"
+    },
+    "roll_record": {
+      "additionalProperties": false,
+      "properties": {
+        "choice": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "dice": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "result": {
+          "type": "integer"
+        },
+        "stream": {
+          "type": "string"
+        },
+        "table_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "stream",
+        "dice",
+        "result",
+        "table_id",
+        "choice"
+      ],
+      "type": "object"
+    },
+    "room_content": {
+      "additionalProperties": false,
+      "properties": {
+        "alertness": {
+          "enum": [
+            "calm",
+            "wary",
+            "alert",
+            "fortified"
+          ],
+          "type": "string"
+        },
+        "contents": {
+          "additionalProperties": false,
+          "properties": {
+            "monsters": {
+              "items": {
+                "$ref": "#/$defs/monster_group"
+              },
+              "type": "array"
+            },
+            "specials": {
+              "items": {
+                "$ref": "#/$defs/special"
+              },
+              "type": "array"
+            },
+            "traps": {
+              "items": {
+                "$ref": "#/$defs/trap"
+              },
+              "type": "array"
+            },
+            "treasure": {
+              "items": {
+                "$ref": "#/$defs/treasure_item"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "monsters",
+            "treasure",
+            "traps",
+            "specials"
+          ],
+          "type": "object"
+        },
+        "faction_id": {
+          "type": "string"
+        },
+        "rolls": {
+          "items": {
+            "$ref": "#/$defs/roll_record"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "rolls",
+        "contents",
+        "alertness"
+      ],
+      "type": "object"
+    },
+    "special": {
+      "additionalProperties": false,
+      "properties": {
+        "params": {
+          "type": "object"
+        },
+        "special_id": {
+          "pattern": "^SP[0-9]{4}$",
+          "type": "string"
+        },
+        "special_type": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "special_id",
+        "special_type"
+      ],
+      "type": "object"
+    },
+    "trap": {
+      "additionalProperties": false,
+      "properties": {
+        "damage_packet": {
+          "additionalProperties": false,
+          "properties": {
+            "amount": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "damage_type": {
+              "type": "string"
+            },
+            "enchantment_bonus": {
+              "type": "integer"
+            },
+            "magical": {
+              "type": "boolean"
+            },
+            "source_tags": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "amount",
+            "damage_type",
+            "magical"
+          ],
+          "type": "object"
+        },
+        "dc": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "effect_ref": {
+          "type": "string"
+        },
+        "trap_id": {
+          "pattern": "^TR[0-9]{4}$",
+          "type": "string"
+        },
+        "trap_type": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "trigger": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "trap_id",
+        "trap_type",
+        "dc",
+        "trigger"
+      ],
+      "type": "object"
+    },
+    "treasure_item": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_or_ref": {
+          "oneOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "minLength": 1,
+              "type": "string"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "coins",
+            "gems",
+            "jewelry",
+            "item",
+            "magic_item"
+          ],
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "treasure_id": {
+          "pattern": "^T[0-9]{4}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "treasure_id",
+        "kind",
+        "amount_or_ref"
+      ],
+      "type": "object"
+    },
+    "wandering": {
+      "additionalProperties": false,
+      "properties": {
+        "chance_d6": {
+          "maximum": 6,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "check_every_turns": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "tables": {
+          "items": {
+            "$ref": "#/$defs/wandering_table"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "check_every_turns",
+        "chance_d6",
+        "tables"
+      ],
+      "type": "object"
+    },
+    "wandering_table": {
+      "additionalProperties": false,
+      "properties": {
+        "depth_max": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "depth_min": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "entries": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "count_dice": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "monster_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "tags": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "weight": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "weight",
+              "monster_id",
+              "count_dice"
+            ],
+            "type": "object"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "table_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "table_id",
+        "depth_min",
+        "depth_max",
+        "entries"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "sww:dungeon_stocking.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "encounter_resolution": {
+      "additionalProperties": false,
+      "properties": {
+        "cl_lists_hash": {
+          "minLength": 8,
+          "type": "string"
+        },
+        "cl_lists_source": {
+          "type": "string"
+        },
+        "stub_count": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "uses_compiled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "cl_lists_source",
+        "cl_lists_hash",
+        "uses_compiled",
+        "stub_count"
+      ],
+      "type": "object"
+    },
+    "level_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "resolved_variants": {
+      "description": "Optional convenience mirror of instance_state.resolved_spawns for inspection.",
+      "items": {
+        "$ref": "#/$defs/resolved_spawn"
+      },
+      "type": "array"
+    },
+    "restock": {
+      "$ref": "#/$defs/restock"
+    },
+    "theme": {
+      "type": "object"
+    },
+    "rng_streams": {
+      "additionalProperties": false,
+      "properties": {
+        "gen.factions": {
+          "type": "string"
+        },
+        "gen.stocking": {
+          "type": "string"
+        },
+        "gen.wandering": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "gen.stocking",
+        "gen.factions",
+        "gen.wandering"
+      ],
+      "type": "object"
+    },
+    "room_contents": {
+      "additionalProperties": {
+        "$ref": "#/$defs/room_content"
+      },
+      "propertyNames": {
+        "pattern": "^R[0-9]{4}$"
+      },
+      "type": "object"
+    },
+    "schema_version": {
+      "pattern": "^P4\\.9\\.[0-9]+(\\.[0-9]+)*$",
+      "type": "string"
+    },
+    "seed": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "wandering": {
+      "$ref": "#/$defs/wandering"
+    }
+  },
+  "required": [
+    "schema_version",
+    "level_id",
+    "seed",
+    "rng_streams",
+    "room_contents",
+    "wandering",
+    "restock"
+  ],
+  "title": "DungeonStocking",
+  "type": "object"
+}

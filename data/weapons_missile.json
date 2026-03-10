@@ -1,0 +1,114 @@
+[
+  {
+    "name": "Axe, hand",
+    "damage": "1d6",
+    "rate_of_fire": "1",
+    "range": "10ft",
+    "weight_lb": 5,
+    "cost_gp": 1.0
+  },
+  {
+    "name": "Bow, long",
+    "damage": "See Arrows",
+    "rate_of_fire": "2",
+    "range": "70ft",
+    "weight_lb": 5,
+    "cost_gp": 60.0
+  },
+  {
+    "name": "Bow, short",
+    "damage": "See Arrows",
+    "rate_of_fire": "2",
+    "range": "50ft",
+    "weight_lb": 5,
+    "cost_gp": 15.0
+  },
+  {
+    "name": "Crossbow, heavy",
+    "damage": "See Bolts, heavy",
+    "rate_of_fire": "1/2",
+    "range": "80ft",
+    "weight_lb": 5,
+    "cost_gp": 20.0
+  },
+  {
+    "name": "Crossbow, light",
+    "damage": "See Bolts, light",
+    "rate_of_fire": "1",
+    "range": "60ft",
+    "weight_lb": 5,
+    "cost_gp": 12.0
+  },
+  {
+    "name": "Dagger",
+    "damage": "1d4",
+    "rate_of_fire": "1",
+    "range": "10ft",
+    "weight_lb": 2,
+    "cost_gp": 2.0
+  },
+  {
+    "name": "Dart",
+    "damage": "1d3",
+    "rate_of_fire": "3",
+    "range": "15ft",
+    "weight_lb": 1,
+    "cost_gp": 0.2
+  },
+  {
+    "name": "Javelin",
+    "damage": "1d6",
+    "rate_of_fire": "1",
+    "range": "20ft",
+    "weight_lb": 5,
+    "cost_gp": 0.5
+  },
+  {
+    "name": "Sling",
+    "damage": "See Stones, sling",
+    "rate_of_fire": "1",
+    "range": "40ft",
+    "weight_lb": 1,
+    "cost_gp": 0.2
+  },
+  {
+    "name": "Spear",
+    "damage": "1d6",
+    "rate_of_fire": "1",
+    "range": "20ft",
+    "weight_lb": 10,
+    "cost_gp": 1.0
+  },
+  {
+    "name": "Stones, sling (20)",
+    "damage": "1d4",
+    "rate_of_fire": "By weapon",
+    "range": "By weapon",
+    "weight_lb": 5,
+    "cost_gp": 0.0
+  },
+  {
+    "name": "Arrows (20)",
+    "damage": "1d6",
+    "rate_of_fire": "By weapon",
+    "range": "By weapon",
+    "weight_lb": 1,
+    "cost_gp": 2.0
+  },
+  {
+    "name": "Bolts, heavy (20)",
+    "damage": "1d6+1",
+    "rate_of_fire": "By weapon",
+    "range": "By weapon",
+    "weight_lb": 1,
+    "cost_gp": 2.0
+  },
+  {
+    "name": "Bolts, light (20)",
+    "damage": "1d4+1",
+    "rate_of_fire": "By weapon",
+    "range": "By weapon",
+    "weight_lb": 1,
+    "cost_gp": 2.0
+  }
+]

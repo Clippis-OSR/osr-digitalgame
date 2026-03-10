@@ -1,0 +1,2585 @@
+[
+  {
+    "name": "Aerial Servant",
+    "spell_level": "Cleric, 7th Level",
+    "range": "N/A",
+    "duration": "Until completed or insanity",
+    "description": "This spell summons a powerful creature from the elemental planes of \nair, to fetch and return one thing (or creature) to the caster. Only a creature \nwith a Strength of 18 can fight its way from the servant’s grasp, and even then the chance is not likely to be greater than 50%. The servant can carry up to 500 pounds in weight. An aerial servant has the following attributes: HD 16, AC 3 [16], Atk Bonus +17, Atk 1 (4d4), Move 240 feet. If the servant is frustrated in its efforts to bring the desired object to the caster, it will become insane, returning and attacking him or her.\nAnimal growt",
+    "spell_id": "aerial_servant_lcleric_7th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Animal growth",
+    "spell_level": "Druid, 5th Level; Magic-User, 5th Level",
+    "range": "120 feet",
+    "duration": "2 hours",
+    "description": "This spell causes 1d6 normal creatures to grow immediately to giant \nsize. While the spell lasts, the affected creatures can attack as per a giant version of themselves.\nAnimal Summoning",
+    "spell_id": "animal_growth_ldruid_5th_level_magic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Animal Summoning i",
+    "spell_level": "Druid, 4th Level",
+    "range": "30 feet",
+    "duration": "1 hour",
+    "description": "The Druid summons forth normal animals to serve as allies: 1 creature \nlarger than a man (such as an elephant), 3 animals the size of a man or horse (such as a lion), or 6 animals smaller than a man (such as a wolf). The animals obey the caster’s commands.\nAnimal Summoning i",
+    "spell_id": "animal_summoning_i_ldruid_4th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Animal Summoning ii",
+    "spell_level": "Druid, 5th Level",
+    "range": "30 feet",
+    "duration": "2 hours",
+    "description": "The Druid summons forth normal animals to serve as allies: 2 \ncreatures larger than a man (such as an elephant), 6 animals the size of a man or horse (such as a lion), or 12 animals smaller than a man (such as wolves). The animals obey the caster’s commands.\nAnimal Summoning ii",
+    "spell_id": "animal_summoning_ii_ldruid_5th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Animal Summoning iii",
+    "spell_level": "Druid, 6th Level",
+    "range": "30 feet",
+    "duration": "4 hours",
+    "description": "The Druid summons forth normal animals to serve as allies: 4 \ncreatures larger than a man (such as an elephant), 12 animals the size of a man or horse (such as a lion), or 24 animals smaller than a man (such as wolves). The animals obey the caster’s commands.\nAnimate Dea",
+    "spell_id": "animal_summoning_iii_ldruid_6th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Animate Dead",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "Referee’s Discretion",
+    "duration": "Permanent",
+    "description": "This spell animates skeletons or zombies from dead bodies. 1d6 \nundead are animated per level of the caster above 8th. The corpses remain animated until slain.Animate Objec",
+    "spell_id": "animate_dead_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Animate Dead",
+    "spell_level": "Cleric, 6th Level",
+    "range": "60 feet",
+    "duration": "Permanent",
+    "description": "This spell animates skeletons or zombies from dead bodies. 1d6 \nundead are animated per level of the caster above 8th. The corpses remain animated until slain.Animate Object",
+    "spell_id": "animate_dead_lcleric_6th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Animate Rock",
+    "spell_level": "Druid, 7th Level",
+    "range": "60 feet",
+    "duration": "1 hour",
+    "description": "The caster brings rock to life, perhaps by calling a spirit into it, or \nperhaps by some other means related to the druidic affinity for stone and the elements. The mass of rock, whether or not shaped into an object, moves and attacks of its own volition. The druid has roughly a 50% +2% per level chance to be able to bring the object under control; otherwise it will act somewhat randomly, having little or no independent intelligence. The quantity of rock that can be animated is a function of the druid’s power and is about 2-3 cubic feet per level. If the animated rock is a statue, it will move at a speed appropriate to whatever the statue depicts (a wolf statue, for example, moving faster than the statue of a man). A formless mass of rock will have a movement rate of 3.\nAnti-Animal Shell \nSee Anti-Animal Ward\nAnti-Animal War",
+    "spell_id": "animate_rock_ldruid_7th_level",
+    "aliases": [],
+    "tags": [
+      "protection"
+    ]
+  },
+  {
+    "name": "Anti-Animal Ward",
+    "spell_level": "Druid, 6th Level",
+    "range": "Caster",
+    "duration": "2 hours",
+    "description": "The caster is surrounded by a magical barrier that prevents any sort \nof normal or giant animal (but not magical beasts such as a manticore or griffon) from reaching through or attacking. The spell has a radius of 10 feet. If anyone within the magical warding casts an attack spell or makes a physical attack, the barrier instantly evaporates.\nAnti-Magic Shel",
+    "spell_id": "anti_animal_ward_ldruid_6th_level",
+    "aliases": [],
+    "tags": [
+      "protection"
+    ]
+  },
+  {
+    "name": "Anti-Magic Shell",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "Caster",
+    "duration": "2 hours",
+    "description": "An invisible bubble of force surrounds the caster, impenetrable to \nmagic. Spells and other magical effects cannot pass into or out of the shell. The shell is ten feet in radius.\nAnti-Plant Shell \nSee Anti-Plant Ward\nAnti-Plant War",
+    "tags": [
+      "force",
+      "illusion",
+      "protection"
+    ],
+    "spell_id": "anti_magic_shell_lmagic_user_6th_level",
+    "aliases": []
+  },
+  {
+    "name": "Anti-Plant Ward",
+    "spell_level": "Druid, 5th Level",
+    "range": "Caster",
+    "duration": "2 hours",
+    "description": "The caster is surrounded by a magical barrier which prevents any sort \nof plant, magical or not, from reaching through or attacking. The shell has a radius of ten feet. If anyone within the magical warding casts an attack spell or makes a physical attack, the barrier will instantly evaporate.\n52MAgiC\nAstral Spel",
+    "spell_id": "anti_plant_ward_ldruid_5th_level",
+    "aliases": [],
+    "tags": [
+      "protection"
+    ]
+  },
+  {
+    "name": "Astral Spell",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "100 miles (above ground), 100 yards (below",
+    "duration": "2 hours",
+    "description": "The caster projects his or her astral form into other places; the astral \nform is invisible to all creatures but those also traveling the astral plane of existence. The spell has a duration of two hours. If the caster’s physical body is moved more than 100 miles from its original location while the astral form is away, the link is sundered and the caster’s soul becomes lost in the beyond. (If the caster’s body is underground, it need only be moved 100 yards before the connection is broken.)\nThe astral form is capable of casting spells, but there is a 5% chance \nper spell level that the spell will fail. Additionally, there is a 2% chance per spell level of the attempted spell that the astral spell itself will falter as a result of the spell casting, and the astral form will return to the physical body. When traveling in astral form upon the earth, the astral form may travel as fast as 100 miles per hour per level above 18th. If the form is traveling underground, its top speed is much slower: 120 feet per 10-minute turn. When traveling into the deeper regions beyond the earth, speed and distance are obviously not measured in miles.Blade Barrie",
+    "spell_id": "astral_spell_lmagic_user_9th_level",
+    "aliases": [],
+    "tags": [
+      "control",
+      "illusion"
+    ]
+  },
+  {
+    "name": "Blade Barrier",
+    "spell_level": "Cleric, 6th Level",
+    "range": "60 feet",
+    "duration": "12 turns",
+    "description": "Mystical blades, whirling and thrusting, form a lethal circle around \nthe spell’s recipient, at a radius of 15 feet. The barrier inflicts 7d10 points of damage to anyone trying to pass through.",
+    "spell_id": "blade_barrier_lcleric_6th_level",
+    "aliases": [],
+    "tags": [
+      "force"
+    ]
+  },
+  {
+    "name": "Bless",
+    "spell_level": "Cleric, 2nd Level",
+    "range": "Only upon a character not in combat.",
+    "duration": "1 hour (6 turns)",
+    "description": "This spell grants its recipient a +1 to attack rolls (and improves \nmorale, if the recipient is not a player character). The recipient cannot already be in combat when the spell is cast.\nCacodemon or Cacodaemon \nSee Conjuration of Demons\nCall lightnin",
+    "spell_id": "bless_lcleric_2nd_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Call lightning",
+    "spell_level": "Druid, 3rd level",
+    "range": "1000 feet",
+    "duration": "One hour",
+    "description": "This spell of colossal power may only be used outdoors, and even \nthen only when a storm is present or immediately imminent. Under such conditions, the caster may tap into and unleash the power of the storm itself, calling forth bolts of lightning from the sky at intervals of no less than ten minutes in between. The lightning blasts straight downward from the heavens, inflicting damage of 8d6 hp + 1 hp/level.\nCharm Monste",
+    "tags": [
+      "charm",
+      "electric",
+      "mind_affecting",
+      "protection"
+    ],
+    "spell_id": "call_lightning_ldruid_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Charm Monster",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "60 feet",
+    "duration": "See below",
+    "description": "This spell operates in the same manner as Charm Person, but can affect \nany one living creature, including powerful monsters. For monsters of fewer than 3 hit dice, up to 3d6 can be affected. Monsters have one chance per week to break free of the charm, with the probability based on their hit dice (as shown on the following table).\ntable 35: Charm Monster\nHit Dice Chance to Break Charm1\nFewer than 2 5%\n2–4 10%\n5–7 20%\n8–10 40%\n11+ 80%\n1 Per week\nCharm Perso",
+    "tags": [
+      "charm",
+      "cold",
+      "mind_affecting"
+    ],
+    "spell_id": "charm_monster_lmagic_user_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Charm Person",
+    "spell_level": "Magic-User, 1st Level",
+    "range": "120 feet",
+    "duration": "Until dispelled",
+    "description": "This spell affects living bipeds of human size or smaller, such as \ngoblins or dryads. If the spell succeeds (saving throw allowed), the unfortunate creature falls under the caster’s influence.\n53MAgiC\nCharm Plant",
+    "tags": [
+      "charm",
+      "mind_affecting"
+    ],
+    "spell_id": "charm_person_lmagic_user_1st_level",
+    "aliases": []
+  },
+  {
+    "name": "Charm Plants",
+    "spell_level": "Magic-User, 7th Level",
+    "range": "120 feet",
+    "duration": "Until dispelled",
+    "description": "If the plant fails a saving throw (and it need not be intelligent), it will \nobey the caster to the extent of its ability. The spell affects one large tree, six man-sized plants, twelve plants three feet tall, or twenty-four flower-sized plants.\nClairaudienc",
+    "tags": [
+      "charm",
+      "detection",
+      "mind_affecting"
+    ],
+    "spell_id": "charm_plants_lmagic_user_7th_level",
+    "aliases": []
+  },
+  {
+    "name": "Clairaudience",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "60 feet",
+    "duration": "2 hours",
+    "description": "Clairaudience  allows the caster to hear through solid stone (limiting \nrange to 2 feet or so) and other obstacles, any sounds within a range of 60 feet. The spell’s effect cannot pass through even a thin sheeting of lead, however, for this metal blocks it utterly. The spell can be cast through a crystal ball.\nClairvoyanc",
+    "spell_id": "clairaudience_lmagic_user_3rd_level",
+    "aliases": [],
+    "tags": [
+      "detection"
+    ]
+  },
+  {
+    "name": "Clairvoyance",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "60 feet",
+    "duration": "2 hours",
+    "description": "Clairvoyance  allows the caster to see through solid stone (limiting \nrange to 2 feet or so) and other obstacles, anything within a range of 60 feet. The spell’s effect cannot pass through even a thin sheeting of lead, however, for this metal blocks it completely.\nClon",
+    "spell_id": "clairvoyance_lmagic_user_3rd_level",
+    "aliases": [],
+    "tags": [
+      "detection"
+    ]
+  },
+  {
+    "name": "Clone",
+    "spell_level": "Magic-User, 8th Level",
+    "range": "Close",
+    "duration": "Permanent",
+    "description": "By this eerie and disturbing spell, a piece of flesh, taken from a living \nperson, is grown into an exact duplicate of the person at the time the flesh was removed. (Whether this requires a laboratory and how much time is needed to regrow the clone depend upon the spell formula and the Referee’s discretion.) If a clone is created while its parent-creature still lives, the clone will seek to kill its original. If it fails to achieve this goal, both the clone and the original will become insane.\nCloudkil",
+    "spell_id": "clone_lmagic_user_8th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Cloudkill",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "Moves 6 feet per minute",
+    "duration": "1 hour",
+    "description": "Foul and poisonous vapors boil from the thin air, forming a cloud 15 \nfeet in radius. The cloud moves directly forward at a rate of 6 feet per minute unless its direction or speed is affected by winds. Unusually strong gusts can dissipate and destroy the cloud. Poison-laden, the horrid mist is heavier than air, and thus sinks down any pits or stairs in its path. For any creature with fewer than 5HD, touching the cloud (much less breathing it) requires a saving throw to avoid immediate death.\nCommun",
+    "tags": [
+      "death",
+      "necrotic",
+      "poison",
+      "protection"
+    ],
+    "spell_id": "cloudkill_lmagic_user_5th_level",
+    "aliases": []
+  },
+  {
+    "name": "Commune",
+    "spell_level": "Cleric, 5th Level",
+    "range": "Caster",
+    "duration": "3 questions",
+    "description": "Higher powers grant an answer to three questions the caster poses to \nthem. Higher powers do not like being constantly interrogated by mere mortals, so use of the spell should be limited to once per week or so by the Referee.Commune with natur",
+    "spell_id": "commune_lcleric_5th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Commune with nature",
+    "spell_level": "Druid, 5th Level",
+    "range": "Caster",
+    "duration": "3 questions",
+    "description": "The powers of land, sky, and nature grant an answer to three questions \nthe caster poses to them. The spell cannot be used while underground or within a building; a fourth question may be asked if the caster is in a druidic holy place. The powers of nature can only respond to questions that are within their knowledge and purview. It is inadvisable to use the spell more than once per week.",
+    "spell_id": "commune_with_nature_ldruid_5th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Confusion",
+    "spell_level": "Druid, 7th Level; Magic-User, 4th Level",
+    "range": "120 feet",
+    "duration": "2 hours",
+    "description": "This spell confuses people and monsters, making them act randomly. \nOn a roll of 2d6, the creatures will do the following:\ntable 36: Confusion\nDie Roll Reaction\n2–5 Attack caster & caster’s allies\n6–8 Stand baffled and inactive\n9–12 Attack each other\nThe effects of the confusion may shift every 10 minutes or so, and the \ndice are once again rolled.\nThe spell affects 2d6 creatures, plus an additional creature for every \ncaster level above 8th. Creatures of 3 hit dice or fewer are automatically affected by the spell, and it takes effect instantly. Creatures of 4 hit dice or more automatically overcome the confusion effect as it builds up to its full power (1d12 minutes, minus the caster’s level), and only then are they permitted a saving throw. Eventually, these creatures are likely to succumb to the confusion, for they must continue to make another saving throw every 10 minutes until the spell’s two-hour duration has run its course.\nConjure Animals \nSee Conjuration of Animals\nConjure Earth Elemental \nSee Conjuration of Earth Elementals\nConjure Elemental \nSee Conjuration of Elementals\nConjure Fire Elemental \nSee Conjuration of Fire Elementals\nConjuration of Animal",
+    "tags": [
+      "cold",
+      "control",
+      "fire",
+      "mind_affecting",
+      "summoning"
+    ],
+    "spell_id": "confusion_ldruid_7th_level_magic_user_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Conjuration of Animals",
+    "spell_level": "Cleric, 6th Level",
+    "range": "30 feet",
+    "duration": "1 hour",
+    "description": "The Cleric conjures up normal animals to serve as allies: 1 creature \nlarger than a man (such as an elephant), 3 animals the size of a man or horse (such as a lion), or 6 animals smaller than a man (such as a wolf). The animals obey the caster’s commands.\n54MAgiC\nConjuration of Demon",
+    "spell_id": "conjuration_of_animals_lcleric_6th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Conjuration of Demons",
+    "spell_level": "Magic-User, 7th Level",
+    "range": "10 feet",
+    "duration": "Referee’s discretion",
+    "description": "This spell summons a demon or other fiend (such as a devil) from the \nlower planes of existence. The spell provides no protection whatsoever against the wrath of the summoned creature, and the Magic-User should be versed in the lore of pentacles and other magical means of hedging out demons. Gaining the demon’s assistance is beyond the spell’s power, coming down to a matter of negotiations and threats between the caster and the fiend.\nConjuration of Earth Elemental",
+    "spell_id": "conjuration_of_demons_lmagic_user_7th_level",
+    "aliases": [],
+    "tags": [
+      "protection",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Conjuration of Earth Elementals",
+    "spell_level": "Druid, 7th Level",
+    "range": "240 feet",
+    "duration": "Until dispelled or concentration ceases",
+    "description": "This spell summons forth a 16 HD earth elemental and binds it to \nfollow the caster’s commands. The elemental obeys the caster only for as long as the caster concentrates on maintaining control over it. Unlike the Magic-User spell for conjuring elementals (Conjuration of Elementals ) this spell summons a willing ally from the elemental \nplanes rather than a hostile slave. The elemental will not stay longer than the caster concentrates upon it, but it will not seek to attack a druidic summoner once this binding is released. The spell is powerful enough not to risk the random consequences of the sixth level Druid spell Conjuration of Fire Elementals , or perhaps it is simply that the \nmagic of stone is less mercurial than the magic of fire.\nConjuration of Elemental",
+    "spell_id": "conjuration_of_earth_elementals_ldruid_7th_level",
+    "aliases": [],
+    "tags": [
+      "control",
+      "fire",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Conjuration of Elementals",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "240 feet",
+    "duration": "Until dispelled or slain",
+    "description": "The caster summons a 16 HD elemental (any kind) from the elemental \nplanes of existence, and binds it to follow commands. The elemental obeys the caster only for as long as the caster concentrates on it; and when the caster ceases to concentrate, even for a moment, the elemental is released and will attack its former master.\nConjuration of Fire Elemental",
+    "spell_id": "conjuration_of_elementals_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "control",
+      "fire",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Conjuration of Fire Elementals",
+    "spell_level": "Druid, 6th Level",
+    "range": "240 feet",
+    "duration": "Until dispelled or concentration ceases",
+    "description": "The caster summons a 16 HD fire elemental from the elemental planes \nof existence, and binds it to obey the character’s commands. The elemental obeys the caster only for as long as the caster concentrates on it. Unlike the Magic-User spell for conjuring elementals (Conjuration of Elementals) this spell summons a willing ally from the elemental planes rather than a hostile slave. The elemental will not stay longer than the caster concentrates upon it, but it will not seek to attack a druidic summoner. There is, however, a 5% chance that the spell will summon forth powers unintended by the druid. If this happens, one of two things will occur, with a 50% chance of each. The spell might summon forth a truly great elemental force, an elemental with 20 HD. However, there is also the chance that the spell will summon forth an efreeti. The efreet do not have the same rapport with Druids as the pure elementals do, and an efreeti, unlike elementals, will attack the caster when the Druid’s concentration falters.Contact Other Plan",
+    "spell_id": "conjuration_of_fire_elementals_ldruid_6th_level",
+    "aliases": [],
+    "tags": [
+      "control",
+      "fire",
+      "force",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Contact Other Plane",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "None",
+    "duration": "Number of “Yes/No” questions",
+    "description": "The caster creates a mental contact with the planes, forces, powers, \nand geometries of the beyond, in order to gain affirmative or negative answers to the questions being contemplated. The spell’s effects depend upon how deeply the caster quests into the various planes of existence. The caster must decide how “far” into the planes of existence the contact will be attempted. The number of planes in “depth” that the caster chooses will affect the number of yes or no questions that can be asked, the chance that the knowledge is available at that level, the chance of receiving a wrong answer, and the chance that the caster will become temporarily insane from the experience. Temporary insanity lasts for as many weeks as the “number” of the plane where the caster’s sanity failed… or perhaps was deliberately removed.\ntable 37: Contact Other Plane\nPlane of \nExistenceMax. # \nQuestionsKnowledge \nAvailableWrong \nResultTemporary \nInsanity1\n3rd 3 25% 70% 1%\n4th 4 30% 60% 10%\n5th 5 40% 50% 20%\n6th 6 50% 40% 30%\n7th 7 60% 30% 40%\n8th 8 70% 25% 45%\n9th 9 80% 20% 55%\n10th 10 85% 15% 65%\n11th 11 90% 10% 75%\n12th 12 95% 1% 85%\n1 This chance is reduced by 5% for every level of the caster above 11th\nContinual ligh",
+    "spell_id": "contact_other_plane_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "force"
+    ]
+  },
+  {
+    "name": "Continual light",
+    "spell_level": "Magic-User, 2nd Level; Cleric, 3rd Level",
+    "range": "120 feet",
+    "duration": "Permanent until dispelled",
+    "description": "The targeted person or object produces light as bright as sunlight (and \nwith the same effects as sunlight), to a radius of 120 feet.\nControl temperature, 10-foot radiu",
+    "tags": [
+      "utility"
+    ],
+    "spell_id": "continual_light_lmagic_user_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Control temperature, 10-foot radius",
+    "spell_level": "Druid, 4th Level",
+    "range": "Touched sprig of mistletoe",
+    "duration": "3 turns + 1 turn/level",
+    "description": "The caster may raise or lower the temperature by 50 degrees (hotter \nor colder) in a 10-foot radius around the material component, a sprig of mistletoe.\nControl Weathe",
+    "spell_id": "control_temperature_10_foot_radius_ldruid_4th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Control Weather",
+    "spell_level": "Cleric, 7th Level; Druid, 7th Level; Magic-User, 6th LevelRange: Referee’s discretionDuration: Referee’s discretion",
+    "range": "Referee’s discretion",
+    "duration": "Referee’s discretion",
+    "description": "The caster can summon or stop rainfall, create unusually high or low \ntemperatures, summon or disperse a tornado, clear the sky of clouds, or summon clouds into being.\n55MAgiC\nControl Wind",
+    "spell_id": "control_weather_lcleric_7th_level_druid_7th_level_magic_user_6th_levelrange_referee_s_discretionduration_referee_s_discretion",
+    "aliases": [],
+    "tags": [
+      "creation",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Control Winds",
+    "spell_level": "Druid, 5th Level",
+    "range": "Centered on caster",
+    "duration": "6 turns + 1 turn/level",
+    "description": "Within a radius of 240 feet, the caster controls the winds. It is possible \nto make the air completely still, or to whisk it into a gale-like tumult of \nunbelievable ferocity.\nCreate Wate",
+    "spell_id": "control_winds_ldruid_5th_level",
+    "aliases": [],
+    "tags": [
+      "creation"
+    ]
+  },
+  {
+    "name": "Create Water",
+    "spell_level": "Cleric, 4th Level; Druid 2nd Level",
+    "range": "Close",
+    "duration": "Immediate",
+    "description": "This spell creates a one-day supply of drinking water for 24 men (or, \nfor game purposes, horses). At 9th level the amount of water doubles, \nand it doubles again at every level thereafter.\nCreate Foo",
+    "spell_id": "create_water_lcleric_4th_level_druid_2nd_level",
+    "aliases": [],
+    "tags": [
+      "creation"
+    ]
+  },
+  {
+    "name": "Create Food",
+    "spell_level": "Cleric, 5th Level",
+    "range": "Close",
+    "duration": "Immediate",
+    "description": "This spell creates a one-day supply of food for 24 humans (or the \nlike). At 9th level the amount of food doubles, and it doubles again at every level thereafter.\nCreeping Doo",
+    "spell_id": "create_food_lcleric_5th_level",
+    "aliases": [],
+    "tags": [
+      "creation"
+    ]
+  },
+  {
+    "name": "Creeping Doom",
+    "spell_level": "Druid, 7th Level",
+    "range": "50 feet",
+    "duration": "Immediate",
+    "description": "This spell creates a one-day supply of food for 24 humans (or the \nlike). At 9th level the amount of food doubles, and it doubles again at every level thereafter.\nCreeping Doom",
+    "spell_id": "creeping_doom_ldruid_7th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Cure Disease",
+    "spell_level": "Cleric, 3rd Level; Druid, 3rd Level",
+    "range": "Touch",
+    "duration": "Immediate",
+    "description": "Cures the spell’s recipient of any diseases, including magically \ninflicted ones. An evil reversal of this spell allows a Chaotically aligned Cleric to cause disease.\nCure light Wound",
+    "spell_id": "cure_disease_lcleric_3rd_level_druid_3rd_level",
+    "aliases": [],
+    "tags": [
+      "healing"
+    ]
+  },
+  {
+    "name": "Cure light Wounds",
+    "spell_level": "Cleric, 1st Level; Druid 2nd, Level",
+    "range": "Touch",
+    "duration": "Immediate",
+    "description": "Cures 1d6+1 hit points of damage. An evil reversal of this spell allows a \nChaotically aligned Cleric to cause light wounds rather than curing them.\nCure Serious Wound",
+    "tags": [
+      "force",
+      "healing"
+    ],
+    "spell_id": "cure_light_wounds_lcleric_1st_level_druid_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Cure Serious Wounds",
+    "spell_level": "Cleric, 4th Level; Druid, 4th Level",
+    "range": "Touch",
+    "duration": "Immediate",
+    "description": "Cures 1d6+1 hit points of damage. An evil reversal of this spell allows a \nChaotically aligned Cleric to cause light wounds rather than curing them.\nCure Serious Wounds",
+    "spell_id": "cure_serious_wounds_lcleric_4th_level_druid_4th_level",
+    "aliases": [],
+    "tags": [
+      "force",
+      "healing"
+    ]
+  },
+  {
+    "name": "Darkness 15-foot Radius",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "Touch",
+    "duration": "Immediate",
+    "description": "Cures 2d6+2 hit points of damage. An evil reversal of this spell allows \na Chaotically aligned Cleric to cause serious wounds.Darkness 15-foot Radius",
+    "spell_id": "darkness_15_foot_radius_lmagic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "force"
+    ]
+  },
+  {
+    "name": "Darkvision",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "120 feet",
+    "duration": "1 hour",
+    "description": "Darkness falls within the spell’s radius, impenetrable even to darkvision. \nA Light spell or Dispel Magic can be used to counteract the darkness.\nDarkvision",
+    "tags": [
+      "dispel"
+    ],
+    "spell_id": "darkvision_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Death Spell",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "40 feet",
+    "duration": "1 day",
+    "description": "The recipient of the spell can see in total darkness for the length of \nthe spell’s duration.\nDeath Spell",
+    "tags": [
+      "death",
+      "necrotic"
+    ],
+    "spell_id": "death_spell_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Delayed Blast Fireball",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "240 feet",
+    "duration": "Causes normal death",
+    "description": "Within a 60-foot radius, up to 2d8 creatures, with fewer than 7 hit dice \neach, perish.\nDelayed Blast Fireball",
+    "tags": [
+      "cold",
+      "fire"
+    ],
+    "spell_id": "delayed_blast_fireball_lmagic_user_6th_level",
+    "aliases": []
+  },
+  {
+    "name": "Detect Evil (Cleric)",
+    "spell_level": "Cleric, 1st Level",
+    "range": "120 feet",
+    "duration": "1 hour",
+    "description": "The caster detects any evil enchantments, evil intentions, evil \nthoughts, or evil auras within the spell’s range. Poison is not inherently evil and cannot be detected by means of this spell. Whether there is any distinction between “evil” and “Chaos” is left to the Referee; in most campaigns they are exactly the same.\nDetect Evil (Magic- user",
+    "spell_id": "detect_evil_cleric_lcleric_1st_level",
+    "aliases": [
+      "Detect Evil"
+    ],
+    "tags": [
+      "detection",
+      "poison"
+    ]
+  },
+  {
+    "name": "Detect Evil (Magic- user)",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "60 feet",
+    "duration": "20 minutes",
+    "description": "The caster detects any evil enchantments, evil intentions, evil \nthoughts, or evil auras within the spell’s range. Poison is not inherently evil and cannot be detected by means of this spell. Whether there is any meaningful distinction between “evil” and “Chaos” is left to the Referee; in most campaigns they are exactly the same.\nDetect invisibilit",
+    "spell_id": "detect_evil_magic_user_lmagic_user_2nd_level",
+    "aliases": [
+      "Detect Evil"
+    ],
+    "tags": [
+      "detection",
+      "illusion",
+      "poison"
+    ]
+  },
+  {
+    "name": "Detect invisibility",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "10 feet per caster level",
+    "duration": "1 hour",
+    "description": "The caster can perceive invisible objects and creatures, even those \nlurking in the Astral or Ethereal planes of existence.\n56MAgiC\nDetect Magi",
+    "tags": [
+      "detection",
+      "illusion"
+    ],
+    "spell_id": "detect_invisibility_lmagic_user_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Detect Magic",
+    "spell_level": "Cleric, Magic-User, Druid 1st Level",
+    "range": "10 feet per caster level",
+    "duration": "1 hour",
+    "description": "The caster can perceive invisible objects and creatures, even those \nlurking in the Astral or Ethereal planes of existence.\n56MAgiC\nDetect Magic",
+    "spell_id": "detect_magic_lcleric_magic_user_druid_1st_level",
+    "aliases": [],
+    "tags": [
+      "detection",
+      "illusion"
+    ]
+  },
+  {
+    "name": "Detect Snares and Pits",
+    "spell_level": "Druid 1st Level",
+    "range": "30 feet",
+    "duration": "1 hour + 10 min/level",
+    "description": "Much like the Clerical Find Traps spell, this spell grants the caster a \nmystical power of sight, revealing any traps. However, the spell only functions outdoors; it is useless inside buildings or in dungeons.\nDimension Doo",
+    "spell_id": "detect_snares_and_pits_ldruid_1st_level",
+    "aliases": [],
+    "tags": [
+      "detection"
+    ]
+  },
+  {
+    "name": "Dimension Door",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "10 feet (360-foot teleport distance)",
+    "duration": "1 hour",
+    "description": "Dimension Door is a weak form of teleportation, a spell that can be managed \nby lesser magicians who cannot yet manage the Teleport spell. The caster can \nteleport himself, an object, or another person, with perfect accuracy to the stated location, as long as it is within the spell’s range.Disintegrat",
+    "spell_id": "dimension_door_lmagic_user_4th_level",
+    "aliases": [],
+    "tags": [
+      "teleport",
+      "travel"
+    ]
+  },
+  {
+    "name": "Disintegrate",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "60 feet",
+    "duration": "Permanent—cannot be dispelled",
+    "description": "The caster defines one specific target such as a door, a peasant, or \na statue, and it disintegrates into dust. Magical materials are not disintegrated, and living creatures (such as the aforementioned peasant) are permitted a saving throw.\nDispel Evi",
+    "spell_id": "disintegrate_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "dispel"
+    ]
+  },
+  {
+    "name": "Dispel Evil",
+    "spell_level": "Cleric, 5th Level",
+    "range": "30 feet",
+    "duration": "10 minutes against an item",
+    "description": "This spell is similar to the Magic-User spell Dispel Magic, but \naffects only evil magic. Also unlike the Dispel Magic spell, Dispel Evil functions (temporarily) against evil “sendings,” possibly including dreams or supernatural hunting-beasts. The power of an evil magic item is held in abeyance for 10 minutes rather than being permanently dispelled. Evil spells are completely destroyed. \nAs with Dispel Magic, the chance of successfully dispelling evil is a \npercentage based on the ratio of the level of the dispelling caster over the level of original caster (or HD of the monster). Thus, a 9th-level Cleric attempting to dispel an evil charm cast by a 12th-level Cleric has a 75% chance of success (9/12 = .75, or 75%). If the 12th-level Cleric was dispelling the 9th-level Cleric’s charm, success would be certain (12/9 = 1.33, or 133%).\n57MAgiC\nDispel Magi",
+    "tags": [
+      "charm",
+      "dispel",
+      "mind_affecting"
+    ],
+    "spell_id": "dispel_evil_lcleric_5th_level",
+    "aliases": []
+  },
+  {
+    "name": "Dispel Magic",
+    "spell_level": "Druid, 4th Level; Magic-User, 3rd Level",
+    "range": "120 feet",
+    "duration": "10 minutes against an item",
+    "description": "Dispel Magic, although not powerful enough to permanently \ndisenchant a magic item (nullifies for 10 minutes), can be used to completely dispel most other spells and enchantments.\nThe chance of successfully dispelling magic is a percentage based on the \nratio of the level of the dispelling caster over the level of original caster (or HD of the monster). Thus, a 6th-level Magic-User attempting to dispel a charm cast by a 12th-level Magic-User has a 50% chance of success (6/12 = .50, or 50%). If the 12th-level Magic-User was dispelling the 6th-level Magic-User’s charm, success would be certain (12/6 = 2.00, or 200%).\nEarthquak",
+    "tags": [
+      "charm",
+      "dispel",
+      "mind_affecting"
+    ],
+    "spell_id": "dispel_magic_ldruid_4th_level_magic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Earthquake",
+    "spell_level": "Cleric, 7th Level",
+    "range": "Referee’s discretion",
+    "duration": "Immediate",
+    "description": "The Cleric causes a powerful earthquake in an area 60x60 feet plus an \nadditional 10 feet (in both length and width) per three levels above 17th. The quake topples walls, causes rockslides, and opens gaping fissures in the earth. Any creature caught in the quake has a 1 in 6 chance of falling into the depths of the earth and being killed. The earthquake’s tremors do not extend in any way beyond the spell’s area of effect.\nEnchant ite",
+    "tags": [
+      "utility"
+    ],
+    "spell_id": "earthquake_lcleric_7th_level",
+    "aliases": []
+  },
+  {
+    "name": "Enchant item",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "Touch",
+    "duration": "Permanent",
+    "description": "This spell is used in the creation of a magical item, in addition to \nwhatever research, special ingredients, or other efforts the Referee may determine are necessary for the task.\nESP (Detect thoughts",
+    "spell_id": "enchant_item_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "creation",
+      "detection"
+    ]
+  },
+  {
+    "name": "ESP (Detect thoughts)",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "60 feet",
+    "duration": "2 hours",
+    "description": "The caster can detect the thoughts of other beings at a distance of \n60 feet. The spell cannot penetrate more than two feet of stone, and is blocked by even a thin sheet of lead.\nExplosive Rune",
+    "spell_id": "esp_detect_thoughts_lmagic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "detection"
+    ]
+  },
+  {
+    "name": "Explosive Runes",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "Written on parchment",
+    "duration": "Permanent",
+    "description": "The Magic-User scribes a rune onto parchment, vellum, or paper as a deadly \ntrap. If anyone other than the caster reads the rune, the sigil explodes into fire, automatically dealing 4d6 points of damage to anyone directly in front of it. The parchment or book upon which the rune was scribed will also be destroyed. An explosive rune can be detected, bypassed, and even removed by a higher-level Magic-User. Any Magic-User at least two levels higher than the rune’s creator has a 60% chance to detect it, a 75% chance to bypass it (if it is detected), and a 100% chance to remove it (if it is successfully detected and bypassed). \nExtension",
+    "spell_id": "explosive_runes_lmagic_user_3rd_level",
+    "aliases": [],
+    "tags": [
+      "detection",
+      "fire"
+    ]
+  },
+  {
+    "name": "Extension i",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "Caster",
+    "duration": "See below",
+    "description": "Extension I lengthens the duration of another of the caster’s spells by \n50%. Only spells of levels 1–3 can be affected by Extension I .Extension i",
+    "spell_id": "extension_i_lmagic_user_4th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Extension i",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "Caster",
+    "duration": "See below",
+    "description": "Extension I lengthens the duration of another of the caster’s spells by \n50%. Only spells of levels 1–3 can be affected by",
+    "spell_id": "extension_i_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Extension iii",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "Caster",
+    "duration": "See below",
+    "description": "Extension II lengthens the duration of another of the caster’s spells by \n50%. Only spells of levels 1–4 can be affected by Extension II .\nExtension iii",
+    "spell_id": "extension_iii_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Faerie Fire",
+    "spell_level": "Druid, 1st Level",
+    "range": "Caster",
+    "duration": "See below",
+    "description": "Extension III doubles the duration of another of the caster’s spells. \nSpells of level 1–5 can be affected by Extension III .\nFaerie Fire",
+    "tags": [
+      "fire"
+    ],
+    "spell_id": "faerie_fire_ldruid_1st_level",
+    "aliases": []
+  },
+  {
+    "name": "Fear",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "240 feet",
+    "duration": "1 hour",
+    "description": "This spell causes the creatures in its cone-shaped path to flee in horror \nif they fail a saving throw. If they do so, there is a 60% chance that they will drop whatever they are holding. The cone extends 240 feet to a base 120 feet across.\nFeeblemin",
+    "tags": [
+      "fear",
+      "mind_affecting"
+    ],
+    "spell_id": "fear_lmagic_user_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Feeblemind",
+    "spell_level": "Druid, 6th Level; Magic-User, 5th Level",
+    "range": "240 feet",
+    "duration": "Permanent until dispelled",
+    "description": "Feeblemind  is a spell that affects only Magic-Users. The saving throw \nagainst the spell is made at a -4 penalty, and if the saving throw fails, the targeted Magic-User becomes feeble of mind until the magic is dispelled.\nFind the Pat",
+    "spell_id": "feeblemind_ldruid_6th_level_magic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "dispel",
+      "mind_affecting"
+    ]
+  },
+  {
+    "name": "Find the Path",
+    "spell_level": "Cleric, 6th Level",
+    "range": "Caster",
+    "duration": "1 hour +10 minutes/level; 1 day outdoors",
+    "description": "The caster perceives the fastest way out of an area, even if the area is \ndesigned to be difficult to navigate, such as a labyrinth. Outdoors the spell has greater power, lasting a full day.\nFind trap",
+    "spell_id": "find_the_path_lcleric_6th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Find traps",
+    "spell_level": "Cleric, 2nd Level",
+    "range": "30 feet",
+    "duration": "20 minutes (2 turns)",
+    "description": "The caster can perceive both magical and non-magical traps at a \ndistance of 30 feet.\n58MAgiC\nFinger of Deat",
+    "spell_id": "find_traps_lcleric_2nd_level",
+    "aliases": [],
+    "tags": [
+      "detection"
+    ]
+  },
+  {
+    "name": "Finger of Death",
+    "spell_level": "Cleric, 5th Level",
+    "range": "30 feet",
+    "duration": "20 minutes (2 turns)",
+    "description": "The caster can perceive both magical and non-magical traps at a \ndistance of 30 feet.\n58MAgiC\nFinger of Death",
+    "tags": [
+      "death",
+      "necrotic"
+    ],
+    "spell_id": "finger_of_death_lcleric_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Fire Storm",
+    "spell_level": "Druid, 7th Level",
+    "range": "120 feet",
+    "duration": "Immediate",
+    "description": "This spell kills a single creature (saving throw applies). Misusing the \nspell is an evil act that will likely invoke divine retribution of some kind.\nFire Storm",
+    "tags": [
+      "fire"
+    ],
+    "spell_id": "fire_storm_ldruid_7th_level",
+    "aliases": []
+  },
+  {
+    "name": "Fireball",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "240 feet",
+    "duration": "Instantaneous",
+    "description": "A bead-like missile shoots from the caster’s finger, to explode, at the \ntargeted location, in a furnace-like blast of fire. The burst radius is 20 feet, and damage is 1d6 per level of the caster. The blast fills 33,000 cubic feet (33 ten-foot x ten-foot x ten-foot cubical areas) but shapes itself to the available volume. A successful saving throw means that the target takes only half damage.\nFl",
+    "tags": [
+      "fire"
+    ],
+    "spell_id": "fireball_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Fly",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "Touch",
+    "duration": "1 turn/level + 1d6 turns",
+    "description": "This spell imbues the Magic-User with the power of flight, with a movement \nrate of 120 feet per round. The Referee secretly rolls the 1d6 additional turns; the player does not know exactly how long the power of flight will last.\ngat",
+    "spell_id": "fly_lmagic_user_3rd_level",
+    "aliases": [],
+    "tags": [
+      "travel"
+    ]
+  },
+  {
+    "name": "Gate",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "Near the caster",
+    "duration": "See below",
+    "description": "A Gate spell creates an opening to another plane of existence and summons \nforth a specified, tremendously powerful being from the other plane, including gods, demi-gods, demons, etc. The caster must know the name of the creature being summoned or the spell will fail. There is a 5% chance that the wrong being might be summoned forth, and (regardless whether the summoned being is the right one or not) there is a 5% chance that it will lack interest in the situation and return through the gate. The summoned being is not necessarily friendly to the caster, and may even be extremely annoyed.\ngea",
+    "spell_id": "gate_lmagic_user_9th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Geas",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "30 feet",
+    "duration": "Until task is completed",
+    "description": "If the spell succeeds (saving throw cancels), the caster may set a \ntask for the spell’s victim. If the victim does not diligently work at performing the task, the refusal will cause weakness (50% reduction in strength), and trying to ignore the geas eventually causes death.Hallucinatory Fores",
+    "spell_id": "geas_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "death",
+      "illusion",
+      "necrotic"
+    ]
+  },
+  {
+    "name": "Hallucinatory Forest",
+    "spell_level": "Druid, 4th Level",
+    "range": "60 feet",
+    "duration": "Until dispelled",
+    "description": "Much like the Magic-User spell Hallucinatory Terrain, this spell \nchanges the appearance of the land, although the illusion is always that of a forest. Druids and magical creatures of the forest such as a dryad or treant will not be fooled by the illusion, but until the dweomer is dispelled all other creatures will perceive the area to be forested. The maximum extent of the nonexistent forest, measured for convenience in 30-foot x 30-foot “squares,” is one such square per level of the caster.\nHallucinatory terrai",
+    "spell_id": "hallucinatory_forest_ldruid_4th_level",
+    "aliases": [],
+    "tags": [
+      "dispel",
+      "illusion"
+    ]
+  },
+  {
+    "name": "Hallucinatory terrain",
+    "spell_level": "Magic-User. 4th Level",
+    "range": "240 feet",
+    "duration": "Until touched (other than by ally) or dispelled",
+    "description": "This spell changes the appearance of the terrain into the semblance of \nwhat the caster desires. A hill can be made to disappear, or it could be replaced with an illusory forest, for example.\nHast",
+    "spell_id": "hallucinatory_terrain_lmagic_user_4th_level",
+    "aliases": [],
+    "tags": [
+      "illusion"
+    ]
+  },
+  {
+    "name": "Haste",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "240 feet",
+    "duration": "30 minutes",
+    "description": "In an area with a radius of 60 feet around the point where the spell \nis targeted, as many as 24 creatures become able to move and attack at double normal speed.\nHeat Meta",
+    "tags": [
+      "control"
+    ],
+    "spell_id": "haste_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Heat Metal",
+    "spell_level": "Druid, 2nd Level",
+    "range": "30 feet",
+    "duration": "30 minutes",
+    "description": "In an area with a radius of 60 feet around the point where the spell \nis targeted, as many as 24 creatures become able to move and attack at double normal speed.\nHeat Metal",
+    "tags": [
+      "utility"
+    ],
+    "spell_id": "heat_metal_ldruid_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Hold Animal",
+    "spell_level": "Druid, 3rd level",
+    "range": "120 feet",
+    "duration": "1 hour (+10 minutes/level)",
+    "description": "The caster targets no more than four normal or giant animals, with \ntotal hit dice equal to or less than those of the Druid. These animals are completely immobilized (saving throw applies). If the caster targets a single creature, the saving throw is made with a penalty of -2.\n59MAgiC\nHold Monste",
+    "tags": [
+      "cold"
+    ],
+    "spell_id": "hold_animal_ldruid_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Hold Monster",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "120 feet",
+    "duration": "1 hour (+10 minutes/level)",
+    "description": "The caster targets 1d4 creatures, which are completely immobilized \n(saving throw applies). The caster may also target a single creature, in which case the saving throw is made with a penalty of -2.\nHold Plan",
+    "tags": [
+      "control",
+      "paralysis"
+    ],
+    "spell_id": "hold_monster_lmagic_user_5th_level",
+    "aliases": []
+  },
+  {
+    "name": "Hold Plant",
+    "spell_level": "Druid, 5th Level",
+    "range": "30 feet/level",
+    "duration": "1 hour (+10 minutes/level)",
+    "description": "The caster targets 1d4 plants or plant-creatures, which become completely \nimmobilized. (A saving throw applies for monster-type plants.) The caster may also target a single plant, in which case the saving throw is made with a penalty of -2. The spell does not only immobilize plants; it will also temporarily arrest the growth of any plant, magical or not.\nHold Person (Cleric",
+    "tags": [
+      "control",
+      "paralysis"
+    ],
+    "spell_id": "hold_plant_ldruid_5th_level",
+    "aliases": []
+  },
+  {
+    "name": "Hold Person (Cleric)",
+    "spell_level": "Cleric, 2nd Level",
+    "range": "180 feet",
+    "duration": "9 turns",
+    "description": "The caster targets 1d4 persons (according to the same parameters \nas the Charm Person spell), who are completely immobilized (saving throw applies). The caster may also target a single person, in which case the saving throw is made with a penalty of -2. \nHold Person (Magic- user",
+    "tags": [
+      "charm",
+      "control",
+      "mind_affecting",
+      "paralysis"
+    ],
+    "spell_id": "hold_person_cleric_lcleric_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Hold Person (Magic- user)",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "120 feet",
+    "duration": "1 hour (+10 minutes/level)",
+    "description": "The caster targets 1d4 persons (according to the same parameters \nas the Charm Person spell), who are completely immobilized (saving throw applies). The caster may also target a single person, in which case the saving throw is made with a penalty of -2. Hold Porta",
+    "tags": [
+      "charm",
+      "control",
+      "mind_affecting",
+      "paralysis"
+    ],
+    "spell_id": "hold_person_magic_user_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Holy Word",
+    "spell_level": "Magic-User, 1st Level",
+    "range": "Referee’s Discretion",
+    "duration": "2d6 turns",
+    "description": "This spell holds a door closed for the spell’s duration or until dispelled. \nCreatures with magic resistance can shatter the spell without effort.\nHoly Wor",
+    "spell_id": "holy_word_lmagic_user_1st_level",
+    "aliases": [],
+    "tags": [
+      "dispel",
+      "protection"
+    ]
+  },
+  {
+    "name": "Holy Word",
+    "spell_level": "Cleric, 7th Level",
+    "range": "40-foot radius",
+    "duration": "2d6 turns",
+    "description": "This spell holds a door closed for the spell’s duration or until dispelled. \nCreatures with magic resistance can shatter the spell without effort.\nHoly Word",
+    "spell_id": "holy_word_lcleric_7th_level",
+    "aliases": [],
+    "tags": [
+      "dispel",
+      "protection"
+    ]
+  },
+  {
+    "name": "Ice Storm",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "120 feet",
+    "duration": "1 round",
+    "description": "A whirling vortex of ice, snow, and hail forms in a cube roughly 30 \nfeet across. Massive hailstones inflict 3d10 hit points of damage (no saving throw applies) to all within the area.\ninsect Plagu",
+    "tags": [
+      "cold"
+    ],
+    "spell_id": "ice_storm_lmagic_user_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Insect Plague",
+    "spell_level": "Cleric, 5th Level; Druid, 4th level",
+    "range": "480 feet",
+    "duration": "1 day",
+    "description": "This spell works only outdoors. A storm of insects gathers, and goes \nwherever the caster directs. The cloud covers approximately 400 square feet (20 feet by 20 feet, with roughly corresponding height). Any creature of 2 HD or fewer that is exposed to the cloud of insects flees in terror (no saving throw).\n60MAgiC\n\ninvisibilit",
+    "spell_id": "insect_plague_lcleric_5th_level_druid_4th_level",
+    "aliases": [],
+    "tags": [
+      "fear",
+      "illusion",
+      "mind_affecting"
+    ]
+  },
+  {
+    "name": "Invisibility",
+    "spell_level": "Magic-User, 2th Level",
+    "range": "240 ft",
+    "duration": "Until dispelled or an attack is made",
+    "description": "The object of this spell, whether a person or a thing, becomes invisible \nto both normal sight and darkvision. The result is that an invisible creature cannot be attacked unless its approximate location is known, and all attacks are made at -4 to hit. If the invisible creature makes an attack, the spell is broken. Otherwise, it lasts until dispelled or removed by the caster.\ninvisibility 10-Foot Radiu",
+    "tags": [
+      "dispel",
+      "illusion"
+    ],
+    "spell_id": "invisibility_lmagic_user_2th_level",
+    "aliases": []
+  },
+  {
+    "name": "Invisibility 10-Foot Radius",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "240 feet",
+    "duration": "Until dispelled or an attack is made",
+    "description": "Like the Invisibility spell, Invisibility 10-Foot Radius makes the target \ncreature or object invisible to normal sight and darkvision. It also, \nhowever, throws a radius of invisibility around the recipient, which moves with him/her/it. Nothing inside the radius of invisibility can be attacked unless its approximate location is known, and all attacks are made at -4 to hit. If an invisible creature makes an attack, the spell is broken. Otherwise, it lasts until dispelled or removed by the caster.\ninvisible Stalke",
+    "tags": [
+      "dispel",
+      "illusion"
+    ],
+    "spell_id": "invisibility_10_foot_radius_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Invisible Stalker",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "Close",
+    "duration": "Until mission is completed",
+    "description": "This spell summons (or perhaps creates) an invisible stalker, an \ninvisible being with 8 HD. (See the Monster section for more details.) The stalker will perform one task as commanded by the caster, regardless of how long the task may take or how far the stalker may have to travel. The stalker cannot be banished by means of",
+    "spell_id": "invisible_stalker_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "illusion",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Knock",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "60 feet",
+    "duration": "Immediate",
+    "description": "This spell unlocks and unbars all doors, gates, and portals within its \nrange, including those held or locked by normal magic.\nlegend lor",
+    "spell_id": "knock_lmagic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Knock",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "60 feet",
+    "duration": "Immediate",
+    "description": "This spell unlocks and unbars all doors, gates, and portals within its \nrange, including those held or locked by normal magic.\nlegend lore",
+    "spell_id": "knock_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Levitate",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "20 feet/level",
+    "duration": "1 turn/level",
+    "description": "This spell allows the Magic-User to levitate himself, moving vertically \nup or down, but the spell itself provides no assistance with lateral movement. A wall, cliff side, or ceiling could, of course, be used to pull along hand-over-hand. Levitation allows up- or downward movement at a rate of up to 6 feet per minute (60 feet per turn), and the caster cannot levitate more than 20 feet per level from the ground level where the spell was cast. (Such range is applied both to movement into the air and to downward movement into a pit or chasm.)ligh",
+    "spell_id": "levitate_lmagic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "protection",
+      "travel"
+    ]
+  },
+  {
+    "name": "Light",
+    "spell_level": "Cleric; Magic-User, 1st Level",
+    "range": "60 feet",
+    "duration": "1 hour (+10 minutes/level)",
+    "description": "The target person or object (at a range of up to 60 feet) produces light \nabout as bright as a torch, to a radius of 20 feet.\nThe Cleric version of this spell lasts 2 hours.\nlightning Bol",
+    "spell_id": "light_lcleric_magic_user_1st_level",
+    "aliases": [],
+    "tags": [
+      "electric"
+    ]
+  },
+  {
+    "name": "Lightning Bolt",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "240 feet (maximum distance)",
+    "duration": "Instantaneous",
+    "description": "A bolt of lighting extends 60 feet from the targeted point, almost ten \nfeet wide. Anyone in its path suffers 1d6 points of damage per level of the caster (half with a successful saving throw). The bolt always extends 60 feet, even if this means that it ricochets backward from something that blocks its path.                       \nlimited Wis",
+    "tags": [
+      "electric",
+      "protection"
+    ],
+    "spell_id": "lightning_bolt_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Limited Wish",
+    "spell_level": "Magic-User, 7th Level",
+    "range": "Referee’s discretion",
+    "duration": "Changes reality",
+    "description": "This powerful spell allows the caster to change reality, although in limited \nways and sometimes only for limited periods of time. Such limitations will determined by the Referee in accordance with the circumstances.\nlocate",
+    "spell_id": "limited_wish_lmagic_user_7th_level",
+    "aliases": [],
+    "tags": [
+      "detection"
+    ]
+  },
+  {
+    "name": "Locate Animal",
+    "spell_level": "Druid, 1st level",
+    "range": "60 feet +10 feet/level",
+    "duration": "1 round/level",
+    "description": "Within the spell’s range, the caster perceives the correct direction (as \nthe crow flies) toward the nearest specimen of a type of animal named in the casting of the spell. \nlocate Object (Cleric",
+    "spell_id": "locate_animal_ldruid_1st_level",
+    "aliases": [
+      "Locate Animals"
+    ],
+    "tags": [
+      "detection",
+      "protection"
+    ]
+  },
+  {
+    "name": "Locate Object Cleric",
+    "spell_level": "Cleric, 3rd Level",
+    "range": "90 feet",
+    "duration": "1 round/level",
+    "description": "Within the spell’s range, the Cleric perceives the correct direction (as \nthe crow flies) toward an object the caster specifies by description in the spell. The object must be something the caster has seen, although the spell can detect an object in a general class of items known to the caster: stairs, gold, etc.\n61MAgiC\n\nlocate Object (Magic- user",
+    "spell_id": "locate_object_cleric_lcleric_3rd_level",
+    "aliases": [],
+    "tags": [
+      "detection",
+      "protection"
+    ]
+  },
+  {
+    "name": "Locate Object Magic- User",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "60 feet +10 feet/level",
+    "duration": "1 round/level",
+    "description": "Within the spell’s range, the caster perceives the correct direction (as \nthe crow flies) toward an object the caster specifies by description in the spell. The object must be something the caster has seen, although the spell can detect an object in a general class of items known to the caster: stairs, gold, etc.\nlocate",
+    "spell_id": "locate_object_magic_user_lmagic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "detection",
+      "protection"
+    ]
+  },
+  {
+    "name": "Locate Plants",
+    "spell_level": "Druid, 2nd level",
+    "range": "60 feet (+10 feet/level)",
+    "duration": "1 round/level",
+    "description": "The caster perceives the correct direction (as the crow flies) toward \nthe nearest specimen of a type of plant named in the casting of the spell.\nlower",
+    "spell_id": "locate_plants_ldruid_2nd_level",
+    "aliases": [],
+    "tags": [
+      "detection",
+      "protection"
+    ]
+  },
+  {
+    "name": "Lower Water",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "240 feet",
+    "duration": "1 round/level",
+    "description": "The caster perceives the correct direction (as the crow flies) toward \nthe nearest specimen of a type of plant named in the casting of the spell.\nlower",
+    "spell_id": "lower_water_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "protection"
+    ]
+  },
+  {
+    "name": "Magic Jar",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "240 feet",
+    "duration": "2 hours",
+    "description": "This spell lowers the depth and water level of lakes, rivers, wells, and \nother bodies of water to one-half normal.\nMagic Jar",
+    "spell_id": "magic_jar_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Magic Missile",
+    "spell_level": "Magic-User, 1st Level",
+    "range": "150 feet",
+    "duration": "Immediate",
+    "description": "A magical missile flies where the caster directs, with a range of 150 \nfeet. At the Referee’s discretion, this spell may have one of two effects: 1) The Magic-User must roll to hit the target with a +1 bonus to the roll. The missile inflicts 1d6+1 points of damage. 2) The missile hits automatically, doing 1d4+1 points of damage.\nIn either case, the Magic-User casts an additional two missiles for \nevery 5 levels of experience. Thus, at 5th level, the caster is able to hurl 3 magic missiles, and 5 missiles at 10th level.Magic Mout",
+    "tags": [
+      "force"
+    ],
+    "spell_id": "magic_missile_lmagic_user_1st_level",
+    "aliases": []
+  },
+  {
+    "name": "Magic Mouth",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "Touch",
+    "duration": "Permanent until triggered or dispelled",
+    "description": "This enchantment is set upon an object, and the magic is triggered \nwhen certain conditions established by the caster are met. When that happens, a mouth appears on the object and speaks the message it has been commanded to speak. The message may be up to thirty words long.\nMass",
+    "spell_id": "magic_mouth_lmagic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Mass Charm",
+    "spell_level": "Magic-User, 8th Level",
+    "range": "120 feet",
+    "duration": "Until dispelled",
+    "description": "This spell operates in the same manner and with the same restrictions \nas Charm Person. However, it affects a total of 30 HD of creatures, in \nany combination. All saving throws are made with a penalty of -2.\nMass invisibilit",
+    "tags": [
+      "charm",
+      "illusion",
+      "mind_affecting"
+    ],
+    "spell_id": "mass_charm_lmagic_user_8th_level",
+    "aliases": []
+  },
+  {
+    "name": "Mass invisibility",
+    "spell_level": "Magic-User, 7th Level",
+    "range": "240 feet",
+    "duration": "See below",
+    "description": "This spell makes 1d3 x 100 man- or horse-sized creatures (or objects) \ninvisible, as if they had been affected by a single Invisibility  spell. The \nspell can instead affect up to 6 creatures of dragon size. As with the \nInvisibility  spell, the enchantment lasts until dispelled or until one of \nthe creatures makes an attack.\nMassmorp",
+    "tags": [
+      "dispel",
+      "illusion"
+    ],
+    "spell_id": "mass_invisibility_lmagic_user_7th_level",
+    "aliases": []
+  },
+  {
+    "name": "Massmorph",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "240 feet",
+    "duration": "Until negated by the caster or dispelled",
+    "description": "One hundred or fewer man- or horse-sized creatures are changed \nto appear like innocent trees. The illusion is so perfect that creatures moving through the “forest” will not detect the deception.\n62MAgiC\nMaze",
+    "spell_id": "massmorph_lmagic_user_4th_level",
+    "aliases": [],
+    "tags": [
+      "detection",
+      "illusion"
+    ]
+  },
+  {
+    "name": "Maze",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "60 feet",
+    "duration": "Depends on Intelligence",
+    "description": "The targeted creature disappears into a gap in reality, where strange \ncurving and branching passages conceal the way out. Creatures with \nan Intelligence score lower than 6 require 2d4 x3 rounds (minutes) to escape the interdimensional prison. Creatures with Intelligence scores 7–11 require 2d4 rounds, and creatures with an intelligence of 12+ require only 1d4 rounds to puzzle their way back into normal reality. Although monsters are not described with specific Intelligence scores, it should not be hard to determine into which category any specific monster falls. Unless ruled otherwise by the Referee, there is no saving throw to avoid the spell.\nMeteor Swar",
+    "spell_id": "maze_lmagic_user_9th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Meteor Swarm",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "240 feet",
+    "duration": "Instantaneous",
+    "description": "Tiny meteors swarm from the caster’s hands and explode into balls of fire \nwhere desired. The caster may hurl 4 normal fireballs for 10d6 damage or \n8 fireballs of 10-foot diameter that inflict 5d6 points of damage. Targets are permitted a saving throw, allowing them to take half damage.\nMind Blan",
+    "tags": [
+      "fire"
+    ],
+    "spell_id": "meteor_swarm_lmagic_user_9th_level",
+    "aliases": []
+  },
+  {
+    "name": "Mind Blank",
+    "spell_level": "Magic-user, 8th Level",
+    "range": "10-foot radius",
+    "duration": "24 hours",
+    "description": "The spell protects against all magic spying, including crystal balls, \nspells (including Wish), and even magical scrying by minor deities.\nMirror imag",
+    "spell_id": "mind_blank_lmagic_user_8th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Mirror image",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "10-foot radius",
+    "duration": "24 hours",
+    "description": "The spell protects against all magic spying, including crystal balls, \nspells (including Wish), and even magical scrying by minor deities.\nMirror image",
+    "spell_id": "mirror_image_lmagic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "illusion"
+    ]
+  },
+  {
+    "name": "Monster Summoning i",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "N/A",
+    "duration": "6 rounds (minutes)",
+    "description": "The caster summons allies, who serve him until slain, or until the \nduration of the spell expires. The allies do not appear immediately; there is a delay of 1 turn (10 minutes) before they appear.\ntable 38: Monster Summoning i\nDie Roll Monster Summoned1\n1 1d6 Giant Rats\n2 1d3 Dwarves (Goblins)\n3 1d3 Elves (Hobgoblins)\n4 1d6 Kobolds\n5 1d3 Orcs\n6 1d3 Skeletons\n1 Chaotically-aligned casters might get the monster in parenthesis, at \nthe Referee’s discretionMonster Summoning i",
+    "spell_id": "monster_summoning_i_lmagic_user_3rd_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "The Referees DiscretionMonster Summoning ii",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "N/A",
+    "duration": "6 rounds (minutes)",
+    "description": "The caster summons allies, who serve him until slain, or until the \nduration of the spell expires. The allies do not appear immediately; there is a delay of 1 turn (10 minutes) before they appear.\ntable 39: Monster Summoning ii\nDie Roll Monster Summoned\n1 1d2 Hobgoblins\n2 1d2 Zombies\n3 1d2 Gnolls\n4 1d2 Bugbears\n5 1d6 Orcs\n6 1d6 Skeletons",
+    "spell_id": "the_referees_discretionmonster_summoning_ii_lmagic_user_4th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Monster Summoning iii",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "N/A",
+    "duration": "6 rounds (minutes)",
+    "description": "The caster summons allies, who serve him until slain, or until the \nduration of the spell expires. The allies do not appear immediately; there is a delay of 1 turn (10 minutes) before they appear.\ntable 40: Monster Summoning iii\nDie Roll Monster Summoned\n1 1d4 Bugbears\n2 1d2 Harpies\n3 1d2 Ochre Jellies\n4 1d2 Were-rats\n5 1d2 Wights\n6 1d2 Wild Boar\nMonster Summoning i",
+    "spell_id": "monster_summoning_iii_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Monster Summoning iV",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "N/A",
+    "duration": "6 rounds (minutes)",
+    "description": "The caster summons allies, who serve him until slain, or until the \nduration of the spell expires. The allies do not appear immediately; there is a delay of 1 turn (10 minutes) before they appear.\ntable 41: Monster Summoning iV\nDie Roll Monster Summoned\n1 1 Gargoyle\n2 1 Ogre\n3 1 Owlbear\n4 1 Shadow\n5 1 Werewolf\n6 1 Wraith\n63MAgiC\nMonster Summoning",
+    "spell_id": "monster_summoning_iv_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "illusion",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Monster Summoning V",
+    "spell_level": "Magic-User, 7th Level",
+    "range": "N/A",
+    "duration": "6 rounds (minutes)",
+    "description": "The caster summons allies, who serve him until slain, or until the \nduration of the spell expires. The allies do not appear immediately; there is a delay of 1 turn (10 minutes) before they appear.\ntable 42: Monster Summoning V\nDie Roll Monster Summoned\n1 1 Cockatrice\n2 1 Manticore\n3 1 Minotaur\n4 1 Ogre Mage\n5 1 Salamander\n6 1 Troll\nMonster Summoning V",
+    "spell_id": "monster_summoning_v_lmagic_user_7th_level",
+    "aliases": [],
+    "tags": [
+      "cold",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Monster Summoning V i",
+    "spell_level": "Magic-User, 8th Level",
+    "range": "N/A",
+    "duration": "6 rounds (minutes)",
+    "description": "The caster summons allies, who serve him until slain, or until the \nduration of the spell expires. The allies do not appear immediately; there is a delay of 1 turn (10 minutes) before they appear.\ntable 43: Monster Summoning V i\nDie Roll Monster Summoned\n1 1 Black Dragon\n2 1 Chimera\n3 1 Efreeti\n4 1 Flesh Golem\n5 1 Frost Giant\n6 1 Hill Giant\n7 1 Hydra (7 heads)\n8 1 Mummy\n9 1d2 Ogre Magi\n10 1 White DragonMonster Summoning V i",
+    "spell_id": "monster_summoning_v_i_lmagic_user_8th_level",
+    "aliases": [],
+    "tags": [
+      "cold",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Monster Summoning VIII",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "N/A",
+    "duration": "6 rounds (minutes)",
+    "description": "The caster summons allies, who serve him until slain, or until the \nduration of the spell expires. The allies do not appear immediately; \nthere is a delay of 1 turn (10 minutes) before they appear.\ntable 44: Monster Summoning V ii\nDie Roll Monster Summoned\n1 1d2 Chimerae\n2 1 Fire Giant\n3 1 Hydra (9 heads)\n4 1 Iron Golem\n5 1 Lich\n6 1 Purple Worm\n7 1 Red Dragon\n8 1 Stone Golem\n9 1 Storm Giant\n10 1 Titan",
+    "spell_id": "monster_summoning_viii_lmagic_user_9th_level",
+    "aliases": [],
+    "tags": [
+      "fire",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Move Earth",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "240 feet",
+    "duration": "1 hour; effects permanent",
+    "description": "This spell can only be used above ground. It allows the caster to move \nhills and other raised land or stone at a rate of 6 feet per minute (60 feet per turn).\nneutralize Poiso",
+    "spell_id": "move_earth_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "creation"
+    ]
+  },
+  {
+    "name": "Obscuring Mist",
+    "spell_level": "Cleric, 4th Level; Druid, 3rd Level",
+    "range": "Touch",
+    "duration": "Immediate",
+    "description": "This spell counteracts poison if used promptly, but cannot be used to \nbring the dead back to life later.\nObscurement \nSee",
+    "tags": [
+      "poison"
+    ],
+    "spell_id": "obscuring_mist_lcleric_4th_level_druid_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Obscuring Mist",
+    "spell_level": "Druid, 2nd Level",
+    "range": "Touch",
+    "duration": "Immediate",
+    "description": "This spell counteracts poison if used promptly, but cannot be used to \nbring the dead back to life later.\nObscurement \nSee Obscuring Mist\nObscuring Mist",
+    "spell_id": "obscuring_mist_ldruid_2nd_level",
+    "aliases": [],
+    "tags": [
+      "poison"
+    ]
+  },
+  {
+    "name": "Part Water",
+    "spell_level": "Cleric, 7th Level",
+    "range": "20 feet",
+    "duration": "1 turn/level",
+    "description": "A misty vapor seethes outward from the casting point, billowing forth \nto fill a radius of 20 feet + 10 feet per level of the caster.\nPart Water",
+    "spell_id": "part_water_lcleric_7th_level",
+    "aliases": [],
+    "tags": [
+      "protection"
+    ]
+  },
+  {
+    "name": "Part Water",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "120 feet",
+    "duration": "1 hour",
+    "description": "This spell creates a gap through water, but only to a depth of 10 feet.\nPassplan",
+    "spell_id": "part_water_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Passplant",
+    "spell_level": "Druid, 5th Level",
+    "range": "120 feet",
+    "duration": "1 hour",
+    "description": "This spell creates a gap through water, but only to a depth of 10 feet.\nPassplant",
+    "spell_id": "passplant_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Passwall",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "30 feet",
+    "duration": "3 turns (30 minutes)",
+    "description": "This spell creates a hole through solid rock, about 7 feet high, 10 \nfeet wide, and 10 feet deep (possibly deeper at the discretion of the Referee). The hole closes again at the end of the spell’s duration.\nPermanenc",
+    "spell_id": "passwall_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "travel"
+    ]
+  },
+  {
+    "name": "Permanency",
+    "spell_level": "Magic-User, 8th Level",
+    "range": "See below",
+    "duration": "Permanent until dispelled by an opponent of twice the caster’s level",
+    "description": "This spell makes the effect of another spell permanent—unless a Magic-\nUser of twice the caster’s level dispels it. No more than one Permanency  \nis ordinarily possible on any one object, and no more than two upon a creature. Considerable Referee discretion is required for the use of this spell; many spells should not be subject to being made permanent.\nPhantasmal Forc",
+    "spell_id": "permanency_lmagic_user_8th_level",
+    "aliases": [],
+    "tags": [
+      "cold",
+      "dispel",
+      "illusion"
+    ]
+  },
+  {
+    "name": "Phantasmal Force",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "240 feet",
+    "duration": "Until concentration ends",
+    "description": "This spell creates an illusion that seems realistic to all who view it. \nThe illusion disappears when it is touched, but if the viewer believes the illusion is real, it can cause damage. Unless the Referee rules otherwise, victims of the spell are permitted a saving throw, and the illusion cannot cause more than 2d6 points of damage per victim. This will depend on circumstances; a truly brilliant use of the spell can be quite devastating, and a poorly thought-out illusion might cause almost immediate disbelief.Phase Doo",
+    "tags": [
+      "force",
+      "illusion"
+    ],
+    "spell_id": "phantasmal_force_lmagic_user_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Phase Door",
+    "spell_level": "Magic-User, 7th Level",
+    "range": "10 feet from caster",
+    "duration": "Seven uses",
+    "description": "The phase door is an invisible portal about 7 feet high, 10 feet wide, and 10 feet deep, accessible only to the caster. A barrage of Dispel Magic spells can close the passage, but only if the combined level of the dispelling casters is twice that of the portal’s creator. \nPlant Door\nSee",
+    "spell_id": "phase_door_lmagic_user_7th_level",
+    "aliases": [],
+    "tags": [
+      "cold",
+      "dispel",
+      "illusion",
+      "teleport",
+      "travel"
+    ]
+  },
+  {
+    "name": "Plant Doorway",
+    "spell_level": "Druid, 4th Level",
+    "range": "Passage begins where caster stands",
+    "duration": "3 turns + 1 turn/level",
+    "description": "This spell opens a pathway for the caster through even the deepest and \nmost tangled growths of plants, thorns, and trees. The pathway can be made up to 5 feet wide, 6 feet tall, and 100 feet in length, but only the caster can move through it. The Druid may choose to remain housed safely inside a tree, if the spell has opened a passage through one. It is possible to remain within the tree after the spell expires; for as long as desired, in fact, before leaving it.\nPlant growt",
+    "spell_id": "plant_doorway_ldruid_4th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Plant growth",
+    "spell_level": "Druid, 3rd Level; Magic-User, 4th Level",
+    "range": "240 feet",
+    "duration": "Permanent until dispelled",
+    "description": "Undergrowth in the area suddenly grows into an impassable forest \nof thorns and vines. Up to 300 square feet of ground can be affected by this spell and the caster can decide the shape of the area to be enchanted. An alternate version (Referee’s decision) would allow the spell to affect an area of 300 feet x 300 feet, for a total of 90,000 square feet).\nPolymorph Objec",
+    "spell_id": "plant_growth_ldruid_3rd_level_magic_user_4th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Polymorph Object",
+    "spell_level": "Magic-User, 8th Level",
+    "range": "240 feet",
+    "duration": "Referee’s discretion",
+    "description": "An object can be turned into another object, animal, vegetable, \nor mineral. The degree of change will affect the spell’s duration. Animal-to-animal changes, vegetable-to-vegetable changes, and mineral-to-mineral changes are all likely to remain permanent until dispelled. Thus, turning a human into an orc, or turning a wall into a pile of sand, would both result in a permanent change. On the other hand, turning a shrub into a thinking human being would last only a small number of turns. Determining how long a proposed use of the spell will last is the province of the Referee; it is important to remember that this is an eighth-level spell of considerable power—but not as powerful as a ninth-level Wish  \nspell.\nPolymorph Othe",
+    "tags": [
+      "dispel"
+    ],
+    "spell_id": "polymorph_object_lmagic_user_8th_level",
+    "aliases": []
+  },
+  {
+    "name": "Polymorph Other",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "240 feet",
+    "duration": "Permanent until dispelled",
+    "description": "This spell allows the caster to turn another being into a different \ntype of creature, such as a dragon, a garden slug, or of course, a frog or newt. The polymorphed creature gains all the abilities of the new form, but retains its own mind and hit points.\n65MAgiC\nPolymorph Sel",
+    "tags": [
+      "force"
+    ],
+    "spell_id": "polymorph_other_lmagic_user_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Polymorph Self",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "Caster",
+    "duration": "1 hour or Referee’s discretion",
+    "description": "The caster assumes the form of any object or creature, gaining the \nnew form’s attributes (the use of wings, for example), but not its hit points or combat abilities. The Referee might allow the benefit of the new form’s armor class, if it is due to heavily armored skin. A great deal of the spell’s effect is left to the Referee to decide.\nPower Word, Blin",
+    "tags": [
+      "force"
+    ],
+    "spell_id": "polymorph_self_lmagic_user_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Power Word, Blind",
+    "spell_level": "Magic-User, 8th Level",
+    "range": "120 feet",
+    "duration": "1d4 or 2d4 days (See below)",
+    "description": "The caster speaks a word of power to a particular creature. If that \ncreature has 40 hit points or fewer, it is instantly blinded for 2d4 days; if the creature has from 41 to 80 hit points, it is blinded for 1d4 days. If the creature has more than 80 hit points it is not affected by the spell. No saving throw applies.\nPower Word, Kil",
+    "tags": [
+      "force"
+    ],
+    "spell_id": "power_word_blind_lmagic_user_8th_level",
+    "aliases": []
+  },
+  {
+    "name": "Power Word, Kill",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "120 feet",
+    "duration": "Immediate",
+    "description": "The caster speaks a word of power to a particular creature. If that creature \nhas 50 hit points or fewer, it is slain by the word it hears; if it has more than 50 hit points it is not affected by the spell. No saving throw is permitted.\nPower Word, Stu",
+    "tags": [
+      "force"
+    ],
+    "spell_id": "power_word_kill_lmagic_user_9th_level",
+    "aliases": []
+  },
+  {
+    "name": "Power Word, Stun",
+    "spell_level": "Magic-User, 7th Level",
+    "range": "120 feet",
+    "duration": "1d6 or 2d6 turns (See below)",
+    "description": "The caster speaks a word of power to a particular creature. If that \ncreature has 35 or fewer hit points, it is instantly stunned for 2d6 turns; if the creature has from 36 to 70 hit points, it is stunned for only 1d6 turns. If the creature has more than 70 hit points it is not affected by the spell. No saving throw is permitted.\nPraye",
+    "spell_id": "power_word_stun_lmagic_user_7th_level",
+    "aliases": [],
+    "tags": [
+      "force"
+    ]
+  },
+  {
+    "name": "Prayer",
+    "spell_level": "Cleric, 3rd Level",
+    "range": "30 feet",
+    "duration": "Following melee round",
+    "description": "The Prayer spell seeks short-term favor from the gods to help some \nother spell or attack to succeed. Prayer affects a 20-foot x 20-foot area, causing a saving throw penalty to all creatures in that area. The penalty is a -1, plus an additional -1 for every ten caster levels. Thus, a 10th level Cleric causes a saving throw penalty of -2. The penalty actually takes effect in the melee round following the one in which it was cast.\nPredict Weathe",
+    "spell_id": "prayer_lcleric_3rd_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Predict Weather",
+    "spell_level": "Druid, 1st Level",
+    "range": "Centered on caster",
+    "duration": "Immediate",
+    "description": "The Druid silently drinks in knowledge from the surrounding area, \nbecoming attuned to the patterns of air, wind, earth and fire. Within moments, the character can predict what the weather conditions will be for the next twelve hours in the immediate vicinity (2 square miles/level). As with most forecasts of weather, conditions may change unexpectedly, giving rise to a 5% chance that the Druid’s prediction will, ultimately, prove to be incorrect.Prismatic Spher",
+    "spell_id": "predict_weather_ldruid_1st_level",
+    "aliases": [],
+    "tags": [
+      "fire"
+    ]
+  },
+  {
+    "name": "Prismatic Sphere",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "10-foot sphere",
+    "duration": "1 hour",
+    "description": "A sphere of seven colors whirls about the Magic-User, with a radius of \n10 feet. The glowing colors form a layered spectrum; to destroy the sphere, each layer must be destroyed in turn from Red to Orange, to Yellow, to Blue, to Indigo, and then to the innermost Violet layer. Any creature of 7 or fewer hit dice that looks upon the sphere will be blinded for 1d6 turns.\ntable 46: Prismatic Sphere\nLayer Effects of Color Negated By\nRed Causes 12 points \nof damage when \ntouched. Stops any \nmagic arrows or \nmissiles (including \nthe spell Magic \nMissile).Ice Storm or other \ncold-based attack\nOrangeCauses 24 points \nof damage when \ntouched. Stops \narrows and any \nother non-magical \nmissile.Lightning Bolt  or \nother electrical \nattack\nYellowCauses 48 points \nof damage when \ntouched. Blocks all \nbreath weapons.Magic Missile  spell \nor a magical arrow\nGreenCauses death \n(saving throw \nallowed) when \ntouched. Blocks \nany scrying and \ndetection-type spells \nfrom seeing within.Passwall spell or \nother earth-moving \nmagic\nBlueTurns flesh to stone \nwhen touched \n(saving throw \nallowed). Blocks \nall divine (Clerical) \nmagic from passing \nthrough. Disintegrate spell \n(may be from a \nwand or item)\nIndigoCauses death \nand destroys the \nsoul utterly when \ntouched (saving \nthrow allowed).Dispel Magic\nVioletCauses permanent \ninsanity when \ntouched. Blocks \nall arcane (Magic-\nUser) spells.",
+    "spell_id": "prismatic_sphere_lmagic_user_9th_level",
+    "aliases": [],
+    "tags": [
+      "cold",
+      "death",
+      "detection",
+      "dispel",
+      "electric",
+      "force",
+      "necrotic",
+      "summoning",
+      "travel"
+    ]
+  },
+  {
+    "name": "Produce Fire",
+    "spell_level": "Druid, 4th Level",
+    "range": "30 feet",
+    "duration": "1 turn (10 minutes)",
+    "description": "This spell instantly creates fire in an area of up to 10 feet x 10 feet. \nThe fire burns for no longer than ten minutes without fuel, but will set alight any flammable materials in the area where it was summoned forth. The spell may also be reversed to quench flames rather than ignite them.\nProduce Flam",
+    "tags": [
+      "fire",
+      "summoning"
+    ],
+    "spell_id": "produce_fire_ldruid_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Produce Flame",
+    "spell_level": "Druid, 2nd Level",
+    "range": "Palm of hand",
+    "duration": "2 turns/level",
+    "description": "Flame ignites from nowhere in the palm of the caster’s hand, causing \nno damage to the caster, but otherwise as hot as natural fire. It can be used while held, or thrown to a distance of 30 feet, to ignite flammable materials. For so long as the druid-fire is in the caster’s hand, it can be extinguished immediately whenever the caster wishes it gone.\nProject imag",
+    "tags": [
+      "fire"
+    ],
+    "spell_id": "produce_flame_ldruid_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Project image",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "240-foot sphere",
+    "duration": "1 hour",
+    "description": "The caster projects an image of himself or herself, to a maximum \nrange of 240 feet. Not only does the projected image mimic the caster’s sounds and gestures, but also any spells being cast will appear to originate from the image.\nProtection from Evi",
+    "spell_id": "project_image_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "protection"
+    ]
+  },
+  {
+    "name": "Protection from Evil",
+    "spell_level": "Cleric, 1st Level; Magic-User, 1st Level",
+    "range": "Caster",
+    "duration": "2 hours",
+    "description": "Creates a magical field of protection immediately around the caster, \nblocking out all enchanted monsters such as elementals and demons). Evil monsters suffer a -1 penalty to hit the caster, and the caster gains +1 on all saving throws against such attacks. If the caster already has any magical bonuses to saving throws or armor class, the bonus from the magic circle has no effect, although the protective circle still functions against enchanted creatures.\nThe Magic-User version of this spell is exactly the same as the one \nused by the Cleric, except that it has a duration time of 1 hour.\nProtection from Evil, 10-Foot Radiu",
+    "spell_id": "protection_from_evil_lcleric_1st_level_magic_user_1st_level",
+    "aliases": [],
+    "tags": [
+      "protection",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Protection from Evil, 10-Foot Radius",
+    "spell_level": "Cleric, 4th Level; Magic-User, 3rd Level",
+    "range": "Centered on caster",
+    "duration": "1 hour",
+    "description": "The spell creates a magical field of protection, ten feet in radius, \naround the caster. The field blocks out all enchanted monsters (such as elementals and demons). Evil monsters suffer a -1 penalty to hit anyone within the protective globe, and these shielded individuals gain +1 on all saving throws against such attacks. If a person in the circle already has any magical bonuses to saving throws or armor class, the bonus from the magic circle has no effect for that person, although the protective circle still functions against enchanted creatures.Protection from Fir",
+    "spell_id": "protection_from_evil_10_foot_radius_lcleric_4th_level_magic_user_3rd_level",
+    "aliases": [],
+    "tags": [
+      "protection",
+      "summoning"
+    ]
+  },
+  {
+    "name": "Protection from Fire",
+    "spell_level": "Druid, 3rd Level",
+    "range": "Touch",
+    "duration": "3 turns +1 turn/level",
+    "description": "Protection from Fire may be cast on another person, but it confers a great \ndeal more eldritch warding if it is woven personally around the caster. When used to protect another creature, the spell’s warding grants complete immunity to normal fire and cuts damage from magical fire in half. When used to ward the caster, the spell also grants complete immunity against one exposure to magical fire, after which it functions normally.\nProtection from lightnin",
+    "spell_id": "protection_from_fire_ldruid_3rd_level",
+    "aliases": [
+      "Protection Against Fire"
+    ],
+    "tags": [
+      "fire",
+      "protection"
+    ]
+  },
+  {
+    "name": "Protection from lightning",
+    "spell_level": "Druid, 4th Level",
+    "range": "Touch",
+    "duration": "6 turns +1 turn/level",
+    "description": "This spell protects any creature from lightning, reducing any damage \nby one-half. Once lightning strikes, however, the spell ends.\nProtection from normal Missile",
+    "tags": [
+      "electric",
+      "protection"
+    ],
+    "spell_id": "protection_from_lightning_ldruid_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Protection from normal Missiles",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "Caster",
+    "duration": "6 turns +1 turn/level",
+    "description": "This spell protects any creature from lightning, reducing any damage \nby one-half. Once lightning strikes, however, the spell ends.\nProtection from normal Missiles",
+    "tags": [
+      "electric",
+      "protection"
+    ],
+    "spell_id": "protection_from_normal_missiles_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Purify Food and Drink",
+    "spell_level": "Cleric, 1st Level",
+    "range": "Caster",
+    "duration": "2 hours",
+    "description": "The caster becomes invulnerable to non-magical missiles, although \nlarger missiles such as boulders will overcome the spell’s magic.\nPurify Food and Drink",
+    "spell_id": "purify_food_and_drink_lcleric_1st_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Purify Water",
+    "spell_level": "Cleric, 1st Level; Druid, 1st Level",
+    "range": "Close/Touch (Referee’s discretion)",
+    "duration": "Immediate",
+    "description": "Enough food and water for up to a dozen people is made pure, \nremoving spoilage and poisons.\nPurify Water",
+    "spell_id": "purify_water_lcleric_1st_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Pyrotechnics",
+    "spell_level": "Druid, 3rd Level; Magic-User, 2nd Level",
+    "range": "Close/Touch (Referee’s discretion)",
+    "duration": "Immediate",
+    "description": "Approximately ten gallons of water is made pure, removing all \npoisons, algae, and other such contaminants.\nPyrotechnics",
+    "spell_id": "pyrotechnics_ldruid_3rd_level_magic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "fire"
+    ]
+  },
+  {
+    "name": "Quest",
+    "spell_level": "Cleric, 5th Level",
+    "range": "Speaking range",
+    "duration": "Until completed",
+    "description": "If the spell succeeds (saving throw applies), the caster may set a \ntask for the spell’s victim. If the victim does not diligently work at \nperforming the task, a deadly weakness will set in (50% reduction in Strength), and an attempt to entirely abandon the quest incurs a curse set by the caster in the wording of the original Quest. The details, of course, must be approved by the Referee.\n67MAgiC\nRaise Dea",
+    "spell_id": "quest_lcleric_5th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Raise Dead",
+    "spell_level": "Cleric, 5th Level",
+    "range": "Close/Touch (Referee’s discretion)",
+    "duration": "Immediate",
+    "description": "Raise Dead allows the Cleric to raise a corpse from the dead, provided \nit has not been dead too long. The normal time limit is 5 days, but \nfor every caster level higher than 8th, the time limit extends another 5 days. Characters with low Constitution might not survive the ordeal, and even for those with strong Constitution a period of at least a week is required before they can function normally. This spell functions only on “human-like” races, that is, ones that can be used for player characters.\nRead language",
+    "spell_id": "raise_dead_lcleric_5th_level",
+    "aliases": [],
+    "tags": [
+      "healing"
+    ]
+  },
+  {
+    "name": "Read languages",
+    "spell_level": "Magic-User, 1st Level",
+    "range": "Normal reading distance",
+    "duration": "One or two readings",
+    "description": "This spell allows the caster to decipher directions, instructions, and \nformulae in languages unknown to the caster. This can be particularly \nuseful for treasure maps, but it does not solve any codes.\nRead Magi",
+    "spell_id": "read_languages_lmagic_user_1st_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Read Magic",
+    "spell_level": "Magic-User, 1st Level",
+    "range": "Caster only",
+    "duration": "2 scrolls or other magical writings",
+    "description": "This spell allows the caster to read the magical writings upon scrolls \nand (occasionally) dungeon walls. Without the use of this spell, magical \nwriting cannot be read even by a Magic-User.\nReincarnation (Druidic",
+    "spell_id": "read_magic_lmagic_user_1st_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Reincarnation (Druidic)",
+    "spell_level": "Magic-User, 6th Level; Druid, 7th Level",
+    "range": "Touch",
+    "duration": "Instantaneous",
+    "description": "This spell brings a dead person’s soul back from the dead, but the \nsoul reappears in a newly formed body. Druidic Reincarnation  will \nnot affect someone who has been dead more than a week. Roll 1d100, and on a roll of 01-75 the result is determined from the same table as would be used for a Magic-User’s Reincarnation  spell (below). If the \npercentile dice gave a result of 76-00, roll 1d6 on the following table:\ntable 47: Druidic Reincarnation\nDie Roll Reincarnated as …\n1 Bear\n2 Lion\n3 Mouse\n4 Raven\n5 Stag\n6 WolfReincarnation (Magic- user",
+    "spell_id": "reincarnation_druidic_ldruid_7th_level",
+    "aliases": [
+      "Reincarnation"
+    ],
+    "tags": [
+      "cold"
+    ]
+  },
+  {
+    "name": "6 WolfReincarnation (Magic- user)",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "Touch",
+    "duration": "Instantaneous",
+    "description": "This spell brings a dead person’s soul back from the dead, but the \nsoul reappears in a newly formed body. Reincarnation will not affect someone who has been dead more than a week. Roll 1d20 on the following table. If the resulting creature is a normal character race, roll 1d6 to determine the character’s new level. \ntable 48: Reincarnation by Magic- users\nDie Roll Reincarnated as...\n1 Bugbear\n2 Centaur\n3 Dog, Cat, or Wolf\n4 Dwarf\n5 Elf\n6 Gnoll\n7 Goblin\n8 Half-orc\n9 Harpy\n10 Hobgoblin\n11 Human\n12 Kobold\n13 Lizard man\n14 Lycanthrope (Werewolf or other)\n15 Minotaur\n16 Ogre\n17 Ogre Mage\n18 Orc\n19 Troll\n20 Wyvern\nRemove Curs",
+    "spell_id": "6_wolfreincarnation_magic_user_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Remove Curse",
+    "spell_level": "Cleric, 3rd Level; Magic-User, 4th Level",
+    "range": "Very close",
+    "duration": "Immediate",
+    "description": "This spell removes one curse from a person or object.\nRepel Woo",
+    "tags": [
+      "dispel"
+    ],
+    "spell_id": "remove_curse_lcleric_3rd_level_magic_user_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Repel Wood",
+    "spell_level": "Cleric, 3rd Level; Magic-User, 4th Level",
+    "range": "Very close",
+    "duration": "Immediate",
+    "description": "This spell removes one curse from a person or object.\nRepel Wood",
+    "spell_id": "repel_wood_lcleric_3rd_level_magic_user_4th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Repulsion",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "120 feet",
+    "duration": "1 hour",
+    "description": "Any creature trying to move toward the caster finds itself moving \naway, instead.\nRestoratio",
+    "spell_id": "repulsion_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "protection"
+    ]
+  },
+  {
+    "name": "Restoration",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "120 feet",
+    "duration": "1 hour",
+    "description": "Any creature trying to move toward the caster finds itself moving \naway, instead.\nRestoration",
+    "spell_id": "restoration_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "healing",
+      "protection"
+    ]
+  },
+  {
+    "name": "Resurrection",
+    "spell_level": "Cleric, 7th Level",
+    "range": "Referee’s discretion",
+    "duration": "Immediate",
+    "description": "This spell (also known as “Raise Dead Fully”) raises the dead back \nto life, in the same manner as the Raise Dead spell. It is, however, \nconsiderably more powerful: the person raised from the dead needs no time to recuperate from the experience of death, and suffers no other penalties. An evil “reversal” of the spell can also be cast, which causes death with no saving throw.\nReverse gravit",
+    "spell_id": "resurrection_lcleric_7th_level",
+    "aliases": [],
+    "tags": [
+      "death",
+      "healing",
+      "necrotic"
+    ]
+  },
+  {
+    "name": "Reverse gravity",
+    "spell_level": "Magic-User, 7th Level",
+    "range": "90 feet",
+    "duration": "1 round (minute)",
+    "description": "The spell reverses gravity in a cubical area approximately 30 feet x 30 \nfeet x 30 feet in size. Everything in the area falls upward, and then when the spell ends it all falls back down again.\nRope tric",
+    "spell_id": "reverse_gravity_lmagic_user_7th_level",
+    "aliases": [],
+    "tags": [
+      "protection"
+    ]
+  },
+  {
+    "name": "Rope trick",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "As far as the caster can throw a rope",
+    "duration": "1 hour +1 turn/level",
+    "description": "The caster tosses a rope into the air and it hangs there, waiting to \nbe climbed. The caster and up to three others can climb the rope and disappear into a small ‘other’ dimension. The rope itself can be pulled into the pocket dimension, or left outside. If it is left outside, however, someone may steal it.\nShape Chang",
+    "spell_id": "rope_trick_lmagic_user_3rd_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Shape Change",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "Caster",
+    "duration": "1d6+10 turns +1 turn/level",
+    "description": "When the caster casts this spell upon him- or herself, it allows the \ncaster to turn at will into a variety of creatures. In each form, the wizard gains the characteristics of the creature, much as with the Polymorph Others spell. Thus, turning into a dragon actually allows the caster to use the dragon’s breath weapon. The caster might then choose to turn into a raven, then a frog, or whatever other creature is chosen. It is not, of course, required that the caster use more than one shape—remaining as a dragon for the duration of the spell works perfectly well.Shiel",
+    "spell_id": "shape_change_lmagic_user_9th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Shield",
+    "spell_level": "Magic-User, 1st Level",
+    "range": "Caster",
+    "duration": "2 turns",
+    "description": "The caster conjures up an invisible shield that interposes itself in front \nof attacks. The shield improves the caster’s armor class to 2 [17] against missile attacks and to 4 [15] against other (melee) attacks. If the caster’s armor class is already better than the spell would grant, the spell has no effect.\nSilence, 15-Foot Radiu",
+    "spell_id": "shield_lmagic_user_1st_level",
+    "aliases": [],
+    "tags": [
+      "control",
+      "illusion",
+      "protection"
+    ]
+  },
+  {
+    "name": "Silence, 15-Foot Radius",
+    "spell_level": "Cleric, 2nd Level",
+    "range": "180 feet",
+    "duration": "12 turns",
+    "description": "Magical silence falls in an area with a 15-foot radius around the \ntargeted creature or object, and moves with it. Nothing from this area, no matter how loud, can be heard outside the radius.\nSimulacru",
+    "tags": [
+      "control"
+    ],
+    "spell_id": "silence_15_foot_radius_lcleric_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Simulacrum",
+    "spell_level": "Magic-User, 7th Level",
+    "range": "Touch",
+    "duration": "Permanent",
+    "description": "The caster creates a duplicate of himself or some other person. \nThe basic form is created from snow and ice, and must then be animated. (Animate Dead is an acceptable means.) A Limited Wish  \n(along with the actual Simulacrum spell) is then used to imbue the animated form with intelligence and certain knowledge of the person being simulated. The simulacrum gains 30–60% (use a d4) of the simulated creature’s knowledge and experience. The simulacrum follows its creator’s orders. Note that the simulacrum is not a perfect representation of the original. Side by side, the differences are obvious, and the simulacrum is a magical creature detectable with a Detect Magic spell. If the original of the simulacrum dies, a \nstrange effect begins: the simulacrum begins to gain the knowledge and experience of the dead individual at a rate of 1% per week, to a maximum of 90%.\nSlee",
+    "spell_id": "simulacrum_lmagic_user_7th_level",
+    "aliases": [],
+    "tags": [
+      "cold",
+      "detection"
+    ]
+  },
+  {
+    "name": "Sleep",
+    "spell_level": "Magic-User, 1st Level",
+    "range": "240 feet",
+    "duration": "1 hour",
+    "description": "This spell puts enemies into an enchanted slumber (no saving throw \npermitted). It affects creatures based on their hit dice.\ntable 49: Sleep\nHit Dice of Victims Number Affected\nLess than 1 to 1 2d8\n1+ to 2+ 2d6\n3 to 3+ 1d6\n4 to 4+ 1\nSlo",
+    "tags": [
+      "cold",
+      "control",
+      "mind_affecting",
+      "sleep"
+    ],
+    "spell_id": "sleep_lmagic_user_1st_level",
+    "aliases": []
+  },
+  {
+    "name": "Slow",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "240 feet",
+    "duration": "3 turns (30 minutes)",
+    "description": "In an area with a radius of 60 feet around the point where the spell is \ntargeted, as many as 24 creatures failing a saving throw can move and attack only at half speed.\n69MAgiC\nSnake Char",
+    "tags": [
+      "control"
+    ],
+    "spell_id": "slow_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Snake Charm",
+    "spell_level": "Cleric, 2nd Level",
+    "range": "60 feet",
+    "duration": "1d4+2 turns",
+    "description": "One hit die (1 HD) of snakes can be charmed per level of the caster. \nThe snakes obey the caster’s commands.\nSpeak with Animal",
+    "tags": [
+      "charm",
+      "mind_affecting"
+    ],
+    "spell_id": "snake_charm_lcleric_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Speak with Animals",
+    "spell_level": "Cleric, 2nd Level; Druid, 2nd Level",
+    "range": "60 feet",
+    "duration": "1d4+2 turns",
+    "description": "One hit die (1 HD) of snakes can be charmed per level of the caster. \nThe snakes obey the caster’s commands.\nSpeak with Animals",
+    "spell_id": "speak_with_animals_lcleric_2nd_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Speak with the Dead",
+    "spell_level": "Cleric, 3rd Level",
+    "range": "Close/Touch (Referee’s discretion)",
+    "duration": "3 questions",
+    "description": "The caster can ask three questions of a corpse, and it will answer, \nalthough the answers might be cryptic. Only higher-level Clerics have enough spiritual power to command answers of long-dead corpses. Clerics lower than 8th level can gain answers only from bodies that have been dead 1d4 days. Clerics levels 8–14 can speak to corpses that have been dead 1d4 months. Clerics of level 15+ can gain answers from a corpse of any age, including thousand-year-old relics, as long as the body is still relatively intact. Note that a die roll is involved here: for example, a seventh-level Cleric attempting to speak with a two-day-old corpse might still fail—the d4 roll might indicate that only a one-day-old corpse can be reached with this particular attempt at the spell. \nSpeak with Monster",
+    "spell_id": "speak_with_the_dead_lcleric_3rd_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Speak with Monsters",
+    "spell_level": "Cleric, 6th Level",
+    "range": "Speaking range",
+    "duration": "3d4 questions",
+    "description": "The caster can speak with any type of monster, for the duration of a \ncertain number of questions. The monster is not forced to answer.\nSpeak with Plant",
+    "spell_id": "speak_with_monsters_lcleric_6th_level",
+    "aliases": [],
+    "tags": [
+      "force"
+    ]
+  },
+  {
+    "name": "Speak with Plants",
+    "spell_level": "Cleric, 4th Level; Druid, 4th Level",
+    "range": "Speaking range",
+    "duration": "3d4 questions",
+    "description": "The caster can speak with any type of monster, for the duration of a \ncertain number of questions. The monster is not forced to answer.\nSpeak with Plants",
+    "spell_id": "speak_with_plants_lcleric_4th_level_druid_4th_level",
+    "aliases": [],
+    "tags": [
+      "force"
+    ]
+  },
+  {
+    "name": "Strength",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "Speaking range",
+    "duration": "6 turns",
+    "description": "The caster can speak and understand the speech of plants. Plants smaller \nthan trees will obey commands, moving aside when requested, etc.\nStrength",
+    "spell_id": "strength_lmagic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Sticks to Snakes",
+    "spell_level": "Cleric, 4th Level; Druid, 5th Level",
+    "range": "120 feet",
+    "duration": "1 hour",
+    "description": "The caster may turn as many as 2d8 normal sticks into snakes, each \none having a 50% chance of being venomous. The snakes follow commands, but turn back into sticks at the end of the spell, or when killed.\nStone to Fles",
+    "spell_id": "sticks_to_snakes_lcleric_4th_level_druid_5th_level",
+    "aliases": [],
+    "tags": [
+      "poison"
+    ]
+  },
+  {
+    "name": "Stone to Flesh",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "120 feet",
+    "duration": "Permanent until reversed",
+    "description": "This spell can be used to counteract the negative effects of monsters \nwho petrify their victims. It can also be reversed to turn flesh into stone, as desired by the caster. A saving throw is permitted to avoid being turned to stone, but if the spell succeeds the victim is transformed into a statue; the stone-to-flesh version of the spell will restore the victim to normal.\nSuggestio",
+    "spell_id": "stone_to_flesh_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": [
+      "healing",
+      "petrification"
+    ]
+  },
+  {
+    "name": "Suggestion",
+    "spell_level": "Magic-User, 3rd Level",
+    "range": "Shouting distance",
+    "duration": "1 week",
+    "description": "The caster speaks a hypnotic suggestion to the intended victim. \nVictims who fail a saving throw will carry out the suggestion, as long as it can be performed within a week. The suggestion might not call for the action to be carried out immediately, and can be contingent upon something else happening first. A suggestion that the victim commit suicide is only 1% likely to be obeyed.\nSymbol (Cleric",
+    "tags": [
+      "utility"
+    ],
+    "spell_id": "suggestion_lmagic_user_3rd_level",
+    "aliases": []
+  },
+  {
+    "name": "Symbol (Cleric)",
+    "spell_level": "Cleric, 7th Level",
+    "range": "Referee’s discretion (according to symbol)",
+    "duration": "Varies (depends upon symbol used)",
+    "description": "A Symbol spell creates a deadly magical trap, written into the shape \nof a divine rune. The rune’s magic is activated when any person or creature hostile to the caster reads it, or passes over, under, or past it. Various different runes are known, and others may be possible:\nSymbol of Discord: Causes all creatures in the hostile group to begin \narguing, and possibly fighting amongst themselves with lethal intent.\nSymbol of Fear: Casts a Fear spell.Symbol of Sleep: Casts a Sleep  spell affecting double the normal \nnumber of creatures and with double the normal duration.\nSymbol of Stunning: Up to 150 hit points of creatures are affected as \nper a Power Word, Stun.\nDivine symbols cannot be crafted in such a way that would cause a \npermanent effect (such as insanity) upon those affected.\nSymbol (Magic- user",
+    "spell_id": "symbol_cleric_lcleric_7th_level",
+    "aliases": [],
+    "tags": [
+      "control",
+      "fear",
+      "force",
+      "mind_affecting",
+      "sleep"
+    ]
+  },
+  {
+    "name": "Symbol (Magic- user)",
+    "spell_level": "Magic-User, 8th Level",
+    "range": "Referee’s discretion (according to symbol)",
+    "duration": "Varies (depends upon symbol used)",
+    "description": "A Symbol spell creates a deadly magical trap, written into the shape \nof an arcane rune. The rune’s magic is activated when any person or creature hostile to the caster reads it, or passes over, under, or past it. Various different runes are known, and others may be possible:\nSymbol of Death: Deals a total of 75 hit points of damage.Symbol of Discord: Causes all creatures in the hostile group to begin \n70MAgiC\narguing, and possibly fighting amongst themselves with lethal intent.\nSymbol of Fear: Casts a Fear spell.\nSymbol of Insanity: Up to 100 hit points of creatures are driven insane \nby a curse.\nSymbol of Sleep: Casts a Sleep  spell affecting double the normal \nnumber of creatures and with double the normal duration.\nSymbol of Stunning: Up to 150 hit points of creatures are affected as \nper a Power Word, Stun.\ntelekinesi",
+    "spell_id": "symbol_magic_user_lmagic_user_8th_level",
+    "aliases": [],
+    "tags": [
+      "control",
+      "death",
+      "fear",
+      "mind_affecting",
+      "necrotic",
+      "sleep"
+    ]
+  },
+  {
+    "name": "Telekinesis",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "120 feet",
+    "duration": "6 turns (1 hour)",
+    "description": "The caster can move objects using mental power alone. The amount \nof weight that can be lifted and moved is 20 pounds per level. It is up to the Referee’s interpretation of the spell whether the objects can be thrown, and at what speed.\ntelepor",
+    "spell_id": "telekinesis_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Teleport",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "Touch",
+    "duration": "Instantaneous",
+    "description": "This spell transports the caster or another person to a destination that \nthe caster knows, or at least knows what it looks like from a picture or a map. Success depends on how well the caster knows the targeted location, as follows:\n1. If the caster has only seen the location in a picture or through a map \n(so that knowledge is not based on direct experience), there is only a 25% chance of success, and failure means death, for the traveler’s soul is lost in the spaces between realities. 2. If the caster has seen but not studied the location, there is a 20% \nchance of error. In the case of an error, there is a 50% chance that \nthe traveler arrives low, 1d10 x10 feet below the intended location (with death resulting from arrival within a solid substance). If the error is high (over the 50% chance for a “low” arrival), the traveler arrives 1d10 x10 feet above the targeted location—likely resulting in a deadly fall. \n3. If the caster is well familiar with the location, or has studied it carefully, \nthere is only a 5% chance of error. On a 1 in 6 the teleport is low, otherwise it is high. In either case, the arrival is 1d4 x10 feet high or low.\ntime Sto",
+    "spell_id": "teleport_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "death",
+      "necrotic",
+      "teleport",
+      "travel"
+    ]
+  },
+  {
+    "name": "Time Stop",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "Caster",
+    "duration": "1d4+1 rounds",
+    "description": "The caster stops the passage of time in a radius of about 15 feet \naround himself. (The time-stopped area does not thereafter move with the caster.) Any creatures within this area are suspended in time, unable to act. The caster is not stopped in time while in the area or beyond.\ntransmute Metal to Woo",
+    "spell_id": "time_stop_lmagic_user_9th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Transmute Metal To Wood",
+    "spell_level": "Druid, 7th Level",
+    "range": "120 feet",
+    "duration": "Permanent",
+    "description": "This spell transmutes metal into wood in a 10-foot x 10-foot area. \nEach discrete piece of metal is allowed a saving throw. (Coins may be checked in batches rather than rolling hundreds of saving throws.) The effect cannot be dispelled, although a reversed version of this spell could be used to undo the transmutation.\n71MAgiC\ntransmute Rock to Mu",
+    "spell_id": "transmute_metal_to_wood_ldruid_7th_level",
+    "aliases": [],
+    "tags": [
+      "dispel"
+    ]
+  },
+  {
+    "name": "Transmute Rock To Mud",
+    "spell_level": "Druid, 5th Level; Magic-User, 5th Level",
+    "range": "120 feet",
+    "duration": "3d6 days, unless reversed",
+    "description": "This spell transmutes rock (and any other form of earth, including \nsand) into mud. An area of roughly 300 x 300 feet becomes a deep mire, reducing movement to 10% of normal.\ntransport via",
+    "spell_id": "transmute_rock_to_mud_ldruid_5th_level_magic_user_5th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Transport Via Plants",
+    "spell_level": "Druid, 6th Level",
+    "range": "Touch first plant",
+    "duration": "24 hours or until travel is completed",
+    "description": "The caster may enter any normal plant and pass any distance to a chosen \nplant of the same kind in a single round, regardless of the distance separat-ing the two. Both plants must be alive. The caster may also choose to remain in one or the other of the two plants for up to 24 hours, but the destruction of an occupied plant slays the caster and ejects the body from the plant. The caster becomes aware of all plants within 3000 feet, and the spell will not fail if the attempted travel is made within this radius. However, if the caster attempts to travel beyond this radius into the substance of a plant the caster has never before seen – meaning that specific plant, not just the species – there is a 20% chance of error during travel. The exact nature of the error depends upon specific circumstances, but it is likely to be off by a margin of at least 1d6 miles, into any other sort of plant.\nturn Wood\nSee",
+    "spell_id": "transport_via_plants_ldruid_6th_level",
+    "aliases": [],
+    "tags": [
+      "death",
+      "necrotic"
+    ]
+  },
+  {
+    "name": "Wall of Fire",
+    "spell_level": "Druid, 5th Level; Magic-User, 4th Level",
+    "range": "60 feet",
+    "duration": "Concentration",
+    "description": "A wall of fire flares into being and burns for as long as the caster \nconcentrates upon it. Creatures with 3 or fewer hit dice cannot pass through it, and no creature can see through it to the other side. Passing through the fire inflicts 1d6 hit points of damage (no saving throw) and undead creatures sustain twice the normal damage. The caster may choose to create a straight wall 60 feet long and 20 feet high, or a circular wall with a 15-foot radius, also 20 feet high.\nWall of ic",
+    "tags": [
+      "cold",
+      "creation",
+      "fire"
+    ],
+    "spell_id": "wall_of_fire_ldruid_5th_level_magic_user_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Wall of ice",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "60 feet",
+    "duration": "Concentration",
+    "description": "The caster conjures up a wall of ice, six feet thick and non-transparent. \nThe caster may choose to create a straight wall 60 feet long and 20 feet high, or a circular wall with a 15-foot radius, also 20 feet high. Creatures with 3 or fewer hit dice cannot affect the wall, but creatures of 4+ hit dice are able to smash through it, taking 1d6 points of damage in the process. Creatures with fire-based metabolisms take 2d6 instead of the normal 1d6. Fire spells and magical effects are negated in the vicinity of the wall.\nWall of iro",
+    "tags": [
+      "cold",
+      "creation",
+      "fire",
+      "summoning"
+    ],
+    "spell_id": "wall_of_ice_lmagic_user_4th_level",
+    "aliases": []
+  },
+  {
+    "name": "Wall of iron",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "60 feet",
+    "duration": "2 hours",
+    "description": "The caster conjures an iron wall from thin air. The wall is 3 feet thick, \n50 feet tall, and 50 feet long.Wall of Ston",
+    "spell_id": "wall_of_iron_lmagic_user_5th_level_1",
+    "aliases": [],
+    "tags": [
+      "creation"
+    ]
+  },
+  {
+    "name": "Wall of iron",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "60 feet",
+    "duration": "2 hours",
+    "description": "The caster conjures an iron wall from thin air. The wall is 3 feet thick, \n50 feet tall, and 50 feet long.Wall of",
+    "spell_id": "wall_of_iron_lmagic_user_5th_level_2",
+    "aliases": [],
+    "tags": [
+      "creation"
+    ]
+  },
+  {
+    "name": "Warp Wood",
+    "spell_level": "Druid, 2nd Level",
+    "range": "60 feet",
+    "duration": "Permanent",
+    "description": "This spell warps, bends, and twists wood. The volume of about one \n2-inch x 4-inch x 5-foot plank may be affected per every two levels of the caster – the volume of a spear or several arrows. However, keep in mind that springing a door open or causing a leak in a ship’s planking does not actually require much of the constituent wood to be warped.\nWater Breathin",
+    "spell_id": "warp_wood_ldruid_2nd_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Water Breathing",
+    "spell_level": "Druid, 3rd Level; Magic-User, 3rd Level",
+    "range": "30 feet",
+    "duration": "2 hours",
+    "description": "The recipient of the spell is able to breathe underwater until the spell’s \nduration expires.\nWeather Summonin",
+    "spell_id": "water_breathing_ldruid_3rd_level_magic_user_3rd_level",
+    "aliases": [],
+    "tags": [
+      "summoning",
+      "travel"
+    ]
+  },
+  {
+    "name": "Weather Summoning",
+    "spell_level": "Druid, 3rd Level; Magic-User, 3rd Level",
+    "range": "30 feet",
+    "duration": "2 hours",
+    "description": "The recipient of the spell is able to breathe underwater until the spell’s \nduration expires.\nWeather Summoning",
+    "spell_id": "weather_summoning_ldruid_3rd_level_magic_user_3rd_level",
+    "aliases": [],
+    "tags": [
+      "summoning"
+    ]
+  },
+  {
+    "name": "Web",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "30 feet",
+    "duration": "8 hours",
+    "description": "Fibrous, sticky webs fill an area up to 10 x 10 x 20 feet. It is extremely \ndifficult to get through the mass of strands—it takes one turn if a torch and sword (or a flaming sword) are used, and creatures larger than a horse can break through in 2 turns. Humans alone take more time to break through—perhaps 3–4 turns or longer at the Referee’s discretion.\nWizard Ey",
+    "tags": [
+      "control",
+      "fire"
+    ],
+    "spell_id": "web_lmagic_user_2nd_level",
+    "aliases": []
+  },
+  {
+    "name": "Wizard Eye",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "240 feet",
+    "duration": "1 hour",
+    "description": "The caster conjures up an invisible, magical “eye,” that can move a \nmaximum of 240 feet from its creator. It floats along as directed by the caster, at a rate of 120 feet per turn (12 feet per minute).\n72MAgiC\nWizard loc",
+    "spell_id": "wizard_eye_lmagic_user_4th_level",
+    "aliases": [],
+    "tags": [
+      "detection",
+      "illusion"
+    ]
+  },
+  {
+    "name": "Wizard lock",
+    "spell_level": "Magic-User, 2nd Level",
+    "range": "Close",
+    "duration": "Permanent until dispelled",
+    "description": "As with a Hold Portal spell, Wizard Lock holds a door closed, but it is \npermanent until dispelled. Creatures with magic resistance can shatter the spell without effort. Any Magic-User at least three levels higher than the caster can open the portal, and a Knock spell will open it as well, although the spell is not permanently destroyed in these cases.\nWis",
+    "spell_id": "wizard_lock_lmagic_user_2nd_level",
+    "aliases": [],
+    "tags": [
+      "control",
+      "dispel",
+      "protection"
+    ]
+  },
+  {
+    "name": "Wish",
+    "spell_level": "Magic-User, 9th Level",
+    "range": "Unlimited",
+    "duration": "See below",
+    "description": "This spell is not all-powerful; it grants wishes of limited scope \n(although more powerful than a Limited Wish). The Referee’s discretion will rule what sort of wishes are within the spell’s power. (One possible—unofficial—guideline might be that a Wish can grant \neffects that would be similar in power to a spell of level 8 or lower, with permanent effects in many cases.) After casting a Wish spell, the \nMagic-User is mentally drained and unable to cast spells for a period of 1d4 days.\nWind Wal",
+    "spell_id": "wish_lmagic_user_9th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Wind Walk",
+    "spell_level": "Cleric, 7th Level",
+    "range": "Touch",
+    "duration": "1 day or until dispelled",
+    "description": "The caster and one other person in contact with him become \nincorporeal and mist-like, able to travel through walls and other obstacles. The Cleric can bring this companion along and travel at 48 feet per minute indoors (or in subterranean settings) and much faster outdoors.\nWord of Recal",
+    "spell_id": "wind_walk_lcleric_7th_level",
+    "aliases": [],
+    "tags": [
+      "utility"
+    ]
+  },
+  {
+    "name": "Word of Recall",
+    "spell_level": "Cleric, 6th Level",
+    "range": "Indefinite",
+    "duration": "Immediate",
+    "description": "The Cleric teleports without error back to a prepared sanctuary.End of Player’s Section\nThis concludes the player’s section of Swords & Wizardry. To play \nthis game, it is unnecessary to read any further.\nRemember\nSwords & Wizardry is a free-form roleplaying game, meaning \nthat there are not very many rules. The Referee is responsible for handling situations not covered by the rules, making fair evaluations of what the characters do and deciding what happens as a result. This is not a game in which the players are “against” the Referee, even though the Referee is responsible for creating tricky traps, dangerous situations, and running the monsters and other foes the PCs will encounter during the game. In fact, the players and the Referee cooperate with each other to create a fantasy epic, with the Referee creating the setting and the players developing the story of the heroes. If they are not skillful and smart, the epic might be very short indeed! It is not the Referee’s job to defeat the players; the job is to provide interesting (and dangerous) challenges, and then guide the story fairly along the path that it takes – a path sure to contain twists and turns that surprise the Referee as well as the players!\n73MAgiC\nintroduction\nAs the Referee of a game of Swords & Wizardry, you do not have a \ncharacter; instead, you are the player who is in charge of the game. You \ncreate the adventure, you run the monsters, and you are the one who decides the results of all the decisions made by the players for their \ncharacters. You don’t get to tell the players what the characters do – that is their part of the game – but you referee the results according to the \nrules, and you interpret what the rules mean. Compared to most other fantasy roleplaying games, the Swords & Wizardry rules require a lot of interpretation because – by design – they do not try to cover every single possibility for what the players will do. It takes a little bit of practice to referee a game smoothly, but once you get the hang of it, you will find that you can run a fast-paced game without getting caught up in every little detail.\nThe three most important things to know about running a game of \nSwords & Wizardry are these:\nThe rules are just guidelinesThere is not a rule for everything.When in doubt, make a ruling.If you are a beginner Referee, and have never played a roleplaying \ngame before, it is a good idea to stick to “the rules” for a few gaming sessions, just to learn how the game works. We have provided enough of these basic rules to get you started without having to make too many difficult decisions. But once you are comfortable with the basic idea of a roleplaying game you can start thinking about the optional rules, about creating house rules, and about adapting the rules. There is a whole world of fantasy out there waiting for you.\nThis part of the book gives you the basic resources for the two main \ntasks of the Referee: creating the adventure, and running the adventure. Creating the adventure is done ahead of time; it is the job of dreaming up an adventurous place or situation, creating a map, and deciding what dangerous things lurk there, just waiting for a party of adventurers to stumble across them. Running the adventure is what happens when your friends are assembled around the gaming table with dice and character sheets: it is your job to describe the starting point and then to keep the game moving once the adventuring begins. As you and your players get more familiar with the game, and their characters start to go up in level, you may want to start creating some details about the world that surrounds these adventures – which is called your campaign world. The following part of the book contains basic advice about all these aspects of being a Referee.",
+    "spell_id": "word_of_recall_lcleric_6th_level",
+    "aliases": [],
+    "tags": [
+      "cold",
+      "creation",
+      "protection",
+      "teleport",
+      "travel"
+    ]
+  },
+  {
+    "name": "Hold Portal",
+    "spell_level": "Magic-User, 1st Level",
+    "range": "N/A",
+    "duration": "N/A",
+    "description": "Magically holds a door, gate, or portal shut against opening attempts for the duration.",
+    "spell_id": "hold_portal_lmagic_user_1st_level",
+    "aliases": [],
+    "tags": []
+  },
+  {
+    "name": "Neutralize Poison",
+    "spell_level": "Cleric, 4th Level; Druid, 3rd Level",
+    "range": "Touch",
+    "duration": "Immediate",
+    "description": "Neutralizes poison in a creature or object; may reverse or prevent poison effects depending on timing.",
+    "spell_id": "neutralize_poison_lcleric_4th_level_druid_3rd_level",
+    "aliases": [],
+    "tags": [
+      "healing"
+    ]
+  },
+  {
+    "name": "Speak with Dead",
+    "spell_level": "Cleric, 3rd Level",
+    "range": "N/A",
+    "duration": "N/A",
+    "description": "Allows the caster to question a dead creature's spirit for a limited number of answers.",
+    "spell_id": "speak_with_dead_lcleric_3rd_level",
+    "aliases": [],
+    "tags": []
+  },
+  {
+    "name": "Wall of Stone",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "N/A",
+    "duration": "Permanent",
+    "description": "Creates a wall of stone; may be shaped within limits.",
+    "spell_id": "wall_of_stone_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": []
+  },
+  {
+    "name": "Legend Lore",
+    "spell_level": "Magic-User, 6th Level",
+    "range": "N/A",
+    "duration": "N/A",
+    "description": "Reveals legends about a person, place, or thing.",
+    "spell_id": "legend_lore_lmagic_user_6th_level",
+    "aliases": [],
+    "tags": []
+  },
+  {
+    "name": "Extension II",
+    "spell_level": "Magic-User, 5th Level",
+    "range": "N/A",
+    "duration": "N/A",
+    "description": "Extends the duration of spells already cast, per the Extension spell rules.",
+    "spell_id": "extension_ii_lmagic_user_5th_level",
+    "aliases": [],
+    "tags": []
+  },
+  {
+    "name": "Monster Summoning II",
+    "spell_level": "Magic-User, 4th Level",
+    "range": "N/A",
+    "duration": "N/A",
+    "description": "Summons monsters to serve the caster, stronger than Monster Summoning I.",
+    "spell_id": "monster_summoning_ii_lmagic_user_4th_level",
+    "aliases": [],
+    "tags": []
+  }
+]

@@ -1,0 +1,711 @@
+{
+  "schema_version": "spell_lists_compiled.v1",
+  "build": "P4.10.4",
+  "generated_from": "data/spell_lists_canonical_v1.json",
+  "classes": {
+    "Druid": {
+      "1": [
+        {
+          "spell_id": "detect_magic_lcleric_magic_user_druid_1st_level",
+          "name": "Detect Magic"
+        },
+        {
+          "spell_id": "detect_snares_and_pits_ldruid_1st_level",
+          "name": "Detect Snares and Pits"
+        },
+        {
+          "spell_id": "faerie_fire_ldruid_1st_level",
+          "name": "Faerie Fire"
+        },
+        {
+          "spell_id": "locate_animal_ldruid_1st_level",
+          "name": "Locate Animal"
+        },
+        {
+          "spell_id": "predict_weather_ldruid_1st_level",
+          "name": "Predict Weather"
+        },
+        {
+          "spell_id": "purify_water_lcleric_1st_level",
+          "name": "Purify Water"
+        }
+      ],
+      "2": [
+        {
+          "spell_id": "create_water_lcleric_4th_level_druid_2nd_level",
+          "name": "Create Water"
+        },
+        {
+          "spell_id": "cure_light_wounds_lcleric_1st_level_druid_2nd_level",
+          "name": "Cure light Wounds"
+        },
+        {
+          "spell_id": "heat_metal_ldruid_2nd_level",
+          "name": "Heat Metal"
+        },
+        {
+          "spell_id": "locate_plants_ldruid_2nd_level",
+          "name": "Locate Plants"
+        },
+        {
+          "spell_id": "obscuring_mist_ldruid_2nd_level",
+          "name": "Obscuring Mist"
+        },
+        {
+          "spell_id": "produce_flame_ldruid_2nd_level",
+          "name": "Produce Flame"
+        },
+        {
+          "spell_id": "speak_with_animals_lcleric_2nd_level",
+          "name": "Speak with Animals"
+        },
+        {
+          "spell_id": "warp_wood_ldruid_2nd_level",
+          "name": "Warp Wood"
+        }
+      ],
+      "3": [
+        {
+          "spell_id": "call_lightning_ldruid_3rd_level",
+          "name": "Call lightning"
+        },
+        {
+          "spell_id": "cure_disease_lcleric_3rd_level_druid_3rd_level",
+          "name": "Cure Disease"
+        },
+        {
+          "spell_id": "hold_animal_ldruid_3rd_level",
+          "name": "Hold Animal"
+        },
+        {
+          "spell_id": "neutralize_poison_lcleric_4th_level_druid_3rd_level",
+          "name": "Neutralize Poison"
+        },
+        {
+          "spell_id": "plant_growth_ldruid_3rd_level_magic_user_4th_level",
+          "name": "Plant growth"
+        },
+        {
+          "spell_id": "protection_from_fire_ldruid_3rd_level",
+          "name": "Protection from Fire"
+        },
+        {
+          "spell_id": "pyrotechnics_ldruid_3rd_level_magic_user_2nd_level",
+          "name": "Pyrotechnics"
+        },
+        {
+          "spell_id": "water_breathing_ldruid_3rd_level_magic_user_3rd_level",
+          "name": "Water Breathing"
+        }
+      ],
+      "4": [
+        {
+          "spell_id": "animal_summoning_i_ldruid_4th_level",
+          "name": "Animal Summoning i"
+        },
+        {
+          "spell_id": "control_temperature_10_foot_radius_ldruid_4th_level",
+          "name": "Control temperature, 10-foot radius"
+        },
+        {
+          "spell_id": "cure_serious_wounds_lcleric_4th_level_druid_4th_level",
+          "name": "Cure Serious Wounds"
+        },
+        {
+          "spell_id": "dispel_magic_ldruid_4th_level_magic_user_3rd_level",
+          "name": "Dispel Magic"
+        },
+        {
+          "spell_id": "hallucinatory_forest_ldruid_4th_level",
+          "name": "Hallucinatory Forest"
+        },
+        {
+          "spell_id": "insect_plague_lcleric_5th_level_druid_4th_level",
+          "name": "Insect Plague"
+        },
+        {
+          "spell_id": "plant_doorway_ldruid_4th_level",
+          "name": "Plant Doorway"
+        },
+        {
+          "spell_id": "produce_fire_ldruid_4th_level",
+          "name": "Produce Fire"
+        },
+        {
+          "spell_id": "protection_from_lightning_ldruid_4th_level",
+          "name": "Protection from lightning"
+        },
+        {
+          "spell_id": "speak_with_plants_lcleric_4th_level_druid_4th_level",
+          "name": "Speak with Plants"
+        }
+      ],
+      "5": [
+        {
+          "spell_id": "animal_growth_ldruid_5th_level_magic_user_5th_level",
+          "name": "Animal growth"
+        },
+        {
+          "spell_id": "animal_summoning_ii_ldruid_5th_level",
+          "name": "Animal Summoning ii"
+        },
+        {
+          "spell_id": "anti_plant_ward_ldruid_5th_level",
+          "name": "Anti-Plant Ward"
+        },
+        {
+          "spell_id": "commune_with_nature_ldruid_5th_level",
+          "name": "Commune with nature"
+        },
+        {
+          "spell_id": "control_winds_ldruid_5th_level",
+          "name": "Control Winds"
+        },
+        {
+          "spell_id": "hold_plant_ldruid_5th_level",
+          "name": "Hold Plant"
+        },
+        {
+          "spell_id": "transmute_rock_to_mud_ldruid_5th_level_magic_user_5th_level",
+          "name": "Transmute Rock To Mud"
+        },
+        {
+          "spell_id": "passplant_lmagic_user_6th_level",
+          "name": "Passplant"
+        },
+        {
+          "spell_id": "sticks_to_snakes_lcleric_4th_level_druid_5th_level",
+          "name": "Sticks to Snakes"
+        },
+        {
+          "spell_id": "wall_of_fire_ldruid_5th_level_magic_user_4th_level",
+          "name": "Wall of Fire"
+        }
+      ]
+    },
+    "Magic-User": {
+      "1": [
+        {
+          "spell_id": "charm_person_lmagic_user_1st_level",
+          "name": "Charm Person"
+        },
+        {
+          "spell_id": "detect_magic_lcleric_magic_user_druid_1st_level",
+          "name": "Detect Magic"
+        },
+        {
+          "spell_id": "hold_portal_lmagic_user_1st_level",
+          "name": "Hold Portal"
+        },
+        {
+          "spell_id": "light_lcleric_magic_user_1st_level",
+          "name": "Light"
+        },
+        {
+          "spell_id": "magic_missile_lmagic_user_1st_level",
+          "name": "Magic Missile"
+        },
+        {
+          "spell_id": "protection_from_evil_lcleric_1st_level_magic_user_1st_level",
+          "name": "Protection from Evil"
+        },
+        {
+          "spell_id": "read_languages_lmagic_user_1st_level",
+          "name": "Read languages"
+        },
+        {
+          "spell_id": "read_magic_lmagic_user_1st_level",
+          "name": "Read Magic"
+        },
+        {
+          "spell_id": "shield_lmagic_user_1st_level",
+          "name": "Shield"
+        },
+        {
+          "spell_id": "sleep_lmagic_user_1st_level",
+          "name": "Sleep"
+        }
+      ],
+      "2": [
+        {
+          "spell_id": "continual_light_lmagic_user_2nd_level",
+          "name": "Continual light"
+        },
+        {
+          "spell_id": "darkness_15_foot_radius_lmagic_user_2nd_level",
+          "name": "Darkness 15-foot Radius"
+        },
+        {
+          "spell_id": "detect_evil_magic_user_lmagic_user_2nd_level",
+          "name": "Detect Evil (Magic- user)"
+        },
+        {
+          "spell_id": "detect_invisibility_lmagic_user_2nd_level",
+          "name": "Detect invisibility"
+        },
+        {
+          "spell_id": "esp_detect_thoughts_lmagic_user_2nd_level",
+          "name": "ESP (Detect thoughts)"
+        },
+        {
+          "spell_id": "invisibility_lmagic_user_2th_level",
+          "name": "Invisibility"
+        },
+        {
+          "spell_id": "knock_lmagic_user_2nd_level",
+          "name": "Knock"
+        },
+        {
+          "spell_id": "levitate_lmagic_user_2nd_level",
+          "name": "Levitate"
+        },
+        {
+          "spell_id": "locate_object_magic_user_lmagic_user_2nd_level",
+          "name": "Locate Object Magic- User"
+        },
+        {
+          "spell_id": "magic_mouth_lmagic_user_2nd_level",
+          "name": "Magic Mouth"
+        },
+        {
+          "spell_id": "mirror_image_lmagic_user_2nd_level",
+          "name": "Mirror image"
+        },
+        {
+          "spell_id": "phantasmal_force_lmagic_user_2nd_level",
+          "name": "Phantasmal Force"
+        },
+        {
+          "spell_id": "pyrotechnics_ldruid_3rd_level_magic_user_2nd_level",
+          "name": "Pyrotechnics"
+        },
+        {
+          "spell_id": "strength_lmagic_user_2nd_level",
+          "name": "Strength"
+        },
+        {
+          "spell_id": "web_lmagic_user_2nd_level",
+          "name": "Web"
+        },
+        {
+          "spell_id": "wizard_lock_lmagic_user_2nd_level",
+          "name": "Wizard lock"
+        }
+      ],
+      "3": [
+        {
+          "spell_id": "clairaudience_lmagic_user_3rd_level",
+          "name": "Clairaudience"
+        },
+        {
+          "spell_id": "clairvoyance_lmagic_user_3rd_level",
+          "name": "Clairvoyance"
+        },
+        {
+          "spell_id": "darkvision_lmagic_user_3rd_level",
+          "name": "Darkvision"
+        },
+        {
+          "spell_id": "dispel_magic_ldruid_4th_level_magic_user_3rd_level",
+          "name": "Dispel Magic"
+        },
+        {
+          "spell_id": "explosive_runes_lmagic_user_3rd_level",
+          "name": "Explosive Runes"
+        },
+        {
+          "spell_id": "fireball_lmagic_user_3rd_level",
+          "name": "Fireball"
+        },
+        {
+          "spell_id": "fly_lmagic_user_3rd_level",
+          "name": "Fly"
+        },
+        {
+          "spell_id": "haste_lmagic_user_3rd_level",
+          "name": "Haste"
+        },
+        {
+          "spell_id": "hold_person_magic_user_lmagic_user_3rd_level",
+          "name": "Hold Person (Magic- user)"
+        },
+        {
+          "spell_id": "invisibility_10_foot_radius_lmagic_user_3rd_level",
+          "name": "Invisibility 10-Foot Radius"
+        },
+        {
+          "spell_id": "lightning_bolt_lmagic_user_3rd_level",
+          "name": "Lightning Bolt"
+        },
+        {
+          "spell_id": "monster_summoning_i_lmagic_user_3rd_level",
+          "name": "Monster Summoning i"
+        },
+        {
+          "spell_id": "protection_from_evil_10_foot_radius_lcleric_4th_level_magic_user_3rd_level",
+          "name": "Protection from Evil, 10-Foot Radius"
+        },
+        {
+          "spell_id": "protection_from_normal_missiles_lmagic_user_3rd_level",
+          "name": "Protection from normal Missiles"
+        },
+        {
+          "spell_id": "rope_trick_lmagic_user_3rd_level",
+          "name": "Rope trick"
+        },
+        {
+          "spell_id": "slow_lmagic_user_3rd_level",
+          "name": "Slow"
+        },
+        {
+          "spell_id": "suggestion_lmagic_user_3rd_level",
+          "name": "Suggestion"
+        },
+        {
+          "spell_id": "water_breathing_ldruid_3rd_level_magic_user_3rd_level",
+          "name": "Water Breathing"
+        }
+      ],
+      "4": [
+        {
+          "spell_id": "charm_monster_lmagic_user_4th_level",
+          "name": "Charm Monster"
+        },
+        {
+          "spell_id": "confusion_ldruid_7th_level_magic_user_4th_level",
+          "name": "Confusion"
+        },
+        {
+          "spell_id": "dimension_door_lmagic_user_4th_level",
+          "name": "Dimension Door"
+        },
+        {
+          "spell_id": "extension_i_lmagic_user_4th_level",
+          "name": "Extension i"
+        },
+        {
+          "spell_id": "fear_lmagic_user_4th_level",
+          "name": "Fear"
+        },
+        {
+          "spell_id": "hallucinatory_terrain_lmagic_user_4th_level",
+          "name": "Hallucinatory terrain"
+        },
+        {
+          "spell_id": "ice_storm_lmagic_user_4th_level",
+          "name": "Ice Storm"
+        },
+        {
+          "spell_id": "massmorph_lmagic_user_4th_level",
+          "name": "Massmorph"
+        },
+        {
+          "spell_id": "monster_summoning_ii_lmagic_user_4th_level",
+          "name": "Monster Summoning II"
+        },
+        {
+          "spell_id": "plant_growth_ldruid_3rd_level_magic_user_4th_level",
+          "name": "Plant growth"
+        },
+        {
+          "spell_id": "polymorph_other_lmagic_user_4th_level",
+          "name": "Polymorph Other"
+        },
+        {
+          "spell_id": "polymorph_self_lmagic_user_4th_level",
+          "name": "Polymorph Self"
+        },
+        {
+          "spell_id": "remove_curse_lcleric_3rd_level_magic_user_4th_level",
+          "name": "Remove Curse"
+        },
+        {
+          "spell_id": "wall_of_fire_ldruid_5th_level_magic_user_4th_level",
+          "name": "Wall of Fire"
+        },
+        {
+          "spell_id": "wall_of_ice_lmagic_user_4th_level",
+          "name": "Wall of ice"
+        },
+        {
+          "spell_id": "wizard_eye_lmagic_user_4th_level",
+          "name": "Wizard Eye"
+        }
+      ],
+      "5": [
+        {
+          "spell_id": "animal_growth_ldruid_5th_level_magic_user_5th_level",
+          "name": "Animal growth"
+        },
+        {
+          "spell_id": "animate_dead_lmagic_user_5th_level",
+          "name": "Animate Dead"
+        },
+        {
+          "spell_id": "cloudkill_lmagic_user_5th_level",
+          "name": "Cloudkill"
+        },
+        {
+          "spell_id": "conjuration_of_elementals_lmagic_user_5th_level",
+          "name": "Conjuration of Elementals"
+        },
+        {
+          "spell_id": "contact_other_plane_lmagic_user_5th_level",
+          "name": "Contact Other Plane"
+        },
+        {
+          "spell_id": "extension_ii_lmagic_user_5th_level",
+          "name": "Extension II"
+        },
+        {
+          "spell_id": "feeblemind_ldruid_6th_level_magic_user_5th_level",
+          "name": "Feeblemind"
+        },
+        {
+          "spell_id": "hold_monster_lmagic_user_5th_level",
+          "name": "Hold Monster"
+        },
+        {
+          "spell_id": "magic_jar_lmagic_user_6th_level",
+          "name": "Magic Jar"
+        },
+        {
+          "spell_id": "monster_summoning_iii_lmagic_user_5th_level",
+          "name": "Monster Summoning iii"
+        },
+        {
+          "spell_id": "passwall_lmagic_user_5th_level",
+          "name": "Passwall"
+        },
+        {
+          "spell_id": "telekinesis_lmagic_user_5th_level",
+          "name": "Telekinesis"
+        },
+        {
+          "spell_id": "teleport_lmagic_user_5th_level",
+          "name": "Teleport"
+        },
+        {
+          "spell_id": "transmute_rock_to_mud_ldruid_5th_level_magic_user_5th_level",
+          "name": "Transmute Rock To Mud"
+        },
+        {
+          "spell_id": "wall_of_iron_lmagic_user_5th_level_1",
+          "name": "Wall of iron"
+        },
+        {
+          "spell_id": "wall_of_stone_lmagic_user_5th_level",
+          "name": "Wall of Stone"
+        }
+      ],
+      "6": [
+        {
+          "spell_id": "anti_magic_shell_lmagic_user_6th_level",
+          "name": "Anti-Magic Shell"
+        },
+        {
+          "spell_id": "control_weather_lcleric_7th_level_druid_7th_level_magic_user_6th_levelrange_referee_s_discretionduration_referee_s_discretion",
+          "name": "Control Weather"
+        },
+        {
+          "spell_id": "death_spell_lmagic_user_3rd_level",
+          "name": "Death Spell"
+        },
+        {
+          "spell_id": "disintegrate_lmagic_user_6th_level",
+          "name": "Disintegrate"
+        },
+        {
+          "spell_id": "enchant_item_lmagic_user_6th_level",
+          "name": "Enchant item"
+        },
+        {
+          "spell_id": "extension_iii_lmagic_user_6th_level",
+          "name": "Extension iii"
+        },
+        {
+          "spell_id": "geas_lmagic_user_6th_level",
+          "name": "Geas"
+        },
+        {
+          "spell_id": "invisible_stalker_lmagic_user_6th_level",
+          "name": "Invisible Stalker"
+        },
+        {
+          "spell_id": "legend_lore_lmagic_user_6th_level",
+          "name": "Legend Lore"
+        },
+        {
+          "spell_id": "lower_water_lmagic_user_6th_level",
+          "name": "Lower Water"
+        },
+        {
+          "spell_id": "monster_summoning_iv_lmagic_user_6th_level",
+          "name": "Monster Summoning iV"
+        },
+        {
+          "spell_id": "move_earth_lmagic_user_6th_level",
+          "name": "Move Earth"
+        },
+        {
+          "spell_id": "part_water_lmagic_user_6th_level",
+          "name": "Part Water"
+        },
+        {
+          "spell_id": "project_image_lmagic_user_6th_level",
+          "name": "Project image"
+        },
+        {
+          "spell_id": "reincarnation_druidic_ldruid_7th_level",
+          "name": "Reincarnation (Druidic)"
+        },
+        {
+          "spell_id": "repulsion_lmagic_user_6th_level",
+          "name": "Repulsion"
+        },
+        {
+          "spell_id": "stone_to_flesh_lmagic_user_6th_level",
+          "name": "Stone to Flesh"
+        }
+      ]
+    },
+    "Cleric": {
+      "1": [
+        {
+          "spell_id": "cure_light_wounds_lcleric_1st_level_druid_2nd_level",
+          "name": "Cure light Wounds"
+        },
+        {
+          "spell_id": "detect_evil_cleric_lcleric_1st_level",
+          "name": "Detect Evil (Cleric)"
+        },
+        {
+          "spell_id": "detect_magic_lcleric_magic_user_druid_1st_level",
+          "name": "Detect Magic"
+        },
+        {
+          "spell_id": "light_lcleric_magic_user_1st_level",
+          "name": "Light"
+        },
+        {
+          "spell_id": "protection_from_evil_lcleric_1st_level_magic_user_1st_level",
+          "name": "Protection from Evil"
+        },
+        {
+          "spell_id": "purify_food_and_drink_lcleric_1st_level",
+          "name": "Purify Food and Drink"
+        }
+      ],
+      "2": [
+        {
+          "spell_id": "bless_lcleric_2nd_level",
+          "name": "Bless"
+        },
+        {
+          "spell_id": "find_traps_lcleric_2nd_level",
+          "name": "Find traps"
+        },
+        {
+          "spell_id": "hold_person_cleric_lcleric_2nd_level",
+          "name": "Hold Person (Cleric)"
+        },
+        {
+          "spell_id": "silence_15_foot_radius_lcleric_2nd_level",
+          "name": "Silence, 15-Foot Radius"
+        },
+        {
+          "spell_id": "snake_charm_lcleric_2nd_level",
+          "name": "Snake Charm"
+        },
+        {
+          "spell_id": "speak_with_animals_lcleric_2nd_level",
+          "name": "Speak with Animals"
+        }
+      ],
+      "3": [
+        {
+          "spell_id": "continual_light_lmagic_user_2nd_level",
+          "name": "Continual light"
+        },
+        {
+          "spell_id": "cure_disease_lcleric_3rd_level_druid_3rd_level",
+          "name": "Cure Disease"
+        },
+        {
+          "spell_id": "locate_object_cleric_lcleric_3rd_level",
+          "name": "Locate Object Cleric"
+        },
+        {
+          "spell_id": "prayer_lcleric_3rd_level",
+          "name": "Prayer"
+        },
+        {
+          "spell_id": "remove_curse_lcleric_3rd_level_magic_user_4th_level",
+          "name": "Remove Curse"
+        },
+        {
+          "spell_id": "speak_with_dead_lcleric_3rd_level",
+          "name": "Speak with Dead"
+        }
+      ],
+      "4": [
+        {
+          "spell_id": "create_water_lcleric_4th_level_druid_2nd_level",
+          "name": "Create Water"
+        },
+        {
+          "spell_id": "cure_serious_wounds_lcleric_4th_level_druid_4th_level",
+          "name": "Cure Serious Wounds"
+        },
+        {
+          "spell_id": "neutralize_poison_lcleric_4th_level_druid_3rd_level",
+          "name": "Neutralize Poison"
+        },
+        {
+          "spell_id": "protection_from_evil_10_foot_radius_lcleric_4th_level_magic_user_3rd_level",
+          "name": "Protection from Evil, 10-Foot Radius"
+        },
+        {
+          "spell_id": "speak_with_plants_lcleric_4th_level_druid_4th_level",
+          "name": "Speak with Plants"
+        },
+        {
+          "spell_id": "sticks_to_snakes_lcleric_4th_level_druid_5th_level",
+          "name": "Sticks to Snakes"
+        }
+      ],
+      "5": [
+        {
+          "spell_id": "commune_lcleric_5th_level",
+          "name": "Commune"
+        },
+        {
+          "spell_id": "create_food_lcleric_5th_level",
+          "name": "Create Food"
+        },
+        {
+          "spell_id": "dispel_evil_lcleric_5th_level",
+          "name": "Dispel Evil"
+        },
+        {
+          "spell_id": "finger_of_death_lcleric_2nd_level",
+          "name": "Finger of Death"
+        },
+        {
+          "spell_id": "insect_plague_lcleric_5th_level_druid_4th_level",
+          "name": "Insect Plague"
+        },
+        {
+          "spell_id": "quest_lcleric_5th_level",
+          "name": "Quest"
+        },
+        {
+          "spell_id": "raise_dead_lcleric_5th_level",
+          "name": "Raise Dead"
+        }
+      ]
+    }
+  },
+  "unresolved": [],
+  "content_hash": "sha256:52c5e436a20f96569a86a066600cccd8f185c9f79d9b62574cb8c4ef6b9a9873"
+}

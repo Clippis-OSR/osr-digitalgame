@@ -1,0 +1,210 @@
+{
+  "schema_version": "spell_lists_canonical.v1",
+  "source": "Swords & Wizardry Complete (user-provided canonical lists)",
+  "classes": {
+    "Druid": {
+      "1": [
+        "Detect Magic",
+        "Detect Snares & Pits",
+        "Faerie Fire",
+        "Locate Animals",
+        "Predict Weather",
+        "Purify Water"
+      ],
+      "2": [
+        "Create Water",
+        "Cure Light Wounds",
+        "Heat Metal",
+        "Locate Plants",
+        "Obscuring Mist",
+        "Produce Flame",
+        "Speak with Animals",
+        "Warp Wood"
+      ],
+      "3": [
+        "Call Lightning",
+        "Cure Disease",
+        "Hold Animal",
+        "Neutralize Poison",
+        "Plant Growth",
+        "Protection Against Fire",
+        "Pyrotechnics",
+        "Water Breathing"
+      ],
+      "4": [
+        "Animal Summoning I",
+        "Control Temperature 10-ft. Radius",
+        "Cure Serious Wounds",
+        "Dispel Magic",
+        "Hallucinatory Forest",
+        "Insect Plague",
+        "Plant Doorway",
+        "Produce Fire",
+        "Protection from Lightning",
+        "Speak with Plants"
+      ],
+      "5": [
+        "Animal Growth",
+        "Animal Summoning II",
+        "Anti-Plant Ward",
+        "Commune with Nature",
+        "Control Winds",
+        "Hold Plant",
+        "Transmute Rock to Mud",
+        "Passplant",
+        "Sticks to Snakes",
+        "Wall of Fire"
+      ]
+    },
+    "Magic-User": {
+      "1": [
+        "Charm Person",
+        "Detect Magic",
+        "Hold Portal",
+        "Light",
+        "Magic Missile",
+        "Protection from Evil",
+        "Read Languages",
+        "Read Magic",
+        "Shield",
+        "Sleep"
+      ],
+      "2": [
+        "Continual Light",
+        "Darkness, 15-foot Radius",
+        "Detect Evil",
+        "Detect Invisibility",
+        "ESP",
+        "Invisibility",
+        "Knock",
+        "Levitate",
+        "Locate Object",
+        "Magic Mouth",
+        "Mirror Image",
+        "Phantasmal Force",
+        "Pyrotechnics",
+        "Strength",
+        "Web",
+        "Wizard Lock"
+      ],
+      "3": [
+        "Clairaudience",
+        "Clairvoyance",
+        "Darkvision",
+        "Dispel Magic",
+        "Explosive Runes",
+        "Fireball",
+        "Fly",
+        "Haste",
+        "Hold Person",
+        "Invisibility, 10-foot Radius",
+        "Lightning Bolt",
+        "Monster Summoning I",
+        "Protection from Evil, 10-foot Radius",
+        "Protection from Normal Missiles",
+        "Rope Trick",
+        "Slow",
+        "Suggestion",
+        "Water Breathing"
+      ],
+      "4": [
+        "Charm Monster",
+        "Confusion",
+        "Dimension Door",
+        "Extension I",
+        "Fear",
+        "Hallucinatory Terrain",
+        "Ice Storm",
+        "Massmorph",
+        "Monster Summoning II",
+        "Plant Growth",
+        "Polymorph Other",
+        "Polymorph Self",
+        "Remove Curse",
+        "Wall of Fire",
+        "Wall of Ice",
+        "Wizard Eye"
+      ],
+      "5": [
+        "Animal Growth",
+        "Animate Dead",
+        "Cloudkill",
+        "Conjuration of Elementals",
+        "Contact Other Plane",
+        "Extension II",
+        "Feeblemind",
+        "Hold Monster",
+        "Magic Jar",
+        "Monster Summoning III",
+        "Passwall",
+        "Telekinesis",
+        "Teleport",
+        "Transmute Rock to Mud",
+        "Wall of Iron",
+        "Wall of Stone"
+      ],
+      "6": [
+        "Anti-Magic Shell",
+        "Control Weather",
+        "Death Spell",
+        "Disintegrate",
+        "Enchant Item",
+        "Extension III",
+        "Geas",
+        "Invisible Stalker",
+        "Legend Lore",
+        "Lower Water",
+        "Monster Summoning IV",
+        "Move Earth",
+        "Part Water",
+        "Project Image",
+        "Reincarnation",
+        "Repulsion",
+        "Stone to Flesh"
+      ]
+    },
+    "Cleric": {
+      "1": [
+        "Cure Light Wounds",
+        "Detect Evil",
+        "Detect Magic",
+        "Light",
+        "Protection from Evil",
+        "Purify Food and Drink"
+      ],
+      "2": [
+        "Bless",
+        "Find Traps",
+        "Hold Person",
+        "Silence, 15-foot Radius",
+        "Snake Charm",
+        "Speak with Animals"
+      ],
+      "3": [
+        "Continual Light",
+        "Cure Disease",
+        "Locate Object",
+        "Prayer",
+        "Remove Curse",
+        "Speak with Dead"
+      ],
+      "4": [
+        "Create Water",
+        "Cure Serious Wounds",
+        "Neutralize Poison",
+        "Protection from Evil, 10-foot Radius",
+        "Speak with Plants",
+        "Sticks to Snakes"
+      ],
+      "5": [
+        "Commune",
+        "Create Food",
+        "Dispel Evil",
+        "Finger of Death",
+        "Insect Plague",
+        "Quest",
+        "Raise Dead"
+      ]
+    }
+  }
+}

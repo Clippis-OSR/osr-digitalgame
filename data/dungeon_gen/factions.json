@@ -1,0 +1,61 @@
+{
+  "schema_version": "P4.9.0",
+  "faction_templates": [
+    {
+      "faction_id": "goblin_tribe",
+      "name": "Goblin Tribe",
+      "alignment": "chaos",
+      "morale_mod": 1,
+      "reaction_mod": -1,
+      "tags": [
+        "humanoid",
+        "raiders"
+      ],
+      "doctrine": {
+        "prefers_ambush": true,
+        "uses_traps": true
+      }
+    },
+    {
+      "faction_id": "cult_of_ash",
+      "name": "Cult of Ash",
+      "alignment": "chaos",
+      "morale_mod": 2,
+      "reaction_mod": -2,
+      "tags": [
+        "cult",
+        "underground"
+      ],
+      "doctrine": {
+        "prefers_summons": true,
+        "guards_setpieces": true
+      }
+    },
+    {
+      "faction_id": "lost_guard",
+      "name": "Lost Guard",
+      "alignment": "law",
+      "morale_mod": 0,
+      "reaction_mod": 1,
+      "tags": [
+        "human",
+        "survivors"
+      ],
+      "doctrine": {
+        "parley_friendly": true
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "a": "goblin_tribe",
+      "b": "cult_of_ash",
+      "stance": "rival"
+    },
+    {
+      "a": "lost_guard",
+      "b": "goblin_tribe",
+      "stance": "hostile"
+    }
+  ]
+}

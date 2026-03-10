@@ -1,0 +1,929 @@
+{
+  "basilisk": [
+    {
+      "id": "basilisk_gaze",
+      "save_tags": [
+        "petrification"
+      ],
+      "trigger": "on_spawn",
+      "type": "gaze_petrification"
+    }
+  ],
+  "carrion_creeper": [
+    {
+      "duration": "2d4",
+      "id": "crawler_tentacles",
+      "save_tags": [
+        "paralysis"
+      ],
+      "trigger": "on_hit",
+      "type": "paralysis"
+    }
+  ],
+  "cockatrice": [
+    {
+      "id": "cockatrice_touch",
+      "save_tags": [
+        "petrification"
+      ],
+      "trigger": "on_hit",
+      "type": "petrification"
+    }
+  ],
+  "demon_baalroch_balor": [
+    {
+      "id": "baalroch_whip_pull_burn",
+      "params": {
+        "burn_damage": "3d6"
+      },
+      "trigger": "on_hit",
+      "type": "pull_and_burn"
+    },
+    {
+      "id": "baalroch_gate",
+      "params": {
+        "success_pct": 70,
+        "table": "baalroch_gate_table"
+      },
+      "trigger": "special_action",
+      "type": "gate_demon"
+    },
+    {
+      "id": "baalroch_low_level_spell_immunity",
+      "params": {
+        "caster_level_lt": 6
+      },
+      "trigger": "always",
+      "type": "spell_immunity_caster_level_lt"
+    }
+  ],
+  "demon_erinyes": [
+    {
+      "id": "erinyes_fear",
+      "save_tags": [
+        "spells"
+      ],
+      "trigger": "on_spawn",
+      "type": "aura_fear"
+    },
+    {
+      "id": "erinyes_whip_entangle",
+      "save_tags": [
+        "spells"
+      ],
+      "trigger": "on_hit",
+      "type": "entangle"
+    },
+    {
+      "id": "erinyes_sword_paralysis",
+      "save_tags": [
+        "paralysis"
+      ],
+      "trigger": "on_hit",
+      "type": "paralysis"
+    }
+  ],
+  "demon_glabrezu": [
+    {
+      "id": "glabrezu_spell_likes",
+      "params": {
+        "at_will": [
+          "fear",
+          "levitate",
+          "polymorph_self"
+        ],
+        "daily": [
+          "darkness_10ft_radius"
+        ]
+      },
+      "trigger": "on_spawn",
+      "type": "spell_like_bundle"
+    },
+    {
+      "id": "glabrezu_gate",
+      "params": {
+        "success_pct": 30,
+        "table": "demon_category_1d4"
+      },
+      "trigger": "special_action",
+      "type": "gate_demon"
+    }
+  ],
+  "demon_hezrou_second_category_demon": [
+    {
+      "id": "hezrou_summon",
+      "params": {
+        "category": 2,
+        "success_pct": 20
+      },
+      "trigger": "special_action",
+      "type": "summon_same_category"
+    }
+  ],
+  "demon_lemures": [
+    {
+      "id": "lemure_regen",
+      "params": {
+        "hp_per_round": 1
+      },
+      "trigger": "on_round_start",
+      "type": "regeneration"
+    },
+    {
+      "id": "lemure_holy_water_only",
+      "params": {
+        "requires": "holy_water"
+      },
+      "trigger": "on_death_check",
+      "type": "special_kill_condition"
+    }
+  ],
+  "demon_manes": [
+    {
+      "id": "manes_half_damage_nonmagic",
+      "params": {
+        "multiplier": 0.5,
+        "source": "non_magic_weapon"
+      },
+      "trigger": "on_damage_taken",
+      "type": "damage_modifier"
+    }
+  ],
+  "demon_marilith_fifth_category_demon": [
+    {
+      "id": "marilith_tail_constrict",
+      "params": {
+        "auto_damage_after_hit": true
+      },
+      "trigger": "on_hit",
+      "type": "constrict"
+    },
+    {
+      "id": "marilith_gate",
+      "params": {
+        "success_pct": 50,
+        "table": "marilith_gate_table"
+      },
+      "trigger": "special_action",
+      "type": "gate_demon"
+    }
+  ],
+  "demon_nalfeshnee": [
+    {
+      "id": "nalfeshnee_to_hit_bonus",
+      "params": {
+        "bonus": 2
+      },
+      "trigger": "always",
+      "type": "to_hit_bonus"
+    },
+    {
+      "id": "nalfeshnee_spell_likes",
+      "params": {
+        "at_will": [
+          "fear",
+          "polymorph_self",
+          "dispel_magic"
+        ],
+        "daily": [
+          "symbol_of_discord"
+        ]
+      },
+      "trigger": "on_spawn",
+      "type": "spell_like_bundle"
+    },
+    {
+      "id": "nalfeshnee_gate",
+      "params": {
+        "success_pct": 60,
+        "table": "demon_category_1d6"
+      },
+      "trigger": "special_action",
+      "type": "gate_demon"
+    }
+  ],
+  "demon_prince_orc_us": [
+    {
+      "id": "orcus_command_undead",
+      "trigger": "special_action",
+      "type": "command_undead"
+    },
+    {
+      "id": "orcus_wand_death",
+      "params": {
+        "weapon": "wand_of_orcus"
+      },
+      "save_tags": [
+        "death"
+      ],
+      "trigger": "on_hit",
+      "type": "save_or_die"
+    },
+    {
+      "id": "orcus_summon_undead",
+      "trigger": "special_action",
+      "type": "summon_undead"
+    },
+    {
+      "id": "orcus_telepathy",
+      "params": {
+        "range_ft": 100
+      },
+      "trigger": "always",
+      "type": "telepathy"
+    }
+  ],
+  "demon_prince_orcus": [
+    {
+      "id": "orcus_command_undead",
+      "trigger": "special_action",
+      "type": "command_undead"
+    },
+    {
+      "id": "orcus_wand_death",
+      "params": {
+        "weapon": "wand_of_orcus"
+      },
+      "save_tags": [
+        "death"
+      ],
+      "trigger": "on_hit",
+      "type": "save_or_die"
+    },
+    {
+      "id": "orcus_summon_undead",
+      "trigger": "special_action",
+      "type": "summon_undead"
+    },
+    {
+      "id": "orcus_telepathy",
+      "params": {
+        "range_ft": 100
+      },
+      "trigger": "always",
+      "type": "telepathy"
+    }
+  ],
+  "demon_q_uasit": [
+    {
+      "id": "quasit_regen",
+      "params": {
+        "hp_per_round": 1
+      },
+      "trigger": "on_round_start",
+      "type": "regeneration"
+    },
+    {
+      "id": "quasit_poison_dex",
+      "params": {
+        "ability": "dex",
+        "amount": 1,
+        "duration": "2d6",
+        "lethal": false
+      },
+      "save_tags": [
+        "poison"
+      ],
+      "trigger": "on_hit",
+      "type": "ability_damage"
+    },
+    {
+      "id": "quasit_invisibility",
+      "trigger": "special_action",
+      "type": "invisibility_at_will"
+    },
+    {
+      "id": "quasit_fear_1_day",
+      "params": {
+        "spell": "fear",
+        "uses_per_day": 1
+      },
+      "trigger": "special_action",
+      "type": "spell_like"
+    }
+  ],
+  "demon_quasit": [
+    {
+      "id": "quasit_regen",
+      "params": {
+        "hp_per_round": 1
+      },
+      "trigger": "on_round_start",
+      "type": "regeneration"
+    },
+    {
+      "id": "quasit_poison_dex",
+      "params": {
+        "ability": "dex",
+        "amount": 1,
+        "duration": "2d6",
+        "lethal": false
+      },
+      "save_tags": [
+        "poison"
+      ],
+      "trigger": "on_hit",
+      "type": "ability_damage"
+    },
+    {
+      "id": "quasit_invisibility",
+      "trigger": "special_action",
+      "type": "invisibility_at_will"
+    },
+    {
+      "id": "quasit_fear_1_day",
+      "params": {
+        "spell": "fear",
+        "uses_per_day": 1
+      },
+      "trigger": "special_action",
+      "type": "spell_like"
+    }
+  ],
+  "demon_succubus": [
+    {
+      "id": "succubus_level_drain_kiss",
+      "params": {
+        "levels": 1,
+        "method": "kiss"
+      },
+      "save_tags": [],
+      "trigger": "on_hit",
+      "type": "level_drain"
+    },
+    {
+      "id": "succubus_spell_likes",
+      "params": {
+        "at_will": [
+          "charm_person",
+          "darkness_10ft_diameter",
+          "change_shape"
+        ],
+        "daily": [],
+        "other": [
+          "esp",
+          "clairaudience",
+          "suggestion"
+        ]
+      },
+      "trigger": "on_spawn",
+      "type": "spell_like_bundle"
+    },
+    {
+      "id": "succubus_gate",
+      "params": {
+        "success_pct": 40,
+        "table": "succubus_gate_table"
+      },
+      "trigger": "special_action",
+      "type": "gate_demon"
+    }
+  ],
+  "demon_vrock_first_category_demon": [
+    {
+      "id": "vrock_darkness",
+      "params": {
+        "radius_ft": 5,
+        "spell": "darkness"
+      },
+      "trigger": "special_action",
+      "type": "spell_like"
+    },
+    {
+      "id": "vrock_gate",
+      "params": {
+        "success_pct": 10,
+        "table": "vrock_gate_table"
+      },
+      "trigger": "special_action",
+      "type": "gate_demon"
+    }
+  ],
+  "dragon": [
+    {
+      "duration": "1d4",
+      "id": "dragon_fear",
+      "save_tags": [
+        "spells"
+      ],
+      "trigger": "on_spawn",
+      "type": "fear_aura"
+    }
+  ],
+  "ghost": [
+    {
+      "duration": "1d4",
+      "id": "ghost_fear",
+      "save_tags": [
+        "spells"
+      ],
+      "trigger": "on_spawn",
+      "type": "fear_aura"
+    }
+  ],
+  "ghoul": [
+    {
+      "duration": "2d4",
+      "id": "ghoul_touch",
+      "save_tags": [
+        "paralysis"
+      ],
+      "trigger": "on_hit",
+      "type": "paralysis"
+    }
+  ],
+  "lich": [
+    {
+      "duration": "2d4",
+      "id": "lich_touch",
+      "save_tags": [
+        "paralysis"
+      ],
+      "trigger": "on_hit",
+      "type": "paralysis"
+    },
+    {
+      "id": "lich_drain",
+      "levels": 1,
+      "trigger": "on_hit",
+      "type": "energy_drain"
+    },
+    {
+      "duration": "1d4",
+      "id": "lich_dread",
+      "save_tags": [
+        "spells"
+      ],
+      "trigger": "on_spawn",
+      "type": "fear_aura"
+    }
+  ],
+  "medusa": [
+    {
+      "id": "medusa_gaze",
+      "save_tags": [
+        "petrification"
+      ],
+      "trigger": "on_spawn",
+      "type": "gaze_petrification"
+    }
+  ],
+  "mummy": [
+    {
+      "duration": "1d4",
+      "id": "mummy_fear",
+      "save_tags": [
+        "spells"
+      ],
+      "trigger": "on_spawn",
+      "type": "fear_aura"
+    },
+    {
+      "blocks_magical_heal": true,
+      "blocks_natural_heal": true,
+      "damage_per_day": "1d6",
+      "id": "mummy_rot",
+      "save_tags": [
+        "spells"
+      ],
+      "trigger": "on_hit",
+      "type": "disease"
+    }
+  ],
+  "octopus_giant": [
+    {
+      "damage_per_round": "1d6",
+      "damage_type": "physical",
+      "escape_bonus": 0,
+      "escape_dc": 14,
+      "escape_stat": "STR",
+      "id": "octopus_constrict",
+      "notes": "S&W: after a tentacle hits, it deals 1d6 per round automatically; 25% chance to pinion a limb (not yet modeled).",
+      "save_on_apply": false,
+      "to_hit_mod": -2,
+      "trigger": "on_hit",
+      "type": "grapple"
+    }
+  ],
+  "purple_worm": [
+    {
+      "cut_out_damage": 30,
+      "cut_out_enabled": true,
+      "damage_per_round": "2d6",
+      "damage_type": "acid",
+      "id": "purple_worm_swallow",
+      "inside_ac": 9,
+      "inside_to_hit_mod": -4,
+      "notes": "S&W: swallows whole if attack roll is 4 higher than needed to hit, or double the number required to hit (bite). Attack-type gating not yet modeled.",
+      "save_on_apply": false,
+      "swallow_double_needed": true,
+      "swallow_margin": 4,
+      "trigger": "on_hit",
+      "type": "swallow"
+    }
+  ],
+  "spectre": [
+    {
+      "id": "spectre_drain",
+      "levels": 2,
+      "trigger": "on_hit",
+      "type": "energy_drain"
+    }
+  ],
+  "spider_giant_greater_6_foot_diameter": [
+    {
+      "id": "giant_spider_bite",
+      "mode": "instant_death",
+      "save_tags": [
+        "poison"
+      ],
+      "trigger": "on_hit",
+      "type": "poison"
+    }
+  ],
+  "spider_giant_man_sized_4_foot_diameter": [
+    {
+      "id": "giant_spider_bite",
+      "mode": "instant_death",
+      "save_tags": [
+        "poison"
+      ],
+      "trigger": "on_hit",
+      "type": "poison"
+    }
+  ],
+  "spider_giant_smaller": [
+    {
+      "id": "giant_spider_bite",
+      "mode": "instant_death",
+      "save_tags": [
+        "poison"
+      ],
+      "trigger": "on_hit",
+      "type": "poison"
+    }
+  ],
+  "troll": [
+    {
+      "amount": 3,
+      "id": "troll_regen",
+      "trigger": "on_spawn",
+      "type": "regeneration"
+    }
+  ],
+  "vampires": [
+    {
+      "duration": "2d6",
+      "id": "vampire_charm",
+      "save_tags": [
+        "spells"
+      ],
+      "trigger": "on_hit",
+      "type": "charm"
+    },
+    {
+      "id": "vampire_drain",
+      "levels": 2,
+      "trigger": "on_hit",
+      "type": "energy_drain"
+    },
+    {
+      "duration": "1d4",
+      "id": "vampire_fear",
+      "save_tags": [
+        "spells"
+      ],
+      "trigger": "on_spawn",
+      "type": "fear_aura"
+    }
+  ],
+  "wight": [
+    {
+      "id": "wight_drain",
+      "levels": 1,
+      "trigger": "on_hit",
+      "type": "energy_drain"
+    }
+  ],
+  "wraith": [
+    {
+      "id": "wraith_drain",
+      "levels": 1,
+      "trigger": "on_hit",
+      "type": "energy_drain"
+    }
+  ],
+  "wyvern": [
+    {
+      "dot_damage": "1d6",
+      "duration": "1d6",
+      "id": "wyvern_sting",
+      "mode": "dot",
+      "save_each_tick": false,
+      "save_tags": [
+        "poison"
+      ],
+      "tick": "start_of_round",
+      "trigger": "on_hit",
+      "type": "poison"
+    }
+  ],
+  "elemental_air": [
+    {
+      "id": "air_elemental_whirlwind",
+      "type": "whirlwind",
+      "trigger": "action",
+      "save_tags": [
+        "breath"
+      ],
+      "params": {
+        "diameter_ft": 30,
+        "height_ft": 100,
+        "hurl_max_hd": 1,
+        "note": "hurling creatures of 1 HD or less great distances"
+      }
+    }
+  ],
+  "elemental_earth": [
+    {
+      "id": "earth_elemental_tear_down_stone",
+      "type": "structure_damage",
+      "trigger": "action",
+      "save_tags": [],
+      "params": {
+        "target": "stone_structure",
+        "time_rounds_expr": "1d4+4",
+        "time_unit": "minutes",
+        "note": "can rip down even a castle wall"
+      }
+    },
+    {
+      "id": "earth_elemental_damage_reduction_off_earth",
+      "type": "conditional_damage_reduction",
+      "trigger": "on_damage",
+      "save_tags": [],
+      "params": {
+        "condition": "opponent_not_on_earth_or_rock",
+        "reduce_damage_by": "1d6"
+      }
+    }
+  ],
+  "elemental_fire": [
+    {
+      "id": "fire_elemental_ignite",
+      "type": "ignite_on_hit",
+      "trigger": "on_hit",
+      "save_tags": [
+        "save"
+      ],
+      "params": {
+        "targets": "flammable_materials_including_wood",
+        "save_rule": "as_determined_by_referee"
+      }
+    }
+  ],
+  "elemental_water": [
+    {
+      "id": "water_elemental_range_limit",
+      "type": "tether",
+      "trigger": "always",
+      "save_tags": [],
+      "params": {
+        "max_distance_ft": 60,
+        "source": "large_body_of_water"
+      }
+    },
+    {
+      "id": "water_elemental_damage_reduction_out_of_water",
+      "type": "conditional_damage_reduction",
+      "trigger": "on_damage",
+      "save_tags": [],
+      "params": {
+        "condition": "opponent_not_in_water",
+        "reduce_damage_by": "1d6"
+      }
+    },
+    {
+      "id": "water_elemental_overturn_boats",
+      "type": "structure_damage",
+      "trigger": "action",
+      "save_tags": [],
+      "params": {
+        "small_boats": "can_overturn",
+        "ship_rounds_expr": "1d4+4",
+        "ship_break_time": "1 hour"
+      }
+    }
+  ],
+  "lycanthrope_werebear": [
+    {
+      "type": "grab_and_hug",
+      "trigger": "on_attack_roll_natural_18_plus_with_claw",
+      "params": {
+        "extra_damage": "2d8"
+      }
+    },
+    {
+      "type": "lycanthropy_infection",
+      "trigger": "victim_below_50pct_hp_by_lycanthrope",
+      "params": {}
+    }
+  ],
+  "lycanthrope_wererat": [
+    {
+      "type": "control_rats",
+      "trigger": "at_will",
+      "params": {}
+    },
+    {
+      "type": "surprise_bonus",
+      "trigger": "encounter_start",
+      "params": {
+        "surprise_on_d6": "1-4"
+      }
+    },
+    {
+      "type": "lycanthropy_infection",
+      "trigger": "victim_below_50pct_hp_by_lycanthrope",
+      "params": {}
+    }
+  ],
+  "lycanthrope_wereboar": [
+    {
+      "type": "lycanthropy_infection",
+      "trigger": "victim_below_50pct_hp_by_lycanthrope",
+      "params": {}
+    }
+  ],
+  "lycanthrope_weretiger": [
+    {
+      "type": "lycanthropy_infection",
+      "trigger": "victim_below_50pct_hp_by_lycanthrope",
+      "params": {}
+    }
+  ],
+  "lycanthrope_werewolf": [
+    {
+      "type": "lycanthropy_infection",
+      "trigger": "victim_below_50pct_hp_by_lycanthrope",
+      "params": {}
+    }
+  ],
+  "unicorn": [
+    {
+      "type": "magic_resistance",
+      "trigger": "passive",
+      "params": {
+        "pct": 25
+      }
+    },
+    {
+      "type": "charge_double_damage",
+      "trigger": "on_charge",
+      "params": {}
+    },
+    {
+      "type": "teleport",
+      "trigger": "1_per_day",
+      "params": {
+        "range_ft": 360,
+        "allows_rider": true
+      }
+    }
+  ],
+  "clay_golem": [
+    {
+      "type": "berserk_chance",
+      "trigger": "each_combat_round",
+      "params": {
+        "pct_cumulative": 1
+      }
+    },
+    {
+      "type": "spell_interaction",
+      "trigger": "on_spell",
+      "params": {
+        "earthquake": "destroy"
+      }
+    }
+  ],
+  "flesh_golem": [
+    {
+      "type": "spell_interaction",
+      "trigger": "on_spell",
+      "params": {
+        "fire": "slow",
+        "cold": "slow",
+        "lightning": "heal"
+      }
+    }
+  ],
+  "iron_golem": [
+    {
+      "type": "breath_weapon",
+      "trigger": "3_per_day_or_60pct_round",
+      "params": {
+        "shape": "cloud",
+        "radius_ft": 10,
+        "effect": "poison_gas"
+      }
+    },
+    {
+      "type": "spell_interaction",
+      "trigger": "on_spell",
+      "params": {
+        "lightning": "slow",
+        "fire": "heal"
+      }
+    }
+  ],
+  "stone_golem": [
+    {
+      "type": "spell_interaction",
+      "trigger": "on_spell",
+      "params": {
+        "fire": "slow",
+        "rock_to_mud": "damage",
+        "mud_to_rock": "heal"
+      }
+    }
+  ],
+  "golem_clay": [
+    {
+      "type": "berserk_chance",
+      "trigger": "each_combat_round",
+      "params": {
+        "pct_cumulative": 1
+      }
+    },
+    {
+      "type": "spell_interaction",
+      "trigger": "on_spell",
+      "params": {
+        "earthquake": "destroy"
+      }
+    }
+  ],
+  "golem_flesh": [
+    {
+      "type": "spell_interaction",
+      "trigger": "on_spell",
+      "params": {
+        "fire": "slow",
+        "cold": "slow",
+        "lightning": "heal"
+      }
+    }
+  ],
+  "golem_iron": [
+    {
+      "type": "breath_weapon",
+      "trigger": "3_per_day_or_60pct_round",
+      "params": {
+        "shape": "cloud",
+        "radius_ft": 10,
+        "effect": "poison_gas"
+      }
+    },
+    {
+      "type": "spell_interaction",
+      "trigger": "on_spell",
+      "params": {
+        "lightning": "slow",
+        "fire": "heal"
+      }
+    }
+  ],
+  "golem_stone": [
+    {
+      "type": "spell_interaction",
+      "trigger": "on_spell",
+      "params": {
+        "fire": "slow",
+        "rock_to_mud": "damage",
+        "mud_to_rock": "heal"
+      }
+    }
+  ],
+  "treant": [
+    {
+      "type": "control_trees",
+      "trigger": "action",
+      "params": {
+        "range_ft": 60,
+        "max_awake_trees": 2,
+        "awake_tree_move": 3
+      }
+    }
+  ],
+  "trapper_beast": [
+    {
+      "type": "enfold_and_smother",
+      "trigger": "on_prey_steps_on",
+      "params": {
+        "max_victims": 4,
+        "death_in_rounds": 7
+      }
+    }
+  ]
+}

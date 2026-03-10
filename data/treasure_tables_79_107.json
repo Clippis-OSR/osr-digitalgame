@@ -1,0 +1,1701 @@
+{
+  "79": {
+    "table": 79,
+    "title": "Minor gems and Jewelry",
+    "die": "1d4",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Gem or jewelry worth 1d6 gp"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Gem or jewelry worth 1d100 + 25 gp"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Gem or jewelry worth 1d100 + 75 gp"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Gem or jewelry worth 1d100 x10 gp"
+      }
+    ],
+    "raw": "Die Roll (1d4) Result\n1 Gem or jewelry worth 1d6 gp\n2 Gem or jewelry worth 1d100 + 25 gp\n3 Gem or jewelry worth 1d100 + 75 gp\n4 Gem or jewelry worth 1d100 x10 gp"
+  },
+  "80": {
+    "table": 80,
+    "title": "Medium gems and Jewelry",
+    "die": "1d4",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Gem or jewelry worth 1d100 gp"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Gem or jewelry worth 1d6 x200 gp"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Gem or jewelry worth 1d6 x300 gp"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Gem or jewelry worth 1d100 x100 gptable 81: Major gems and Jewelry"
+      },
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Gem or jewelry worth 1d100 x10 gp"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Gem or jewelry worth 1d100 x80 gp"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Gem or jewelry worth 1d100 x120 gp"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Gem or jewelry worth 1d100 x200 gp"
+      }
+    ],
+    "raw": "Die Roll (1d4) Result\n1 Gem or jewelry worth 1d100 gp\n2 Gem or jewelry worth 1d6 x200 gp\n3 Gem or jewelry worth 1d6 x300 gp\n4 Gem or jewelry worth 1d100 x100 gptable 81: Major gems and Jewelry\nDie Roll (1d4) Result\n1 Gem or jewelry worth 1d100 x10 gp\n2 Gem or jewelry worth 1d100 x80 gp\n3 Gem or jewelry worth 1d100 x120 gp\n4 Gem or jewelry worth 1d100 x200 gp\nMagic item trade-Outs"
+  },
+  "81": {
+    "table": 81,
+    "title": "Major gems and Jewelry",
+    "die": "1d4",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Gem or jewelry worth 1d100 x10 gp"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Gem or jewelry worth 1d100 x80 gp"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Gem or jewelry worth 1d100 x120 gp"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Gem or jewelry worth 1d100 x200 gp"
+      }
+    ],
+    "raw": "Die Roll (1d4) Result\n1 Gem or jewelry worth 1d100 x10 gp\n2 Gem or jewelry worth 1d100 x80 gp\n3 Gem or jewelry worth 1d100 x120 gp\n4 Gem or jewelry worth 1d100 x200 gp\nMagic item trade-Outs"
+  },
+  "82": {
+    "table": 82,
+    "title": "Minor Magic items",
+    "die": "1d4",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Roll once on the Potions table"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Roll 1d6 on the Scrolls table"
+      }
+    ],
+    "raw": "Die Roll  \n(1d4)Result\n1 Roll once on the Potions table\n2 Roll 1d6 on the Scrolls table\n3Roll 1d6 on the \nMagic Armor and Weapons Table (Table 89)\n4Roll 1d20 on the Remarkable Magic Items Table \n(Table 98)"
+  },
+  "83": {
+    "table": 83,
+    "title": "Medium Magic items",
+    "die": "1d4",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Roll three times on the Potions table"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Roll 1d6 +6 on the Scrolls table"
+      }
+    ],
+    "raw": "Die Roll  \n(1d4)Result\n1 Roll three times on the Potions table\n2 Roll 1d6 +6 on the Scrolls table\n3Roll 1d6 +6 on the \nMagic Armor and Weapons Table (Table 89)\n4Roll 1d20 +20 on the Remarkable Magic Items \nTable (Table 98)"
+  },
+  "84": {
+    "table": 84,
+    "title": "Major Magic items",
+    "die": "1d4",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Roll six times on the Potions table"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Roll 1d6 +12 on the Scrolls table"
+      }
+    ],
+    "raw": "Die Roll \n(1d4)Result\n1 Roll six times on the Potions table\n2 Roll 1d6 +12 on the Scrolls table\n3Roll 1d6 +12 on the \nMagic Armor and Weapons Table (Table 89)\n4Roll 1d20 +40 on the Remarkable Magic Items \nTable (Table 98)\nMagic item Descriptions\nAbbreviations\nMany of the magic items found in the game can only be used by \ncertain character classes. This information is abbreviated in the tables as follows:\n(A) The item can be used by members of any class; \n(C) The item can only be used by members of the Cleric classes \n(Cleric and Druid); \n(F) The item can only be used by members of the Fighter  classes \n(Fighter, Paladin, and Ranger); \n(M) The item can only be used by Magic-Users; \n(T) The item can only be used by members of the Thief classes (Assas-\nsin, Monk, and Thief).\nIf an item has more than one abbreviation, it is usable by the character \nclasses indicated, but no others. For example, a magic item labeled (C, M) is usable by members of the Cleric classes and by Magic-Users, but not by any other character classes.\n120tREAS uRE\nPotions\nStrange alchemical brews, in dusty, stoppered bottles, are to be found \nin many of the forgotten or forbidden places of the world. Time has \noften worn away any markings once left to identify the contents of these mysterious mixtures, if the alchemist ever chose to label them in the first place. The consequences of drinking the products of alchemy can be varied: some of these can produce wondrously useful effects, but others might be deadly poisons!  \nIn general, since potions are the product of alchemy rather than \nmagic, they will neither be apparent to Detect Magic spells, nor easily \nidentified without tasting and experimentation. If the Referee decides that alchemy instead manipulates magic, as opposed to fantastical but otherwise natural chemistry, then Detect Magic and Dispel Magic \nwould work upon potions.\nPotions are usable by all character classes except  Monks. Unless \notherwise noted, potion effects have a duration of 1d6+6 full turns."
+  },
+  "85": {
+    "table": 85,
+    "title": "Potions",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 3,
+        "result": "Animal Control"
+      },
+      {
+        "lo": 4,
+        "hi": 6,
+        "result": "Clairaudience"
+      },
+      {
+        "lo": 7,
+        "hi": 9,
+        "result": "Clairvoyance"
+      },
+      {
+        "lo": 10,
+        "hi": 12,
+        "result": "Diminution"
+      },
+      {
+        "lo": 13,
+        "hi": 15,
+        "result": "Dragon Control"
+      },
+      {
+        "lo": 16,
+        "hi": 18,
+        "result": "Ethereality"
+      },
+      {
+        "lo": 19,
+        "hi": 21,
+        "result": "Fire Resistance"
+      },
+      {
+        "lo": 22,
+        "hi": 24,
+        "result": "Flying"
+      },
+      {
+        "lo": 25,
+        "hi": 25,
+        "result": "Frozen Concoction"
+      },
+      {
+        "lo": 26,
+        "hi": 27,
+        "result": "Gaseous Form"
+      },
+      {
+        "lo": 28,
+        "hi": 30,
+        "result": "Giant Strength"
+      },
+      {
+        "lo": 31,
+        "hi": 33,
+        "result": "Growth"
+      },
+      {
+        "lo": 34,
+        "hi": 36,
+        "result": "Heroism"
+      },
+      {
+        "lo": 37,
+        "hi": 39,
+        "result": "Invisibility"
+      },
+      {
+        "lo": 40,
+        "hi": 42,
+        "result": "Invulnerability"
+      },
+      {
+        "lo": 43,
+        "hi": 45,
+        "result": "Levitation"
+      },
+      {
+        "lo": 46,
+        "hi": 48,
+        "result": "Plant Control"
+      },
+      {
+        "lo": 49,
+        "hi": 55,
+        "result": "Poison"
+      },
+      {
+        "lo": 56,
+        "hi": 58,
+        "result": "Slipperiness"
+      },
+      {
+        "lo": 59,
+        "hi": 61,
+        "result": "Treasure Finding"
+      },
+      {
+        "lo": 62,
+        "hi": 64,
+        "result": "Undead Control"
+      },
+      {
+        "lo": 65,
+        "hi": 75,
+        "result": "Extra Healing"
+      },
+      {
+        "lo": 76,
+        "hi": 100,
+        "result": "Healing"
+      }
+    ],
+    "raw_table": "Die Roll \n(1d100)Potion (Duration of 1d6+6 turns)\n1\u20133 Animal Control\n4\u20136 Clairaudience\n7\u20139 Clairvoyance\n10\u201312 Diminution\n13\u201315 Dragon Control\n16\u201318 Ethereality\n19\u201321 Fire Resistance\n22\u201324 Flying\n25 Frozen Concoction\n26\u201327 Gaseous Form\n28\u201330 Giant Strength\n31\u201333 Growth\n34\u201336 Heroism\n37\u201339 Invisibility\n40\u201342 Invulnerability\n43\u201345 Levitation\n46\u201348 Plant Control\n49\u201355 Poison\n56\u201358 Slipperiness\n59\u201361 Treasure Finding\n62\u201364 Undead Control\n65\u201375 Extra Healing\n76\u201300 Healing",
+    "descriptions": "Magic Potion Descriptions  \nAnimal Control: As per the spell.\nClairaudience: As per the spell.Clairvoyance: As per the spell.Diminution: This potion causes the drinker to shrink down to six inches tall for 2d6 hours. Taking smaller doses of the potion will result in less of a reduction in size.Dragon Control: The drinker gains the ability to control dragons of a certain type after partaking of this type of potion. 1d3 dragons of a specific type (determined randomly by the Referee) can be affected as per Charm Monster.Ethereality: The imbiber can move through solid objects but \ncannot attack. Equipment also becomes ethereal.Extra Healing: This potion is a potent curative; it heals 3d8+3 \nhit points of damage (duration does not apply).Fire Resistance: The drinker becomes immune to normal fire, gains +2 on saving throws against fire attacks, and suffers only half damage to magic fire attacks that do not permit saving throws.Flying: As per the spell.Frozen Concoction: These potions can be readily identified because they are often one or two degrees cooler than the surrounding temperature. The potion allows the imbiber to climb walls without falling, and not to drop held items in case of being surprised or frightened.Gaseous Form: The user\u2019s body turns to a mist, allowing access to any place that is not airtight. Equipment is left behind; only the body becomes gaseous.Giant Strength: The character becomes unbelievably strong for the potion\u2019s duration, gaining an additional 1d8 to damage rolls and +4 to hit (in addition to any normal bonuses, including existing Strength bonuses).Growth: The character grows to 30 feet in height.Healing: This potion cures 1d8+1 hit points of damage.Heroism: The imbiber gains +2 to attacks and damage.Invisibility: As per the spell.Invulnerability: The drinker gains a bonus of +2 on saving throws; moreover, any opponents attack with a penalty of -2.Levitation: As per the spell.Plant Control: As per the spell.Poison: The drinker must make a successful saving throw or die. Some poisons cause instant death; others cause death within a certain number of rounds, or even turns. In the case of a few poisons, failing the saving throw causes damage rather than death \u2013 such weaker poisons generally also inflict a small amount of damage even if the saving throw is successful.Slipperiness: Except for the soles of the feet and the palms of the hands, the character suddenly has a virtually frictionless surface.Treasure Finding: A character drinking this wonderful concoction can detect hoards of treasure within 400 feet.Undead Control: The drinker can control undead; 2d4 undead of fewer than 4 HD and 1d4 undead of 4+ hit dice fall under the imbiber\u2019s control, as per the Control Animal spell, after the potion is consumed.\nScrolls\nWith the exception of Protection scrolls, which can be used by any \ncharacter class, scrolls can only be used by a character class that can \ncast the appropriate type of spell. Rangers and Thieves are exceptions to this rule at higher levels (see the class descriptions for more details)."
+  },
+  "86": {
+    "table": 86,
+    "title": "Scrolls ( general)",
+    "die": "1d18",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "1 spell, level 1"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "1 spell, level 1d3"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "2 spells, level 1d2 each"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "3 spells, level 1 each"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Cursed Scroll"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Protection Scroll (normal duration)"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "2 spells, level 1d4"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "2 spells, level 1d6+1 each"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "1 spell level 1d6"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "5 spells, level 1d3 each"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "Cursed scroll"
+      },
+      {
+        "lo": 12,
+        "hi": 12,
+        "result": "Protection Scroll (double duration)"
+      },
+      {
+        "lo": 13,
+        "hi": 13,
+        "result": "5 spells, level 1d6 each"
+      },
+      {
+        "lo": 14,
+        "hi": 14,
+        "result": "6 spells, level 1d6 each"
+      },
+      {
+        "lo": 15,
+        "hi": 15,
+        "result": "7 spells, level 1d6 each"
+      },
+      {
+        "lo": 16,
+        "hi": 16,
+        "result": "8 spells, level 1d6 each"
+      },
+      {
+        "lo": 17,
+        "hi": 17,
+        "result": "Cursed scroll"
+      },
+      {
+        "lo": 18,
+        "hi": 18,
+        "result": "Protection Scroll"
+      }
+    ],
+    "raw": "Die Roll Scroll (50% Cleric, 50% Magic-User)\n1 1 spell, level 1\n2 1 spell, level 1d3\n3 2 spells, level 1d2 each\n4 3 spells, level 1 each\n5 Cursed Scroll\n6 Protection Scroll (normal duration)\n7 2 spells, level 1d4\n8 2 spells, level 1d6+1 each\n9 1 spell level 1d6  \n(+1 for Clerics, +3 for Magic-Users)\n10 5 spells, level 1d3 each\n11 Cursed scroll\n12 Protection Scroll (double duration)\n13 5 spells, level 1d6 each\n14 6 spells, level 1d6 each\n15 7 spells, level 1d6 each\n16 8 spells, level 1d6 each\n17 Cursed scroll\n18 Protection Scroll  \n(triple duration and double effect if applicable)\n121tREAS uRE"
+  },
+  "87": {
+    "table": 87,
+    "title": "Protection Scrolls",
+    "die": "1d8",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Demons"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Drowning"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Elementals"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Magic"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Metal"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Poison"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Undead"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Were-creatures"
+      }
+    ],
+    "raw_table": "Die Roll (1d8) Protection Scroll\n1 Demons\n2 Drowning\n3 Elementals\n4 Magic\n5 Metal\n6 Poison\n7 Undead\n8 Were-creatures",
+    "descriptions": "Protection Scroll Descriptions\nDemons: All within a 10-foot radius around the reader are \nprotected from the attacks of 1 demon per round. Duration: 40 minutes.Drowning: All within a 10-foot radius of the reader gain the ability to breathe underwater. Duration: 1 full day.Elementals: This scroll protects against a single elemental. Duration: 40 minutes.Magic: An anti-magic shell with a radius of 10 feet surrounds and moves with the reader; spells cannot pass in or out of the shell. Duration: 1 hour.Metal: Metal cannot harm the reader. Duration: 1 hour.Poison: Poisons have no effect upon one who reads such a scroll aloud; moreover, any poisons, active or quiescent, in the scroll reader\u2019s body are instantly removed. Duration: 6 hours.Undead: All within a 10-foot radius of the reader are protected against undead, but only to a limited degree. In any given round, 2d12 undead with fewer than 4 HD, and 2d6 undead with 4-5 HD, and 1d6 undead with 6+ HD are foiled by the protection of the scroll. Thus, the scroll is effective against all but a vast horde of undead. Duration: 1 hour.Were-creatures: All within a ten-foot radius around the reader are protected from lycanthropes. Duration: 1 hour.Cursed Scrolls\nCursed scrolls can inflict curses ranging from the amusing to the an-\nnoying, and all the way to the unbelievably catastrophic. The Referee is encouraged to invent interesting curses that might be written on scrolls, in addition to the possibilities shown on the table. A successful saving throw will allow the reader to avoid the curse. Most curses can be re-moved with a remove curse spell."
+  },
+  "88": {
+    "table": 88,
+    "title": "Cursed Scrolls",
+    "die": "1d20",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Blindness (3d6 turns)"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Confusion. Character acts randomly."
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Instant Death"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Lose 1d10 x100 experience points"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "Magically adhesive scroll"
+      },
+      {
+        "lo": 13,
+        "hi": 13,
+        "result": "Paralysis (3d6 turns)"
+      },
+      {
+        "lo": 19,
+        "hi": 19,
+        "result": "Turned to Stone"
+      }
+    ],
+    "raw_table": "Die Roll\n(1d20)Nature of the Curse\n1 Blindness (3d6 turns)\n2Causes an aversion: roll 1d6. The character gains a \nstrong aversion to: (1) Swords, (2) Spiders,  \n(3) Armor, (4) Spell casting, (5) Bathing,  \n(6) Being underground.\n3 Confusion. Character acts randomly.\n4Despondency (1d6 days\u2019 duration).  \nThe character will refuse to go anywhere, as there is \nsimply no point to it.\n5Dimensional V ortex. The character is physically \nsucked up into the scroll, appearing as a new word \non the page until rescued by a remove curse spell.\n6Hallucinations (3d6 turns). The exact nature of the \nhallucinations varies, but in general the character will \neither begin casting spells and/or attacking nearby \npeople, or will remain fascinated by the colors, \nunwilling to move.\n7 Instant Death\n8Levitation. The character levitates one inch off the \nground, and cannot get back down.\n9 Lose 1d10 x100 experience points\n10Lose one point of a randomly-determined  \nattribute score\n11 Magically adhesive scroll\n12Obedience (3d6 turns). The character does what \nanyone suggests.\n13 Paralysis (3d6 turns)\n14Paralysis: Everyone in a radius of 20 feet must  \nmake a saving throw or be paralyzed for  \n3d6 turns, with the exception of the reader of the \nscroll, who is unaffected.\n15Permanent diminution in size. Some of these reduce \nthe reader to half size (50%) and the rest reduce the \nreader to 6 inches tall.\n16Polymorph: roll 1d6. The character turns into  \n(1) a pig, (2) a mouse, (3) a flamingo, (4) a talking \nparrot, (5) a dog, (6) a water buffalo\n17Sleep (until curse is removed). In some cases, \nmagical sleep can be broken by a kiss. Otherwise, the \ncurse can only be removed by magic.\n18Smell. The character becomes foul-smelling for  \n1d8 days\n19 Turned to Stone\n20Uncontrollable sneezing (3d6 turns). The reader is \nlikely to attract wandering monsters, especially those \nthat prey upon the weak.To determine the specific spells written on a scroll, refer to \nthe list of spells for the appropriate type and level, and roll 1d20 (no spell list has more than 20 spells). If the die roll is higher than the number of spells, simply roll again until the result is low enough to indicate one of the spells on the list.\n122tREAS uRE\nMagic Armor and Weapons\nRoll on Table 89 to determine the basic nature of the enchantment and \nof the item (whether it is a shield, weapon, or armor). Table 90 is used to \ndetermine the nature of a cursed item, if one is indicated on Table 89. Finally, roll on Table 91 (melee weapons), 92 (armor) or 94 (missile weapons) to determine the type of weapon or armor bearing the enchantment.",
+    "descriptions": ""
+  },
+  "89": {
+    "table": 89,
+    "title": "Magic Armor and Weapons",
+    "die": "1d18",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Cursed armor or shield"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "+1 missile weapon(s)"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "+1 shield"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "+1 melee weapon"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "+1 armor"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Cursed weapon"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "+2 missile weapon(s)"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "+2 shield"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "+2 melee weapon"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "+2 armor"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "+2 melee weapon"
+      },
+      {
+        "lo": 12,
+        "hi": 12,
+        "result": "+1 melee weapon with minor ability"
+      },
+      {
+        "lo": 13,
+        "hi": 13,
+        "result": "+3 missile weapon(s)"
+      },
+      {
+        "lo": 14,
+        "hi": 14,
+        "result": "+3 melee weapon"
+      },
+      {
+        "lo": 15,
+        "hi": 15,
+        "result": "+3 shield"
+      },
+      {
+        "lo": 16,
+        "hi": 16,
+        "result": "+3 armor"
+      },
+      {
+        "lo": 17,
+        "hi": 17,
+        "result": "Unusual weapon"
+      },
+      {
+        "lo": 18,
+        "hi": 18,
+        "result": "Unusual armor"
+      }
+    ],
+    "raw": "Die Roll\n(as described \nin Tables \n82-84)Weapon or Armor\n1 Cursed armor or shield\n2 +1 missile weapon(s)\n3 +1 shield\n4 +1 melee weapon\n5 +1 armor\n6 Cursed weapon\n7 +2 missile weapon(s)\n8 +2 shield\n9 +2 melee weapon\n10 +2 armor\n11 +2 melee weapon\n12 +1 melee weapon with minor ability\n13 +3 missile weapon(s)\n14 +3 melee weapon\n15 +3 shield\n16 +3 armor\n17 Unusual weapon\n18 Unusual armor"
+  },
+  "90": {
+    "table": 90,
+    "title": "Cursed Armor, Shields, and Weapons",
+    "die": "1d8",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 2,
+        "result": "-1 weapon or armor"
+      },
+      {
+        "lo": 3,
+        "hi": 4,
+        "result": "-2 weapon or armor"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "-3 weapon or armor"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Causes the wearer to run away from combat"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Causes the wearer to charge into combat"
+      }
+    ],
+    "raw": "Die Roll (1d8) Cursed Armor, Shield, or Weapon*\n1\u20132 -1 weapon or armor\n3\u20134 -2 weapon or armor\n5 -3 weapon or armor\n6Attracts missiles (even those fired at others \nnearby), and grants +1 to hit on such missiles\n7 Causes the wearer to run away from combat\n8 Causes the wearer to charge into combat\n*Cannot be put down without the casting of Remove Curse."
+  },
+  "91": {
+    "table": 91,
+    "title": "Magic Melee Weapon types",
+    "die": "1d20",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 2,
+        "result": "Axe, battle"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Axe, hand"
+      },
+      {
+        "lo": 4,
+        "hi": 5,
+        "result": "Dagger"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Hammer, war"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Lance"
+      },
+      {
+        "lo": 8,
+        "hi": 10,
+        "result": "Mace, heavy"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "Mace, light"
+      },
+      {
+        "lo": 12,
+        "hi": 12,
+        "result": "Spear"
+      },
+      {
+        "lo": 13,
+        "hi": 13,
+        "result": "Staff"
+      },
+      {
+        "lo": 14,
+        "hi": 14,
+        "result": "Sword, Short*"
+      },
+      {
+        "lo": 15,
+        "hi": 15,
+        "result": "Sword, Two-handed*"
+      },
+      {
+        "lo": 16,
+        "hi": 20,
+        "result": "Sword, Long**Magic Swords are often quite unique in their abilities, and some"
+      }
+    ],
+    "raw": "Die Roll (1d20) Melee Weapon\n1-2 Axe, battle\n3 Axe, hand\n4-5 Dagger\n6 Hammer, war\n7 Lance\n8-10 Mace, heavy\n11 Mace, light\n12 Spear\n13 Staff\n14 Sword, Short*\n15 Sword, Two-handed*\n16-20 Sword, Long**Magic Swords are often quite unique in their abilities, and some \nare actually intelligent in some way. A magical melee weapon that is determined to be a sword \u2013 even if the original result of the die roll did not indicate a \u201cminor ability\u201d or an \u201cunusual weapon\u201d \u2013 has a 25% chance to be a unique magical sword (see the on Unique Magical Swords below)."
+  },
+  "92": {
+    "table": 92,
+    "title": "Magic Armor types",
+    "die": "1d4",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Chain mail"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Leather armor"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Plate mail"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Ring mail"
+      }
+    ],
+    "raw": "Die Roll \n(1d4)Armor\n1 Chain mail\n2 Leather armor\n3 Plate mail\n4 Ring mail\nunique Magical Swords\nMagic swords are capable of holding powerful dweomers, and are \noften (25%) forged with unusual and unique qualities. If a Unique Magic Sword is indicated by this die roll, roll on Table 93, below, to determine these. If a to-hit bonus was not indicated by the table (i.e., the sword was an \u201cUnusual Weapon\u201d), roll 1d4 for the to-hit bonus."
+  },
+  "93": {
+    "table": 93,
+    "title": "unique Magic Swords",
+    "die": "1d20",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "NoneFlaming Sword: The sword burns"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "NoneDancing Sword: A dancing sword"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "NoneThe sword detects traps as per the"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "NoneThe sword allows its wielder to see"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "NoneThe sword detects magic as per the"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "None The sword allows Clairaudience"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "None The sword allows the wielder to fly."
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "NoneThe sword allows the wielder to"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "NoneThe sword may be used to heal 1d6"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "NoneThe sword imbues the wielder with"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "NoneThe sword imbues the wielder with"
+      },
+      {
+        "lo": 12,
+        "hi": 12,
+        "result": "NoneThe sword may be used to cause"
+      },
+      {
+        "lo": 13,
+        "hi": 13,
+        "result": "NoneThe sword has a 25% chance to"
+      },
+      {
+        "lo": 14,
+        "hi": 14,
+        "result": "NoneThe sword awakens its owner when"
+      },
+      {
+        "lo": 15,
+        "hi": 15,
+        "result": "NoneThe sword detects the presence of a"
+      },
+      {
+        "lo": 16,
+        "hi": 16,
+        "result": "NoneThe sword detects Lawful or Chaotic"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "feet. Roll 3d6"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "feet, and can"
+      }
+    ],
+    "raw": "Die \nRoll \n(1d20)Intelligence Magical Power\n1 NoneFlaming Sword: The sword burns \nwith enchanted fire when drawn \nfrom its sheath, inflicting an ad -\nditional 1d6 points of damage with \nsuccessful hits in combat. It can also \nbe used as a light source with a 30 \nfoot radius when unsheathed.\n2 NoneDancing Sword: A dancing sword \nlevitates to fight beside its owner \nwithout the need to be held. In the \nfirst round it is a +1 weapon, in the \nsecond round it is a +2 weapon, and \nin the third round it is a +3 weapon. \nAfter 3 rounds, the sword dances no \nfurther until it is directed at a new \nopponent, but remains a regular +1 \nsword regardless.\n3 NoneThe sword detects traps as per the \nClerical spell Find Traps.\n4 NoneThe sword allows its wielder to see \ninvisible objects.\n5 NoneThe sword detects magic as per the \nDetect Magic spell.\n6 None The sword allows Clairaudience\n7 None The sword allows the wielder to fly.\n8 NoneThe sword allows the wielder to \nlevitate, as per the Levitate  spell.\n9 NoneThe sword may be used to heal 1d6 \nhit points, once per day.\n10 NoneThe sword imbues the wielder with \nthe special abilities of a dwarf, when \nthe sword is drawn.\n11 NoneThe sword imbues the wielder with \nthe special abilities of an elf, when \nthe sword is drawn.\n123tREAS uRE\nDie \nRoll \n(1d20)Intelligence Magical Power\n12 NoneThe sword may be used to cause \nConfusion to enemies once per day.\n13 NoneThe sword has a 25% chance to \ndeflect arrows before the to-hit roll\n14 NoneThe sword awakens its owner when \ndanger is near, but only if the owner \nis asleep.\n15 NoneThe sword detects the presence of a \nparticular type or class of monster.\n16 NoneThe sword detects Lawful or Chaotic \nalignments within 20 feet.\n17Intelligent: \ncommunicates \nby telepathy to \nwielder only. \nRoll 3d6 for \nintelligence.The sword allows its wielder to \nchange his or her facial appear-\nance and create the appearance of a \nslightly larger or smaller size, all by \nillusion.\n18Intelligent: \ncommunicates \nby telepathy to \nanyone within \n10 feet. Roll 3d6 \nfor intelligence.The sword may detect cursed items, \nwith a 50% chance of success.\n19Intelligent: com-\nmunicates by \ntelepathy with \nwielder and can \nalso speak aloud. \nRoll 3d6 for \nintelligence.The sword allows the wielder to \nwalk through 20 feet of solid rock, \ntwice per day.\n20Intelligent: \ncommunicates \nby telepathy to \nanyone within \n10 feet, and can \nspeak aloud. \nRoll 3d6 for \nintelligence.The sword makes its wielder im-\nmune to all level-draining effects."
+  },
+  "94": {
+    "table": 94,
+    "title": "Magic Missile Weapon types",
+    "die": "1d20",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 8,
+        "result": "2d6 arrows"
+      },
+      {
+        "lo": 9,
+        "hi": 10,
+        "result": "1d10 sling stones"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "1 javelin"
+      },
+      {
+        "lo": 12,
+        "hi": 15,
+        "result": "2d4 darts"
+      },
+      {
+        "lo": 16,
+        "hi": 20,
+        "result": "2d6 crossbow bolts"
+      }
+    ],
+    "raw": "Die Roll (1d20) Magic Missile Weapon\n1\u20138 2d6 arrows\n9\u201310 1d10 sling stones\n11 1 javelin\n12\u201315 2d4 darts\n16\u201320 2d6 crossbow bolts"
+  },
+  "95": {
+    "table": 95,
+    "title": "Minor Abilities for Melee Weapons",
+    "die": "1d8",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 5,
+        "result": "Additional +1 damage"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Sheds light, 15-foot radius"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Sheds light, 30-foot radius"
+      },
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "+1 blunt weapon that destroys undead"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "+1 thrown weapon that returns to hand"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "+1 weapon, extra attack"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "+1, +2 vs. particular type of foe"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "+1, +4 vs. particular type of foe"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "+2, +3 vs. particular type of foe"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "+4 weapon"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "+5 weapon"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Flaming weapon"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "Freezing Weapon"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "Dancing Weapon"
+      },
+      {
+        "lo": 12,
+        "hi": 12,
+        "result": "Intelligent Weapon"
+      }
+    ],
+    "raw": "Die Roll (1d8) Minor Ability\n1\u20135 Additional +1 damage\n6 Sheds light, 15-foot radius\n7 Sheds light, 30-foot radius\n8Inflicts an additional +4 points of damage against \na particular opponent type such as undead, drag-\nons, demons, giants, etc.table 96: unusual Weapons\nDie Roll (1d12) Unusual Weapon\n1 +1 blunt weapon that destroys undead\n2 +1 thrown weapon that returns to hand\n3 +1 weapon, extra attack\n4 +1, +2 vs. particular type of foe\n5 +1, +4 vs. particular type of foe\n6 +2, +3 vs. particular type of foe\n7 +4 weapon\n8 +5 weapon\n9 Flaming weapon\n10 Freezing Weapon\n11 Dancing Weapon\n12 Intelligent Weapon\nunusual Weapon Descriptions\n+1 blunt weapon that destroys undead: Such a weapon must \nbe a mace, hammer, sling, or staff (determine type randomly). Lesser types of undead (HD 1-3) do not get a saving throw against destruction.+1 thrown weapon that returns to hand: This axe, javelin, or \nhammer (determine type randomly) flies back to the thrower\u2019s hand.+1 weapon, extra attack: This weapon grants 1 additional attack, once per day.+1, +2 vs. a particular type of foe: This weapon normally provides to-hit and damage bonuses of +1, but is +2 vs. a particular type of foe (were-creatures, undead, giants, orcs, dragons, etc.) to be determined randomly.+1, +4 vs. a particular type of foe: This weapon normally provides to-hit and damage bonuses of +1, but is +4 vs. a particular type of foe (were-creatures, undead, giants, orcs, dragons, etc.) to be determined randomly.+2, +3 vs. a particular type of foe: This weapon normally provides to-hit and damage bonuses of +2, but is +3 vs. a particular type of foe (were-creatures, undead, giants, orcs, dragons, etc.) to be determined randomly.Flaming Weapon: The weapon burns with enchanted fire \nwhen held, inflicting an additional 1d6 points of damage with successful hits in combat. It can also be used as a light source with a 30 foot radius. Roll 1d4-1 for the amount of the weapon bonus (some are not magical except for the enchanted flames).Freezing Weapon: This weapon is freezing cold, inflicting an \nadditional 1d6 points of damage with successful hits. Roll 1d4-1 for the amount of the weapon bonus.Dancing Weapon: A dancing weapon levitates to fight beside \nits owner without the need to be held. In the first round it is a +1 weapon, in the second round it is a +2 weapon, and in the third round it is a +3 weapon. After 3 rounds, the weapon dances no further until it is directed at a new opponent, but is +1 regardless.Intelligent Weapon: Roll 1d3 for the weapon\u2019s to-hit bonus. \nThere is a 10% chance that such a weapon may have the ability to cast a particular spell once per day at the wielder\u2019s command. The spell will be either Cleric (50%) or Magic-User (50%), and will be of Level 1d3. Such weapons generally can communicate with their bearers, and sometimes (25% chance) can speak audibly. Even if the weapon cannot speak audibly, it will communicate with its wielder by telepathy when held.\n124tREAS uRE"
+  },
+  "96": {
+    "table": 96,
+    "title": "unusual Weapons",
+    "die": "1d12",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "+1 blunt weapon that destroys undead"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "+1 thrown weapon that returns to hand"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "+1 weapon, extra attack"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "+1, +2 vs. particular type of foe"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "+1, +4 vs. particular type of foe"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "+2, +3 vs. particular type of foe"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "+4 weapon"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "+5 weapon"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Flaming weapon"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "Freezing Weapon"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "Dancing Weapon"
+      },
+      {
+        "lo": 12,
+        "hi": 12,
+        "result": "Intelligent Weapon"
+      }
+    ],
+    "raw": "Die Roll (1d12) Unusual Weapon\n1 +1 blunt weapon that destroys undead\n2 +1 thrown weapon that returns to hand\n3 +1 weapon, extra attack\n4 +1, +2 vs. particular type of foe\n5 +1, +4 vs. particular type of foe\n6 +2, +3 vs. particular type of foe\n7 +4 weapon\n8 +5 weapon\n9 Flaming weapon\n10 Freezing Weapon\n11 Dancing Weapon\n12 Intelligent Weapon\nunusual Weapon Descriptions\n+1 blunt weapon that destroys undead: Such a weapon must \nbe a mace, hammer, sling, or staff (determine type randomly). Lesser types of undead (HD 1-3) do not get a saving throw against destruction.+1 thrown weapon that returns to hand: This axe, javelin, or \nhammer (determine type randomly) flies back to the thrower\u2019s hand.+1 weapon, extra attack: This weapon grants 1 additional attack, once per day.+1, +2 vs. a particular type of foe: This weapon normally provides to-hit and damage bonuses of +1, but is +2 vs. a particular type of foe (were-creatures, undead, giants, orcs, dragons, etc.) to be determined randomly.+1, +4 vs. a particular type of foe: This weapon normally provides to-hit and damage bonuses of +1, but is +4 vs. a particular type of foe (were-creatures, undead, giants, orcs, dragons, etc.) to be determined randomly.+2, +3 vs. a particular type of foe: This weapon normally provides to-hit and damage bonuses of +2, but is +3 vs. a particular type of foe (were-creatures, undead, giants, orcs, dragons, etc.) to be determined randomly.Flaming Weapon: The weapon burns with enchanted fire \nwhen held, inflicting an additional 1d6 points of damage with successful hits in combat. It can also be used as a light source with a 30 foot radius. Roll 1d4-1 for the amount of the weapon bonus (some are not magical except for the enchanted flames).Freezing Weapon: This weapon is freezing cold, inflicting an \nadditional 1d6 points of damage with successful hits. Roll 1d4-1 for the amount of the weapon bonus.Dancing Weapon: A dancing weapon levitates to fight beside \nits owner without the need to be held. In the first round it is a +1 weapon, in the second round it is a +2 weapon, and in the third round it is a +3 weapon. After 3 rounds, the weapon dances no further until it is directed at a new opponent, but is +1 regardless.Intelligent Weapon: Roll 1d3 for the weapon\u2019s to-hit bonus. \nThere is a 10% chance that such a weapon may have the ability to cast a particular spell once per day at the wielder\u2019s command. The spell will be either Cleric (50%) or Magic-User (50%), and will be of Level 1d3. Such weapons generally can communicate with their bearers, and sometimes (25% chance) can speak audibly. Even if the weapon cannot speak audibly, it will communicate with its wielder by telepathy when held.\n124tREAS uRE"
+  },
+  "97": {
+    "table": 97,
+    "title": "unusual Armor",
+    "die": "1d8",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "+4 armor"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "+4 shield"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "+5 armor"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "+5 shield"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Armor of Arrow Deflection"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Demonic Armor"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Ethereal Armor"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Fiery Armor"
+      }
+    ],
+    "raw": "Die Roll (1d8) Unusual Armor\n1 +4 armor  \n(determine armor type using Table 92)\n2 +4 shield\n3 +5 armor   \n(determine armor type using Table 92)\n4 +5 shield\n5 Armor of Arrow Deflection\n6 Demonic Armor\n7 Ethereal Armor\n8 Fiery Armor\nunusual Armor Descriptions\nArmor of Arrow Deflection: Missiles aimed at such armor have \na to-hit penalty of -2.Demonic Armor: The armor is possessed by a spirit or demon, \nwith effects to be determined by the Referee. In general, such armor would provide both benefits and drawbacks.Ethereal Armor: Ethereal armor is +3 plate mail that also \nallows the wearer to become insubstantial and incorporeal 50 times, after which it reverts irrevocably to normal +3 plate mail. In ethereal form, the wearer can attack and be attacked only by ethereal opponents.Fiery Armor: Fiery armor is +1 armor that is surrounded by \nflames. These flames deal 1d3 damage to anyone attacking the wearer with melee weapons.\nRemarkable Magic items\nWands, Rings, Staffs, and Miscellaneous \nEnchanted \ni\ntems"
+  },
+  "98": {
+    "table": 98,
+    "title": "Remarkable Magic items (Overview)",
+    "die": "1d60",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Lesser Wand"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Lesser Ring"
+      },
+      {
+        "lo": 3,
+        "hi": 20,
+        "result": "Lesser Misc. Magical Item"
+      },
+      {
+        "lo": 21,
+        "hi": 21,
+        "result": "Lesser Wand"
+      },
+      {
+        "lo": 22,
+        "hi": 22,
+        "result": "Lesser Wand"
+      },
+      {
+        "lo": 23,
+        "hi": 23,
+        "result": "Greater Wand"
+      },
+      {
+        "lo": 24,
+        "hi": 24,
+        "result": "Lesser Ring"
+      },
+      {
+        "lo": 25,
+        "hi": 25,
+        "result": "Lesser Ring"
+      },
+      {
+        "lo": 26,
+        "hi": 26,
+        "result": "Greater Ring"
+      },
+      {
+        "lo": 27,
+        "hi": 40,
+        "result": "Medium Misc. Magical Item"
+      },
+      {
+        "lo": 41,
+        "hi": 41,
+        "result": "Greater Wand"
+      },
+      {
+        "lo": 42,
+        "hi": 42,
+        "result": "Greater Wand"
+      },
+      {
+        "lo": 43,
+        "hi": 43,
+        "result": "Greater Ring"
+      },
+      {
+        "lo": 44,
+        "hi": 44,
+        "result": "Greater Ring"
+      },
+      {
+        "lo": 45,
+        "hi": 45,
+        "result": "Staff"
+      },
+      {
+        "lo": 46,
+        "hi": 60,
+        "result": "Greater Misc. Magical itemWands"
+      }
+    ],
+    "raw": "Die Roll \n(as described in \nTables 82-84)Item\n1 Lesser Wand\n2 Lesser Ring\n3\u201320 Lesser Misc. Magical Item\n21 Lesser Wand\n22 Lesser Wand\n23 Greater Wand\n24 Lesser Ring\n25 Lesser Ring\n26 Greater Ring\n27\u201340 Medium Misc. Magical Item\n41 Greater Wand\n42 Greater Wand\n43 Greater Ring\n44 Greater Ring\n45 Staff\n46\u201360 Greater Misc. Magical itemWands\nWands may only be used by Magic-Users.\nWands that cast spells become useless when they reach zero charges, \nbut can be recharged by casting the spell into the wand. Each such \nrecharge, where a spell is cast into the wand, has a 5% chance of destroying the wand irrevocably. In some cases, a non-rechargeable wand might be found with a large number of charges (e.g., 100). Wands may be used while in melee combat."
+  },
+  "99": {
+    "table": 99,
+    "title": "lesser Wands",
+    "die": "1d6",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 2,
+        "result": "Spell, level 1, holds 10 charges"
+      },
+      {
+        "lo": 3,
+        "hi": 4,
+        "result": "Spell, level 2, holds 5 charges"
+      },
+      {
+        "lo": 5,
+        "hi": 6,
+        "result": "Spell, level 3, holds 2 charges"
+      }
+    ],
+    "raw": "Die Roll (1d6) Lesser Wand\n1\u20132 Spell, level 1, holds 10 charges\n3\u20134 Spell, level 2, holds 5 charges\n5\u20136 Spell, level 3, holds 2 charges"
+  },
+  "100": {
+    "table": 100,
+    "title": "greater Wands",
+    "die": "1d10",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Spell, level 3, holds 10 charges"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Spell, level 4, holds 10 charges"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Wand of Cold"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Wand of Detection, enemies"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Wand of Detection, magic"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Wand of Detection, metal"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Wand of Detection, traps & secret doors"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Wand of Fear"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Wand of Paralyzing"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "Wand of Polymorph"
+      }
+    ],
+    "raw": "Die Roll (1d10) Greater Wand\n1 Spell, level 3, holds 10 charges\n2 Spell, level 4, holds 10 charges\n3 Wand of Cold\n4 Wand of Detection, enemies\n5 Wand of Detection, magic\n6 Wand of Detection, metal\n7 Wand of Detection, traps & secret doors\n8 Wand of Fear\n9 Wand of Paralyzing\n10 Wand of Polymorph\ngreater Wand Descriptions\nWand of Cold: The wand casts a Cone of Cold  60 feet long, to \na base 30 feet across at the far end. Creatures caught in the cone take 6d6 damage (saving throw applies for half damage). The wand holds 25 charges and cannot be recharged.Wand of Detection, enemies: These wands detect enemies in a radius of 60 feet, if the enemies are thinking hostile thoughts. The wand is always active when held, and does not use charges.Wand of Detection, magic: Wands of magic detection function as a Detect Magic  spell with a range of 20 feet. The user gets a \nvague sense of what sort of magic is being detected. The wand is always active when held, and does not use charges.Wand of Detection, metal: Such wands detect large caches of metal, within a range of 20 feet. The wand\u2019s user also gets a vague sense of the metal\u2019s type. The wand is always active when held, and does not use charges.Wand of Detection, traps and secret doors: These wands detect traps and secret doors, with a range of 20 feet. The wand is always active when held, and does not use charges.Wand of Fear: A wand of fear causes creatures in a cone-shaped path to flee (saving throw negates). There is a 60% chance that they will drop whatever they are holding. The cone extends 60 feet to a base 30 feet across. The wand holds 25 charges, and cannot be recharged.Wand of Paralyzing: This sort of wand casts a cone of paralysis 60 feet long to a base 30 feet across at the end. Creatures in the To determine the specific spell cast by a lesser wand or a \ngreater wand that casts a spell, refer to the list of spells for the appropriate type and level, and roll 1d20 (no spell list has more than 20 spells). If the die roll is higher than the number of spells, simply roll again until the result is low enough to indicate one of the spells on the list.\n125tREAS uRE\ncone are paralyzed for 3d6 turns (saving throw negates). The \nwand holds 25 charges, and cannot be recharged.Wand of Polymorph: Such wands are of two types. One type casts Polymorph Self,  and the other casts Polymorph Other. The \nwand carries 10 charges, and cannot be recharged.\nRings\nNo more than two magic rings may be worn at a time (one on each \nhand) without unpredictable and potentially dire consequences."
+  },
+  "101": {
+    "table": 101,
+    "title": "lesser Rings",
+    "die": "1d6",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Fire Resistance (A)"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Invisibility (A)"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Mammal Control (A)"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Poison Resistance (A)"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Protection, +1 (A)"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Protection, +2 (A)"
+      }
+    ],
+    "raw": "Lesser rings may be worn and used by members of any character \nclass, as indicated in the table.\nDie Roll (1d6) Lesser Rings\n1 Fire Resistance (A)\n2 Invisibility (A)\n3 Mammal Control (A)\n4 Poison Resistance (A)\n5 Protection, +1 (A)\n6 Protection, +2 (A)"
+  },
+  "102": {
+    "table": 102,
+    "title": "greater Rings",
+    "die": "1d10",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Djinni Summoning (A)"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Human Control (A)"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Regeneration (A)"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Shooting Stars (A)"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Spell Storing, Magic-User (M)"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Spell Storing, Cleric (C)"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Spell Turning (A)"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Telekinesis (A)"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Three Wishes (A)"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "X-ray Vision (A)"
+      }
+    ],
+    "raw": "Die Roll (1d10) Greater Rings\n1 Djinni Summoning (A)\n2 Human Control (A)\n3 Regeneration (A)\n4 Shooting Stars (A)\n5 Spell Storing, Magic-User (M)\n6 Spell Storing, Cleric (C)\n7 Spell Turning (A)\n8 Telekinesis (A)\n9 Three Wishes (A)\n10 X-ray Vision (A)\n(A) indicates that the item can be used by members of any class; \n(C) indicates that the item can be used by members of the \nCleric classes; (M) indicates that the item can be used by members \nof the Magic-User classes.\nDescription of Magic Rings\nDjinni Summoning: The wearer of the ring can summon a \ndjinni, who will do the wearer\u2019s bidding, following instructions precisely and to the letter, no further. Such rings can be treacherous, but only for those who use them foolishly. Fire Resistance: The wearer receives a +5 to saving throws vs. magical fire, and is immune to normal fire.Human Control: Such rings allow the wearer to cast Charm \nPerson once per day, and to maintain the charm on up to 3 individuals at a time.Invisibility: While wearing the ring, the wearer becomes invisible.Mammal Control: The wearer controls 1d8 mammals at a range of up to 60 feet. Control does not extend to people or to giant animals.Poison Resistance: The wearer receives a +5 to saving throws vs. poison.Protection, +1: The wearer gains a bonus of \u20131[+1] to armor \nclass, and +1 on all saving throws.Protection, +2: The wearer gains armor class bonus of \u20132[+2], \nand +2 on all saving throws.Regeneration: The wearer regenerates one hit point per combat round, and thus cannot die unless the ring is removed or the wearer\u2019s body is burned.Shooting Stars: Once per day, the ring can unleash 1d6 lightning bolts that inflict 3d6 hit points each (saving throw indicating half damage).Spell Storing, Magic-User: The ring contains 1d6 Magic-User \nspells. Roll 1d6 for each spell to determine the spell level, and then determine the spell by rolling on the spell list for that level. The wearer (if a Magic-User) can cast these spells as if they were normally memorized and prepared spells. Once a spell is cast, it cannot be cast a second time until the wearer has rested for 8 hours.Spell Storing, Cleric: The ring contains 1d6 Cleric spells. \nRoll 1d4 for each spell to determine the spell level, and then determine the spell by rolling on the spell list for that level. The wearer (if a Cleric) can cast these spells as if they were normally prepared spells. Once a spell is cast, it cannot be cast a second time until the wearer has rested for 8 hours.Spell Turning: Any spell (other than from a wand or other item) \ndirectly aimed at the wearer of the ring is partially reflected back at the caster. Roll a percentile die to see how much of the spell\u2019s power bounces back; the exact determination of what happens is up to the Referee.Telekinesis: The wearer can mentally lift and move 200 pounds of weight at a range of 120 feet.Three Wishes: These rings grant the wearer three wishes. \nBeware of outrageous wishes; they backfire.X-ray Vision: The wearer has x-ray vision at a range of 40 \nfeet. The maximum distance through which the wearer can see through solid rock is just over 10 feet, through solid metals (other than lead) is 1 foot, and through lead is 1 inch.\nStaffs\nLike wands, most staffs operate by using up charges. However, staffs \nare not as easily rechargeable as wands. Magic-Users will have to figure out how it is done, or hire a wizard to do it (if such a knowledgeable wizard can even be found). Most staffs carry 200 charges."
+  },
+  "103": {
+    "table": 103,
+    "title": "Magic Staffs",
+    "die": "1d10",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Absorption (M)"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Beguiling (C, M)"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Command (C, M)"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Healing (C)"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Power (M)"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Resurrection (C)"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Snake (C)"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Striking (C, M)"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Withering (C)"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "Wizardry (M)"
+      }
+    ],
+    "raw_table": "Die Roll (1d10) Staff\n1 Absorption (M)\n2 Beguiling (C, M)\n3 Command (C, M)\n4 Healing (C)\n5 Power (M)\n6 Resurrection (C)\n7 Snake (C)\n8 Striking (C, M)\n9 Withering (C)\n10 Wizardry (M)\n(C) indicates that the item can be used by members of the Cleric \nclasses; (M) indicates that the item can be used by members of the \nMagic-User classes. Other character classes cannot make use of \nmagical staffs.",
+    "descriptions": "Staff Descriptions\nAbsorption: Absorbs up to 100 levels of spells directed at the holder before its absorption properties cease forever. The holder can cast spells from the staff in response to hostile spells, using the staff\u2019s stored levels, of the exact level of the hostile spell directed at the caster, but the spell must be chosen from the list of spells the caster has prepared.Beguiling: Foes within a 20-foot range must make a saving throw or consider the holder to be a loyal friend for 4d4 rounds \n126tREAS uRE\n(uses one charge).\nCommand: A charge can be used to control humans (as per a Charm Person spell), plants, or animals.Healing: Cures 1d6+1 hit points of damage per charge.Power: Casts Light (no charge used), casts Fireball  (4d6 \ndamage), cold as a Wand of Cold, Lightning Bolts  (4d6 damage), \nacts as a Ring of Telekinesis (costs one charge) and hits for 2d6 damage (no charge used).Resurrection: These staffs only carry 10 charges, but a charge may be used to cast Raise Dead.\nSnake: In combat, a Staff of the Snake is +1 to hit and +1 damage. When commanded (by using a charge) the staff coils around the target (with a successful hit) and pinions the victim for 1d4 x10 minutes. This attack is only useful on a victim about the size of a human or smaller. The staff will slither back to its owner afterwards, at a speed of 24. Only Clerics can employ a Staff of the Snake.Striking: This staff inflicts 2d6 points of damage with a successful hit (does not use charges).Withering: The dreaded staff of Withering adds ten years of physical aging with a successful hit.Wizardry: The most powerful of staffs, it is a Staff of Power with additional abilities. At the cost of one charge, it allows Invisibility , summoning elementals (calling 1d4 at a time), Hold \nPerson, a Wall of Fire, Passwall, a Web  spell, or Fly .\nMiscellaneous Magic items"
+  },
+  "104": {
+    "table": 104,
+    "title": "lesser Miscellaneous Magical items",
+    "die": "1d20",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Arrow of Direction (A)"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Bag of Holding (A)"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Boots of Elvenkind (A)"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Bracers of Defense, AC 6 [13] (A)"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Chime of Opening (A)"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Cloak of Elvenkind (A)"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Cloak of Protection, +1 (C, M, T)"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Cursed Item (A)"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "Decanter of Endless Water (A)"
+      },
+      {
+        "lo": 12,
+        "hi": 12,
+        "result": "Dust of Sneezing and Choking (A)"
+      },
+      {
+        "lo": 13,
+        "hi": 13,
+        "result": "Gauntlets of Swimming and Climbing (C, F, T)"
+      },
+      {
+        "lo": 14,
+        "hi": 14,
+        "result": "Horseshoes of Speed (horses)"
+      },
+      {
+        "lo": 15,
+        "hi": 15,
+        "result": "Luckstone (A)"
+      },
+      {
+        "lo": 16,
+        "hi": 16,
+        "result": "Manual of Beneficial Exercise (A)"
+      },
+      {
+        "lo": 17,
+        "hi": 17,
+        "result": "Pipes of the Sewers (A)"
+      },
+      {
+        "lo": 18,
+        "hi": 18,
+        "result": "Rope of Climbing (A)"
+      },
+      {
+        "lo": 19,
+        "hi": 19,
+        "result": "Rope of Entanglement (A)"
+      },
+      {
+        "lo": 20,
+        "hi": 20,
+        "result": "Spade of Excavation (F)"
+      },
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Amulet against Scrying (A)"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Boots of Flying (A)"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Carpet of Flying (A)"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Cloak of Displacement (A)"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Deck of Many Things (A)"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Figurine of the Onyx Dog (A)"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Gauntlets of Ogre Power (C, F, T)"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "Hole, Portable (A)"
+      },
+      {
+        "lo": 12,
+        "hi": 12,
+        "result": "Horn of Valhalla, Bronze (C, F)"
+      },
+      {
+        "lo": 13,
+        "hi": 13,
+        "result": "Horn of Valhalla, Silver (A)"
+      },
+      {
+        "lo": 14,
+        "hi": 14,
+        "result": "Jug of Alchemy (A)"
+      },
+      {
+        "lo": 15,
+        "hi": 15,
+        "result": "Manual of Quickness (A)"
+      },
+      {
+        "lo": 16,
+        "hi": 16,
+        "result": "Medallion of ESP (A)"
+      },
+      {
+        "lo": 17,
+        "hi": 17,
+        "result": "Mirror of Mental Scrying (A)"
+      },
+      {
+        "lo": 18,
+        "hi": 18,
+        "result": "Robe of Blending (A)"
+      },
+      {
+        "lo": 19,
+        "hi": 19,
+        "result": "Robe of Eyes (M)"
+      },
+      {
+        "lo": 20,
+        "hi": 20,
+        "result": "Robe of Wizardry (M)"
+      }
+    ],
+    "raw_table": "Die Roll (1d20) Item\n1 Arrow of Direction (A)\n2 Bag of Holding (A)\n3 Boots of Elvenkind (A)\n4Boots of Speed or \nBoots of Leaping (50%/50%) (A)\n5 Bracers of Defense, AC 6 [13] (A)\n6 Chime of Opening (A)\n7 Cloak of Elvenkind (A)\n8 Cloak of Protection, +1 (C, M, T)\n9 Cursed Item (A)\n10 Decanter of Endless Water (A)\n11Dust of Appearance or \nDisappearance (50%/50%) (A)\n12 Dust of Sneezing and Choking (A)\n13 Gauntlets of Swimming and Climbing (C, F, T)\n14 Horseshoes of Speed (horses)\n15 Luckstone (A)\n16 Manual of Beneficial Exercise (A)\n17 Pipes of the Sewers (A)\n18 Rope of Climbing (A)\n19 Rope of Entanglement (A)\n20 Spade of Excavation (F)\n(A) indicates that the item can be used by members of any class; \n(C) indicates that the item can be used by members of the Cleric \nclasses; (F) indicates that the item can be used by members of the \nFighter classes; (M) indicates that the item can be used by mem-\nbers of the Magic-User classes; (T) indicates that the item can be \nused by members of the Thief classes.table 105: Medium Miscellaneous Magical items\nDie Roll (1d20) Item\n1 Amulet against Scrying (A)\n2 Boots of Flying (A)\n3Bracers of Defense, AC 4 [15] or AC 2 [17] \n(50%/50%) (A)\n4 Carpet of Flying (A)\n5 Cloak of Displacement (A)\n6Cloak of Protection, +2 or +3 (50%/50%)(C, \nM, T)\n7 Deck of Many Things (A)\n8 Figurine of the Onyx Dog (A)\n9 Gauntlets of Ogre Power (C, F, T)\n10Helm of Reading Magic \nand Languages (A)\n11 Hole, Portable (A)\n12 Horn of Valhalla, Bronze (C, F)\n13 Horn of Valhalla, Silver (A)\n14 Jug of Alchemy (A)\n15 Manual of Quickness (A)\n16 Medallion of ESP (A)\n17 Mirror of Mental Scrying (A)\n18 Robe of Blending (A)\n19 Robe of Eyes (M)\n20 Robe of Wizardry (M)\n(A) indicates that the item can be used by members of any class; \n(C) indicates that the item can be used by members of the Cleric \nclasses; (F) indicates that the item can be used by members of the \nFighter classes; (M) indicates that the item can be used by mem-\nbers of the Magic-User classes; (T) indicates that the item can be \nused by members of the Thief classes.\n127tREAS uRE",
+    "descriptions": ""
+  },
+  "105": {
+    "table": 105,
+    "title": "Medium Miscellaneous Magical items",
+    "die": "1d20",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Amulet against Scrying (A)"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Boots of Flying (A)"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Carpet of Flying (A)"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Cloak of Displacement (A)"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Deck of Many Things (A)"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Figurine of the Onyx Dog (A)"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Gauntlets of Ogre Power (C, F, T)"
+      },
+      {
+        "lo": 11,
+        "hi": 11,
+        "result": "Hole, Portable (A)"
+      },
+      {
+        "lo": 12,
+        "hi": 12,
+        "result": "Horn of Valhalla, Bronze (C, F)"
+      },
+      {
+        "lo": 13,
+        "hi": 13,
+        "result": "Horn of Valhalla, Silver (A)"
+      },
+      {
+        "lo": 14,
+        "hi": 14,
+        "result": "Jug of Alchemy (A)"
+      },
+      {
+        "lo": 15,
+        "hi": 15,
+        "result": "Manual of Quickness (A)"
+      },
+      {
+        "lo": 16,
+        "hi": 16,
+        "result": "Medallion of ESP (A)"
+      },
+      {
+        "lo": 17,
+        "hi": 17,
+        "result": "Mirror of Mental Scrying (A)"
+      },
+      {
+        "lo": 18,
+        "hi": 18,
+        "result": "Robe of Blending (A)"
+      },
+      {
+        "lo": 19,
+        "hi": 19,
+        "result": "Robe of Eyes (M)"
+      },
+      {
+        "lo": 20,
+        "hi": 20,
+        "result": "Robe of Wizardry (M)"
+      }
+    ],
+    "raw_table": "Die Roll (1d20) Item\n1 Amulet against Scrying (A)\n2 Boots of Flying (A)\n3Bracers of Defense, AC 4 [15] or AC 2 [17] \n(50%/50%) (A)\n4 Carpet of Flying (A)\n5 Cloak of Displacement (A)\n6Cloak of Protection, +2 or +3 (50%/50%)(C, \nM, T)\n7 Deck of Many Things (A)\n8 Figurine of the Onyx Dog (A)\n9 Gauntlets of Ogre Power (C, F, T)\n10Helm of Reading Magic \nand Languages (A)\n11 Hole, Portable (A)\n12 Horn of Valhalla, Bronze (C, F)\n13 Horn of Valhalla, Silver (A)\n14 Jug of Alchemy (A)\n15 Manual of Quickness (A)\n16 Medallion of ESP (A)\n17 Mirror of Mental Scrying (A)\n18 Robe of Blending (A)\n19 Robe of Eyes (M)\n20 Robe of Wizardry (M)\n(A) indicates that the item can be used by members of any class; \n(C) indicates that the item can be used by members of the Cleric \nclasses; (F) indicates that the item can be used by members of the \nFighter classes; (M) indicates that the item can be used by mem-\nbers of the Magic-User classes; (T) indicates that the item can be \nused by members of the Thief classes.\n127tREAS uRE",
+    "descriptions": ""
+  },
+  "106": {
+    "table": 106,
+    "title": "Greater Miscellaneous Magical Items................",
+    "die": null,
+    "entries": [],
+    "raw_table": "128\nT\nable 107: Cursed Items.......................................................\n 130\n5tABlE OF COntEntS\nlist of tables\ngetting Started\nMost likely, you already know basically how this game works. One of \nyou is the \u201cReferee, \u201d who runs the game world: the Referee designs the \nadventures, makes decisions and dice rolls for the monsters, describes what the characters see, and judges the effects of their actions. The rest of you are the \u201cplayers, \u201d each of you taking on the role of a \u201cplayer character\u201d who might be a powerful wizard, a hard-bitten warrior, or any other sort of fantasy avatar representing you in the game world. Y ou do not need to use miniatures, although they can sometimes help clarify who was standing underneath the stone block when it fell, and other such important questions. \nThe first step is to complete a character sheet, recording your char -\nacter\u2019s statistics and equipment; the next step is to sit down around a table with some dice and start playing! Unless, of course, you are the Referee, in which case you will have to prepare the adventure first. There is more for you later on in the book \u2013 you are important enough to have whole sections of the rulebook for your use only!\nDice\nSwords & Wizardry uses several different kinds of dice, abbreviated \naccording to how many sides they have. A four-sided die is called a d4, and if you roll 3 of them (adding the results together), that is written as \n3d4. The six-sided die is a d6, the eight-sided die is a d8, the ten-sided die is a d10, the twelve-sided die is a d12, and the twenty-sided die is \na d20. When the rules mention d100 (or percentile dice), roll two ten-sided dice, treating the first roll as the \u201ctens\u201d and the second roll as the \u201cones. \u201d If you were to roll a 7 and then a 3, the result would be 73. A roll of 0 and 0 means a result of \u201c100. \u201d\nCommon terms\nY ou will discover several common terms (and their abbreviations) \nwhile reading. Swords & Wizardry itself is a roleplaying game, short-ened to RPG. The Referee may also be known as the Game Master, or GM. As a player, your character will be a player character (PC), while the Referee will provide non-player characters (NPCs). \u201cExperience points\u201d (XP) are the measure of a character\u2019s growing expertise and ability. \u201cHit Dice\u201d (HD) are the number of dice a character or mon-ster rolls to determine total \u201chit points\u201d (hp ), the amount of dam-\nage a one can handle before becoming incapacitated. \u201c Armor Class\u201d (AC) is a measure of protection against attack. A \u201cSaving Throw\u201d \nrepresents the attempt to avoid or mitigate some type of unusual attack. Gold pieces (often just called gp ) are the most important me-\ndium of exchange. Do not worry about trying to memorize all this; most of it will be self-evident as you read through.TREASURE and glittering gems; dark places beneath the earth where monsters dwell; magic circles, penta-\ngrams and pentacles; runes of evil import, and iron-banded doors of mouldering oak; wizards of vast power, \nliving in their isolated towers above black seaside cliffs; great-horned demons in their bloody lairs; massive stone idols with jeweled eyes and hieroglyphic pedestals, carved in the distant eons before the young civi-lizations of humankind; strange and glowing orbs, floating in the air above rusted metal grates leading to deeper levels of the underground passageways\u2026 \nIt is about flying carpets and cursed blades, about hooded priests gathered for unspeakable rites in their forgot-\nten temples; it is about adventure and about perilous undertakings, forcing back the evil creatures of Chaos from the borderlands of embattled civilization; it is about battle-scarred warriors and deadly sorcerers\u2026\nIt\u2019s about SWORDS & W\ni\nZARDRY!\n6intROD uCtiOn\nForeword\nBy Tim Kask, founding editor of The Dragon Magazine\nFor thirty-five years, I have been telling role-playing gamers to ignore \nrules that they do not like. The essence of RPGing is in the story, not the \naccomplishment of arbitrary goals and benchmarks. We all take part in creating the story; the GM writes an outline, tots up a list of \u201cplot elements,\u201d and then sets the players loose to fill in the details. This has never changed.\nWhat you hold in your hand are guidelines; this is one set of \u201crules\u201d \nthat has an internal integrity that makes it work. Is it the only way to play? Certainly not; from the very beginning of role-playing GMs have been encouraged to extrapolate and interpret, to make the game their own. If a given rule does not seem \u201cright\u201d to you, then ignore it! Or, better still, change it! Make your game or campaign your own. All GMs need to worry about is keeping a \u201clogical reality\u201d active in their campaigns; the players rely on that logic to find their way through the perils and puzzles of the adventure.\nThe truest test of whether or not you are doing it right has always been \ntwo-fold: are you having fun, and do your players keep showing up every session? If you can answer yes to either, you\u2019re on the right path. If you can answer in the affirmative to both, you have the \u201cright\u201d of it. From the very conception of RPGing, the whole idea was to have fun. We showed the world a new way to do it, but we never said there was only one way.\nHave fun adventuring.\nTim Kask\nJuly 10, 2010introduction\nIn 1974, Gary Gygax (1938-2008) and Dave Arneson (1947-2009) \nwrote the world\u2019s first fantasy role-playing game, a simple and very \nflexible set of rules that launched an entirely new genre of gaming. In 1976, the first supplement to these rules was published, with Rob \nKuntz as Mr. Gygax\u2019s co-author, along with three other supplements. We call these rules the \u201cOriginal Game. \u201d\nWhat you are reading is an unofficial, \u201crestated\u201d version of the rules of \nthe Original Game, created using the Wizards of the Coast Open Game License. It is not an exact reproduction, mainly for legal reasons; but in the 1970s, no group of gamers played precisely the same version of the Original Game anyway. The \u201870s was a decade of freaky improvisation, weird fantasy, and rebellion. And that\u2019s Swords & Wizardry. If that\u2019s how you roll, all the rest is just details.\nThe Swords & Wizardry rules are short compared to the multi-paged \nrule-libraries required to play most modern role-playing games, yet this game contains within itself all the seeds and soul of mythic fantasy, the building blocks of vast complexity, the kindling of wonder. The Original Game is so powerful because it is encapsulated in a small formula, like a genie kept imprisoned in the small compass of an unremarkable lamp. Take this framework, and then imagine the hell out of it!\nEnjoy!\nMatt Finch\n\u201cWizards of the Coast\u201d is a trademark of Wizards of the Coast, Inc., and is used without permission. \nThe authors and publishers of Swords and Wizardry\u2122 are not affiliated with Wizards of the Coast, Inc., \nand make no claim upon such trademark.\nY our first step as a player is to create a character. A Referee who is just \nlearning the rules should also become familiar with how this part of the \ngame works. \nSetting up Your  \nCharacter Sheet\nInformation about your character goes on a character sheet, which can \nbe a simple sheet of paper, or you can use a pre-printed form. A blank character sheet is included at the back of the book for your convenience, and looks like this:\nThe blank character sheet provided in this book may be photocopied \nor otherwise reproduced for personal use, if desired.Roll Attribute Scores\nThe basic attributes of a character are numbers representing Strength \n(muscle power), Dexterity (quickness and coordination), Constitution (general health and hardiness), Intelligence (education and IQ), Wis-dom (common sense), and Charisma (leadership). The first step to cre-ating your character is to roll 3d6 for each of the six attribute scores. If this is a long-term game and you want to play a specific character class, the Referee will probably allow you to shift the scores around \u2013 in some fashion \u2013 if your dice rolls are a disaster for that particular kind of character. Keep in mind that your character will almost certainly have at least one score that is lower than average. This is not a game of armored super-heroes! The great wizards and knights of the world do not begin as superior specimens of human perfection; they are flawed like anyone else. What truly makes heroes of legend, in the end, is not what they were born with; it is what they achieve, in a risky life full of adventure, peril, and courage \u2013 and sometimes lots of trickery and guile, too.\nStrength\n Roll 3d6 for your character\u2019s Strength score, and write it on your char -\nacter sheet. High strength lets the character force doors open more eas-ily, and allows much more weight (treasure!) to be carried. For Fighters only, high strength gives bonuses to hit and to inflict damage. The table \nbelow shows the effects of your character\u2019s Strength score. Write down these bonuses on your character sheet. Strength is the Prime Attribute for Fighters, Paladins, and Rangers, and one of the Prime Attributes for Assassin characters. (The Prime Attribute is important for calculating bonuses to your experience points when you get them and is described later in the rules.)",
+    "descriptions": ""
+  },
+  "107": {
+    "table": 107,
+    "title": "Cursed items",
+    "die": "1d10",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 1,
+        "result": "Bag of Devouring"
+      },
+      {
+        "lo": 2,
+        "hi": 2,
+        "result": "Censer of Hostile Elementals"
+      },
+      {
+        "lo": 3,
+        "hi": 3,
+        "result": "Cloak of Poison"
+      },
+      {
+        "lo": 4,
+        "hi": 4,
+        "result": "Crystal Ball of Suggestion"
+      },
+      {
+        "lo": 5,
+        "hi": 5,
+        "result": "Dancing Boots"
+      },
+      {
+        "lo": 6,
+        "hi": 6,
+        "result": "Flask of Stoppered Curses"
+      },
+      {
+        "lo": 7,
+        "hi": 7,
+        "result": "Horn of Collapse"
+      },
+      {
+        "lo": 8,
+        "hi": 8,
+        "result": "Medallion of Projecting Thoughts"
+      },
+      {
+        "lo": 9,
+        "hi": 9,
+        "result": "Mirror of Opposition"
+      },
+      {
+        "lo": 10,
+        "hi": 10,
+        "result": "Robe of Feeblemindedness"
+      }
+    ],
+    "raw_table": "Die Roll (1d10) Cursed Item\n1 Bag of Devouring\n2 Censer of Hostile Elementals\n3 Cloak of Poison\n4 Crystal Ball of Suggestion\n5 Dancing Boots\n6 Flask of Stoppered Curses\n7 Horn of Collapse\n8 Medallion of Projecting Thoughts\n9 Mirror of Opposition\n10 Robe of Feeblemindedness",
+    "descriptions": "Cursed item Descriptions\nBag of Devouring: A Bag of Devouring functions as a bag of holding, but then devours any item placed into it within 1d4+1 hours.Censer of Hostile Elementals: This is a censer (or brazier, \nbowl, or stone) that summons elementals\u2014but the elementals are hostile instead of under the summoner\u2019s control.Cloak of Poison: Upon donning this cloak, the wearer\u2019s body is suffused with magical poisons of many kinds, and dies instantly, without the chance of a saving throw.Crystal Ball of Suggestion: This cursed item does not function as a crystal ball, but rather implants a Suggestion (per the spell) \nin the viewer\u2019s mind. Powerful versions of this item might even implant a Geas.Dancing Boots: These boots function as boots of elvenkind or speed, until the wearer is in combat or fleeing. Suddenly, at that point, the unfortunate victim will begin to dance a jig, or perhaps a stately pavane.Flask of Stoppered Curses: This flask releases a curse of some kind when its seal is broken.Horn of Collapse: When sounded, this horn causes a blast of destruction straight upwards, destroying any ceiling overhead and causing it to collapse.Medallion of Projecting Thoughts: While this medallion is around a character\u2019s neck, the wearer\u2019s thoughts can be \u201cheard\u201d by all nearby.Mirror of Opposition: All persons looking into this mirror are attacked by evil versions of themselves, exact duplicates including spells and magic items. When the mirror-opposites are slain, their bodies and equipment disappear into mist, and return to the mirror.Robe of Feeblemindedness: Anyone donning this cloak has his or her intelligence reduced to that of a garden snail.\n130tREAS uRE\n131\n\nlegal Appendix\n132Publishing Your Own Materials for \nSwords & Wizardry\nIf you want to publish your own Swords & Wizardry adventures or other \ngaming resources, you can! First of all, if you are interested in submitting \nyour materials to Frog God Games for consideration, contact Bill Webb at bill@talesofthefroggod.com. If they are accepted, your work will get published as part of the Swords & Wizardry product line!\nIf you want to be your own, independent publisher of Swords & Wizardry  \nresources, and you comply with the terms of the Swords & Wizardry Compatibility-Statement License, you can even use the Swords & Wizardry  \ntrademarks (S&W and Swords & Wizardry) to indicate that your resources are compatible. As long as you follow the requirements, you can state that your resource \u201cis compatible with the rules of Swords & Wizardry\u201d or, \u201ccompatible with the Swords & Wizardry rules\u201d or, \u201ccompatible with the Swords & Wizardry game.\u201d Here are those requirements:\nThe Swords & Wizardry Compatibility-Statement License (CSL for the \nComplete Rules):\n1. You must state on the first page where you mention S&W that \n\u201cSwords & Wizardry, S&W, and Mythmere Games are trademarks of Matthew J. Finch,\u201d and that you are not affiliated with Matthew J. Finch, Mythmere Games\u2122, or Frog God Games\n2. You must, when referring to the armor class of any creature or \ncharacter, include both the descending AC and the Ascending System AC, with the Ascending System AC in brackets.\n3. If you are using the license to commit legal fraud, you forfeit the right to continue using the license: specifically, if you are claiming compatibility with the rules of S&W, the claim must not constitute legal fraud, or fraud in the inducement, under the laws of the State of Texas. Note that this requirement is almost impossible to violate unintentionally\u2014it is largely intended to keep the author out of trouble, not to restrict legitimate statements of compatibility.\n4. You must comply with the terms of the OGL if the terms apply.5. Your cover must include the words \u201cHouse Rules\u201d or \u201cVariant Rules\u201d \nnear the title if the document is a full, free-standing game that includes modifications. Feel free to contact Frog God Games if you wish to use a different form of disclaimer.\n6. Selling a full version of this game with your house rules incorporated \ninto it is perfectly permissible, but you may not sell an effectively unchanged copy of the rules for money.\n7. If your document is a private house rules document for your gaming \ngroup, not being sold for profit or distributed for general use, you may scan and use artwork (including the cover) from the printed version, provided that the cover contains the words \u201cHouse Rules,\u201d near the title, and that the artists are appropriately credited.\n8. Your rights under this CSL cannot be revoked, and are perpetual, \nunless you breach the terms of the license, in which case your rights terminate.\n9. If you comply with the above, you may state that your resource \nis \u201ccompatible with the rules of Swords & Wizardry\u201d or, \u201ccompatible with the Swords & Wizardry rules\u201d or, \u201ccompatible with the Swords & Wizardry game.\u201d\nIf you have questions about the license, feel free to contact us.\nOpen game Content\nOpen Game \nContent may only be Used under and in terms of the Open Game License \n(OGL).\nThis entire work is designated as Open Game Content under the OGL, with the exception \nof the trademarks \u201cSwords & Wizardry,\u201d \u201cS&W,\u201d \u201cMythmere Games,\u201d \u201cFGG,\u201d \u201cFrog God \nGames,\u201d and with the exception of all artwork.  These trademarks, artwork, and the Trade Dress of this work (font, layout, style of artwork, etc.) are reserved as Product Identity.  Open \ng\name \nl\nicense\nOPEN GAME LICENSE Version 1.0a The following text is the property of Wizards of the Coast, Inc. and is Copyright 2000 \nWizards of the Coast, Inc (\u201cWizards\u201d). All Rights Reserved. \n1. Definitions: (a)\u201dContributors\u201d means the copyright and/or trademark owners who have \ncontributed Open Game Content; (b)\u201dDerivative Material\u201d means copyrighted material including derivative works and translations (including into other computer languages), potation, modification, correction, addition, extension, upgrade, improvement, compilation, abridgment or other form in which an existing work may be recast, transformed or adapted; (c) \u201cDistribute\u201d means to reproduce, license, rent, lease, sell, broadcast, publicly display, transmit or otherwise distribute; (d)\u201dOpen Game Content\u201d means the game mechanic and includes the methods, procedures, processes and routines to the extent such content does not embody the Product Identity and is an enhancement over the prior art and any additional content clearly identified as Open Game Content by the Contributor, and means any work covered by this License, including translations and derivative works under copyright law, but specifically excludes Product Identity. (e) \u201cProduct Identity\u201d means product and product line names, logos and identifying marks including trade dress; artifacts; creatures characters; stories, storylines, plots, thematic elements, dialogue, incidents, language, artwork, symbols, designs, depictions, likenesses, formats, poses, concepts, themes and graphic, photographic and other visual or audio representations; names and descriptions of characters, spells, enchantments, personalities, teams, personas, likenesses and special abilities; places, locations, environments, creatures, equipment, magical or supernatural abilities or effects, logos, symbols, or graphic designs; and any other trademark or registered trademark clearly identified as Product identity by the owner of the Product Identity, and which specifically excludes the Open Game Content; (f) \u201cTrademark\u201d means the logos, names, mark, sign, motto, designs that are used by a Contributor to identify itself or its products or the associated products contributed to the Open Game License by the Contributor (g) \u201cUse\u201d, \u201cUsed\u201d or \u201cUsing\u201d means to use, Distribute, copy, edit, format, modify, translate and otherwise create Derivative Material of Open Game Content. (h) \u201cYou\u201d or \u201cYour\u201d means the licensee in terms of this agreement. \n2. The License: This License applies to any Open Game Content that contains a notice \nindicating that the Open Game Content may only be Used under and in terms of this License. You must affix such a notice to any Open Game Content that you Use. No terms may be added to or subtracted from this License except as described by the License itself. No other terms or conditions may be applied to any Open Game Content distributed using this License. \n3.Offer and Acceptance: By Using the Open Game Content You indicate Your acceptance \nof the terms of this License. \n4. Grant and Consideration: In consideration for agreeing to use this License, the \nContributors grant You a perpetual, worldwide, royalty-free, non-exclusive license with the exact terms of this License to Use, the Open Game Content. 5.Representation of Authority to Contribute: If You are contributing original material as \nOpen Game Content, You represent that Your Contributions are Your original creation and/or You have sufficient rights to grant the rights conveyed by this License. \n6.Notice of License Copyright: You must update the COPYRIGHT NOTICE portion of \nthis License to include the exact text of the COPYRIGHT NOTICE of any Open Game Content You are copying, modifying or distributing, and You must add the title, the copyright date, and the copyright holder\u2019s name to the COPYRIGHT NOTICE of any original Open Game Content you Distribute. \n7. Use of Product Identity: You agree not to Use any Product Identity, including as \nan indication as to compatibility, except as expressly licensed in another, independent Agreement with the owner of each element of that Product Identity. You agree not to indicate compatibility or co-adaptability with any Trademark or Registered Trademark in conjunction with a work containing Open Game Content except as expressly licensed in another, independent Agreement with the owner of such Trademark or Registered Trademark. The use of any Product Identity in Open Game Content does not constitute a challenge to the ownership of that Product Identity. The owner of any Product Identity used in Open Game Content shall retain all rights, title and interest in and to that Product Identity. \n8. Identification: If you distribute Open Game Content You must clearly indicate which \nportions of the work that you are distributing are Open Game Content. \n9. Updating the License: Wizards or its designated Agents may publish updated versions \nof this License. You may use any authorized version of this License to copy, modify and distribute any Open Game Content originally distributed under any version of this License. \n10. Copy of this License: You MUST include a copy of this License with every copy of \nthe Open Game Content You Distribute. \n11. Use of Contributor Credits: You may not market or advertise the Open Game Content using \nthe name of any Contributor unless You have written permission from the Contributor to do so. \n12. Inability to Comply: If it is impossible for You to comply with any of the terms of this \nLicense with respect to some or all of the Open Game Content due to statute, judicial order, or governmental regulation then You may not Use any Open Game Material so affected. \n13. Termination: This License will terminate automatically if You fail to comply with all \nterms herein and fail to cure such breach within 30 days of becoming aware of the breach. All sublicenses shall survive the termination of this License. \n14. Reformation: If any provision of this License is held to be unenforceable, such \nprovision shall be reformed only to the extent necessary to make it enforceable. \n15. COPYRIGHT NOTICE Open Game License v 1.0a Copyright 2000, Wizards of the Coast, Inc. System Reference Document Copyright 2000-2003, Wizards of the Coast, Inc.; Authors \nJonathan Tweet, Monte Cook, Skip Williams, Rich Baker, Andy Collins, David Noonan, Rich Redman, Bruce R. Cordell, John D. Rateliff, Thomas Reid, James Wyatt, based on original material by E. Gary Gygax and Dave Arneson.\nSwords & Wizardry Core Rules, Copyright 2008, Matthew J. FinchSwords & Wizardry Complete Rules, Copyright 2010, Matthew J. Finch\n\n133~A~\nAbbreviations  6, 120\nAbility Scores\n  see \nAttribute Scores\nAdventures, designing\n 75-86\nAdventures, dungeon\n 75-82\nAdventures, wilderness\n  \n \nsee Wilderness Adventures\nAerial Combat \n 88-89\nAlchemist \n 48, 50\nAlignment \n 9, 10, 28\nAlignment \nTongues  8\nArmor Class \n 31\nArmor\n, magic\nWeight of\n 31\nT\nypes of\n 123-125\nArmor\n, types of\n  31\nAscending \nAC, quick attack formula\n  44\nAssassin, class description \n 9-10\nAttack, from behind \n \n 40, also see \nBackstab\nAttack Roll  \nAttack \nTables\n 38-40\nDescription\n 36\nAttack \nTables\n  \n38-40\nAttribute Scores\n  7-8\nAttribute, Prime\nAs requirement for character classes\n 25\nBy character class\n 9-23\nEf\nfect on XP Bonus\n 34\n~B~\nBackstab  10, 23\nBlue Book Combat Sequence\n 37\n~C~\nCarrying Capacity   \nStrength modifier\n 7\nEf\nfect of\n 33\nChallenge Level \n 80, 1\n18\nChanging Character Class \n 24\nChaos\n \nsee Alignment\nChaos and Law\n 6, 10, 1\n1-12, 20, 27, 28,\n 42, 49-50, 56, 84\nCharacter Classes \n \n 7-24 or see individual listings\nCharacter Creation \n 7-34\nCharacter Sheet \n 7, 131\nCharisma \n see \nAttribute Scores\nCleric, Class Description \n 10-1\n1\nCleric, Spell List \n 51\nClimb \nWalls\n see Thieving Skills\nCombat\n \n 36-41\nAerial\n 88-89\nBlue Book Sequence\n 37\nHolmes Sequence\n 37\nMass\n \n86\nMelee\n 36-41\nSequence\n 36-37\nShip\n \n90-91\nUnarmed\n \n41Constitution \n see \nAttribute Scores\nCover and Concealment\n  \n \nsee Terrain Features\nCritical Hits\n 40\n~D~\nDamage  43\nDeath \n 43\nDelicate \nTasks\n see Thieving Skills\nDexterity \n see \nAttribute Scores\nDice \n 6\nDistances Outdoors \n 86\nDoors, opening \n \n 79, also see \nThieving Skills\nDruid, class description \n 1\n1\nDruid, spell list \n 51\nDual-Class Characters\n 25\nDungeon, designing \n 75\nDwarfs \n 25, 101\n~E~\nElves  26, 101\nEncounters, Dungeon \n 79-82\nEncounters, \nWilderness  83-86\nEncumbrance \n 32\nEquipment \n 29\nExample, \nDungeon map key \n 77\nOf Play \n 44\nExperience Points \n 34\n~F~\nFighter  14\nFleeing \n see \nRetreating\nFollowers \n 48\n~g~\nGems  120\nGrappling \n see \nUnarmed Combat\n~H~\nHalf-elves  26\nHalflings \n 26\nHealing \n 43\nHirelings \n see \nFollowers\nHolmes, combat sequence \n 37\nHumans \n 27, 105-106\n~i~\nInitiative  36\nIntelligence \n see \nAttribute Scores\nItems, magic \n 120-130~l~\nLanguages  8, 13\nLaw \n see \nAlignment\nLevel (Dungeon)\n 79\nLevel Limits on non-human characters  2\n5\nLight \n 30\nListening, at doors \n \n 79, also see \nThieving Skills\nLost, getting \n 83\n~M~\nMagic  49-50 (also see Spells)\nMagic Items\nArmor\nT\nypes of\n 123-125\nW\neight of \n 31\nCursed\n \n130\nListings \n 121-130\nMiscellaneous \n 127-130\nPotions \n 121\nRings \n 126\nScrolls \n 121-122\nStaf\nfs \n 126\nSwords \n 123\nW\neapons\n \n123-125\nMagic Resistance \n 92\nMagic-User\n, \nClass Description \n 16-17\nSpell list \n 51\nMap Symbols \n 76-78\nMaps, Dungeon \n 76-78\nMass Combat \n 86\nMelee \n see Combat\nMelee \nWeapons \n 30, 36\nMiscellaneous Magic Items \n 127-130\nMissile weapons \n 30, 36, 86, 87, 89\nMoney\nAt start of game \n 29\nT\nypes of (denominations) \n 29\nMonk, class description \n 18-19\nMonsters\nAttack \nTable for \n 40\nBy Challenge Level \n 1\n16-117\nCreating \n 1\n18\nDescriptions of \n 92\nMorale \n 43\nMovement\nCharacters \n 32-33\nV\nehicles \n 83\nMulti-Classed Characters \n 27\nMythrus T\nower  76\n~n~\nNaval Combat  see Ship Combat\nNeutrality\n see Alignment\nNon-human characters \n 25-26index\n~O~\nOil  31\nOutdoor Adventures\n  \nsee \nWilderness Adventures\nOutdoor Distances \n \nsee \nDistances Outdoors\nOverbearing \n see \nUnarmed Combat\n~P~\nPaladin  20\nPoison \n 10, also see \nSaving Throws\nPotions \n 121\nPrime \nAttribute  see Attribute, prime\n~R~\nRaces  25-27\nRanger \n 21-22\nRappan \nAthuk  78\nResistance, Magic \n 92\nRetreating \n 41\nRings, magic \n 126\nRound, melee \n see \nTime\n~S~\nSage  48\nSaving Throw\nCharacters\n 35\nMonsters\n \n118Scrolls, magic \n 121-122\nSequence of Combat \n 36-37\nShip Combat \n 90-91\nShips \n 91\nSieges \n 87-88\nSpells\nDescriptions\n \n52-73\nDeclaring \n 36, 41\nLists\n \n51\nTime of casting \n 36-37\nSpy \n 48\nStaf\nfs, magic \n 126\nStrength \n see \nAttribute Scores\nStrongholds \n \nBy character class\n 7-25\nConstruction of\n 47\nStructural Damage \n see \nSieges\nSubdual Damage \n 41\nSwords, magic \n 123\n~t~\nTerrain Features  41\nThief \n 24\nThieving Skills  \n \nAssassin\n \n9\nMonk\n \n18\nThief\n 23\nT\nime \n 35\nT\nraps \n 79T\nreasure \n 1\n19-130\nTurn (time measurement) \n 35\nT\nurning the Undead \n 42\nT\nwo-Handed Weapons  41\nT\nwo-Weapon Fighting \n 41\n~u~\nUnarmed Combat  41\nUndead, T\nurning  42\n~W~\nWalls, climbing  see Thieving Skills\nWands \n \n41 (\nuse in melee ), 125 (descriptions)\nWeapons, costs \n 30\nW\neapons, magic \n 123-124\nW\neight and Movement \n 32\nW\nilderness Adventures  82-86\nW\nisdom \n see \nAttribute Scores\nWrestling \n see \nUnarmed Combat\n~X~\nXP  see Experience Points\nXP Bonus \n 34index\n134\nAdventurers\nKobold Destroyers\nOrc Destroyers\nOgre DestroyersBrock Cornell\nJohn Da Silva PolaMatthew Parker Winn\nSteve Rubin\nBenjamin B. Welch\nBlarst Senkarst\nBo\nCarey \u201clove Cerity\u201d A.\nEli Davis Carter\nEllen Allandar\nElpan Allander\nJake \nn\nelsonJames Stanton\nJeremy \u201c\nl\nigmancer\u201d \nl\nigman\nJoseph McRoberts\nKevin F. Davila\nKristopher Volter\nl\negopaidi\nl\neif Hamman\nMason \ng\nraceMatt Downer\nMatthew Almeda\nMichael Bielaczyc\nShawn \nt\nhill\nSteve Heitke\nt\nhomas Clark\nRusty Keele SD Houston\nAbby & \nl\nibby\nCopernicus Crane\nDamian Breen\nDave Borne\nDerik Malenda\nDuncan \ng\nulliford\nErik Johnson\nEzra Claverie\nFilip \u201c\nn\nerzenj\u00e4ger\u201d Stojak\ng\nalahad de Corbenic\ng\nilvan \ng\nouv\u00eaa\ng\nuy Fullerton\nHenry V Wilsoni\nan McDougall\ni\nlias Mastrogiorgos\nJames Bower\nJames Carpio\nJames \nl\nemon\nJames R. \nt\nrimble\nJason Azze\nJeremy M. Whalen\nJesse \ng\nervais\nJohn Appel\nJohn P. Seibel\nJonas Mustonen\nJoseph M BosterMc\nl\nean Anderson\nMike Browne\nn\nightstorm\nPatrik Str\u00f6m\nRay op\u2019t\nl\nand\nRay op\u2019t\nl\nand\nRob \nt\nrimarco\nRory Klein\nRyan Baxter\nSteve \u201cEO\nt\nB\u201d Smith\nt\nanner Adams\nt\nravis MillerParty Members\n135\nHippogriff Destroyers\nCentaur Destroyers\nWraith Slayersgrandy Peace\nKreg\nl\nogan \nu\nyedal on E. Varnadore\nPaul \ng\norman\nAdrian \nn\nannenga\nAnthony M. Franchini\nBrian Wickhem\nCarl Bou Mansour\nCarleton C. Oldham\nChristopher \u201cVon Welsh\u201d Coker\nChuck \nt\nhorin\nDan \u201c\nt\noki\u201d Ward\nDarcy Perry\nDavid A. Dupuis\nDeane Beman\nDodgy Farmer\nEric Murray\ng\nerard Fredette\ng\nideon Kalve Jarvis\ng\nideon Vanguard\nJack Ackerman\nJacob Vann\nJake WeisfeldJames Chilcott\nJamison \nt\n \nt\nhing\nJason Hurst\nJean \u201cAlahel\u201d Fridrici\nJeff Henson\nJeffrey Kitts\nJoel \nt\nhorne\nJuan \nn\natera\nK J Van Campen\nK.M. \nt\naylor-Hall\nKarl\nt\nhe\ng\nood\nKeith Schuerholz\nKevin Craig\nKevin Wine\nl\naurin Wegelin\nl\nucas D. \nl\nima\nMike \u201cBloodshadows\u201d Dukes\nMike Culbertson\nMurkatos - \nt\nPK \ng\namesn\nathan Christenson\nn\nathan M. Easton\nn\nick \ni\nbell-Pasley\nn\niels Adair\nParus Paron \u201cPar\u201d Donner\nPatrick Ciraco aka Ancient\ng\namer\nPete Hurley\nPeter Korteman\nRenee Holesovsky\nReverend Dak\nRob Dean\nRoger Wesson, Jr.\nSam \ng\nem\nShane O\u2019Dea\nStephen Azuma\nt\nhomas Moyles\nu\nnwaz\nAaron \nt\nrammell\nAdam Prater\nAdam Windsor\nAlain Bourgeois\nAlan Brodie\nAnders Bersten\nAndrew Branstad\nArthur Braune\nBrad Dancer\nBrendan Strejcek\nBrian A Cross\nBrian \nl\navelle\nBryan \ng\n. Dean\nDavid A. Blair\nDavid Weeks\nDoc\ng\nrognardeddyspaghetti\nEric \ng\nillespie\nFilthy Monkey\ng\neoffrey Sears\ng\neorge Chittum\nJack Fuller\nJames A. Smith\nJared Voshall\nJerry R Baker\nJerry Ward\nJoe Zabrowski\nJohn B Woodford\nJohn Bradway, BAMF\nJohn Pope\nJonathan Combs\nJordi Rabionet HernandezJosh Howard\nJudith K King\nK. \nn\n. Burgesser\nKen \nn\norton\nKevin Brennan\nKevin Flynn\nKevin Heckman\nKevin Mayz\nKevin Smith\nKimmo Warma\nKurt Johnson\nMagentawolf\nMarcus Bates\nMark Atkinson\nMartin Costa, \nl\nord High Phrenologist\nMichael McKeown\n136PARtY MEMBERS\nWraith Slayers, Continued\nJunior Dragon Slayers\nt\nroll SlayersMiniatureWargaming.Com\nn\nathan Seidenberg\nn\nicholas Cassidy\nOlivier \nl\nefebvre\nPaddy Shenanigans\nPaul Munson\nPhil Rose\nRichard RushRobert Conley\nRobert Fisher\nRobert \ng\n Miller\nRobert J. Parker\nRyan \nt\nhompson\nSam Seah\nSean \nl\nambert (sum1els)\nSean O\u2019DellStephen A. Connor\nt\n.S. \nl\nuikart\nt\nim Callahan\nt\nom Hogan\nt\nrevWar (\nt\nrevor Seeton)\nt\nristan bertram\nWilliam D. Smith Jr.\nWralt \ng\naither - \nt\nhe Mage of Spellford\nAndrew McReynolds\nBear D Bingham\nCharlie \u2018\nt\nater\u2019 Dodge\nEthan Childs\nEvelyn Ventura\ni\nMAD\u2019EDD\nin\nE Youri - KantaJack Chaney\nJillian Webb\nJohn Webb\nJohn-Francis Villines\nl\niam Kyle King  \n(Aka Cowboy Captain) l\nilith Ventura\nMaximilian Karl-Heinz Mirza\nn\nicholas De\nl\nateur\nSophia \u201cMyffy\u201d Bush\n\u201cWeird Dave\u201d Olson\nAaron C Derer, the Mad Captive\nAaron Clancy\nAaron F Stanton\nAdam Ball\nAdam Hackley\nAdam Stine\nAdam \nt\nyler Hutcheson\nAndrew Byers\nAndrew Portner\nArvo\nAstral Squid\nBlake \nt\nhomas\nBrandon Ording\nBrent Walters\nBrian Richard Stolt\nBruce Wiggins\nCameron DuBeers\nCarey Williams\nCharles Myers\nChip Warden\nChloe Katzburg\nChris DelaneyChris FitzPatick\nChris J Hahn\nChris Perkins\nChris \nt\nhompson\nChristian \nn\nord\nDaniel Flood\nDavid Bresson\nDavid \nl\nACO\nu\nR\nt\nDiogo \nn\nogueira\nDr. Sheldon Cooper\nEric \u201c\ng\nlithus\u201d Campbell\nErik \nt\nenkar\ng\narret M Hunt\ng\nregory Morse\nHenrik \nl\nandervik\nHenry Wong\nJack Shear\nJamas Enright\nJames \nn\niemira\nJason Stierle\nJeff P. Russell\nJeremy Coffey\nJim \u201cWilmanric\u201d PacekJoan A. Fontas\nJoe Maccarrone\nJohn K Morris\nJohn R. Stanfield \nii\nJoseph Connolly\nJoseph J Pierce\njosh clarke\nJosh Donovick\nJurgan Dark\nKeith \nn\nielsen\nKem \nt\nempleton\nKen \nt\nhronberry\nKevin \u201cMiniCannuck\u201d Jacobi\nKevin W. Keller\nK-slacker\nl\nance Rome\nl\nuigi \u201cdsypher\u201d McMinn\nMarc Young\nMark Clodi\nMark Damon Hughes\nMark Woolley\nMartin Blake\nMatthew Sanderson\n137PARtY MEMBERS\ntroll Slayers, Continued\nHellhound Slayers\nWhite Dragon SlayersMatthew Zymet\nMichael Filan\nMichael White\nMike A\nMike Case\nMike Schulenberg\nMoxadder\nn\nathan J. Sheusi\nOmer \u201cgolan2072\u201d \ng\nolan-Joel\nPat\nPaul Hedrick\nPaul Ramer\nPeter W. \nl\nenz\nPhilip WilliamsRandy Crockett\nRice\nRich \u201cCthulhu\u2019s \nl\nibrarian\u201d Miller\nRich Spainhour\nRichard \u201c\nt\nimmer\u201d Phipps\nRob Malo\nRob Savidge\nRobby Anderson\nRobert Oberg\nRodney Hankemeier\nRuss Brown\nScott Sheets\nsonofotho\nSpencer DavisSteve Huntsberry\nSteven Danielson\nSteven Schopmeyer\nSyyvius\nt\n. Kurt Bond\nt\nhaldon Magedrake\nt\nhomas Eaton-Evans\nt\nhorsten Schubert\nt\nodd Showalter\nt\nuan \nn\nguyen\nt\nyler J. \nl\neben\nWilliam Z. Cohen, MS\ngt\n/\nu\nSC, ret.\nWolfthulhu\nEric Koh\nHE\nl\nE\nn\nA HE\nl\nZ HE\nll\nHO\nun\nDRandolph R Metras\nReaper Miniaturest\nony mullin s\n /  /olfgang\nAaron Crist\nAdam Meyers\nAdam \nt\nrojanowski\nAla Fedorova\nBenjamin Chee\nBill Johnston\nBill \nl\nackey\nBob Keller\nCarey James Beeston\nCarl Rustenbeck\nCharles Dodge\nChris and \nl\nisa Wallace\nChris Cowles\nChris Hill\nChristopher Andrews\nClint Barkley\nColin Miller\nCraig Marshall\nDaniel Jeffery\nDaniel Petersen\nDark SashaDavid Andrew l ynch\nDavid B. Mc\ng\nuire\nDavid Cheatham\nDavid Karoski\nDavid McCartney\nDerek J. Balling\nDerrick \u201cOmote\u201d \nl\nandwehr\nDoug Haworth\nDuncan \ng\n. Scott\nEdmond Courtroul\nEdna Ann Rouse\nEdward Hamilton\nEmiliano Marchetti\nEnrique \nl\nancha\nEric \u201cStrat\u201d Kennedy\nFenway5\nFranz \ng\neorg R\u00f6sel\ng\nothridge Manor\ni\nvan J \nt\nhomas\nJackson Starky\nJames M. Yager\nJames ME PattersonJames Wood\nJason \u201cHierax\u201d Verbitsky\nJason \nl\niswood\nJason Paul McCartan\nJimmy Kane\nJoe Kerce\nJohn Adams\nJohn Bennett\nJohn J. Schaefer\nJohnathan \nl\n Bingham\nJonathan Woodward\nJorge Carreras\nKen Finlayson\nKevin P. McDonough\nKirk Foote\nl\neigh Fewster\nl\nes Hill\nl\nuke R. Bartlett\nl\nupus\nM. Sean Molley\nMa\ng\nnuS\nMarc Paladini/ /\n138PARtY MEMBERS\nWhite Dragon Slayers, Continued\nBlack Dragon SlayersMark \u201cBracton\u201d greenberg\nMarshall \u201cleadjunkie\u201d Mahurin\nMatthew Dunn\nMatthew Wasiak\nMatthias Weeks\nMichael Caldwell\nMichael Russell\nMike Franke\nn\nikos Constant\nOrastes\nOrion Cooper\nPaul Aparicio\nPaul MacDonald\nPaul Maloney\nPaul Ryan\nPeter\nPeter \u201c\nl\nifescanX\u201d PoulsenPeter Ramos\nPeter \nt\nomatz\nRalph Kelleners\nRandom Mc\nn\nasty\nRay Schmidt\nRene \nl\nalonde\nRichard \u201cBoomtopper\u201d White\nRick Rambo\nRobb \nl\nukasik\nRondar the unlucky\nRussell Hoyle\nRyan Simm\nRyan Wiley\nSacratus\nSandy Mackay\nScathaigh\nScott \ng\nalliandScott t hede\nSebastian Dietz\nSebastian Schirrmeister\nS\u00e9bastien \nl\nipp\u00e9\nSkalla Domineron-\nt\nhe Priest of Pain\nSteven Dolges\nt\ned \nl\nudemann\nt\nhe \ng\nrim MacKay\nt\nhomas Milazzo\nt\nodd McKimmey\nt\nyrlafiel\nvance ludemann\nWalter F. Croft\nWilliam Davisson\nWilliam Michael Curtis\nAdam Alexander\nAlexander \ng\nuzman\nAndrew Kelsoe\nAndrew O. Johnson\nAndy Vann\nBastarache\nBlake Kiefer\nBruce \nn\novakowski\nC. Joshua Villines\nCameron Wallace\nChristopher Burns\nCrutch\nDavid \u201cDaveMage\u201d Shlafer\nDenis \ng\nagnon\nDennis Kelley\nEric \nn\nielsen\nFloris van der Zwan\nFredrik Hansson\ng\neoffrey Roy\ng\nraham Hirstg\n\u00fcnther Kronenberg\nHenry Dunn\ntrollandflame.blogspot.com\nJ Preusser\nJames Van Horn\nJaved Mirza\nJeff Vincent\nJonathan A. \ng\nillett\nJoseph Cortese\nJustin\nJye Karl-Perry\nKevin \u201cOracle\u201d Walker\nKevin Brown\nKevin Vanderwater\nKurtis Evans\nl\nisa Kellogg\nl\nouis Roberts\nMatthew \ng\n Payton\nMatthias Deja\nMerric BlackmanMH\nn\nMichael A Magliocca\nn\napoleon Von Smith\nn\nazlith\nn\newt \nn\newport\nn\nigs Phillips\nOberon\nPat Bellavance\nPhil Bordelon\nRichard E Flanagan\nRichard \nl\neiva\nScantrontb\nScott C \ng\niesbrecht\nScott Farber\nSteve \nl\nord\nt\nhaumaturgan\nu\nngar Dragonsbane\nZanshin Frog\n139PARtY MEMBERS\nRed Dragon Slayers\nBenjamin F. Bullock\nBrett Bozeman\nBrett Easterbrook\nBrother \nt\nom\nC. Beau Barnett\nChainsaw\nChris de Putron\nCyberMastah\nDavid DonohooDavid t horp\nDavrion\nDon Johnson\nDragnmoon\ni\nMAD\u2019EDD\nin\nE \ng\nael\nJake Parker\nJames Redmon\nJason \u201cAce\u201d Ventura\nn\nathan HuckR. A. Mc Reynolds\nS \u201cKerion\u201d \ng\netty\nS Penrod\nSam Curry\nScott Kehl\nSean K King\nSteve \ng\neddes\nt\nara Sunder\nVincent Ecuyer\n140PARtY MEMBERS\n\n\nnotes:\nnotes:"
+  }
+}

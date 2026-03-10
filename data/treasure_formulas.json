@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "formulas_by_id": {
+    "xp_hoard_1d3p1": {
+      "kind": "hoard_gp_budget",
+      "base": "xp_total",
+      "mult_expr": "1d3+1",
+      "notes": "Hoard gp budget = total monster XP * (1d3+1)."
+    }
+  }
+}

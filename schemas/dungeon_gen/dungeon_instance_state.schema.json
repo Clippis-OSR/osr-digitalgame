@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sww:dungeon_instance_state.schema.json",
+  "title": "DungeonInstanceState",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "level_id",
+    "base_blueprint_hash",
+    "base_stocking_hash",
+    "turn_counter",
+    "explored",
+    "doors",
+    "rooms",
+    "factions",
+    "entities"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^P4\\.9\\.[0-9]+(\\.[0-9]+)*$"
+    },
+    "level_id": {
+      "type": "string"
+    },
+    "base_blueprint_hash": {
+      "type": "string",
+      "minLength": 8
+    },
+    "base_stocking_hash": {
+      "type": "string",
+      "minLength": 8
+    },
+    "turn_counter": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "explored": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cells_seen",
+        "rooms_seen"
+      ],
+      "properties": {
+        "cells_seen": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/point"
+          }
+        },
+        "rooms_seen": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^R[0-9]{4}$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "doors": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^D[0-9]{4}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/door_state"
+      }
+    },
+    "rooms": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^R[0-9]{4}$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/room_state"
+      }
+    },
+    "factions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/faction_state"
+      }
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entity_state"
+      }
+    },
+    "resolved_spawns": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/resolved_spawn"
+      }
+    },
+    "rng_streams": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y"
+      ],
+      "properties": {
+        "x": {
+          "type": "integer"
+        },
+        "y": {
+          "type": "integer"
+        }
+      }
+    },
+    "door_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "closed",
+            "open",
+            "broken",
+            "spiked",
+            "removed"
+          ]
+        },
+        "spike_strength": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "lock_broken": {
+          "type": "boolean"
+        },
+        "revealed_secret": {
+          "type": "boolean"
+        }
+      }
+    },
+    "room_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cleared",
+        "looted",
+        "alertness_override"
+      ],
+      "properties": {
+        "cleared": {
+          "type": "boolean"
+        },
+        "looted": {
+          "type": "boolean"
+        },
+        "alertness_override": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "calm",
+            "wary",
+            "alert",
+            "fortified",
+            null
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "faction_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reputation",
+        "response_clock",
+        "territory_rooms"
+      ],
+      "properties": {
+        "reputation": {
+          "type": "integer"
+        },
+        "response_clock": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "territory_rooms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^R[0-9]{4}$"
+          }
+        }
+      }
+    },
+    "entity_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_id",
+        "kind",
+        "pos",
+        "hp",
+        "tags"
+      ],
+      "properties": {
+        "entity_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "monster",
+            "npc"
+          ]
+        },
+        "ref_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pos": {
+          "$ref": "#/$defs/point"
+        },
+        "hp": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "state": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+    ,
+    "resolved_spawn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "spawn_id",
+        "room_id",
+        "monster_id",
+        "count",
+        "resolved"
+      ],
+      "properties": {
+        "spawn_id": {
+          "type": "string",
+          "pattern": "^S[0-9]{4}$"
+        },
+        "room_id": {
+          "type": "string",
+          "pattern": "^R[0-9]{4}$"
+        },
+        "monster_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "resolved": {
+          "type": "object"
+        },
+        "source_tags": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  }
+}

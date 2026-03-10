@@ -1,0 +1,448 @@
+{
+  "banshee": {
+    "immunities": [
+      "charm",
+      "disease",
+      "poison",
+      "sleep"
+    ],
+    "requires_magic_to_hit": true
+  },
+  "clay_golem": {
+    "immunities": [
+      "slashing",
+      "piercing"
+    ],
+    "magic_resistance_pct": 100,
+    "requires_magic_to_hit": true,
+    "spell_immunity_all": true,
+    "special_interactions": [
+      "Earthquake destroys clay golem.",
+      "Berserk: 1% cumulative per combat round."
+    ]
+  },
+  "demon_baalroch_balor": {
+    "immunities": [
+      "poison"
+    ],
+    "magic_resistance_pct": 50,
+    "requires_enchantment_bonus": 1,
+    "resistances": [
+      "fire"
+    ]
+  },
+  "demon_dretch": {
+    "immunities": [
+      "poison"
+    ],
+    "magic_resistance_pct": 20
+  },
+  "demon_erinyes": {
+    "immunities": [
+      "fire",
+      "cold"
+    ],
+    "magic_resistance_pct": 25
+  },
+  "demon_glabrezu": {
+    "immunities": [
+      "fire"
+    ],
+    "magic_resistance_pct": 60
+  },
+  "demon_hezrou_second_category_demon": {
+    "immunities": [
+      "poison"
+    ],
+    "magic_resistance_pct": 35,
+    "requires_enchantment_bonus": 1,
+    "resistances": [
+      "fire"
+    ]
+  },
+  "demon_lemures": {
+    "immunities": [
+      "poison"
+    ],
+    "magic_resistance_pct": 20
+  },
+  "demon_manes": {
+    "immunities": [
+      "poison"
+    ],
+    "magic_resistance_pct": 20
+  },
+  "demon_marilith_fifth_category_demon": {
+    "immunities": [
+      "poison"
+    ],
+    "magic_resistance_pct": 40,
+    "requires_enchantment_bonus": 1,
+    "resistances": [
+      "fire"
+    ]
+  },
+  "demon_nalfeshnee": {
+    "immunities": [
+      "fire"
+    ],
+    "magic_resistance_pct": 65,
+    "requires_enchantment_bonus": 1
+  },
+  "demon_prince_orc_us": {
+    "immunities": [
+      "electricity",
+      "poison"
+    ],
+    "magic_resistance_pct": 75,
+    "requires_enchantment_bonus": 3
+  },
+  "demon_prince_orcus": {
+    "immunities": [
+      "electricity",
+      "poison"
+    ],
+    "magic_resistance_pct": 75,
+    "requires_enchantment_bonus": 3
+  },
+  "demon_q_uasit": {
+    "magic_resistance_pct": 25
+  },
+  "demon_quasit": {
+    "magic_resistance_pct": 25
+  },
+  "demon_succubus": {
+    "immunities": [
+      "poison"
+    ],
+    "magic_resistance_pct": 30,
+    "requires_enchantment_bonus": 1,
+    "resistances": [
+      "fire"
+    ]
+  },
+  "demon_vrock_first_category_demon": {
+    "immunities": [
+      "poison"
+    ],
+    "magic_resistance_pct": 30,
+    "requires_enchantment_bonus": 1,
+    "resistances": [
+      "fire"
+    ]
+  },
+  "djinni": {
+    "immunities": [],
+    "magic_resistance_pct": 0,
+    "requires_enchantment_bonus": 0,
+    "requires_magic_to_hit": false,
+    "resistances": [],
+    "special_interactions": {},
+    "vulnerabilities": []
+  },
+  "dragon": {
+    "immunities": [
+      "poison"
+    ],
+    "magic_resistance_pct": 30
+  },
+  "efreeti": {
+    "immunities": [],
+    "magic_resistance_pct": 0,
+    "requires_enchantment_bonus": 0,
+    "requires_magic_to_hit": false,
+    "resistances": [],
+    "special_interactions": {},
+    "vulnerabilities": []
+  },
+  "flesh_golem": {
+    "immunities": [
+      "poison",
+      "disease",
+      "sleep",
+      "charm",
+      "paralysis"
+    ],
+    "magic_resistance_exempt_spells": [
+      "lightning bolt"
+    ],
+    "magic_resistance_pct": 100,
+    "requires_magic_to_hit": true,
+    "resistances": [
+      "magic"
+    ],
+    "special_interactions": [
+      "electric: heal",
+      "Fire and cold spells slow flesh golem.",
+      "Lightning heals flesh golem for damage that would have been dealt."
+    ],
+    "spell_immunity_all": true,
+    "spell_immunity_exempt_spells": [
+      "lightning bolt"
+    ],
+    "requires_enchantment_bonus": 1
+  },
+  "ghost": {
+    "immunities": [
+      "poison",
+      "disease",
+      "sleep",
+      "charm"
+    ],
+    "magic_resistance_pct": 25,
+    "requires_magic_to_hit": true
+  },
+  "ghoul": {
+    "immunities": [
+      "charm",
+      "disease",
+      "poison",
+      "sleep"
+    ]
+  },
+  "iron_golem": {
+    "immunities": [
+      "poison",
+      "disease",
+      "sleep",
+      "charm",
+      "paralysis"
+    ],
+    "magic_resistance_pct": 100,
+    "requires_magic_to_hit": true,
+    "spell_immunity_all": true,
+    "requires_enchantment_bonus": 3,
+    "special_interactions": [
+      "Lightning slows iron golem.",
+      "Fire heals iron golem for damage that would have been dealt.",
+      "Poison gas breath: 10-ft radius cloud."
+    ]
+  },
+  "lich": {
+    "immunities": [
+      "poison",
+      "disease",
+      "sleep",
+      "charm"
+    ],
+    "magic_resistance_pct": 50,
+    "requires_magic_to_hit": true
+  },
+  "mummy": {
+    "immunities": [
+      "charm",
+      "disease",
+      "poison",
+      "sleep"
+    ]
+  },
+  "ochre_jelly": {
+    "immunities": [],
+    "magic_resistance_pct": 0,
+    "requires_enchantment_bonus": 0,
+    "requires_magic_to_hit": false,
+    "resistances": [],
+    "special_interactions": {
+      "electric": "split"
+    },
+    "vulnerabilities": []
+  },
+  "skeleton": {
+    "immunities": [
+      "poison",
+      "disease",
+      "sleep",
+      "charm"
+    ]
+  },
+  "spectre": {
+    "immunities": [
+      "charm",
+      "disease",
+      "poison",
+      "sleep"
+    ],
+    "requires_magic_to_hit": true
+  },
+  "stone_golem": {
+    "immunities": [
+      "poison",
+      "disease",
+      "sleep",
+      "charm",
+      "paralysis"
+    ],
+    "magic_resistance_pct": 100,
+    "requires_magic_to_hit": true,
+    "spell_immunity_all": true,
+    "requires_enchantment_bonus": 2,
+    "special_interactions": [
+      "Fire spells slow stone golem.",
+      "Rock-to-mud damages stone golem; reverse heals."
+    ]
+  },
+  "troll": {
+    "vulnerabilities": [
+      "fire",
+      "acid"
+    ]
+  },
+  "vampires": {
+    "immunities": [
+      "charm",
+      "disease",
+      "poison",
+      "sleep"
+    ],
+    "requires_magic_to_hit": true
+  },
+  "werewolf": {
+    "requires_material": "silver"
+  },
+  "wight": {
+    "immunities": [
+      "charm",
+      "disease",
+      "poison",
+      "sleep"
+    ],
+    "requires_magic_to_hit": true
+  },
+  "wraith": {
+    "immunities": [
+      "charm",
+      "disease",
+      "poison",
+      "sleep"
+    ],
+    "requires_magic_to_hit": true
+  },
+  "zombie": {
+    "immunities": [
+      "charm",
+      "disease",
+      "poison",
+      "sleep"
+    ]
+  },
+  "elemental_air": {
+    "immunities": [
+      "non-magic weapons"
+    ],
+    "requires_magic_to_hit": true
+  },
+  "elemental_earth": {
+    "immunities": [
+      "non-magic weapons"
+    ],
+    "requires_magic_to_hit": true
+  },
+  "elemental_fire": {
+    "immunities": [
+      "non-magic weapons"
+    ],
+    "requires_magic_to_hit": true
+  },
+  "elemental_water": {
+    "immunities": [
+      "non-magic weapons"
+    ],
+    "requires_magic_to_hit": true
+  },
+  "lycanthrope_werebear": {
+    "requires_magic_to_hit": true,
+    "requires_material": "silver",
+    "special_interactions": [
+      "Silver weapons bypass lycanthrope weapon immunity; otherwise requires magic weapon.",
+      "Silver weapons bypass lycanthrope weapon immunity.",
+      "If a victim is attacked and brought below 50% hp by a lycanthrope, victim contracts lycanthropy."
+    ]
+  },
+  "lycanthrope_wereboar": {
+    "requires_magic_to_hit": true,
+    "requires_material": "silver",
+    "special_interactions": [
+      "Silver weapons bypass lycanthrope weapon immunity; otherwise requires magic weapon.",
+      "Silver weapons bypass lycanthrope weapon immunity.",
+      "If a victim is attacked and brought below 50% hp by a lycanthrope, victim contracts lycanthropy."
+    ]
+  },
+  "lycanthrope_wererat": {
+    "requires_magic_to_hit": true,
+    "requires_material": "silver",
+    "special_interactions": [
+      "Silver weapons bypass lycanthrope weapon immunity; otherwise requires magic weapon.",
+      "Silver weapons bypass lycanthrope weapon immunity.",
+      "If a victim is attacked and brought below 50% hp by a lycanthrope, victim contracts lycanthropy."
+    ]
+  },
+  "lycanthrope_weretiger": {
+    "requires_magic_to_hit": true,
+    "requires_material": "silver",
+    "special_interactions": [
+      "Silver weapons bypass lycanthrope weapon immunity; otherwise requires magic weapon.",
+      "Silver weapons bypass lycanthrope weapon immunity.",
+      "If a victim is attacked and brought below 50% hp by a lycanthrope, victim contracts lycanthropy."
+    ]
+  },
+  "lycanthrope_werewolf": {
+    "requires_magic_to_hit": true,
+    "requires_material": "silver",
+    "special_interactions": [
+      "Silver weapons bypass lycanthrope weapon immunity; otherwise requires magic weapon.",
+      "Silver weapons bypass lycanthrope weapon immunity.",
+      "If a victim is attacked and brought below 50% hp by a lycanthrope, victim contracts lycanthropy."
+    ]
+  },
+  "unicorn": {
+    "magic_resistance_pct": 25
+  },
+  "golem_clay": {
+    "requires_magic_to_hit": true,
+    "immunities": [
+      "slashing",
+      "piercing"
+    ],
+    "spell_immunity_all": true,
+    "special_interactions": [
+      "Earthquake destroys clay golem.",
+      "Berserk: 1% cumulative per combat round."
+    ]
+  },
+  "golem_flesh": {
+    "requires_magic_to_hit": true,
+    "requires_enchantment_bonus": 1,
+    "spell_immunity_all": true,
+    "special_interactions": [
+      "Fire and cold spells slow flesh golem.",
+      "Lightning heals flesh golem for damage that would have been dealt."
+    ]
+  },
+  "golem_iron": {
+    "requires_magic_to_hit": true,
+    "requires_enchantment_bonus": 3,
+    "spell_immunity_all": true,
+    "special_interactions": [
+      "Lightning slows iron golem.",
+      "Fire heals iron golem for damage that would have been dealt.",
+      "Poison gas breath: 10-ft radius cloud."
+    ]
+  },
+  "golem_stone": {
+    "requires_magic_to_hit": true,
+    "requires_enchantment_bonus": 2,
+    "spell_immunity_all": true,
+    "special_interactions": [
+      "Fire spells slow stone golem.",
+      "Rock-to-mud damages stone golem; reverse heals."
+    ]
+  },
+  "trapper_beast": {
+    "immunities": [
+      "cold"
+    ],
+    "resistances": {
+      "fire": "half_damage"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "octopus_giant": {
+    "aggression": "pack",
+    "target_priority": "lowest_hp",
+    "flee_hp_pct": 0.0,
+    "morale_mod": 1,
+    "prefer_soft_targets_if_has_grab": true
+  },
+  "purple_worm": {
+    "aggression": "high",
+    "target_priority": "lowest_hp",
+    "flee_hp_pct": 0.0,
+    "morale_mod": 2,
+    "prefer_soft_targets_if_has_grab": true
+  },
+  "djinni": {
+    "aggression": "cautious",
+    "target_priority": "caster",
+    "flee_hp_pct": 0.25,
+    "morale_mod": 1,
+    "use_missile_if_available": true
+  },
+  "efreeti": {
+    "aggression": "cautious",
+    "target_priority": "caster",
+    "flee_hp_pct": 0.25,
+    "morale_mod": 1,
+    "use_missile_if_available": true
+  },
+  "dragon": {
+    "aggression": "high",
+    "target_priority": "caster",
+    "flee_hp_pct": 0.0,
+    "morale_mod": 2,
+    "use_missile_if_available": true
+  },
+  "demon_vrock_first_category_demon": {
+    "aggression": "high",
+    "target_priority": "caster",
+    "flee_hp_pct": 0.0,
+    "morale_mod": 2,
+    "use_missile_if_available": true
+  },
+  "skeleton": {
+    "aggression": "high",
+    "target_priority": "frontline",
+    "flee_hp_pct": 0.0,
+    "morale_mod": 999
+  },
+  "zombie": {
+    "aggression": "high",
+    "target_priority": "frontline",
+    "flee_hp_pct": 0.0,
+    "morale_mod": 999
+  }
+}

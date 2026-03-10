@@ -1,0 +1,3706 @@
+[
+  {
+    "name": "Ant, giant (Q ueen)",
+    "hit_dice": "10",
+    "armor_class": "3 [16]",
+    "attacks": "Bite (1d6)",
+    "saving_throw": "5",
+    "special": "None",
+    "move": "3",
+    "alignment": "Neutrality",
+    "challenge_level": "8",
+    "xp": 800,
+    "monster_id": "ant_giant_q_ueen",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Ant, giant (Queen)",
+    "hit_dice": "10",
+    "armor_class": "3 [16]",
+    "attacks": "Bite (1d6)",
+    "saving_throw": "5",
+    "special": "None",
+    "move": "3",
+    "alignment": "Neutrality",
+    "challenge_level": "8",
+    "xp": 800,
+    "monster_id": "ant_giant_queen",
+    "aliases": [
+      "Ants, Giant (Warrior)",
+      "Ants, Giant (Worker)"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Ant, giant (Warrior)",
+    "hit_dice": "3",
+    "armor_class": "3 [16]",
+    "attacks": "Bite (1d6 + poison)",
+    "saving_throw": "14",
+    "special": "None",
+    "move": "18",
+    "alignment": "Neutrality",
+    "challenge_level": "2",
+    "xp": 30,
+    "monster_id": "ant_giant_warrior",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Ant, giant (Worker)",
+    "hit_dice": "2",
+    "armor_class": "3 [16]",
+    "attacks": "Bite (1d6)",
+    "saving_throw": "16",
+    "special": "None",
+    "move": "18",
+    "alignment": "Neutrality",
+    "challenge_level": "2",
+    "xp": 30,
+    "monster_id": "ant_giant_worker",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Badger, giant",
+    "hit_dice": "3",
+    "armor_class": "4 [15]",
+    "attacks": "2 claws (1d3), bite (1d6)",
+    "saving_throw": "14",
+    "special": "None",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": "3",
+    "xp": 60,
+    "monster_id": "badger_giant",
+    "aliases": [
+      "Badgers, Giant"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Banshee",
+    "hit_dice": "7",
+    "armor_class": "0 [19]",
+    "attacks": "Claw (1d8)",
+    "saving_throw": "9",
+    "special": "See below",
+    "move": "6",
+    "alignment": "Chaos",
+    "challenge_level": "11",
+    "xp": 1700,
+    "monster_id": "banshee",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Basilisk",
+    "hit_dice": "6",
+    "armor_class": "4 [15]",
+    "attacks": "Bite (1d10)",
+    "saving_throw": "11",
+    "special": "Petrifying gaze",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": "8",
+    "xp": 800,
+    "monster_id": "basilisk",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Bat, giant (Bat Monster)",
+    "hit_dice": "8",
+    "armor_class": "6 [13]",
+    "attacks": "Bite (2d8), 2 claws (1d6)",
+    "saving_throw": "8",
+    "special": "None",
+    "move": "4/18 (flying)",
+    "alignment": "Neutrality unless intelligent (Chaos)",
+    "challenge_level": "9",
+    "xp": 1100,
+    "monster_id": "bat_giant_bat_monster",
+    "aliases": [
+      "Bats, Giant (Bat Monster)",
+      "Bats, Giant (Greater Bat)",
+      "Bats, Giant (Vampire Bat)"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Bat, giant ( greater Bat)",
+    "hit_dice": "4",
+    "armor_class": "7 [12]",
+    "attacks": "Bite (1d10)",
+    "saving_throw": "13",
+    "special": "None",
+    "move": "4/18 (flying)",
+    "alignment": "Neutrality",
+    "challenge_level": "5",
+    "xp": 240,
+    "monster_id": "bat_giant_greater_bat",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Bat, giant (Vampire Bat)",
+    "hit_dice": "1",
+    "armor_class": "8 [11]",
+    "attacks": "Bite (1d6)",
+    "saving_throw": "17",
+    "special": "Sucks blood",
+    "move": "4/18 (flying)",
+    "alignment": "Neutrality",
+    "challenge_level": "3",
+    "xp": 60,
+    "monster_id": "bat_giant_vampire_bat",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Bear",
+    "hit_dice": "4+1",
+    "armor_class": "7 [12]",
+    "attacks": "2 Claws (1d3) and bite (1d6)",
+    "saving_throw": "13",
+    "special": "Hug",
+    "move": "9",
+    "alignment": "Neutrality",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "bear",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Beetle, giant (Fire)",
+    "hit_dice": "1",
+    "armor_class": "4 [15]",
+    "attacks": "Bite (3d8)",
+    "saving_throw": "18",
+    "special": "None",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "beetle_giant_fire",
+    "aliases": [
+      "Beetles, Giant (Fire)"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Black Pudding",
+    "hit_dice": "10",
+    "armor_class": "6 [13]",
+    "attacks": "Attack (3d8)",
+    "saving_throw": "5",
+    "special": "Acidic surface, immune to cold, divides when hit with lightning",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": "11",
+    "xp": 1700,
+    "monster_id": "black_pudding",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Blink Dog",
+    "hit_dice": "4",
+    "armor_class": "5 [14]",
+    "attacks": "Bite (1d6)",
+    "saving_throw": "13",
+    "special": "Teleports without error",
+    "move": "12",
+    "alignment": "Law",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "blink_dog",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Boar, Wild",
+    "hit_dice": "3+3",
+    "armor_class": "7 [12]",
+    "attacks": "Gore (3d4)",
+    "saving_throw": "14",
+    "special": "Continues attacking 2 rounds after being “killed”",
+    "move": "15",
+    "alignment": "Neutrality",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "boar_wild",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Bugbear",
+    "hit_dice": "3+1",
+    "armor_class": "5 [14]",
+    "attacks": "Bite (2d4) or by weapon",
+    "saving_throw": "14",
+    "special": "Surprise opponents on a 1–3",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "bugbear",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Bulette",
+    "hit_dice": "7 to 10",
+    "armor_class": "-2 [21]",
+    "attacks": "Bite (4d12) and 2 Claws (3d6)",
+    "saving_throw": "9 (7HD), 8 (8HD), 6 (9HD), 5 (10HD)",
+    "special": "Leaping, surprise",
+    "move": "15",
+    "alignment": "Neutrality",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "bulette",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 9,
+      "max": 12
+    },
+    "variant": {
+      "kind": "hd_plus_offset",
+      "hd_min": 7,
+      "hd_max": 10,
+      "cl_offset": 2
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Carrion Creeper",
+    "hit_dice": "2+4",
+    "armor_class": "7 [12]",
+    "attacks": "Bite (1 hp) and 6 tentacles",
+    "saving_throw": "14",
+    "special": "Tentacles cause paralysis",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "carrion_creeper",
+    "aliases": [
+      "Carrion Crawler"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Centaur",
+    "hit_dice": "4",
+    "armor_class": "5 [14] or 4 [15] with shield",
+    "attacks": "2 kicks (1d6) and weapon",
+    "saving_throw": "13",
+    "special": "None",
+    "move": "18",
+    "alignment": "Any (usually Neutrality)",
+    "challenge_level": "5",
+    "xp": 240,
+    "monster_id": "centaur",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Centipede, giant (large, 20 ft long)",
+    "hit_dice": "4",
+    "armor_class": "0 [19]",
+    "attacks": "Bite (3d8 + poison)",
+    "saving_throw": "13",
+    "special": "Lethal poison, +4 save",
+    "move": "18",
+    "alignment": "Neutrality",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "centipede_giant_large_20_ft_long",
+    "aliases": [
+      "Centipedes, Giant (Large)",
+      "Centipedes, Giant (Man-sized)",
+      "Centipedes, Giant (Small, lethal)",
+      "Centipedes, Giant (Small, non-lethal)"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Centipede, giant (Man-sized)",
+    "hit_dice": "2",
+    "armor_class": "5 [14]",
+    "attacks": "Bite (1d8 + poison)",
+    "saving_throw": "16",
+    "special": "Lethal poison, +6 save",
+    "move": "15",
+    "alignment": "Neutrality",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "centipede_giant_man_sized",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Centipede, giant (Small, lethal)",
+    "hit_dice": "1d2 hit points",
+    "armor_class": "9 [10]",
+    "attacks": "Bite (deals 0 damage)",
+    "saving_throw": "18",
+    "special": "Lethal poison, +4 save",
+    "move": "13",
+    "alignment": "Neutrality",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "centipede_giant_small_lethal",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Centipede, giant (Small, non-lethal)",
+    "hit_dice": "1d2 hit points",
+    "armor_class": "9 [10]",
+    "attacks": "Bite (0 hp damage)",
+    "saving_throw": "18",
+    "special": "Non-lethal poison, +4 save",
+    "move": "13",
+    "alignment": "Neutrality",
+    "challenge_level": "B",
+    "xp": 10,
+    "monster_id": "centipede_giant_small_non_lethal",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Chimera",
+    "hit_dice": "9",
+    "armor_class": "4 [15]",
+    "attacks": "2 claws (1d3), 2 goat horns (1d4), 1 lion bite (2d4),",
+    "saving_throw": "6",
+    "special": "Breathes fire",
+    "move": "9/18 (flying)",
+    "alignment": "Chaos (sometimes Neutrality)",
+    "challenge_level": "11",
+    "xp": 1700,
+    "monster_id": "chimera",
+    "aliases": [
+      "Chimaerae"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Golem, Clay",
+    "hit_dice": "10 (45 hp)",
+    "armor_class": "7 [12]",
+    "attacks": "1 fist (3d10)",
+    "saving_throw": "5",
+    "special": "Immune to slashing and piercing weapons; immune to most spells; berserk 1% cumulative per round; earthquake destroys",
+    "move": "8",
+    "alignment": "Neutrality",
+    "challenge_level": 14,
+    "xp": 2600,
+    "tags": [
+      "construct"
+    ],
+    "monster_id": "clay_golem",
+    "aliases": [
+      "Clay Golem",
+      "golem clay"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Cockatrice",
+    "hit_dice": "5",
+    "armor_class": "6 [13]",
+    "attacks": "Bite (1d6+ turn to stone)",
+    "saving_throw": "12",
+    "special": "Bite turns to stone",
+    "move": "6/18 (flying)",
+    "alignment": "Neutrality",
+    "challenge_level": "7",
+    "xp": 600,
+    "monster_id": "cockatrice",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Crocodile, giant or Sea",
+    "hit_dice": "6",
+    "armor_class": "3 [16]",
+    "attacks": "Bite (4d6) and tail (3d4)",
+    "saving_throw": "11",
+    "special": "None",
+    "move": "9 (12 swimming)",
+    "alignment": "Neutrality",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "crocodile_giant_or_sea",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Crocodile, normal",
+    "hit_dice": "3",
+    "armor_class": "4 [15]",
+    "attacks": "Bite (1d6)",
+    "saving_throw": "14",
+    "special": "None",
+    "move": "9 (12 swimming)",
+    "alignment": "Neutrality",
+    "challenge_level": "3",
+    "xp": 60,
+    "monster_id": "crocodile_normal",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Baalroch (Balor)",
+    "hit_dice": "10",
+    "armor_class": "2 [17]",
+    "attacks": "Sword (1d12+2) and whip (see below)",
+    "saving_throw": "5",
+    "special": "Magic resistance (75%), surrounded by fire",
+    "move": "6/15 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "17",
+    "xp": 3500,
+    "monster_id": "demon_baalroch_balor",
+    "aliases": [
+      "Demon, Balarochs"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Dretch",
+    "hit_dice": "4",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d4), 1 bite (1d6)",
+    "saving_throw": "13",
+    "special": "Magical abilities.",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "demon_dretch",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Erinyes",
+    "hit_dice": "6",
+    "armor_class": "2 [17]",
+    "attacks": "1 bronze sword (1d6 + paralysis)",
+    "saving_throw": "11",
+    "special": "Magic resistance (25%), magical abilities, immune to fire and cold, entangle, fear",
+    "move": "12/24 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "9",
+    "xp": 1100,
+    "monster_id": "demon_erinyes",
+    "aliases": [
+      "Fury",
+      "Furies",
+      "Demon, Erinyes (Fury)"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, glabrezu",
+    "hit_dice": "10",
+    "armor_class": "-4 [23]",
+    "attacks": "2 pincers (2d6), 2 claws (1d3), 1 bite (1d6)",
+    "saving_throw": "5",
+    "special": "Magic resistance (60%), immune to fire, magical abilities",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "15",
+    "xp": 2900,
+    "monster_id": "demon_glabrezu",
+    "aliases": [
+      "Third-category demon",
+      "Demon, Glabrezu (Third-Category Demon)"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Hezrou (Second-Category Demon)",
+    "hit_dice": "9",
+    "armor_class": "-2 [21]",
+    "attacks": "2 claws (1d3), 1 bite (4d4)",
+    "saving_throw": "6",
+    "special": "Magic resistance 50%, magical abilities",
+    "move": "9/14 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "11",
+    "xp": 1700,
+    "monster_id": "demon_hezrou_second_category_demon",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, lemures",
+    "hit_dice": "3",
+    "armor_class": "7 [12]",
+    "attacks": "Claw (1d3)",
+    "saving_throw": "14",
+    "special": "Regenerate (1 hp/round)",
+    "move": "3",
+    "alignment": "Chaos",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "demon_lemures",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Manes",
+    "hit_dice": "1",
+    "armor_class": "5[14]",
+    "attacks": "2 claws (1d2), 1 bite (1d4)",
+    "saving_throw": "18",
+    "special": "Half damage from non-magic weapons",
+    "move": "5",
+    "alignment": "Chaos",
+    "challenge_level": "2",
+    "xp": 30,
+    "monster_id": "demon_manes",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Marilith (Fifth-Category Demon)",
+    "hit_dice": "7",
+    "armor_class": "7 [12]",
+    "attacks": "6 weapons (1d8), tail (1d8)",
+    "saving_throw": "9",
+    "special": "Magic resistance (80%), +1 or better magic weapon required to hit, immune to fire, magical abilities",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "13",
+    "xp": 2300,
+    "monster_id": "demon_marilith_fifth_category_demon",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, nalfeshnee",
+    "hit_dice": "7d10",
+    "armor_class": "4 [15]",
+    "attacks": "2 claws (1d4), 1 bite (2d4)",
+    "saving_throw": "9",
+    "special": "Magic resistance (65%), +1 or better magic weapon needed to hit, immune to fire, +2 on to-hit rolls, magical abilities",
+    "move": "9/14 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "12",
+    "xp": 2000,
+    "monster_id": "demon_nalfeshnee",
+    "aliases": [
+      "Fourth-category demon",
+      "Demon, Nalfeshnee (Fourth-Category Demon)"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon Prince, ORCuS",
+    "hit_dice": "30 (125hp)",
+    "armor_class": "-6 [25]",
+    "attacks": "Wand of Orcus (2d6 or death) or 2 fists (3d6) and tail sting (2d6 plus poison)",
+    "saving_throw": "3",
+    "special": "Command undead, spells, summon undead, +3 or better weapon to hit, immunity to electricity and poison, speak with dead, magic resistance (75%), telepathy 100 ft.",
+    "move": "18/24 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "40",
+    "xp": 10400,
+    "monster_id": "demon_prince_orc_us",
+    "aliases": [
+      "Demon Prince, Orcus",
+      "Orcus",
+      "demon_prince_orcus"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon Prince, ORCuS",
+    "hit_dice": "30 (125hp)",
+    "armor_class": "-6 [25]",
+    "attacks": "Wand of Orcus (2d6 or death) or 2 fists (3d6) and tail sting (2d6 plus poison)",
+    "saving_throw": "3",
+    "special": "Command undead, spells, summon undead, +3 or better weapon to hit, immunity to electricity and poison, speak with dead, magic resistance (75%), telepathy 100 ft.",
+    "move": "18/24 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "40",
+    "xp": 10400,
+    "monster_id": "demon_prince_orcus",
+    "aliases": [
+      "Orcus",
+      "Demon Prince, Orcus",
+      "Prince of the Undead"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Quasit",
+    "hit_dice": "3",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d2 + non-lethal poison), 1 bite (1d3)",
+    "saving_throw": "14",
+    "special": "Magic resistance (25%), regenerate (1 hp/round), non-lethal poison, magical abilities",
+    "move": "14",
+    "alignment": "Chaos",
+    "challenge_level": "7",
+    "xp": 600,
+    "monster_id": "demon_q_uasit",
+    "aliases": [
+      "Demon, Quasit",
+      "Quasit",
+      "demon_quasit"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Quasit",
+    "hit_dice": "3",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d2 + non-lethal poison), 1 bite (1d3)",
+    "saving_throw": "14",
+    "special": "Magic resistance (25%), regenerate (1 hp/round), non-lethal poison, magical abilities",
+    "move": "14",
+    "alignment": "Chaos",
+    "challenge_level": "7",
+    "xp": 600,
+    "monster_id": "demon_quasit",
+    "aliases": [
+      "Demon familiar",
+      "Demon, Quasit"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Succubus",
+    "hit_dice": "6",
+    "armor_class": "9 [10]",
+    "attacks": "2 scratches (1d3)",
+    "saving_throw": "11",
+    "special": "Magic resistance (70%), immune to non-magic weapons, cause darkness in a 10-foot diameter, level drain (1 level) with kiss, summon other demons, spells,change shape.",
+    "move": "12 (18 fly)",
+    "alignment": "Chaotic",
+    "challenge_level": "9",
+    "xp": 1100,
+    "monster_id": "demon_succubus",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Vrock (First-Category Demon)",
+    "hit_dice": "8",
+    "armor_class": "0 [19]",
+    "attacks": "1 beak (1d6), 2 foreclaws (1d8), 2 rear claws (1d8)",
+    "saving_throw": "8",
+    "special": "Magic resistance (50%), immune to fire, darkness",
+    "move": "12/18 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "11",
+    "xp": 1700,
+    "monster_id": "demon_vrock_first_category_demon",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Djinni",
+    "hit_dice": "7+3",
+    "armor_class": "5 [14]",
+    "attacks": "Fist or weapon (2d8)",
+    "saving_throw": "9",
+    "special": "magical powers, whirlwind",
+    "move": "9/24 (flying)",
+    "alignment": "Any",
+    "challenge_level": "9",
+    "xp": 1100,
+    "monster_id": "djinni",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Doppleganger",
+    "hit_dice": "4",
+    "armor_class": "5 [14]",
+    "attacks": "Claw (1d12)",
+    "saving_throw": "13 (5 against any magic)",
+    "special": "Mimics shape, immune to sleep and charm spells",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "5",
+    "xp": 240,
+    "monster_id": "doppleganger",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dragon",
+    "hit_dice": "7-11",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d6) and bite (3d6)",
+    "saving_throw": "8",
+    "special": "Breath weapon; fear aura; spellcasting possible (referee)",
+    "move": "9/24 (flying)",
+    "alignment": "Varies",
+    "challenge_level": "10",
+    "xp": 1600,
+    "monster_id": "dragon",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dragon, Black",
+    "hit_dice": "6–8",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d4), bite (3d6)",
+    "saving_throw": "11, 9, 8",
+    "special": "Spits acid",
+    "move": "9/24 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "dragon_black",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "derived_cl": {
+      "base": "hit_dice_whole",
+      "modifiers": [
+        {
+          "tag": "flies_or_breathes_water",
+          "cl": 1
+        },
+        {
+          "tag": "breath_weapon",
+          "thresholds": [
+            {
+              "max_damage": 25,
+              "cl": 1
+            },
+            {
+              "min_damage": 26,
+              "cl": 2
+            }
+          ]
+        },
+        {
+          "tag": "spellcasting_multiple_spells",
+          "cl": 1,
+          "applies_only_if": "spellcasting_triggers",
+          "max_spell_level": 1
+        }
+      ]
+    },
+    "variant": {
+      "kind": "dragon",
+      "hd_range": [
+        6,
+        8
+      ],
+      "age_categories": [
+        {
+          "id": 1,
+          "name": "very_young",
+          "hp_per_hd": 1,
+          "breath_dmg_per_hd": 1
+        },
+        {
+          "id": 2,
+          "name": "young",
+          "hp_per_hd": 2,
+          "breath_dmg_per_hd": 2
+        },
+        {
+          "id": 3,
+          "name": "immature",
+          "hp_per_hd": 3,
+          "breath_dmg_per_hd": 3
+        },
+        {
+          "id": 4,
+          "name": "adult",
+          "hp_per_hd": 4,
+          "breath_dmg_per_hd": 4
+        },
+        {
+          "id": 5,
+          "name": "old",
+          "hp_per_hd": 5,
+          "breath_dmg_per_hd": 5
+        },
+        {
+          "id": 6,
+          "name": "very_old",
+          "hp_per_hd": 6,
+          "breath_dmg_per_hd": 6
+        },
+        {
+          "id": 7,
+          "name": "aged",
+          "hp_per_hd": 7,
+          "breath_dmg_per_hd": 7
+        },
+        {
+          "id": 8,
+          "name": "ancient",
+          "hp_per_hd": 8,
+          "breath_dmg_per_hd": 8
+        }
+      ],
+      "age_distribution": {
+        "weights": [
+          1,
+          2,
+          4,
+          6,
+          6,
+          4,
+          2,
+          1
+        ]
+      },
+      "breath": {
+        "type": "acid",
+        "shape": "line",
+        "width_ft": 5,
+        "length_ft": 60
+      },
+      "breath_uses_per_day": 3,
+      "talk_pct": 0.45,
+      "spellcasting_if_talks": {
+        "pct": 0.05,
+        "spells": [
+          {
+            "class": "MU",
+            "level": 1,
+            "count": "1d4"
+          }
+        ]
+      },
+      "treasure_gp_value_multiplier_vs_xp": 4
+    },
+    "cl_range": {
+      "min": 8,
+      "max": 12
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dragon, Blue",
+    "hit_dice": "8–10",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d6), bite (2d12)",
+    "saving_throw": "8, 6, 5",
+    "special": "Spits lightning",
+    "move": "9/24 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "dragon_blue",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "derived_cl": {
+      "base": "hit_dice_whole",
+      "modifiers": [
+        {
+          "tag": "flies_or_breathes_water",
+          "cl": 1
+        },
+        {
+          "tag": "breath_weapon",
+          "thresholds": [
+            {
+              "max_damage": 25,
+              "cl": 1
+            },
+            {
+              "min_damage": 26,
+              "cl": 2
+            }
+          ]
+        },
+        {
+          "tag": "spellcasting_multiple_spells",
+          "cl": 1,
+          "applies_only_if": "spellcasting_triggers",
+          "max_spell_level": 2
+        }
+      ]
+    },
+    "variant": {
+      "kind": "dragon",
+      "hd_range": [
+        8,
+        10
+      ],
+      "age_categories": [
+        {
+          "id": 1,
+          "name": "very_young",
+          "hp_per_hd": 1,
+          "breath_dmg_per_hd": 1
+        },
+        {
+          "id": 2,
+          "name": "young",
+          "hp_per_hd": 2,
+          "breath_dmg_per_hd": 2
+        },
+        {
+          "id": 3,
+          "name": "immature",
+          "hp_per_hd": 3,
+          "breath_dmg_per_hd": 3
+        },
+        {
+          "id": 4,
+          "name": "adult",
+          "hp_per_hd": 4,
+          "breath_dmg_per_hd": 4
+        },
+        {
+          "id": 5,
+          "name": "old",
+          "hp_per_hd": 5,
+          "breath_dmg_per_hd": 5
+        },
+        {
+          "id": 6,
+          "name": "very_old",
+          "hp_per_hd": 6,
+          "breath_dmg_per_hd": 6
+        },
+        {
+          "id": 7,
+          "name": "aged",
+          "hp_per_hd": 7,
+          "breath_dmg_per_hd": 7
+        },
+        {
+          "id": 8,
+          "name": "ancient",
+          "hp_per_hd": 8,
+          "breath_dmg_per_hd": 8
+        }
+      ],
+      "age_distribution": {
+        "weights": [
+          1,
+          2,
+          4,
+          6,
+          6,
+          4,
+          2,
+          1
+        ]
+      },
+      "breath": {
+        "type": "lightning",
+        "shape": "line",
+        "width_ft": 5,
+        "length_ft": 100,
+        "save_half": true
+      },
+      "breath_uses_per_day": 3,
+      "talk_pct": 0.65,
+      "spellcasting_if_talks": {
+        "pct": 0.15,
+        "spells": [
+          {
+            "class": "MU",
+            "level": 1,
+            "count": "1d4"
+          },
+          {
+            "class": "MU",
+            "level": 2,
+            "count": "1d3"
+          }
+        ]
+      },
+      "treasure_gp_value_multiplier_vs_xp": 4
+    },
+    "cl_range": {
+      "min": 10,
+      "max": 14
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dragon, gold",
+    "hit_dice": "10–12",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d8), bite (3d12)",
+    "saving_throw": "5, 4, 3",
+    "special": "Breathes poisonous gas or fire",
+    "move": "9/24 (flying)",
+    "alignment": "Law",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "dragon_gold",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "derived_cl": {
+      "base": "hit_dice_whole",
+      "modifiers": [
+        {
+          "tag": "flies_or_breathes_water",
+          "cl": 1
+        },
+        {
+          "tag": "breath_weapon",
+          "thresholds": [
+            {
+              "max_damage": 25,
+              "cl": 1
+            },
+            {
+              "min_damage": 26,
+              "cl": 2
+            }
+          ]
+        },
+        {
+          "tag": "spellcasting_multiple_spells",
+          "cl": 2,
+          "applies_only_if": "spellcasting_triggers",
+          "max_spell_level": 4
+        }
+      ]
+    },
+    "variant": {
+      "kind": "dragon",
+      "hd_range": [
+        10,
+        12
+      ],
+      "age_categories": [
+        {
+          "id": 1,
+          "name": "very_young",
+          "hp_per_hd": 1,
+          "breath_dmg_per_hd": 1
+        },
+        {
+          "id": 2,
+          "name": "young",
+          "hp_per_hd": 2,
+          "breath_dmg_per_hd": 2
+        },
+        {
+          "id": 3,
+          "name": "immature",
+          "hp_per_hd": 3,
+          "breath_dmg_per_hd": 3
+        },
+        {
+          "id": 4,
+          "name": "adult",
+          "hp_per_hd": 4,
+          "breath_dmg_per_hd": 4
+        },
+        {
+          "id": 5,
+          "name": "old",
+          "hp_per_hd": 5,
+          "breath_dmg_per_hd": 5
+        },
+        {
+          "id": 6,
+          "name": "very_old",
+          "hp_per_hd": 6,
+          "breath_dmg_per_hd": 6
+        },
+        {
+          "id": 7,
+          "name": "aged",
+          "hp_per_hd": 7,
+          "breath_dmg_per_hd": 7
+        },
+        {
+          "id": 8,
+          "name": "ancient",
+          "hp_per_hd": 8,
+          "breath_dmg_per_hd": 8
+        }
+      ],
+      "age_distribution": {
+        "weights": [
+          1,
+          2,
+          4,
+          6,
+          6,
+          4,
+          2,
+          1
+        ]
+      },
+      "breath": {
+        "modes": [
+          {
+            "type": "poison_gas",
+            "shape": "cloud",
+            "diameter_ft": 50,
+            "save_half": true
+          },
+          {
+            "type": "fire",
+            "shape": "cone",
+            "length_ft": 90,
+            "base_width_ft": 30
+          }
+        ],
+        "choose_at_spawn": true
+      },
+      "breath_uses_per_day": 3,
+      "talk_pct": 1.0,
+      "spellcasting_if_talks": {
+        "pct": 0.25,
+        "spells": [
+          {
+            "class": "MU",
+            "level": 1,
+            "count": "1d4"
+          },
+          {
+            "class": "MU",
+            "level": 2,
+            "count": "1d3"
+          },
+          {
+            "class": "MU",
+            "level": 3,
+            "count": "1d2"
+          },
+          {
+            "class": "MU",
+            "level": 4,
+            "count": "1"
+          }
+        ]
+      },
+      "treasure_gp_value_multiplier_vs_xp": 4
+    },
+    "cl_range": {
+      "min": 12,
+      "max": 17
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dragon, green",
+    "hit_dice": "7–9",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d6), bite (2d10)",
+    "saving_throw": "9, 8, 6",
+    "special": "Breathes poisonous gas",
+    "move": "9/24 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "dragon_green",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "derived_cl": {
+      "base": "hit_dice_whole",
+      "modifiers": [
+        {
+          "tag": "flies_or_breathes_water",
+          "cl": 1
+        },
+        {
+          "tag": "breath_weapon",
+          "thresholds": [
+            {
+              "max_damage": 25,
+              "cl": 1
+            },
+            {
+              "min_damage": 26,
+              "cl": 2
+            }
+          ]
+        },
+        {
+          "tag": "spellcasting_multiple_spells",
+          "cl": 1,
+          "applies_only_if": "spellcasting_triggers",
+          "max_spell_level": 2
+        }
+      ]
+    },
+    "variant": {
+      "kind": "dragon",
+      "hd_range": [
+        7,
+        9
+      ],
+      "age_categories": [
+        {
+          "id": 1,
+          "name": "very_young",
+          "hp_per_hd": 1,
+          "breath_dmg_per_hd": 1
+        },
+        {
+          "id": 2,
+          "name": "young",
+          "hp_per_hd": 2,
+          "breath_dmg_per_hd": 2
+        },
+        {
+          "id": 3,
+          "name": "immature",
+          "hp_per_hd": 3,
+          "breath_dmg_per_hd": 3
+        },
+        {
+          "id": 4,
+          "name": "adult",
+          "hp_per_hd": 4,
+          "breath_dmg_per_hd": 4
+        },
+        {
+          "id": 5,
+          "name": "old",
+          "hp_per_hd": 5,
+          "breath_dmg_per_hd": 5
+        },
+        {
+          "id": 6,
+          "name": "very_old",
+          "hp_per_hd": 6,
+          "breath_dmg_per_hd": 6
+        },
+        {
+          "id": 7,
+          "name": "aged",
+          "hp_per_hd": 7,
+          "breath_dmg_per_hd": 7
+        },
+        {
+          "id": 8,
+          "name": "ancient",
+          "hp_per_hd": 8,
+          "breath_dmg_per_hd": 8
+        }
+      ],
+      "age_distribution": {
+        "weights": [
+          1,
+          2,
+          4,
+          6,
+          6,
+          4,
+          2,
+          1
+        ]
+      },
+      "breath": {
+        "type": "poison_gas",
+        "shape": "cloud",
+        "diameter_ft": 50,
+        "save_half": true
+      },
+      "breath_uses_per_day": 3,
+      "talk_pct": 0.55,
+      "spellcasting_if_talks": {
+        "pct": 0.1,
+        "spells": [
+          {
+            "class": "MU",
+            "level": 1,
+            "count": "1d4"
+          },
+          {
+            "class": "MU",
+            "level": 2,
+            "count": "1d2"
+          }
+        ]
+      },
+      "treasure_gp_value_multiplier_vs_xp": 4
+    },
+    "cl_range": {
+      "min": 9,
+      "max": 13
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dragon, Red",
+    "hit_dice": "9–11",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d8), bite (3d10)",
+    "saving_throw": "6, 5, 4",
+    "special": "Breathes fire",
+    "move": "9/24 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "dragon_red",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "derived_cl": {
+      "base": "hit_dice_whole",
+      "modifiers": [
+        {
+          "tag": "flies_or_breathes_water",
+          "cl": 1
+        },
+        {
+          "tag": "breath_weapon",
+          "thresholds": [
+            {
+              "max_damage": 25,
+              "cl": 1
+            },
+            {
+              "min_damage": 26,
+              "cl": 2
+            }
+          ]
+        },
+        {
+          "tag": "spellcasting_multiple_spells",
+          "cl": 2,
+          "applies_only_if": "spellcasting_triggers",
+          "max_spell_level": 3
+        }
+      ]
+    },
+    "variant": {
+      "kind": "dragon",
+      "hd_range": [
+        9,
+        11
+      ],
+      "age_categories": [
+        {
+          "id": 1,
+          "name": "very_young",
+          "hp_per_hd": 1,
+          "breath_dmg_per_hd": 1
+        },
+        {
+          "id": 2,
+          "name": "young",
+          "hp_per_hd": 2,
+          "breath_dmg_per_hd": 2
+        },
+        {
+          "id": 3,
+          "name": "immature",
+          "hp_per_hd": 3,
+          "breath_dmg_per_hd": 3
+        },
+        {
+          "id": 4,
+          "name": "adult",
+          "hp_per_hd": 4,
+          "breath_dmg_per_hd": 4
+        },
+        {
+          "id": 5,
+          "name": "old",
+          "hp_per_hd": 5,
+          "breath_dmg_per_hd": 5
+        },
+        {
+          "id": 6,
+          "name": "very_old",
+          "hp_per_hd": 6,
+          "breath_dmg_per_hd": 6
+        },
+        {
+          "id": 7,
+          "name": "aged",
+          "hp_per_hd": 7,
+          "breath_dmg_per_hd": 7
+        },
+        {
+          "id": 8,
+          "name": "ancient",
+          "hp_per_hd": 8,
+          "breath_dmg_per_hd": 8
+        }
+      ],
+      "age_distribution": {
+        "weights": [
+          1,
+          2,
+          4,
+          6,
+          6,
+          4,
+          2,
+          1
+        ]
+      },
+      "breath": {
+        "type": "fire",
+        "shape": "cone",
+        "length_ft": 90,
+        "base_width_ft": 30
+      },
+      "breath_uses_per_day": 3,
+      "talk_pct": 0.75,
+      "spellcasting_if_talks": {
+        "pct": 0.2,
+        "spells": [
+          {
+            "class": "MU",
+            "level": 1,
+            "count": "1d4"
+          },
+          {
+            "class": "MU",
+            "level": 2,
+            "count": "1d3"
+          },
+          {
+            "class": "MU",
+            "level": 3,
+            "count": "1d2"
+          }
+        ]
+      },
+      "treasure_gp_value_multiplier_vs_xp": 4
+    },
+    "cl_range": {
+      "min": 11,
+      "max": 16
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dragon turtle",
+    "hit_dice": "11 to 14",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d8), bite (3d10)",
+    "saving_throw": "4 (11HD) or 3",
+    "special": "Break ships, breathe steam",
+    "move": "3 (9 swimming)",
+    "alignment": "Neutrality or Chaos",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "dragon_turtle",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "variant": {
+      "kind": "dragon_turtle",
+      "hd_range": [
+        11,
+        14
+      ],
+      "hd_to_cl": {
+        "11": 13,
+        "12": 14,
+        "13": 15,
+        "14": 16
+      },
+      "breath": {
+        "type": "steam"
+      },
+      "special_tags": [
+        "break_ships",
+        "breath_weapon",
+        "breathes_water"
+      ]
+    },
+    "cl_range": {
+      "min": 13,
+      "max": 16
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dragon, White",
+    "hit_dice": "5–7",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d4), bite (2d8)",
+    "saving_throw": "12, 11, 9",
+    "special": "Breathes cold",
+    "move": "9/24 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "dragon_white",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "derived_cl": {
+      "base": "hit_dice_whole",
+      "modifiers": [
+        {
+          "tag": "flies_or_breathes_water",
+          "cl": 1
+        },
+        {
+          "tag": "breath_weapon",
+          "thresholds": [
+            {
+              "max_damage": 25,
+              "cl": 1
+            },
+            {
+              "min_damage": 26,
+              "cl": 2
+            }
+          ]
+        }
+      ]
+    },
+    "variant": {
+      "kind": "dragon",
+      "hd_range": [
+        5,
+        7
+      ],
+      "age_categories": [
+        {
+          "id": 1,
+          "name": "very_young",
+          "hp_per_hd": 1,
+          "breath_dmg_per_hd": 1
+        },
+        {
+          "id": 2,
+          "name": "young",
+          "hp_per_hd": 2,
+          "breath_dmg_per_hd": 2
+        },
+        {
+          "id": 3,
+          "name": "immature",
+          "hp_per_hd": 3,
+          "breath_dmg_per_hd": 3
+        },
+        {
+          "id": 4,
+          "name": "adult",
+          "hp_per_hd": 4,
+          "breath_dmg_per_hd": 4
+        },
+        {
+          "id": 5,
+          "name": "old",
+          "hp_per_hd": 5,
+          "breath_dmg_per_hd": 5
+        },
+        {
+          "id": 6,
+          "name": "very_old",
+          "hp_per_hd": 6,
+          "breath_dmg_per_hd": 6
+        },
+        {
+          "id": 7,
+          "name": "aged",
+          "hp_per_hd": 7,
+          "breath_dmg_per_hd": 7
+        },
+        {
+          "id": 8,
+          "name": "ancient",
+          "hp_per_hd": 8,
+          "breath_dmg_per_hd": 8
+        }
+      ],
+      "age_distribution": {
+        "weights": [
+          1,
+          2,
+          4,
+          6,
+          6,
+          4,
+          2,
+          1
+        ]
+      },
+      "breath": {
+        "type": "cold",
+        "shape": "cone",
+        "length_ft": 70,
+        "base_width_ft": 30
+      },
+      "breath_uses_per_day": 3,
+      "talk_pct": 0.0,
+      "spellcasting_if_talks": {
+        "pct": 0.0,
+        "spells": []
+      },
+      "treasure_gp_value_multiplier_vs_xp": 4
+    },
+    "cl_range": {
+      "min": 7,
+      "max": 10
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dryad",
+    "hit_dice": "2",
+    "armor_class": "9 [10]",
+    "attacks": "Wooden dagger (1d4)",
+    "saving_throw": "16",
+    "special": "Charm person (-2 save)",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": "3",
+    "xp": 60,
+    "monster_id": "dryad",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Dwarf",
+    "hit_dice": "1",
+    "armor_class": "4 [15]",
+    "attacks": "War hammer (1d4+1)",
+    "saving_throw": "17",
+    "special": "Detects attributes of stonework",
+    "move": "6",
+    "alignment": "Law",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "dwarf",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Efreeti",
+    "hit_dice": "10",
+    "armor_class": "2 [17]",
+    "attacks": "Fist or sword (2d8)",
+    "saving_throw": "5",
+    "special": "Wall of fire",
+    "move": "9/24 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "12",
+    "xp": 2000,
+    "monster_id": "efreeti",
+    "aliases": [
+      "Efreet"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Elemental, Air",
+    "hit_dice": "8, 12, or 16",
+    "armor_class": "2 [17]",
+    "attacks": "Strike (2d8)",
+    "saving_throw": "8, 3, or 3",
+    "special": "Whirlwind, immune to non-magic weapons",
+    "move": "36 (flying)",
+    "alignment": "Neutrality",
+    "challenge_level": 0,
+    "xp": 0,
+    "monster_id": "elemental_air",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 9,
+      "max": 17
+    },
+    "variant": {
+      "kind": "hd_to_cl_map",
+      "hd_options": [
+        8,
+        12,
+        16
+      ],
+      "hd_to_cl": {
+        "8": 9,
+        "12": 13,
+        "16": 17
+      },
+      "hd_to_xp": {
+        "8": 1100,
+        "12": 2300,
+        "16": 3500
+      },
+      "hd_to_save": {
+        "8": 8,
+        "12": 3,
+        "16": 3
+      }
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Elemental, Earth",
+    "hit_dice": "8, 12, or 16",
+    "armor_class": "2 [17]",
+    "attacks": "Fist (4d8)",
+    "saving_throw": "8, 3, or 3",
+    "special": "Tear down stone, immune to non-magic weapons",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": 0,
+    "xp": 0,
+    "monster_id": "elemental_earth",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 9,
+      "max": 17
+    },
+    "variant": {
+      "kind": "hd_to_cl_map",
+      "hd_options": [
+        8,
+        12,
+        16
+      ],
+      "hd_to_cl": {
+        "8": 9,
+        "12": 13,
+        "16": 17
+      },
+      "hd_to_xp": {
+        "8": 1100,
+        "12": 2300,
+        "16": 3500
+      },
+      "hd_to_save": {
+        "8": 8,
+        "12": 3,
+        "16": 3
+      }
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Elemental, Fire",
+    "hit_dice": "8, 12, or 16",
+    "armor_class": "2 [17]",
+    "attacks": "Strike (3d8)",
+    "saving_throw": "8, 3, or 3",
+    "special": "Ignite materials, immune to non-magic weapons",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": 0,
+    "xp": 0,
+    "monster_id": "elemental_fire",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 9,
+      "max": 17
+    },
+    "variant": {
+      "kind": "hd_to_cl_map",
+      "hd_options": [
+        8,
+        12,
+        16
+      ],
+      "hd_to_cl": {
+        "8": 9,
+        "12": 13,
+        "16": 17
+      },
+      "hd_to_xp": {
+        "8": 1100,
+        "12": 2300,
+        "16": 3500
+      },
+      "hd_to_save": {
+        "8": 8,
+        "12": 3,
+        "16": 3
+      }
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Elemental, Water",
+    "hit_dice": "8, 12, or 16",
+    "armor_class": "2 [17]",
+    "attacks": "Strike (3d10)",
+    "saving_throw": "8, 3, or 3",
+    "special": "Can overturn boats, immune to non-magic weapons",
+    "move": "6/18 (swimming)",
+    "alignment": "Neutrality",
+    "challenge_level": 0,
+    "xp": 0,
+    "monster_id": "elemental_water",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 9,
+      "max": 17
+    },
+    "variant": {
+      "kind": "hd_to_cl_map",
+      "hd_options": [
+        8,
+        12,
+        16
+      ],
+      "hd_to_cl": {
+        "8": 9,
+        "12": 13,
+        "16": 17
+      },
+      "hd_to_xp": {
+        "8": 1100,
+        "12": 2300,
+        "16": 3500
+      },
+      "hd_to_save": {
+        "8": 8,
+        "12": 3,
+        "16": 3
+      }
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Elf",
+    "hit_dice": "1+1",
+    "armor_class": "5 [14]",
+    "attacks": "Sword (1d8) or 2 arrows (1d6)",
+    "saving_throw": "17",
+    "special": "None",
+    "move": "12",
+    "alignment": "Law (sometimes Neutrality)",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "elf",
+    "aliases": [
+      "Elves"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Golem, Flesh",
+    "hit_dice": "8 (40 hp)",
+    "armor_class": "9 [10]",
+    "attacks": "2 fists (2d8)",
+    "saving_throw": "4",
+    "special": "Hit only by +1 or better weapons or silver? (magic); slowed by fire and cold; immune to most spells; healed by lightning",
+    "move": "8",
+    "alignment": "Neutrality",
+    "challenge_level": 12,
+    "xp": 2000,
+    "monster_id": "flesh_golem",
+    "aliases": [
+      "Flesh Golem",
+      "golem flesh"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Nalfeshnee (Fourth-Category Demon) [Bucket]",
+    "hit_dice": "7d10",
+    "armor_class": "4 [15]",
+    "attacks": "2 claws (1d4), 1 bite (2d4)",
+    "saving_throw": "",
+    "special": "Magic resistance (65%), +1 or better magic (Summoning category bucket; resolves to a specific demon)",
+    "move": "—",
+    "alignment": "Chaos",
+    "challenge_level": 12,
+    "xp": 2000,
+    "monster_id": "fourth_category_demon",
+    "aliases": [
+      "Demon, Nalfeshnee (Fourth Category Demon) [Bucket]",
+      "Demon, Nalfeshnee (Fourth-Category Demon) [Bucket]",
+      "Demon, Nalfeshnee Fourth-Category Demon [Bucket]",
+      "Fourth-category demon",
+      "demon, Nalfeshnee (Fourth-Category demon) [Bucket]",
+      "demon, nalfeshnee (fourth category demon) [bucket]",
+      "demon, nalfeshnee (fourth-category demon) [bucket]",
+      "fourth-category demon"
+    ],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "variant": {
+      "kind": "demon_category",
+      "candidates": [
+        "demon_nalfeshnee"
+      ]
+    },
+    "cl_range": {
+      "min": 12,
+      "max": 12
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "gargoyle",
+    "hit_dice": "4",
+    "armor_class": "5 [14]",
+    "attacks": "2 claws (1d3), 1 bite (1d4), 1 horn (1d6)",
+    "saving_throw": "13",
+    "special": "Immune to non-magic weapons",
+    "move": "9/15 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "gargoyle",
+    "aliases": [
+      "Gargoyles"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "gelatinous Cube",
+    "hit_dice": "4",
+    "armor_class": "8 [11]",
+    "attacks": "Attack (2d4)",
+    "saving_throw": "13",
+    "special": "Paralysis, immune to lightning and cold",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": "5",
+    "xp": 240,
+    "monster_id": "gelatinous_cube",
+    "aliases": [
+      "Gelatinous Cubes"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Ghost",
+    "hit_dice": "4",
+    "armor_class": "4 [15]",
+    "attacks": "Touch (1d6)",
+    "saving_throw": "12",
+    "special": "Incorporeal; fear",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "5",
+    "xp": 240,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "ghost",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Ghoul",
+    "hit_dice": "2",
+    "armor_class": "6 [13]",
+    "attacks": "2 claws (1d3) and bite (1d3)",
+    "saving_throw": "15",
+    "special": "Paralysis with hit (2d4 rounds)",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "4",
+    "xp": 120,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "ghoul",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "giant, Cloud",
+    "hit_dice": "12 +1d4 hit points",
+    "armor_class": "4 [15]",
+    "attacks": "Weapon (6d6)",
+    "saving_throw": "3",
+    "special": "Hurl boulders",
+    "move": "15",
+    "alignment": "Chaos (sometimes Neutrality)",
+    "challenge_level": "13",
+    "xp": 2300,
+    "monster_id": "giant_cloud",
+    "aliases": [
+      "Giant, Cloud"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "giant, Fire",
+    "hit_dice": "11 +1d4 hit points",
+    "armor_class": "4 [15]",
+    "attacks": "Weapon (5d6)",
+    "saving_throw": "4",
+    "special": "Hurl boulders, immune to fire",
+    "move": "12",
+    "alignment": "Chaos (sometimes Neutrality)",
+    "challenge_level": "12",
+    "xp": 2000,
+    "monster_id": "giant_fire",
+    "aliases": [
+      "Giant, Fire"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "giant, Frost",
+    "hit_dice": "10+1d4 hit points",
+    "armor_class": "4 [15]",
+    "attacks": "Weapon (4d6)",
+    "saving_throw": "5",
+    "special": "Hurl boulders, immune to cold",
+    "move": "12",
+    "alignment": "Chaos (sometimes Neutrality)",
+    "challenge_level": "11",
+    "xp": 1700,
+    "monster_id": "giant_frost",
+    "aliases": [
+      "Giant, Frost"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "giant, Hill",
+    "hit_dice": "8",
+    "armor_class": "4 [15]",
+    "attacks": "Weapon (2d8)",
+    "saving_throw": "8",
+    "special": "Hurl boulders",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "9",
+    "xp": 1100,
+    "monster_id": "giant_hill",
+    "aliases": [
+      "Giant, Hill"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "giant, Stone",
+    "hit_dice": "9",
+    "armor_class": "0 [19]",
+    "attacks": "Club (3d6)",
+    "saving_throw": "6",
+    "special": "Hurl boulders",
+    "move": "12",
+    "alignment": "Chaos (sometimes Neutrality)",
+    "challenge_level": "10",
+    "xp": 1400,
+    "monster_id": "giant_stone",
+    "aliases": [
+      "Giant, Stone"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "giant, Storm",
+    "hit_dice": "15",
+    "armor_class": "1 [18]",
+    "attacks": "Weapon (7d6)",
+    "saving_throw": "3",
+    "special": "Throw boulders, control weather",
+    "move": "15",
+    "alignment": "Neutral (sometimes Law or Chaos)",
+    "challenge_level": "16",
+    "xp": 3200,
+    "monster_id": "giant_storm",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "gnoll",
+    "hit_dice": "2",
+    "armor_class": "5 [14]",
+    "attacks": "Bite (2d4) or weapon (1d10)",
+    "saving_throw": "16",
+    "special": "None",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "2",
+    "xp": 30,
+    "monster_id": "gnoll",
+    "aliases": [
+      "Gnolls"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Goblin",
+    "hit_dice": "1d6 hit points",
+    "armor_class": "6 [13]",
+    "attacks": "Weapon (1d6)",
+    "saving_throw": "18",
+    "special": "-1 to hit in sunlight",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "B",
+    "xp": 10,
+    "monster_id": "goblin",
+    "aliases": [
+      "Goblins"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Golem, Clay",
+    "hit_dice": "10 (45 hp)",
+    "armor_class": "7 [12]",
+    "attacks": "1 fist (3d10)",
+    "saving_throw": "5",
+    "special": "Immune to slashing and piercing weapons; immune to most spells; berserk 1% cumulative per round; earthquake destroys",
+    "move": "8",
+    "alignment": "Neutrality",
+    "challenge_level": 14,
+    "xp": 2600,
+    "monster_id": "golem_clay",
+    "aliases": [
+      "Clay Golem",
+      "golem clay"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Golem, Flesh",
+    "hit_dice": "8 (40 hp)",
+    "armor_class": "9 [10]",
+    "attacks": "2 fists (2d8)",
+    "saving_throw": "4",
+    "special": "Hit only by +1 or better weapons or silver? (magic); slowed by fire and cold; immune to most spells; healed by lightning",
+    "move": "8",
+    "alignment": "Neutrality",
+    "challenge_level": 12,
+    "xp": 2000,
+    "monster_id": "golem_flesh",
+    "aliases": [
+      "Flesh Golem",
+      "golem flesh"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Golem, Iron",
+    "hit_dice": "16 (80 hp)",
+    "armor_class": "3 [16]",
+    "attacks": "Weapon or fist (4d10)",
+    "saving_throw": "3",
+    "special": "Poison gas breath (10-ft radius cloud); immune to all weapons +2 or less; slowed by lightning; healed by fire; immune to most spells",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": 17,
+    "xp": 3500,
+    "monster_id": "golem_iron",
+    "aliases": [
+      "Iron Golem",
+      "golem iron"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Golem, Stone",
+    "hit_dice": "12 (60 hp)",
+    "armor_class": "5 [14]",
+    "attacks": "Fist (3d8)",
+    "saving_throw": "3",
+    "special": "Unaffected by +1 or lesser weapons; immune to most spells; slowed by fire; damaged by rock-to-mud, healed by reverse; only rock- and fire-affecting spells work; requires +2 weapon to hit",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": 16,
+    "xp": 3200,
+    "monster_id": "golem_stone",
+    "aliases": [
+      "Stone Golem",
+      "golem stone"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "gorgon",
+    "hit_dice": "8",
+    "armor_class": "2 [17]",
+    "attacks": "Gore (2d6)",
+    "saving_throw": "8",
+    "special": "Breath turns creatures to stone",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "10",
+    "xp": 1400,
+    "monster_id": "gorgon",
+    "aliases": [
+      "Gorgons"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "grey Ooze",
+    "hit_dice": "3",
+    "armor_class": "8 [11]",
+    "attacks": "Strike (2d6)",
+    "saving_throw": "14",
+    "special": "Acid, immunities",
+    "move": "1",
+    "alignment": "Neutrality",
+    "challenge_level": "5",
+    "xp": 240,
+    "monster_id": "grey_ooze",
+    "aliases": [
+      "Grey Oozes"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "griffon",
+    "hit_dice": "7",
+    "armor_class": "3 [16]",
+    "attacks": "2 claws (1d4), 1 bite (2d8)",
+    "saving_throw": "9",
+    "special": "None",
+    "move": "12/27 (flying)",
+    "alignment": "Neutrality",
+    "challenge_level": "8",
+    "xp": 800,
+    "monster_id": "griffon",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Harpy",
+    "hit_dice": "3",
+    "armor_class": "7 [12]",
+    "attacks": "2 talons (1d3) and weapon (1d6)",
+    "saving_throw": "14",
+    "special": "Siren-song",
+    "move": "6/18 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "harpy",
+    "aliases": [
+      "Harpies"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Hell Hound",
+    "hit_dice": "4–7",
+    "armor_class": "4 [15]",
+    "attacks": "Bite (1d6)",
+    "saving_throw": "13, 12, 11, or 9",
+    "special": "Breathe fire",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "hell_hound",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Hippogriff",
+    "hit_dice": "3+1",
+    "armor_class": "5 [14]",
+    "attacks": "2 claws (1d6), 1 bite (1d10)",
+    "saving_throw": "14",
+    "special": "None",
+    "move": "18/24 (flying)",
+    "alignment": "Neutrality",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "hippogriff",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Hobgoblin",
+    "hit_dice": "1+1",
+    "armor_class": "5 [14]",
+    "attacks": "Weapon (1d8)",
+    "saving_throw": "17",
+    "special": "None",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "hobgoblin",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Human, Bandit",
+    "hit_dice": "1",
+    "armor_class": "7 [12]",
+    "attacks": "Weapon (1d8)",
+    "saving_throw": "17",
+    "special": "None",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "human_bandit",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Human, Berserker",
+    "hit_dice": "1",
+    "armor_class": "7 [12]",
+    "attacks": "Weapon (1d8)",
+    "saving_throw": "17",
+    "special": "Berserking",
+    "move": "12",
+    "alignment": "Neutrality or Chaos",
+    "challenge_level": "2",
+    "xp": 30,
+    "monster_id": "human_berserker",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Human, normal",
+    "hit_dice": "1d6",
+    "armor_class": "9 [10]",
+    "attacks": "Weapon (1d6)",
+    "saving_throw": "18",
+    "special": "None",
+    "move": "12",
+    "alignment": "Any",
+    "challenge_level": "B",
+    "xp": 10,
+    "monster_id": "human_normal",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Human, Sergeant-at-Arms",
+    "hit_dice": "3",
+    "armor_class": "5 [14]",
+    "attacks": "Weapon (1d8)",
+    "saving_throw": "17",
+    "special": "None",
+    "move": "12",
+    "alignment": "Any",
+    "challenge_level": "3",
+    "xp": 60,
+    "monster_id": "human_sergeant_at_arms",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Human, Soldier",
+    "hit_dice": "1",
+    "armor_class": "7 [12]",
+    "attacks": "Weapon (1d8)",
+    "saving_throw": "17",
+    "special": "None",
+    "move": "12",
+    "alignment": "Any",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "human_soldier",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Hydra",
+    "hit_dice": "5-12 (equal to the number of heads)",
+    "armor_class": "5 [14]",
+    "attacks": "5-12 bites (1d6)",
+    "saving_throw": "12, 11, 9, 8, 6, 5, 4, or 3",
+    "special": "None",
+    "move": "9",
+    "alignment": "Neutrality",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "hydra",
+    "aliases": [
+      "Hydrae (10HD)",
+      "Hydrae (11HD)",
+      "Hydrae (5HD)",
+      "Hydrae (6HD)",
+      "Hydrae (7HD)",
+      "Hydrae (8HD)",
+      "Hydrae (9HD)"
+    ],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 7,
+      "max": 14
+    },
+    "variant": {
+      "kind": "hd_plus_offset",
+      "hd_min": 5,
+      "hd_max": 12,
+      "cl_offset": 2
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "invisible Stalker",
+    "hit_dice": "8",
+    "armor_class": "3 [16]",
+    "attacks": "“Bite” (4d4)",
+    "saving_throw": "8",
+    "special": "Invisible",
+    "move": "Fly 12",
+    "alignment": "Neutrality",
+    "challenge_level": "9",
+    "xp": 1100,
+    "monster_id": "invisible_stalker",
+    "aliases": [
+      "Invisible Stalkers"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Golem, Iron",
+    "hit_dice": "16 (80 hp)",
+    "armor_class": "3 [16]",
+    "attacks": "Weapon or fist (4d10)",
+    "saving_throw": "3",
+    "special": "Poison gas breath (10-ft radius cloud); immune to all weapons +2 or less; slowed by lightning; healed by fire; immune to most spells",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": 17,
+    "xp": 3500,
+    "tags": [
+      "construct"
+    ],
+    "monster_id": "iron_golem",
+    "aliases": [
+      "Iron Golem",
+      "golem iron"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Kobold",
+    "hit_dice": "1d4 hp",
+    "armor_class": "7 [12]",
+    "attacks": "Weapon (1d6)",
+    "saving_throw": "18",
+    "special": "None",
+    "move": "6",
+    "alignment": "Chaos",
+    "challenge_level": "A",
+    "xp": 5,
+    "monster_id": "kobold",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "leech, giant",
+    "hit_dice": "2",
+    "armor_class": "3 [16]",
+    "attacks": "1 bite (2d6)",
+    "saving_throw": "16",
+    "special": "Suck blood",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": "5",
+    "xp": 240,
+    "monster_id": "leech_giant",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Lich",
+    "hit_dice": "11",
+    "armor_class": "0 [19]",
+    "attacks": "Touch (1d8)",
+    "saving_throw": "8",
+    "special": "Spells; paralyzing touch; immune to sleep/charm",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "11",
+    "xp": 1900,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "lich",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "lion",
+    "hit_dice": "5+2",
+    "armor_class": "6 [13]",
+    "attacks": "2 claws (1d4), 1 bite (1d8)",
+    "saving_throw": "12",
+    "special": "None",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": "5",
+    "xp": 240,
+    "monster_id": "lion",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "lizardman",
+    "hit_dice": "2+1",
+    "armor_class": "5 [14]",
+    "attacks": "2 claws (1d3), 1 bite (1d8)",
+    "saving_throw": "16",
+    "special": "Underwater",
+    "move": "6/12 (swimming)",
+    "alignment": "Usually Chaos",
+    "challenge_level": "2",
+    "xp": 30,
+    "monster_id": "lizardman",
+    "aliases": [
+      "Lizardmen"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "lurker, Ceiling",
+    "hit_dice": "10",
+    "armor_class": "6 [13]",
+    "attacks": "1 crush (1d6)",
+    "saving_throw": "5",
+    "special": "Smother",
+    "move": "1/7 (flying)",
+    "alignment": "Neutrality",
+    "challenge_level": "10",
+    "xp": 1400,
+    "monster_id": "lurker_ceiling",
+    "aliases": [
+      "Lurker, Ceiling"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Lycanthrope, Werebear",
+    "hit_dice": "6",
+    "armor_class": "2 [17]",
+    "attacks": "2 claws (1d3), 1 bite (2d4)",
+    "saving_throw": "9",
+    "special": "Lycanthropy; hit only by magic or silver weapons; hug on natural 18+ claw hit for +2d8",
+    "move": "9",
+    "alignment": "Neutrality or Chaos",
+    "challenge_level": 8,
+    "xp": 800,
+    "monster_id": "lycanthrope_werebear",
+    "aliases": [
+      "Werebear",
+      "lycanthrope werebear"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Lycanthrope, Wereboar",
+    "hit_dice": "5",
+    "armor_class": "4 [15]",
+    "attacks": "Bite (2d6)",
+    "saving_throw": "12",
+    "special": "Lycanthropy; hit only by magic or silver weapons",
+    "move": "12",
+    "alignment": "Neutrality or Chaos",
+    "challenge_level": 6,
+    "xp": 400,
+    "monster_id": "lycanthrope_wereboar",
+    "aliases": [
+      "Wereboar",
+      "lycanthrope wereboar"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Lycanthrope, Wererat",
+    "hit_dice": "3",
+    "armor_class": "6 [13]",
+    "attacks": "Bite (1d3), Weapon (1d6)",
+    "saving_throw": "14",
+    "special": "Control rats; lycanthropy; hit only by magic or silver weapons; surprise on 1–4 on d6",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": 4,
+    "xp": 120,
+    "monster_id": "lycanthrope_wererat",
+    "aliases": [
+      "Wererat",
+      "lycanthrope wererat"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Lycanthrope, Weretiger",
+    "hit_dice": "5",
+    "armor_class": "3 [16]",
+    "attacks": "2 claws (1d4), 1 bite (1d10)",
+    "saving_throw": "11",
+    "special": "Lycanthropy; hit only by magic or silver weapons",
+    "move": "12",
+    "alignment": "Neutrality or Chaos",
+    "challenge_level": 7,
+    "xp": 600,
+    "monster_id": "lycanthrope_weretiger",
+    "aliases": [
+      "Weretiger",
+      "lycanthrope weretiger"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Lycanthrope, Werewolf",
+    "hit_dice": "4",
+    "armor_class": "5 [14]",
+    "attacks": "Bite (2d4)",
+    "saving_throw": "13",
+    "special": "Lycanthropy; hit only by magic or silver weapons; wolfsbane keeps at bay",
+    "move": "12",
+    "alignment": "Usually Chaos",
+    "challenge_level": 5,
+    "xp": 240,
+    "monster_id": "lycanthrope_werewolf",
+    "aliases": [
+      "Werewolf",
+      "lycanthrope werewolf"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Manticore",
+    "hit_dice": "6+1",
+    "armor_class": "4 [15]",
+    "attacks": "2 claws (1d3), 1 bite (1d8), 6 tail spikes (1d6)",
+    "saving_throw": "11",
+    "special": "Tail spikes",
+    "move": "12/18 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "8",
+    "xp": 800,
+    "monster_id": "manticore",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Medusa",
+    "hit_dice": "4",
+    "armor_class": "8 [11]",
+    "attacks": "Weapon (1d4)",
+    "saving_throw": "11",
+    "special": "Gaze turns to stone",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "8",
+    "xp": 800,
+    "monster_id": "medusa",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Merman",
+    "hit_dice": "1",
+    "armor_class": "7 [12]",
+    "attacks": "Weapon (1d6)",
+    "saving_throw": "17",
+    "special": "Breathe water",
+    "move": "1/18 (swimming)",
+    "alignment": "Any",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "merman",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Minotaur",
+    "hit_dice": "6",
+    "armor_class": "6 [13]",
+    "attacks": "Head butt (2d4), bite (1d3) and weapon (1d8)",
+    "saving_throw": "11",
+    "special": "Never get lost in labyrinths",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "minotaur",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Mummy",
+    "hit_dice": "5+1",
+    "armor_class": "3 [16]",
+    "attacks": "Fist (1d12)",
+    "saving_throw": "11",
+    "special": "Rot, hit only by magic weapons",
+    "move": "6",
+    "alignment": "Chaos",
+    "challenge_level": "7",
+    "xp": 600,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "mummy",
+    "aliases": [
+      "Mummies"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "naga, guardian",
+    "hit_dice": "11",
+    "armor_class": "5 [14]",
+    "attacks": "Bite (1d6 + poison)",
+    "saving_throw": "4",
+    "special": "Spit poison, constriction, spells.",
+    "move": "18",
+    "alignment": "Law",
+    "challenge_level": "13",
+    "xp": 2300,
+    "monster_id": "naga_guardian",
+    "aliases": [
+      "Naga, Guardian"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "naga, Spirit",
+    "hit_dice": "9",
+    "armor_class": "5 [14]",
+    "attacks": "Bite (1d3 + poison)",
+    "saving_throw": "6",
+    "special": "Poison, charm gaze, spells.",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "13",
+    "xp": 2300,
+    "monster_id": "naga_spirit",
+    "aliases": [
+      "Naga, Spirit"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "naga, Water",
+    "hit_dice": "7",
+    "armor_class": "5 [14]",
+    "attacks": "Bite (1d4 + poison)",
+    "saving_throw": "9",
+    "special": "Poison, spells.",
+    "move": "12/20 (swimming)",
+    "alignment": "Any",
+    "challenge_level": "10",
+    "xp": 1400,
+    "monster_id": "naga_water",
+    "aliases": [
+      "Naga, Water"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "nixie",
+    "hit_dice": "1",
+    "armor_class": "7 [12]",
+    "attacks": "Weapon (1d6)",
+    "saving_throw": "18",
+    "special": "Charm",
+    "move": "6/12 (swimming)",
+    "alignment": "Neutrality",
+    "challenge_level": "B",
+    "xp": 10,
+    "monster_id": "nixie",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Ochre Jelly",
+    "hit_dice": "5",
+    "armor_class": "8 [11]",
+    "attacks": "Acid-laden strike (3d4)",
+    "saving_throw": "11",
+    "special": "Lightning divides creature",
+    "move": "3",
+    "alignment": "Neutrality",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "ochre_jelly",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Octopus, giant",
+    "hit_dice": "4",
+    "armor_class": "7 [12]",
+    "attacks": "8 tentacles (1d3) (see below)",
+    "saving_throw": "13",
+    "special": "Jet, Ink",
+    "move": "9 (swimming)",
+    "alignment": "Neutrality",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "octopus_giant",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Ogre",
+    "hit_dice": "4+1",
+    "armor_class": "5 [14]",
+    "attacks": "Weapon (1d10)",
+    "saving_throw": "13",
+    "special": "None",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "ogre",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Ogre Mage",
+    "hit_dice": "5+4",
+    "armor_class": "4 [15]",
+    "attacks": "Weapon (1d12)",
+    "saving_throw": "12",
+    "special": "Magic use (See below), regenerate 1hp/round",
+    "move": "12/18 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "7",
+    "xp": 600,
+    "monster_id": "ogre_mage",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Orc",
+    "hit_dice": "1",
+    "armor_class": "6 [13]",
+    "attacks": "Weapon, usually spear (1d6) or scimitar (1d8)",
+    "saving_throw": "17",
+    "special": "None",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "orc",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Owlbear",
+    "hit_dice": "5",
+    "armor_class": "5 [14]",
+    "attacks": "2 claws (1d6), 1 bite (2d6)",
+    "saving_throw": "12",
+    "special": "Hug for additional 2d8 if to-hit roll is 18+",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": "5",
+    "xp": 240,
+    "monster_id": "owlbear",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Pegasus",
+    "hit_dice": "2+2",
+    "armor_class": "6 [13]",
+    "attacks": "2 hooves (1d8)",
+    "saving_throw": "13",
+    "special": "None",
+    "move": "24/48 (flying)",
+    "alignment": "Law",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "pegasus",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Piercer",
+    "hit_dice": "1 to 4",
+    "armor_class": "3 [16]",
+    "attacks": "1 drop/pierce (1d6 per HD)",
+    "saving_throw": "17, 16, 14, or 13",
+    "special": "Drop from ceiling",
+    "move": "1",
+    "alignment": "Neutrality",
+    "challenge_level": "17",
+    "xp": 3500,
+    "monster_id": "piercer",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Purple Worm",
+    "hit_dice": "15",
+    "armor_class": "6 [13]",
+    "attacks": "Bite (2d12), sting (1d8 + poison)",
+    "saving_throw": "3",
+    "special": "Poison sting, swallows whole",
+    "move": "9",
+    "alignment": "Neutrality",
+    "challenge_level": "17",
+    "xp": 3500,
+    "monster_id": "purple_worm",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Rakshasa",
+    "hit_dice": "7",
+    "armor_class": "-4 [23]",
+    "attacks": "2 claws (1d3) 1 bite (1d6)",
+    "saving_throw": "9",
+    "special": "Illusory appearance, special magic resistance, spells",
+    "move": "15",
+    "alignment": "Chaos",
+    "challenge_level": "12",
+    "xp": 2000,
+    "monster_id": "rakshasa",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Rat, giant",
+    "hit_dice": "1d4 hit points",
+    "armor_class": "7 [12]",
+    "attacks": "Bite (1d3)",
+    "saving_throw": "18",
+    "special": "5% are diseased",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": "A",
+    "xp": 5,
+    "monster_id": "rat_giant",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Rat, giant (Monstrously Huge)",
+    "hit_dice": "3",
+    "armor_class": "6 [13]",
+    "attacks": "2 claws (1d3), 1 bite (1d6)",
+    "saving_throw": "14",
+    "special": "5% are diseased",
+    "move": "12",
+    "alignment": "Neutrality unless intelligent (Chaos)",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "rat_giant_monstrously_huge",
+    "aliases": [
+      "Rats, Giant (Monstrously Huge)"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Roc",
+    "hit_dice": "12",
+    "armor_class": "4 [15]",
+    "attacks": "Bite (3d6), 2 claws (2d6)",
+    "saving_throw": "3",
+    "special": "None",
+    "move": "3/30 flying)",
+    "alignment": "Neutrality or Law",
+    "challenge_level": "12",
+    "xp": 2000,
+    "monster_id": "roc",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Salamander",
+    "hit_dice": "7",
+    "armor_class": "5 [14] (torso); 3 [16] (serpent body)",
+    "attacks": "Touch and constrict (2d8 + 1d6 heat),",
+    "saving_throw": "9",
+    "special": "Heat, constrict",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "8",
+    "xp": 800,
+    "monster_id": "salamander",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Sea Monster",
+    "hit_dice": "30",
+    "armor_class": "2 [17]",
+    "attacks": "Bite (4d10)",
+    "saving_throw": "3",
+    "special": "Swallow whole",
+    "move": "0/18 (swimming)",
+    "alignment": "Neutrality",
+    "challenge_level": "30",
+    "xp": 12900,
+    "monster_id": "sea_monster",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Sea Serpent",
+    "hit_dice": "15",
+    "armor_class": "6 [13]",
+    "attacks": "Bite (2d12)",
+    "saving_throw": "3",
+    "special": "Swallow whole",
+    "move": "0/20 (swimming)",
+    "alignment": "Neutrality",
+    "challenge_level": "17",
+    "xp": 3500,
+    "monster_id": "sea_serpent",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Shadow",
+    "hit_dice": "2+2",
+    "armor_class": "7 [12]",
+    "attacks": "1 touch (1d4 + Str drain)",
+    "saving_throw": "14",
+    "special": "Drains 1 Str with hit, can only be hit by magical",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "shadow",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Shambling Mound",
+    "hit_dice": "7 to 12",
+    "armor_class": "1 [18]",
+    "attacks": "2 fists (2d8)",
+    "saving_throw": "9, 8, 6, 5, 4, or 3",
+    "special": "Immunities, enfold and suffocate victims.",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "shambling_mound",
+    "aliases": [
+      "Shambling Mound (10 HD)",
+      "Shambling Mound (7HD)",
+      "Shambling Mound (8HD)",
+      "Shambling Mound (9HD)"
+    ],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 10,
+      "max": 15
+    },
+    "variant": {
+      "kind": "hd_plus_offset",
+      "hd_min": 7,
+      "hd_max": 12,
+      "cl_offset": 3
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Shrieker",
+    "hit_dice": "2+2",
+    "armor_class": "7 [12]",
+    "attacks": "None",
+    "saving_throw": "14",
+    "special": "Shriek",
+    "move": "1",
+    "alignment": "Neutrality",
+    "challenge_level": "3",
+    "xp": 60,
+    "monster_id": "shrieker",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Skeleton",
+    "hit_dice": "1",
+    "armor_class": "7 [12]",
+    "attacks": "Weapon (1d6)",
+    "saving_throw": "17",
+    "special": "Immune to sleep and charm spells",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": "1",
+    "xp": 15,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "skeleton",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Slithering tracker",
+    "hit_dice": "4",
+    "armor_class": "5 [14]",
+    "attacks": "No normal attack",
+    "saving_throw": "13",
+    "special": "Transparent, paralysis",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "slithering_tracker",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Slug, giant",
+    "hit_dice": "12",
+    "armor_class": "8 [11]",
+    "attacks": "Bite (1d12) or acid",
+    "saving_throw": "3",
+    "special": "Spit acid (6d6)",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": "13",
+    "xp": 2300,
+    "monster_id": "slug_giant",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Spectre",
+    "hit_dice": "6",
+    "armor_class": "2 [17]",
+    "attacks": "Spectral weapon or touch (1d8 + level drain)",
+    "saving_throw": "9",
+    "special": "Level drain (2 levels) with hit",
+    "move": "15/30 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "9",
+    "xp": 1100,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "spectre",
+    "aliases": [
+      "Specters"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Spider, giant ( greater, 6-foot diameter)",
+    "hit_dice": "4+2",
+    "armor_class": "4 [15]",
+    "attacks": "Bite (1d6+2) + poison",
+    "saving_throw": "13",
+    "special": "Poison (save or die), webs",
+    "move": "4",
+    "alignment": "Chaos",
+    "challenge_level": "7",
+    "xp": 600,
+    "monster_id": "spider_giant_greater_6_foot_diameter",
+    "aliases": [
+      "Spiders, Giant (Greater)",
+      "Spiders, Giant (Man-sized)",
+      "Spiders, Giant (Phase)",
+      "Spiders, Giant (Smaller)"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Spider, giant (Man-sized, 4-foot diameter)",
+    "hit_dice": "2+2",
+    "armor_class": "6 [13]",
+    "attacks": "Bite (1d6) + poison",
+    "saving_throw": "16",
+    "special": "Poison (+1 save or die), surprise",
+    "move": "18",
+    "alignment": "Neutrality unless intelligent (Chaos)",
+    "challenge_level": "5",
+    "xp": 240,
+    "monster_id": "spider_giant_man_sized_4_foot_diameter",
+    "aliases": [
+      "Giant Spider"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Spider, giant (Smaller)",
+    "hit_dice": "1+1",
+    "armor_class": "8 [11]",
+    "attacks": "Bite (1 hp) + poison",
+    "saving_throw": "17",
+    "special": "Poison (+2 save or die)",
+    "move": "9",
+    "alignment": "Neutrality",
+    "challenge_level": "3",
+    "xp": 60,
+    "monster_id": "spider_giant_smaller",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Spider, Phase",
+    "hit_dice": "5",
+    "armor_class": "6 [13]",
+    "attacks": "Bite (1d6) + poison",
+    "saving_throw": "16",
+    "special": "Poison (+1 save or die), phase shifting",
+    "move": "18",
+    "alignment": "Neutrality",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "spider_phase",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Squid, giant",
+    "hit_dice": "6",
+    "armor_class": "3 [16] (body shell), 7 [12] tentacles and front",
+    "attacks": "10 (1d3)",
+    "saving_throw": "11",
+    "special": "Jet, Ink, Constrict",
+    "move": "9 (swimming)",
+    "alignment": "Neutrality",
+    "challenge_level": "9",
+    "xp": 1100,
+    "monster_id": "squid_giant",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Stirge",
+    "hit_dice": "1+1",
+    "armor_class": "7 [12]",
+    "attacks": "“Sting” (1d3 + blood drain)",
+    "saving_throw": "17",
+    "special": "Drain blood 1d4/round,+2 bonus to hit",
+    "move": "3/18 (when flying)",
+    "alignment": "Neutrality",
+    "challenge_level": "1",
+    "xp": 15,
+    "monster_id": "stirge",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Golem, Stone",
+    "hit_dice": "12 (60 hp)",
+    "armor_class": "5 [14]",
+    "attacks": "Fist (3d8)",
+    "saving_throw": "3",
+    "special": "Unaffected by +1 or lesser weapons; immune to most spells; slowed by fire; damaged by rock-to-mud, healed by reverse; only rock- and fire-affecting spells work; requires +2 weapon to hit",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": 16,
+    "xp": 3200,
+    "tags": [
+      "construct"
+    ],
+    "monster_id": "stone_golem",
+    "aliases": [
+      "Stone Golem",
+      "golem stone"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Demon, Glabrezu (Third-Category Demon) [Bucket]",
+    "hit_dice": "10",
+    "armor_class": "–4 [23]",
+    "attacks": "2 pincers (2d6), 2 claws (1d3), 1 bite 1d6",
+    "saving_throw": "",
+    "special": "Magic resistance (60%), immune to fire, magical (Summoning category bucket; resolves to a specific demon)",
+    "move": "—",
+    "alignment": "Chaos",
+    "challenge_level": 15,
+    "xp": 2900,
+    "monster_id": "third_category_demon",
+    "aliases": [
+      "Demon, Glabrezu (Third Category Demon) [Bucket]",
+      "Demon, Glabrezu (Third-Category Demon) [Bucket]",
+      "Demon, Glabrezu Third-Category Demon [Bucket]",
+      "Third-category demon",
+      "demon, Glabrezu (Third-Category demon) [Bucket]",
+      "demon, glabrezu (third category demon) [bucket]",
+      "demon, glabrezu (third-category demon) [bucket]",
+      "third-category demon"
+    ],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "variant": {
+      "kind": "demon_category",
+      "candidates": [
+        "demon_glabrezu"
+      ]
+    },
+    "cl_range": {
+      "min": 15,
+      "max": 15
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "tick, giant",
+    "hit_dice": "3",
+    "armor_class": "4 [15]",
+    "attacks": "Bite (1d4)",
+    "saving_throw": "14",
+    "special": "Drains blood",
+    "move": "3",
+    "alignment": "Neutrality",
+    "challenge_level": "3",
+    "xp": 60,
+    "monster_id": "tick_giant",
+    "aliases": [
+      "Ticks, Giant"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "titan",
+    "hit_dice": "16 HD+1d6 HD",
+    "armor_class": "2 [17] to –3 [22]",
+    "attacks": "Weapon (7d6)",
+    "saving_throw": "3",
+    "special": "Spells",
+    "move": "21",
+    "alignment": "Any",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "titan",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 19,
+      "max": 25
+    },
+    "variant": {
+      "kind": "hd_plus_offset",
+      "hd_min": 17,
+      "hd_max": 23,
+      "cl_offset": 2
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "trapper Beast",
+    "hit_dice": "10 to 12",
+    "armor_class": "3 [16]",
+    "attacks": "1 enfold",
+    "saving_throw": "5, 4, or 3",
+    "special": "Immunities; enfold and smother",
+    "move": "1",
+    "alignment": "Neutrality",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "trapper_beast",
+    "aliases": [
+      "Trapper-beast",
+      "Trapper Beast (12 HD)",
+      "Trapper Beast (11 HD)",
+      "Trapper Beast (10 HD)",
+      "Trapper Beast"
+    ],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 11,
+      "max": 13
+    },
+    "variant": {
+      "kind": "hd_plus_offset",
+      "hd_min": 10,
+      "hd_max": 12,
+      "cl_offset": 1,
+      "hd_to_save": {
+        "10": 5,
+        "11": 4,
+        "12": 3
+      },
+      "enfold": {
+        "max_victims": 4,
+        "death_rounds": 7
+      }
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "treant",
+    "hit_dice": "6 HD + 1d6 HD",
+    "armor_class": "2 [17]",
+    "attacks": "2 strikes (2d6, 3d6, or 4d6)",
+    "saving_throw": "9, 8, 6, 5, 4, or 3",
+    "special": "Control trees",
+    "move": "12",
+    "alignment": "Neutrality",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "treant",
+    "aliases": [
+      "Treant"
+    ],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 7,
+      "max": 12
+    },
+    "variant": {
+      "kind": "hd_plus_offset",
+      "hd_min": 7,
+      "hd_max": 12,
+      "cl_offset": 0,
+      "hd_distribution": "1d6_plus_6",
+      "hd_to_save": {
+        "7": 9,
+        "8": 8,
+        "9": 6,
+        "10": 5,
+        "11": 4,
+        "12": 3
+      },
+      "hd_to_attack_damage": {
+        "7": "2d6",
+        "8": "2d6",
+        "9": "3d6",
+        "10": "3d6",
+        "11": "4d6",
+        "12": "4d6"
+      },
+      "control_trees": {
+        "range_ft": 60,
+        "max_awake_trees": 2,
+        "awake_tree_move": 3
+      }
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Troll",
+    "hit_dice": "6+3",
+    "armor_class": "4 [15]",
+    "attacks": "2 claws (1d6) and bite (1d10)",
+    "saving_throw": "10",
+    "special": "Regenerates 3 hp/round; fire/acid may suppress (referee)",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "8",
+    "xp": 800,
+    "monster_id": "troll",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Unicorn",
+    "hit_dice": "4",
+    "armor_class": "2 [17]",
+    "attacks": "2 hoofs (1d8), 1 horn (1d8)",
+    "saving_throw": "13",
+    "special": "Magic resistance (25%); double damage for charge; teleport 1/day (360 ft with rider); horn healing (referee)",
+    "move": "24",
+    "alignment": "Law",
+    "challenge_level": 5,
+    "xp": 240,
+    "monster_id": "unicorn",
+    "aliases": [
+      "Unicorns"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Vampire",
+    "hit_dice": "7–9",
+    "armor_class": "2 [17]",
+    "attacks": "Bite (1d10 + level drain)",
+    "saving_throw": "9, 8, or 6",
+    "special": "See below",
+    "move": "12/18 (flying)",
+    "alignment": "Chaos",
+    "challenge_level": "",
+    "xp": 0,
+    "monster_id": "vampire",
+    "aliases": [],
+    "cl_mode": "derived",
+    "xp_mode": "table_77",
+    "cl_range": {
+      "min": 9,
+      "max": 11
+    },
+    "variant": {
+      "kind": "hd_plus_offset",
+      "hd_min": 7,
+      "hd_max": 9,
+      "cl_offset": 2
+    },
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Vampires",
+    "hit_dice": "7-9",
+    "armor_class": "2 [17]",
+    "attacks": "Touch (energy drain) or bite (1d6)",
+    "saving_throw": "10",
+    "special": "Charm; energy drain; immune to normal weapons; regenerates; many special vulnerabilities (referee)",
+    "move": "12",
+    "alignment": "Chaos",
+    "challenge_level": "10",
+    "xp": 1500,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "vampires",
+    "aliases": [
+      "Vampire"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Werewolf",
+    "hit_dice": "4+1",
+    "armor_class": "5 [14]",
+    "attacks": "Claw/claw/bite (1d4/1d4/1d6) or weapon (1d6)",
+    "saving_throw": "13",
+    "special": "Hit only by silver weapons; may summon wolves (referee)",
+    "move": "15",
+    "alignment": "Chaos",
+    "challenge_level": "6",
+    "xp": 400,
+    "monster_id": "werewolf",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Wight",
+    "hit_dice": "3",
+    "armor_class": "5 [14]",
+    "attacks": "Claw (1 hp + level drain)",
+    "saving_throw": "14",
+    "special": "Level drain (1 level) with hit, can only be hit by magical or silver weapons",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "5",
+    "xp": 240,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "wight",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Will-o-the-Wisp",
+    "hit_dice": "9",
+    "armor_class": "-8 [27]",
+    "attacks": "Shock (2d6)",
+    "saving_throw": "6",
+    "special": "Change appearance, lightning",
+    "move": "18",
+    "alignment": "Chaos",
+    "challenge_level": "10",
+    "xp": 1400,
+    "monster_id": "will_o_the_wisp",
+    "aliases": [
+      "Will-o'-the-Wisps"
+    ],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Wolf",
+    "hit_dice": "2+2",
+    "armor_class": "7 [12]",
+    "attacks": "Bite (1d4+1)",
+    "saving_throw": "16",
+    "special": "None",
+    "move": "18",
+    "alignment": "Neutrality",
+    "challenge_level": "2",
+    "xp": 30,
+    "monster_id": "wolf",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Worg",
+    "hit_dice": "4",
+    "armor_class": "6 [13]",
+    "attacks": "Bite (1d6+1)",
+    "saving_throw": "13",
+    "special": "None",
+    "move": "18",
+    "alignment": "Chaos",
+    "challenge_level": "4",
+    "xp": 120,
+    "monster_id": "worg",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Wraith",
+    "hit_dice": "4",
+    "armor_class": "3 [16]",
+    "attacks": "Touch (1d6 + level drain)",
+    "saving_throw": "13",
+    "special": "Level drain (1 level) with hit",
+    "move": "9",
+    "alignment": "Chaos",
+    "challenge_level": "6",
+    "xp": 400,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "wraith",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Wyvern",
+    "hit_dice": "8",
+    "armor_class": "3 [16]",
+    "attacks": "Bite (2d8) or sting (1d6 + poison)",
+    "saving_throw": "8",
+    "special": "Poison sting",
+    "move": "6/24 (flying)",
+    "alignment": "Neutrality",
+    "challenge_level": "9",
+    "xp": 1100,
+    "monster_id": "wyvern",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Yeti",
+    "hit_dice": "5",
+    "armor_class": "6[13]",
+    "attacks": "2 fists (1d6)",
+    "saving_throw": "12",
+    "special": "Immune to cold, hug, fear.",
+    "move": "14",
+    "alignment": "Chaos",
+    "challenge_level": "7",
+    "xp": 600,
+    "monster_id": "yeti",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  },
+  {
+    "name": "Zombie",
+    "hit_dice": "2",
+    "armor_class": "8 [11], or 7 [12] with shield",
+    "attacks": "Weapon or strike (1d8)",
+    "saving_throw": "16",
+    "special": "Immune to sleep and charm spells",
+    "move": "6",
+    "alignment": "Neutrality",
+    "challenge_level": "2",
+    "xp": 30,
+    "tags": [
+      "undead"
+    ],
+    "monster_id": "zombie",
+    "aliases": [],
+    "treasure_formula_id": "xp_hoard_1d3p1"
+  }
+]

@@ -1,0 +1,91 @@
+{
+  "schema_version": "items_magic.v1",
+  "notes": "P4.10.2 minimal magic item set (used by treasure tables and deterministic generation).",
+
+  "items": [
+    {
+      "item_id": "potion_healing",
+      "name": "Potion of Healing",
+      "kind": "potion",
+      "tags": ["magic", "consumable", "healing"],
+      "value_gp": 250,
+      "effects": [{"effect": "heal", "amount_expr": "1d6+1"}]
+    },
+    {
+      "item_id": "potion_invisibility",
+      "name": "Potion of Invisibility",
+      "kind": "potion",
+      "tags": ["magic", "consumable"],
+      "value_gp": 500,
+      "effects": [{"effect": "invisibility", "duration_turns_expr": "1d6"}]
+    },
+
+    {
+      "item_id": "scroll_arcane_lvl1",
+      "name": "Scroll (Arcane, 1st-level)",
+      "kind": "scroll",
+      "tags": ["magic", "consumable", "scroll"],
+      "value_gp": 300,
+      "payload": {"spell_source": "arcane", "spell_level": 1, "spell_count_expr": "1d2"}
+    },
+
+    {
+      "item_id": "ammo_plus1_1d6",
+      "name": "Ammunition +1 (1d6 pieces)",
+      "kind": "ammo",
+      "tags": ["magic", "ammo"],
+      "value_gp": 100,
+      "payload": {"count_expr": "1d6", "to_hit_bonus": 1, "damage_bonus": 1}
+    },
+
+    {
+      "item_id": "ring_protection_plus1",
+      "name": "Ring of Protection +1",
+      "kind": "ring",
+      "tags": ["magic", "wearable"],
+      "value_gp": 3000,
+      "effects": [{"effect": "ac_bonus", "amount": 1}, {"effect": "save_bonus", "amount": 1}]
+    },
+    {
+      "item_id": "ring_invisibility",
+      "name": "Ring of Invisibility",
+      "kind": "ring",
+      "tags": ["magic", "wearable"],
+      "value_gp": 12000,
+      "effects": [{"effect": "invisibility", "mode": "command"}]
+    },
+
+    {
+      "item_id": "wand_fireballs",
+      "name": "Wand of Fireballs",
+      "kind": "wand",
+      "tags": ["magic"],
+      "value_gp": 15000,
+      "payload": {"spell_id": "fireball", "charges_expr": "2d10+10"}
+    }
+  ],
+
+  "templates": [
+    {
+      "template_id": "weapon_plus1_any",
+      "kind": "weapon_enchant_any",
+      "bonus": 1,
+      "tags": ["magic", "weapon"],
+      "notes": "Select a random melee or missile weapon and apply +1 (deterministic)."
+    },
+    {
+      "template_id": "weapon_plus2_any",
+      "kind": "weapon_enchant_any",
+      "bonus": 2,
+      "tags": ["magic", "weapon"],
+      "notes": "Select a random melee or missile weapon and apply +2 (deterministic)."
+    },
+    {
+      "template_id": "armor_plus2_any",
+      "kind": "armor_enchant_any",
+      "bonus": 2,
+      "tags": ["magic", "armor"],
+      "notes": "Select a random armor entry and apply +2 AC improvement (deterministic)."
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "columns": 12,
+  "dice": "2d10",
+  "schema_version": "turn_undead_compiled.v1",
+  "undead": [
+    {
+      "name": "Skeleton",
+      "results": [
+        "10",
+        "7",
+        "4",
+        "T",
+        "T",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "undead_cl": 1,
+      "undead_id": "skeleton"
+    },
+    {
+      "name": "Zombie",
+      "results": [
+        "13",
+        "10",
+        "7",
+        "4",
+        "T",
+        "T",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "undead_cl": 2,
+      "undead_id": "zombie"
+    },
+    {
+      "name": "Ghoul",
+      "results": [
+        "16",
+        "13",
+        "10",
+        "7",
+        "4",
+        "T",
+        "T",
+        "D",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "undead_cl": 3,
+      "undead_id": "ghoul"
+    },
+    {
+      "name": "Shadow*",
+      "results": [
+        "19",
+        "16",
+        "13",
+        "10",
+        "7",
+        "4",
+        "T",
+        "T",
+        "D",
+        "D",
+        "D",
+        "D"
+      ],
+      "undead_cl": 4,
+      "undead_id": "shadow"
+    },
+    {
+      "name": "Wight",
+      "results": [
+        "20",
+        "19",
+        "16",
+        "13",
+        "10",
+        "7",
+        "4",
+        "T",
+        "T",
+        "D",
+        "D",
+        "D"
+      ],
+      "undead_cl": 5,
+      "undead_id": "wight"
+    },
+    {
+      "name": "Wraith",
+      "results": [
+        "-",
+        "-",
+        "20",
+        "19",
+        "16",
+        "13",
+        "10",
+        "7",
+        "4",
+        "T",
+        "T",
+        "D"
+      ],
+      "undead_cl": 7,
+      "undead_id": "wraith"
+    },
+    {
+      "name": "Mummy",
+      "results": [
+        "-",
+        "-",
+        "-",
+        "20",
+        "19",
+        "16",
+        "13",
+        "10",
+        "7",
+        "4",
+        "T",
+        "T"
+      ],
+      "undead_cl": 8,
+      "undead_id": "mummy"
+    },
+    {
+      "name": "Spectre",
+      "results": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "20",
+        "19",
+        "16",
+        "13",
+        "10",
+        "7",
+        "4",
+        "T"
+      ],
+      "undead_cl": 9,
+      "undead_id": "spectre"
+    },
+    {
+      "name": "Vampire**",
+      "results": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "20",
+        "19",
+        "16",
+        "13",
+        "10",
+        "7",
+        "4"
+      ],
+      "undead_cl": 10,
+      "undead_id": "vampire"
+    },
+    {
+      "name": "Vampire**",
+      "results": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "20",
+        "19",
+        "16",
+        "13",
+        "10",
+        "7"
+      ],
+      "undead_cl": 11,
+      "undead_id": "vampire_11"
+    },
+    {
+      "name": "Lich",
+      "results": [
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "20",
+        "19",
+        "16",
+        "13"
+      ],
+      "undead_cl": 13,
+      "undead_id": "lich"
+    }
+  ]
+}

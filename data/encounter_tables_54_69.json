@@ -1,0 +1,720 @@
+{
+  "54": {
+    "table": 54,
+    "title": "Encounters in Clear terrain",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 24,
+        "result": "Animals"
+      },
+      {
+        "lo": 25,
+        "hi": 35,
+        "result": "Dragon"
+      },
+      {
+        "lo": 36,
+        "hi": 48,
+        "result": "Flying Creature"
+      },
+      {
+        "lo": 49,
+        "hi": 73,
+        "result": "Humankind"
+      },
+      {
+        "lo": 74,
+        "hi": 86,
+        "result": "Humanoids and Giants"
+      },
+      {
+        "lo": 87,
+        "hi": 0,
+        "result": "Miscellaneous Monster"
+      }
+    ]
+  },
+  "55": {
+    "table": 55,
+    "title": "Encounters in Desert terrain",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 20,
+        "result": "Animals"
+      },
+      {
+        "lo": 21,
+        "hi": 30,
+        "result": "Dragon"
+      },
+      {
+        "lo": 31,
+        "hi": 50,
+        "result": "Flying Creature"
+      },
+      {
+        "lo": 51,
+        "hi": 70,
+        "result": "Humankind"
+      },
+      {
+        "lo": 71,
+        "hi": 90,
+        "result": "Humanoids and Giants"
+      },
+      {
+        "lo": 91,
+        "hi": 0,
+        "result": "Undead"
+      }
+    ]
+  },
+  "56": {
+    "table": 56,
+    "title": "Encounters in Forest or Woodland terrain",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 12,
+        "result": "Animals"
+      },
+      {
+        "lo": 13,
+        "hi": 23,
+        "result": "Dragon"
+      },
+      {
+        "lo": 24,
+        "hi": 36,
+        "result": "Flying Creature"
+      },
+      {
+        "lo": 37,
+        "hi": 61,
+        "result": "Humankind"
+      },
+      {
+        "lo": 62,
+        "hi": 80,
+        "result": "Humanoids and Giants"
+      },
+      {
+        "lo": 81,
+        "hi": 0,
+        "result": "Miscellaneous Monster"
+      }
+    ]
+  },
+  "57": {
+    "table": 57,
+    "title": "Encounters in Hills or Mountain terrain",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 12,
+        "result": "Animals"
+      },
+      {
+        "lo": 13,
+        "hi": 38,
+        "result": "Dragon"
+      },
+      {
+        "lo": 39,
+        "hi": 51,
+        "result": "Flying Creature"
+      },
+      {
+        "lo": 52,
+        "hi": 64,
+        "result": "Humankind"
+      },
+      {
+        "lo": 65,
+        "hi": 89,
+        "result": "Humanoids and Giants"
+      },
+      {
+        "lo": 90,
+        "hi": 0,
+        "result": "Miscellaneous Monster"
+      }
+    ]
+  },
+  "58": {
+    "table": 58,
+    "title": "Encounters in River Areas",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 12,
+        "result": "Animals"
+      },
+      {
+        "lo": 13,
+        "hi": 23,
+        "result": "Dragon"
+      },
+      {
+        "lo": 24,
+        "hi": 36,
+        "result": "Flying Creature"
+      },
+      {
+        "lo": 37,
+        "hi": 49,
+        "result": "Humankind"
+      },
+      {
+        "lo": 50,
+        "hi": 62,
+        "result": "Humanoids and Giants"
+      },
+      {
+        "lo": 63,
+        "hi": 75,
+        "result": "Miscellaneous Monster"
+      },
+      {
+        "lo": 76,
+        "hi": 0,
+        "result": "Swimming Creature"
+      }
+    ]
+  },
+  "59": {
+    "table": 59,
+    "title": "Encounters on the High Seas",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 20,
+        "result": "Swimming Creature"
+      },
+      {
+        "lo": 21,
+        "hi": 30,
+        "result": "Dragon"
+      },
+      {
+        "lo": 31,
+        "hi": 40,
+        "result": "Flying Creature"
+      },
+      {
+        "lo": 41,
+        "hi": 50,
+        "result": "Merchant Galley (roll for small or large)"
+      },
+      {
+        "lo": 51,
+        "hi": 60,
+        "result": "Merchant Ship"
+      },
+      {
+        "lo": 61,
+        "hi": 70,
+        "result": "Pirate Galley (roll for small or large)"
+      },
+      {
+        "lo": 71,
+        "hi": 80,
+        "result": "Pirates Ship (roll for small or large)"
+      },
+      {
+        "lo": 81,
+        "hi": 90,
+        "result": "Warship (patrolling galley)"
+      },
+      {
+        "lo": 91,
+        "hi": 0,
+        "result": "Warship (patrolling ship)"
+      }
+    ]
+  },
+  "60": {
+    "table": 60,
+    "title": "Encounters in Swamp terrain",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 10,
+        "result": "Animals"
+      },
+      {
+        "lo": 11,
+        "hi": 20,
+        "result": "Dragon"
+      },
+      {
+        "lo": 21,
+        "hi": 30,
+        "result": "Flying Creature"
+      },
+      {
+        "lo": 31,
+        "hi": 40,
+        "result": "Humankind"
+      },
+      {
+        "lo": 41,
+        "hi": 50,
+        "result": "Humanoids and Giants"
+      },
+      {
+        "lo": 51,
+        "hi": 60,
+        "result": "Miscellaneous Monster"
+      },
+      {
+        "lo": 61,
+        "hi": 70,
+        "result": "Swimming Creature"
+      },
+      {
+        "lo": 71,
+        "hi": 0,
+        "result": "Undead"
+      }
+    ]
+  },
+  "61": {
+    "table": 61,
+    "title": "Animal Encounters",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 10,
+        "result": "Ants or Beetles"
+      },
+      {
+        "lo": 11,
+        "hi": 20,
+        "result": "Apes or Bears"
+      },
+      {
+        "lo": 21,
+        "hi": 30,
+        "result": "Boars"
+      },
+      {
+        "lo": 31,
+        "hi": 40,
+        "result": "Centipedes or Scorpions"
+      },
+      {
+        "lo": 41,
+        "hi": 50,
+        "result": "Frogs or Toads"
+      },
+      {
+        "lo": 51,
+        "hi": 60,
+        "result": "Lions or great cat"
+      },
+      {
+        "lo": 61,
+        "hi": 70,
+        "result": "Lizards or Snakes"
+      },
+      {
+        "lo": 71,
+        "hi": 80,
+        "result": "Spiders"
+      },
+      {
+        "lo": 81,
+        "hi": 90,
+        "result": "Wolf or great dog"
+      },
+      {
+        "lo": 91,
+        "hi": 0,
+        "result": "Terrain-Specific"
+      }
+    ]
+  },
+  "62": {
+    "table": 62,
+    "title": "Draconic Encounters",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 10,
+        "result": "Basilisk"
+      },
+      {
+        "lo": 11,
+        "hi": 15,
+        "result": "Black Dragon (1d4 for age category)"
+      },
+      {
+        "lo": 16,
+        "hi": 20,
+        "result": "Black Dragon (1d6+2 for age category)"
+      },
+      {
+        "lo": 21,
+        "hi": 25,
+        "result": "Black Dragon (1d8 for age category)"
+      },
+      {
+        "lo": 26,
+        "hi": 30,
+        "result": "Blue Dragon (1d4 for age category)"
+      },
+      {
+        "lo": 31,
+        "hi": 35,
+        "result": "Blue Dragon (1d6+2 for age category)"
+      },
+      {
+        "lo": 36,
+        "hi": 40,
+        "result": "Blue Dragon (1d8 for age category)"
+      },
+      {
+        "lo": 41,
+        "hi": 50,
+        "result": "Cockatrice"
+      },
+      {
+        "lo": 51,
+        "hi": 55,
+        "result": "Green Dragon (1d4 for age category)"
+      },
+      {
+        "lo": 56,
+        "hi": 60,
+        "result": "Green Dragon (1d6+2 for age category)"
+      },
+      {
+        "lo": 61,
+        "hi": 65,
+        "result": "Green Dragon (1d8 for age category)"
+      },
+      {
+        "lo": 66,
+        "hi": 75,
+        "result": "Hydra"
+      },
+      {
+        "lo": 91,
+        "hi": 0,
+        "result": "Wyvern"
+      }
+    ]
+  },
+  "63": {
+    "table": 63,
+    "title": "Flying Creature Encounters",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 5,
+        "result": "Chimerae"
+      },
+      {
+        "lo": 6,
+        "hi": 10,
+        "result": "Djinni or efreet"
+      },
+      {
+        "lo": 11,
+        "hi": 15,
+        "result": "Gargoyles"
+      },
+      {
+        "lo": 16,
+        "hi": 25,
+        "result": "Griffons"
+      },
+      {
+        "lo": 26,
+        "hi": 30,
+        "result": "Harpies"
+      },
+      {
+        "lo": 31,
+        "hi": 40,
+        "result": "Hippogriffs"
+      },
+      {
+        "lo": 41,
+        "hi": 50,
+        "result": "Manticores"
+      },
+      {
+        "lo": 51,
+        "hi": 60,
+        "result": "Normal Birds (flock)"
+      },
+      {
+        "lo": 61,
+        "hi": 65,
+        "result": "Ogre Mage"
+      },
+      {
+        "lo": 66,
+        "hi": 75,
+        "result": "Pegasi"
+      },
+      {
+        "lo": 76,
+        "hi": 85,
+        "result": "Rocs"
+      },
+      {
+        "lo": 86,
+        "hi": 95,
+        "result": "Stirges (day) or Giant bat (night)"
+      },
+      {
+        "lo": 96,
+        "hi": 0,
+        "result": "Wyverns"
+      }
+    ]
+  },
+  "64": {
+    "table": 64,
+    "title": "Humankind Encounters",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 10,
+        "result": "Adventurers"
+      },
+      {
+        "lo": 11,
+        "hi": 30,
+        "result": "Bandits"
+      },
+      {
+        "lo": 31,
+        "hi": 40,
+        "result": "Berserkers"
+      },
+      {
+        "lo": 41,
+        "hi": 50,
+        "result": "Brigands"
+      },
+      {
+        "lo": 51,
+        "hi": 60,
+        "result": "Caravan"
+      },
+      {
+        "lo": 61,
+        "hi": 65,
+        "result": "Cavemen"
+      },
+      {
+        "lo": 66,
+        "hi": 70,
+        "result": "Dwarves"
+      },
+      {
+        "lo": 71,
+        "hi": 75,
+        "result": "Elves"
+      },
+      {
+        "lo": 76,
+        "hi": 85,
+        "result": "Patrol"
+      },
+      {
+        "lo": 86,
+        "hi": 90,
+        "result": "Pilgrims"
+      },
+      {
+        "lo": 91,
+        "hi": 95,
+        "result": "Priests of Chaos"
+      },
+      {
+        "lo": 96,
+        "hi": 0,
+        "result": "Wizard"
+      }
+    ]
+  },
+  "66": {
+    "table": 66,
+    "title": "Miscellaneous Monster Encounters",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 10,
+        "result": "Cockatrice"
+      },
+      {
+        "lo": 11,
+        "hi": 20,
+        "result": "Medusa"
+      },
+      {
+        "lo": 21,
+        "hi": 30,
+        "result": "Minotaurs"
+      },
+      {
+        "lo": 31,
+        "hi": 40,
+        "result": "Owlbears"
+      },
+      {
+        "lo": 41,
+        "hi": 50,
+        "result": "Purple Worm"
+      },
+      {
+        "lo": 51,
+        "hi": 60,
+        "result": "Treant"
+      },
+      {
+        "lo": 61,
+        "hi": 70,
+        "result": "Werebears"
+      },
+      {
+        "lo": 71,
+        "hi": 80,
+        "result": "Wereboars"
+      },
+      {
+        "lo": 81,
+        "hi": 90,
+        "result": "Weretigers"
+      },
+      {
+        "lo": 91,
+        "hi": 0,
+        "result": "Werewolves"
+      }
+    ]
+  },
+  "67": {
+    "table": 67,
+    "title": "Swimming Creature Encounters",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 10,
+        "result": "Crocodile, giant or sea"
+      },
+      {
+        "lo": 11,
+        "hi": 20,
+        "result": "Dragon Turtle"
+      },
+      {
+        "lo": 21,
+        "hi": 30,
+        "result": "Fish, giant"
+      },
+      {
+        "lo": 31,
+        "hi": 40,
+        "result": "Leeches, giant"
+      },
+      {
+        "lo": 41,
+        "hi": 50,
+        "result": "Mermen"
+      },
+      {
+        "lo": 51,
+        "hi": 60,
+        "result": "Nixie"
+      },
+      {
+        "lo": 61,
+        "hi": 70,
+        "result": "Octopus, giant"
+      },
+      {
+        "lo": 71,
+        "hi": 80,
+        "result": "Sea Monster (10%) or Naga, water (90%)"
+      },
+      {
+        "lo": 81,
+        "hi": 90,
+        "result": "Sea Serpent"
+      },
+      {
+        "lo": 91,
+        "hi": 0,
+        "result": "Squid, giant"
+      }
+    ]
+  },
+  "69": {
+    "table": 69,
+    "title": "undead Encounters",
+    "die": "1d100",
+    "entries": [
+      {
+        "lo": 1,
+        "hi": 15,
+        "result": "Ghouls"
+      },
+      {
+        "lo": 16,
+        "hi": 25,
+        "result": "Mummies"
+      },
+      {
+        "lo": 26,
+        "hi": 40,
+        "result": "Skeletons"
+      },
+      {
+        "lo": 41,
+        "hi": 50,
+        "result": "Spectres"
+      },
+      {
+        "lo": 51,
+        "hi": 60,
+        "result": "Vampires"
+      },
+      {
+        "lo": 61,
+        "hi": 75,
+        "result": "Wights"
+      },
+      {
+        "lo": 76,
+        "hi": 85,
+        "result": "Wraiths"
+      },
+      {
+        "lo": 86,
+        "hi": 0,
+        "result": "Zombies"
+      }
+    ]
+  }
+}

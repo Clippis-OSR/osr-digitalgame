@@ -1,0 +1,11 @@
+{
+  "town_id": "threshold",
+  "name": "Threshold",
+  "description": "A rough frontier town on the edge of the wilds.",
+  "services": {
+    "inn": true,
+    "temple": true,
+    "trainer": true,
+    "shop": true
+  }
+}

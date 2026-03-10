@@ -1,0 +1,121 @@
+[
+  {
+    "name": "Axe, battle",
+    "damage": "1d8",
+    "weight_lb": 15,
+    "cost_gp": 5.0,
+    "footnotes": [
+      "1",
+      "2"
+    ]
+  },
+  {
+    "name": "Axe, hand",
+    "damage": "1d6",
+    "weight_lb": 5,
+    "cost_gp": 1.0,
+    "footnotes": [
+      "3"
+    ]
+  },
+  {
+    "name": "Club",
+    "damage": "1d4",
+    "weight_lb": 10,
+    "cost_gp": 0.0,
+    "footnotes": []
+  },
+  {
+    "name": "Dagger",
+    "damage": "1d4",
+    "weight_lb": 2,
+    "cost_gp": 2.0,
+    "footnotes": [
+      "3"
+    ]
+  },
+  {
+    "name": "Flail (two-handed)",
+    "damage": "1d8",
+    "weight_lb": 10,
+    "cost_gp": 8.0,
+    "footnotes": []
+  },
+  {
+    "name": "Hammer, war",
+    "damage": "1d4+1",
+    "weight_lb": 10,
+    "cost_gp": 1.0,
+    "footnotes": []
+  },
+  {
+    "name": "Lance",
+    "damage": "2d4+1",
+    "weight_lb": 15,
+    "cost_gp": 6.0,
+    "footnotes": []
+  },
+  {
+    "name": "Mace, heavy",
+    "damage": "1d6",
+    "weight_lb": 10,
+    "cost_gp": 10.0,
+    "footnotes": []
+  },
+  {
+    "name": "Polearm (two-handed)",
+    "damage": "1d8+1",
+    "weight_lb": 15,
+    "cost_gp": 10.0,
+    "footnotes": []
+  },
+  {
+    "name": "Spear",
+    "damage": "1d6",
+    "weight_lb": 10,
+    "cost_gp": 1.0,
+    "footnotes": [
+      "1",
+      "2",
+      "3"
+    ]
+  },
+  {
+    "name": "Staff (two-handed)",
+    "damage": "1d6",
+    "weight_lb": 10,
+    "cost_gp": 0.0,
+    "footnotes": []
+  },
+  {
+    "name": "Sword, bastard",
+    "damage": "1d8",
+    "weight_lb": 10,
+    "cost_gp": 20.0,
+    "footnotes": [
+      "1",
+      "2"
+    ]
+  },
+  {
+    "name": "Sword, long",
+    "damage": "1d8",
+    "weight_lb": 10,
+    "cost_gp": 15.0,
+    "footnotes": []
+  },
+  {
+    "name": "Sword, short",
+    "damage": "1d6",
+    "weight_lb": 5,
+    "cost_gp": 8.0,
+    "footnotes": []
+  },
+  {
+    "name": "Sword, two-handed",
+    "damage": "1d10",
+    "weight_lb": 15,
+    "cost_gp": 30.0,
+    "footnotes": []
+  }
+]

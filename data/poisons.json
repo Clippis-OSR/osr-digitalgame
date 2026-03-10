@@ -1,0 +1,49 @@
+[
+  {
+    "poison_id": "basic_damage",
+    "name": "Basic Poison",
+    "notes": "Simple injury poison. Save vs poison or take damage.",
+    "effect": {
+      "kind": "poison",
+      "params": {
+        "id": "basic_damage",
+        "mode": "damage",
+        "damage": "1d6",
+        "save_tags": ["poison"],
+        "save_bonus": 0
+      }
+    }
+  },
+  {
+    "poison_id": "lethal",
+    "name": "Lethal Poison",
+    "notes": "Deadly poison. Save vs poison or die.",
+    "effect": {
+      "kind": "poison",
+      "params": {
+        "id": "lethal",
+        "mode": "instant_death",
+        "save_tags": ["poison"],
+        "save_bonus": 0
+      }
+    }
+  },
+  {
+    "poison_id": "weakening_dot",
+    "name": "Weakening Poison",
+    "notes": "Ongoing poison. Save vs poison on application; then takes 1d3 damage for 3 rounds.",
+    "effect": {
+      "kind": "poison",
+      "params": {
+        "id": "weakening_dot",
+        "mode": "dot",
+        "rounds": 3,
+        "dot_damage": "1d3",
+        "save_tags": ["poison"],
+        "save_on_apply": true,
+        "save_each_tick": false,
+        "save_bonus": 0
+      }
+    }
+  }
+]

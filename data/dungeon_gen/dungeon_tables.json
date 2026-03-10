@@ -1,0 +1,91 @@
+{
+  "schema_version": "P4.9.0",
+  "stocking_by_depth": [
+    {
+      "depth_min": 0,
+      "depth_max": 1,
+      "room_contents_table": {
+        "table_id": "stocking.l1",
+        "dice": "1d6",
+        "entries": [
+          {
+            "range": [
+              1,
+              2
+            ],
+            "result": "empty"
+          },
+          {
+            "range": [
+              3,
+              3
+            ],
+            "result": "treasure"
+          },
+          {
+            "range": [
+              4,
+              4
+            ],
+            "result": "monster"
+          },
+          {
+            "range": [
+              5,
+              5
+            ],
+            "result": "monster_treasure"
+          },
+          {
+            "range": [
+              6,
+              6
+            ],
+            "result": "trap_or_special"
+          }
+        ]
+      },
+      "door_type_table": {
+        "table_id": "doors.l1",
+        "dice": "1d20",
+        "entries": [
+          {
+            "range": [
+              1,
+              12
+            ],
+            "result": "normal"
+          },
+          {
+            "range": [
+              13,
+              15
+            ],
+            "result": "stuck"
+          },
+          {
+            "range": [
+              16,
+              18
+            ],
+            "result": "locked"
+          },
+          {
+            "range": [
+              19,
+              19
+            ],
+            "result": "barred"
+          },
+          {
+            "range": [
+              20,
+              20
+            ],
+            "result": "secret"
+          }
+        ]
+      }
+    }
+  ]
+}

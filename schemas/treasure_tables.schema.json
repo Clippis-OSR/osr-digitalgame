@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "p44.schemas.treasure_tables.v1",
+  "title": "Treasure Tables (Raw)",
+  "type": "object",
+  "required": ["schema_version", "tables", "value_tables", "magic_lists"],
+  "properties": {
+    "schema_version": {"const": "treasure_tables.v1"},
+    "source": {"type": "string"},
+    "tables": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/treasure_table_raw"}
+    },
+    "value_tables": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/value_table_raw"}
+    },
+    "magic_lists": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/magic_list_raw"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "dice_string": {
+      "type": "string",
+      "pattern": "^d(\\d+)$"
+    },
+    "range_string": {
+      "type": "string",
+      "pattern": "^(\\d{1,3})-(\\d{1,3})$"
+    },
+    "roll_expr": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Dice expression string, e.g. 2d6*100, 1d4, 3d6+2"
+    },
+    "treasure_table_raw": {
+      "type": "object",
+      "required": ["table_id", "kind", "dice", "entries"],
+      "properties": {
+        "table_id": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+        "kind": {"enum": ["hoard", "individual"]},
+        "dice": {"$ref": "#/$defs/dice_string"},
+        "notes": {"type": "string"},
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/treasure_entry_raw"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "treasure_entry_raw": {
+      "type": "object",
+      "required": ["range", "drops"],
+      "properties": {
+        "range": {"$ref": "#/$defs/range_string"},
+        "drops": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/drop_raw"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "drop_raw": {
+      "oneOf": [
+        {"$ref": "#/$defs/drop_coins_raw"},
+        {"$ref": "#/$defs/drop_gems_raw"},
+        {"$ref": "#/$defs/drop_jewelry_raw"},
+        {"$ref": "#/$defs/drop_magic_raw"}
+      ]
+    },
+    "drop_coins_raw": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {"const": "coins"},
+        "cp": {"$ref": "#/$defs/roll_expr"},
+        "sp": {"$ref": "#/$defs/roll_expr"},
+        "ep": {"$ref": "#/$defs/roll_expr"},
+        "gp": {"$ref": "#/$defs/roll_expr"},
+        "pp": {"$ref": "#/$defs/roll_expr"}
+      },
+      "additionalProperties": false
+    },
+    "drop_gems_raw": {
+      "type": "object",
+      "required": ["type", "count", "value_table"],
+      "properties": {
+        "type": {"const": "gems"},
+        "count": {"$ref": "#/$defs/roll_expr"},
+        "value_table": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "drop_jewelry_raw": {
+      "type": "object",
+      "required": ["type", "count", "value_table"],
+      "properties": {
+        "type": {"const": "jewelry"},
+        "count": {"$ref": "#/$defs/roll_expr"},
+        "value_table": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "drop_magic_raw": {
+      "type": "object",
+      "required": ["type", "picks", "list_id"],
+      "properties": {
+        "type": {"const": "magic"},
+        "picks": {
+          "oneOf": [
+            {"type": "integer", "minimum": 1},
+            {"$ref": "#/$defs/roll_expr"}
+          ]
+        },
+        "list_id": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "value_table_raw": {
+      "type": "object",
+      "required": ["dice", "bands"],
+      "properties": {
+        "dice": {"$ref": "#/$defs/dice_string"},
+        "bands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/value_band_raw"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "value_band_raw": {
+      "type": "object",
+      "required": ["range", "gp_value"],
+      "properties": {
+        "range": {"$ref": "#/$defs/range_string"},
+        "gp_value": {"type": "integer", "minimum": 0}
+      },
+      "additionalProperties": false
+    },
+    "magic_list_raw": {
+      "type": "object",
+      "required": ["list_id", "dice", "entries"],
+      "properties": {
+        "list_id": {"type": "string", "pattern": "^[A-Z0-9_]+$"},
+        "dice": {"$ref": "#/$defs/dice_string"},
+        "notes": {"type": "string"},
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/magic_list_entry_raw"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "magic_list_entry_raw": {
+      "type": "object",
+      "required": ["range", "item_id"],
+      "properties": {
+        "range": {"$ref": "#/$defs/range_string"},
+        "item_id": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

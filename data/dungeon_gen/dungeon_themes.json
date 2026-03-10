@@ -1,0 +1,557 @@
+{
+  "version": 1,
+  "themes": [
+    {
+      "theme_id": "goblin_warrens",
+      "name": "Goblin Warrens",
+      "faction": "goblin_tribe",
+      "secondary_faction": "cave_vermin",
+      "monster_keywords": [
+        "goblin",
+        "kobold",
+        "orc",
+        "rat",
+        "bat"
+      ],
+      "hazards": [
+        "alarm",
+        "dart",
+        "pit"
+      ],
+      "shrines": [
+        "idol",
+        "totem"
+      ],
+      "features": [
+        "barricade",
+        "trash midden",
+        "cookfire"
+      ],
+      "role_weight_modifiers": {
+        "guard": 0.8,
+        "lair": 1.1,
+        "hazard": 0.2,
+        "shrine": 0.1
+      },
+      "adjacency_bias": {
+        "guard": [
+          "treasure",
+          "boss",
+          "treasury",
+          "transit"
+        ],
+        "lair": [
+          "lair",
+          "hazard",
+          "clue"
+        ],
+        "shrine": [
+          "clue",
+          "boss"
+        ]
+      },
+      "special_packs": {
+        "hazard_traps": [
+          {
+            "trap_type": "alarm_rattle",
+            "trigger": "tripwire",
+            "dc": 11,
+            "effect_ref": "raise_alarm",
+            "text": "A web of bones and tin charms clatters through the warrens."
+          },
+          {
+            "trap_type": "dart_slit",
+            "trigger": "tripwire",
+            "dc": 12,
+            "damage": {
+              "amount": 3,
+              "damage_type": "piercing"
+            },
+            "text": "A crude slit in the wall spits a goblin dart."
+          },
+          {
+            "trap_type": "covered_pit",
+            "trigger": "step_on",
+            "dc": 12,
+            "damage": {
+              "amount": 4,
+              "damage_type": "bludgeoning"
+            },
+            "text": "Rush mats collapse over a camouflaged pit."
+          }
+        ],
+        "hazard_specials": [
+          {
+            "special_type": "hazard_sign",
+            "text": "Smoke, refuse, and gnawed bones mark this stretch as unsafe footing."
+          },
+          {
+            "special_type": "hazard_sign",
+            "text": "Fresh chalk scratches mark a goblin kill-zone ahead."
+          }
+        ],
+        "shrine_specials": [
+          {
+            "special_type": "themed_shrine",
+            "shrine": "idol",
+            "effect": "offerings calm nearby goblins",
+            "text": "A soot-black idol squats beneath greasy tallow offerings."
+          },
+          {
+            "special_type": "themed_shrine",
+            "shrine": "totem",
+            "effect": "war paint grants advantage to morale here",
+            "text": "A pole of stolen bones and feathers watches the room."
+          }
+        ],
+        "clue_surfaces": [
+          "wall scrawl",
+          "tally marks",
+          "loot ledger"
+        ],
+        "room_specials": {
+          "guard": [
+            {
+              "special_type": "room_dressing",
+              "detail": "A kicked-over barricade and stacked javelins show a prepared defense."
+            }
+          ],
+          "lair": [
+            {
+              "special_type": "room_dressing",
+              "detail": "Filthy bedding and gnawed scraps mark a packed goblin nest."
+            }
+          ],
+          "treasure": [
+            {
+              "special_type": "room_dressing",
+              "detail": "A hidden niche behind hanging hides conceals the best loot."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "theme_id": "cult_shrine",
+      "name": "Cult Shrine",
+      "faction": "cult_of_ash",
+      "secondary_faction": "undead_thralls",
+      "monster_keywords": [
+        "cult",
+        "skeleton",
+        "zombie",
+        "ghoul",
+        "acolyte",
+        "bandit"
+      ],
+      "hazards": [
+        "alarm",
+        "blade",
+        "gas"
+      ],
+      "shrines": [
+        "blood altar",
+        "ritual circle"
+      ],
+      "features": [
+        "scriptorium",
+        "ritual chalk",
+        "black candles"
+      ],
+      "role_weight_modifiers": {
+        "shrine": 0.8,
+        "guard": 0.4,
+        "clue": 0.3,
+        "hazard": 0.5
+      },
+      "adjacency_bias": {
+        "guard": [
+          "shrine",
+          "boss",
+          "treasury"
+        ],
+        "shrine": [
+          "clue",
+          "guard",
+          "boss"
+        ],
+        "hazard": [
+          "shrine",
+          "treasure"
+        ]
+      },
+      "special_packs": {
+        "hazard_traps": [
+          {
+            "trap_type": "warded_blades",
+            "trigger": "tamper",
+            "dc": 13,
+            "damage": {
+              "amount": 4,
+              "damage_type": "slashing"
+            },
+            "text": "Concealed sacrificial blades snap from the altar frame."
+          },
+          {
+            "trap_type": "choking_incense",
+            "trigger": "open_door",
+            "dc": 12,
+            "effect_ref": "smoke_choke",
+            "text": "A censer tips, filling the room with choking ritual smoke."
+          },
+          {
+            "trap_type": "alarm_gong",
+            "trigger": "tripwire",
+            "dc": 11,
+            "effect_ref": "raise_alarm",
+            "text": "A hidden bronze gong rings through the chapel halls."
+          }
+        ],
+        "hazard_specials": [
+          {
+            "special_type": "ritual_residue",
+            "text": "Ash circles and coagulated wax make movement treacherous."
+          },
+          {
+            "special_type": "ritual_residue",
+            "text": "A low chant seems to linger in the stone, warning of sanctified danger."
+          }
+        ],
+        "shrine_specials": [
+          {
+            "special_type": "themed_shrine",
+            "shrine": "blood altar",
+            "effect": "offer blood to learn a secret, at a cost",
+            "text": "A dark altar is crusted with old sacrificial offerings."
+          },
+          {
+            "special_type": "themed_shrine",
+            "shrine": "ritual circle",
+            "effect": "careful study reveals a warded cache nearby",
+            "text": "Black candles ring a chalk circle burnt deep into the floor."
+          }
+        ],
+        "clue_surfaces": [
+          "burned ledger",
+          "blood sigil",
+          "canticle wall"
+        ],
+        "room_specials": {
+          "guard": [
+            {
+              "special_type": "room_dressing",
+              "detail": "A censor stand and stacked polearms suggest vigilant sentries."
+            }
+          ],
+          "treasure": [
+            {
+              "special_type": "room_dressing",
+              "detail": "Offerings are catalogued in soot-marked chests behind a warding glyph."
+            }
+          ],
+          "lair": [
+            {
+              "special_type": "room_dressing",
+              "detail": "Prayer mats and exhausted braziers show where the faithful slept in shifts."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "theme_id": "lost_garrison",
+      "name": "Lost Garrison",
+      "faction": "lost_guard",
+      "secondary_faction": "wild_beasts",
+      "monster_keywords": [
+        "bandit",
+        "guard",
+        "soldier",
+        "man",
+        "wolf"
+      ],
+      "hazards": [
+        "alarm",
+        "pit",
+        "dart"
+      ],
+      "shrines": [
+        "war memorial",
+        "oath shrine"
+      ],
+      "features": [
+        "armory rack",
+        "bunkroom",
+        "mess hall"
+      ],
+      "role_weight_modifiers": {
+        "guard": 0.9,
+        "transit": 0.4,
+        "clue": 0.2
+      },
+      "adjacency_bias": {
+        "guard": [
+          "guard",
+          "transit",
+          "treasury"
+        ],
+        "treasure": [
+          "guard",
+          "clue"
+        ],
+        "clue": [
+          "transit",
+          "guard"
+        ]
+      },
+      "special_packs": {
+        "hazard_traps": [
+          {
+            "trap_type": "falling_portcullis",
+            "trigger": "tripwire",
+            "dc": 12,
+            "effect_ref": "seal_passage",
+            "text": "A rusted portcullis slams down to cut off retreat."
+          },
+          {
+            "trap_type": "spear_rack",
+            "trigger": "open_door",
+            "dc": 12,
+            "damage": {
+              "amount": 4,
+              "damage_type": "piercing"
+            },
+            "text": "A spring rack hurls short spears from a murder slot."
+          },
+          {
+            "trap_type": "collapse_pit",
+            "trigger": "step_on",
+            "dc": 12,
+            "damage": {
+              "amount": 4,
+              "damage_type": "bludgeoning"
+            },
+            "text": "Rotten planks break into an old training pit."
+          }
+        ],
+        "hazard_specials": [
+          {
+            "special_type": "structural_warning",
+            "text": "Cracked drill markers warn that the floor ahead was once trapped for sieges."
+          },
+          {
+            "special_type": "structural_warning",
+            "text": "Old command whistles and trip cords hint at a ready kill corridor."
+          }
+        ],
+        "shrine_specials": [
+          {
+            "special_type": "themed_shrine",
+            "shrine": "war memorial",
+            "effect": "saluting the fallen steadies the will",
+            "text": "Names of the dead are carved into a weathered memorial stone."
+          },
+          {
+            "special_type": "themed_shrine",
+            "shrine": "oath shrine",
+            "effect": "an oath here reveals a hidden armory sign",
+            "text": "A chipped shrine bears the unit vows of a long-lost company."
+          }
+        ],
+        "clue_surfaces": [
+          "duty roster",
+          "quartermaster note",
+          "command map"
+        ],
+        "room_specials": {
+          "guard": [
+            {
+              "special_type": "room_dressing",
+              "detail": "Weapon racks and chalk watch rotations line the walls."
+            }
+          ],
+          "treasure": [
+            {
+              "special_type": "room_dressing",
+              "detail": "A quartermaster chest is bolted beneath faded inventory marks."
+            }
+          ],
+          "lair": [
+            {
+              "special_type": "room_dressing",
+              "detail": "Bedrolls and ration tins show where survivors or squatters bunked."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "theme_id": "fungal_caverns",
+      "name": "Fungal Caverns",
+      "faction": "vermin_clutch",
+      "secondary_faction": "ooze_bloom",
+      "monster_keywords": [
+        "slime",
+        "ooze",
+        "spider",
+        "beetle",
+        "rat",
+        "worm",
+        "ant"
+      ],
+      "hazards": [
+        "gas",
+        "pit"
+      ],
+      "shrines": [
+        "stone circle",
+        "spore altar"
+      ],
+      "features": [
+        "fungus beds",
+        "spore vents",
+        "slick stone"
+      ],
+      "role_weight_modifiers": {
+        "hazard": 1.1,
+        "lair": 0.7,
+        "shrine": 0.2,
+        "transit": -0.2
+      },
+      "adjacency_bias": {
+        "hazard": [
+          "lair",
+          "hazard",
+          "clue"
+        ],
+        "lair": [
+          "hazard",
+          "lair"
+        ],
+        "clue": [
+          "hazard",
+          "shrine"
+        ]
+      },
+      "special_packs": {
+        "hazard_traps": [
+          {
+            "trap_type": "spore_vent",
+            "trigger": "disturb_growth",
+            "dc": 12,
+            "effect_ref": "spore_cloud",
+            "text": "A ripe puffball bursts into a choking cloud of spores."
+          },
+          {
+            "trap_type": "slick_drop",
+            "trigger": "step_on",
+            "dc": 11,
+            "damage": {
+              "amount": 3,
+              "damage_type": "bludgeoning"
+            },
+            "text": "Slime-slick stone drops into a shallow but nasty sink."
+          },
+          {
+            "trap_type": "acidic_bloom",
+            "trigger": "tamper",
+            "dc": 12,
+            "damage": {
+              "amount": 4,
+              "damage_type": "acid"
+            },
+            "text": "A disturbed fungus sac splashes burning sap."
+          }
+        ],
+        "hazard_specials": [
+          {
+            "special_type": "spore_warning",
+            "text": "Dense caps and drifting motes warn that the air here is hostile."
+          },
+          {
+            "special_type": "spore_warning",
+            "text": "The floor squelches with rot, and every breath tastes wrong."
+          }
+        ],
+        "shrine_specials": [
+          {
+            "special_type": "themed_shrine",
+            "shrine": "stone circle",
+            "effect": "careful offerings reveal safe footing through the spores",
+            "text": "Standing stones ring a bed of pale luminous fungus."
+          },
+          {
+            "special_type": "themed_shrine",
+            "shrine": "spore altar",
+            "effect": "burning the altar clears nearby vermin for a time",
+            "text": "A shelf of living fungus pulses like a breathing altar."
+          }
+        ],
+        "clue_surfaces": [
+          "spore trail",
+          "gnawed shell pile",
+          "dry-stone marker"
+        ],
+        "room_specials": {
+          "guard": [
+            {
+              "special_type": "room_dressing",
+              "detail": "The chokepoint is webbed with hanging roots and defensive spore sacks."
+            }
+          ],
+          "treasure": [
+            {
+              "special_type": "room_dressing",
+              "detail": "A surprisingly dry shelf preserves old salvage beneath mushroom caps."
+            }
+          ],
+          "lair": [
+            {
+              "special_type": "room_dressing",
+              "detail": "Egg clusters and husks mark a brood chamber."
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "role_defaults": {
+    "mandatory_min": {
+      "entrance": 1,
+      "boss": 1,
+      "clue": 1
+    },
+    "conditional_min": {
+      "treasury": {
+        "min_rooms": 9,
+        "count": 1
+      },
+      "shrine": {
+        "min_rooms": 8,
+        "count": 1
+      },
+      "hazard": {
+        "min_rooms": 7,
+        "count": 1
+      }
+    },
+    "target_fractions": {
+      "transit": 0.28,
+      "guard": 0.18,
+      "lair": 0.16,
+      "treasure": 0.1,
+      "shrine": 0.08,
+      "hazard": 0.1,
+      "clue": 0.1
+    },
+    "max_fraction": {
+      "transit": 0.4,
+      "guard": 0.3,
+      "lair": 0.28,
+      "treasure": 0.18,
+      "shrine": 0.14,
+      "hazard": 0.18,
+      "clue": 0.14
+    }
+  }
+}

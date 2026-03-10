@@ -1,0 +1,636 @@
+{
+  "run_idx": 0,
+  "config": {
+    "runs": 1,
+    "seed0": 10000,
+    "dungeon_steps_per_leg": 220,
+    "dungeon_legs": 2,
+    "wilderness_steps_per_leg": 30,
+    "scripted_combats_per_leg": 3,
+    "save_reload_steps": [
+      40,
+      120,
+      200
+    ]
+  },
+  "seeds": {
+    "harness_seed": 10000,
+    "dice_seed": 100000,
+    "wilderness_seed": 200000
+  },
+  "env": {
+    "STRICT_CONTENT": null,
+    "STRICT_REPLAY": null,
+    "ASSERT_INVARIANTS": null,
+    "INVARIANTS_STRICT": null,
+    "EVENT_TRACE": null,
+    "EVENT_TRACE_PATH": null,
+    "EVENT_TRACE_LEVEL": null
+  },
+  "error": {
+    "type": "AttributeError",
+    "message": "'Game' object has no attribute '_cmd_dungeon_camp'"
+  },
+  "transcript": [
+    {
+      "kind": "title",
+      "value": {
+        "title": "Dungeon Entrance"
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Surprise! Your party is caught off-guard."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 10 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 10 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Darkness!"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 50 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 50 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Darkness!"
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Wandering Monster!"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Shapes emerge from the dark..."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Fighting in darkness! (-4 to hit)"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Surprise! Your party is caught off-guard."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 10 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 10 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 120 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 120 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Darkness!"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Wandering Monster!"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Shapes emerge from the dark..."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Fighting in darkness! (-4 to hit)"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 100 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 100 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Wandering Monster!"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Shapes emerge from the dark..."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Fighting in darkness! (-4 to hit)"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 120 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 120 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Wandering Monster!"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Shapes emerge from the dark..."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Fighting in darkness! (-4 to hit)"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Surprise! The enemies are caught off-guard."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 20 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 20 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "You listen carefully... you hear movement beyond."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "No one can prepare spells."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "You find no traps."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "You listen... you hear only distant echoes."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Wandering Monster!"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Shapes emerge from the dark..."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Combat"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Fighting in darkness! (-4 to hit)"
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Starting range: 60 ft."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Combat begins with scattered cover in the wilderness."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Range: 60 ft."
+      }
+    },
+    {
+      "kind": "title",
+      "value": {
+        "title": "Party defeated."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "No one can prepare spells."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    },
+    {
+      "kind": "log",
+      "value": {
+        "msg": "Dusty stonework and old bones."
+      }
+    }
+  ]
+}

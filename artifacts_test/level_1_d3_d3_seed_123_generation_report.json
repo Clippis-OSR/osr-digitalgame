@@ -1,0 +1,485 @@
+{
+  "content_hash": "90b80d7ba292d55173b5663ef221da2082e57b4bede9e22bdccfb9b91f907a75",
+  "level_id": "level_1_d3",
+  "parameters": {
+    "cell_size": 1,
+    "cl_lists_hash": "f18b857948d0670ebdf969fa6b7b579ff402e39eecab009ee23486e1391476fd",
+    "depth": 3,
+    "height": 40,
+    "width": 50
+  },
+  "rng_streams": {
+    "gen.connectivity": "797375567",
+    "gen.doors": "2100166112",
+    "gen.geometry": "1787885225",
+    "gen.stairs": "1056310904",
+    "gen.stocking": "1075234073"
+  },
+  "roll_log": [
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0000",
+      "result": 9,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0001",
+      "result": 2,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0002",
+      "result": 5,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0003",
+      "result": 3,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "stuck",
+      "dice": "1d20",
+      "ref": "D0004",
+      "result": 14,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0005",
+      "result": 3,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0006",
+      "result": 7,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0007",
+      "result": 4,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0008",
+      "result": 8,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0009",
+      "result": 2,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0010",
+      "result": 10,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "stuck",
+      "dice": "1d20",
+      "ref": "D0011",
+      "result": 15,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0012",
+      "result": 4,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "locked",
+      "dice": "1d20",
+      "ref": "D0013",
+      "result": 16,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "8",
+      "dice": "1d4",
+      "ref": "D0013",
+      "result": 2,
+      "step": "door.lock",
+      "stream": "gen.doors",
+      "table_id": "door_lock_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0014",
+      "result": 3,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "stuck",
+      "dice": "1d20",
+      "ref": "D0015",
+      "result": 15,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "locked",
+      "dice": "1d20",
+      "ref": "D0016",
+      "result": 17,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "8",
+      "dice": "1d4",
+      "ref": "D0016",
+      "result": 2,
+      "step": "door.lock",
+      "stream": "gen.doors",
+      "table_id": "door_lock_depth_3"
+    },
+    {
+      "choice": "normal",
+      "dice": "1d20",
+      "ref": "D0017",
+      "result": 7,
+      "step": "door.type",
+      "stream": "gen.doors",
+      "table_id": "door_type_depth_3"
+    },
+    {
+      "choice": "monster_treasure",
+      "dice": "1d6",
+      "notes": "",
+      "ref": "R0000",
+      "result": 5,
+      "step": "stocking.room",
+      "stream": "gen.stocking",
+      "table_id": "stocking.l1"
+    },
+    {
+      "choice": "1 groups",
+      "dice": "1d10",
+      "notes": "",
+      "ref": "R0000",
+      "result": 4,
+      "step": "encounter.table",
+      "stream": "gen.stocking",
+      "table_id": "encounter.gen.dl3"
+    },
+    {
+      "choice": "stub_lizardmen",
+      "dice": "",
+      "notes": "Stub monster_id from compiled CL lists \u2014 replace with full statblock.",
+      "ref": "R0000",
+      "result": 0,
+      "step": "content.stub",
+      "stream": "gen.stocking",
+      "table_id": "stub.monster"
+    },
+    {
+      "choice": "x1 => 9",
+      "dice": "4d6",
+      "notes": "CL 2",
+      "ref": "R0000",
+      "result": 9,
+      "step": "encounter.group.count",
+      "stream": "gen.stocking",
+      "table_id": "encounter.count.dl3"
+    },
+    {
+      "choice": "stub_lizardmen",
+      "dice": "1d20",
+      "notes": "CL 2",
+      "ref": "R0000",
+      "result": 13,
+      "step": "encounter.group.monster",
+      "stream": "gen.stocking",
+      "table_id": "CL2.list"
+    },
+    {
+      "choice": "{'kind': 'gems', 'count': '1d4'}",
+      "dice": "1d6",
+      "notes": "",
+      "ref": "R0000",
+      "result": 5,
+      "step": "stocking.treasure",
+      "stream": "gen.stocking",
+      "table_id": "treasure.l1.coins"
+    },
+    {
+      "choice": "empty",
+      "dice": "1d6",
+      "notes": "",
+      "ref": "R0001",
+      "result": 1,
+      "step": "stocking.room",
+      "stream": "gen.stocking",
+      "table_id": "stocking.l1"
+    },
+    {
+      "choice": "monster",
+      "dice": "1d6",
+      "notes": "",
+      "ref": "R0002",
+      "result": 4,
+      "step": "stocking.room",
+      "stream": "gen.stocking",
+      "table_id": "stocking.l1"
+    },
+    {
+      "choice": "1 groups",
+      "dice": "1d10",
+      "notes": "",
+      "ref": "R0002",
+      "result": 8,
+      "step": "encounter.table",
+      "stream": "gen.stocking",
+      "table_id": "encounter.gen.dl3"
+    },
+    {
+      "choice": "stub_lycanthrope_wereboar",
+      "dice": "",
+      "notes": "Stub monster_id from compiled CL lists \u2014 replace with full statblock.",
+      "ref": "R0002",
+      "result": 0,
+      "step": "content.stub",
+      "stream": "gen.stocking",
+      "table_id": "stub.monster"
+    },
+    {
+      "choice": "x1 => 1",
+      "dice": "1",
+      "notes": "CL 6",
+      "ref": "R0002",
+      "result": 1,
+      "step": "encounter.group.count",
+      "stream": "gen.stocking",
+      "table_id": "encounter.count.dl3"
+    },
+    {
+      "choice": "stub_lycanthrope_wereboar",
+      "dice": "1d20",
+      "notes": "CL 6",
+      "ref": "R0002",
+      "result": 8,
+      "step": "encounter.group.monster",
+      "stream": "gen.stocking",
+      "table_id": "CL6.list"
+    },
+    {
+      "choice": "empty",
+      "dice": "1d6",
+      "notes": "",
+      "ref": "R0003",
+      "result": 2,
+      "step": "stocking.room",
+      "stream": "gen.stocking",
+      "table_id": "stocking.l1"
+    },
+    {
+      "choice": "trap_or_special",
+      "dice": "1d6",
+      "notes": "",
+      "ref": "R0004",
+      "result": 6,
+      "step": "stocking.room",
+      "stream": "gen.stocking",
+      "table_id": "stocking.l1"
+    },
+    {
+      "choice": "special",
+      "dice": "1d2",
+      "notes": "",
+      "ref": "R0004",
+      "result": 2,
+      "step": "stocking.special",
+      "stream": "gen.stocking",
+      "table_id": "trap_or_special"
+    },
+    {
+      "choice": "monster",
+      "dice": "1d6",
+      "notes": "",
+      "ref": "R0005",
+      "result": 4,
+      "step": "stocking.room",
+      "stream": "gen.stocking",
+      "table_id": "stocking.l1"
+    },
+    {
+      "choice": "1 groups",
+      "dice": "1d10",
+      "notes": "",
+      "ref": "R0005",
+      "result": 3,
+      "step": "encounter.table",
+      "stream": "gen.stocking",
+      "table_id": "encounter.gen.dl3"
+    },
+    {
+      "choice": "skeleton",
+      "dice": "",
+      "notes": "Monster has special text but no structured specials entry. special='Immune to sleep and charm spells'",
+      "ref": "R0005",
+      "result": 0,
+      "step": "content.missing_specials",
+      "stream": "gen.stocking",
+      "table_id": "content.monster_specials"
+    },
+    {
+      "choice": "x1 => 29",
+      "dice": "8d6",
+      "notes": "CL 1",
+      "ref": "R0005",
+      "result": 29,
+      "step": "encounter.group.count",
+      "stream": "gen.stocking",
+      "table_id": "encounter.count.dl3"
+    },
+    {
+      "choice": "skeleton",
+      "dice": "1d20",
+      "notes": "CL 1",
+      "ref": "R0005",
+      "result": 18,
+      "step": "encounter.group.monster",
+      "stream": "gen.stocking",
+      "table_id": "CL1.list"
+    },
+    {
+      "choice": "empty",
+      "dice": "1d6",
+      "notes": "",
+      "ref": "R0006",
+      "result": 2,
+      "step": "stocking.room",
+      "stream": "gen.stocking",
+      "table_id": "stocking.l1"
+    },
+    {
+      "choice": "empty",
+      "dice": "1d6",
+      "notes": "",
+      "ref": "R0007",
+      "result": 1,
+      "step": "stocking.room",
+      "stream": "gen.stocking",
+      "table_id": "stocking.l1"
+    }
+  ],
+  "schema_version": "P4.9.2.6",
+  "seed": "123",
+  "summary": {
+    "doors": 18,
+    "features": 0,
+    "loops_added": 4,
+    "rooms": 8,
+    "stairs": 2
+  },
+  "validation": {
+    "checks": [
+      {
+        "check_id": "room_count_min3",
+        "details": {
+          "rooms": 8
+        },
+        "passed": true
+      },
+      {
+        "check_id": "door_count_nonzero",
+        "details": {
+          "doors": 18
+        },
+        "passed": true
+      },
+      {
+        "check_id": "stairs_present",
+        "details": {
+          "stairs": 2
+        },
+        "passed": true
+      },
+      {
+        "check_id": "no_duplicate_door_positions",
+        "details": {
+          "dupes": 0
+        },
+        "passed": true
+      },
+      {
+        "check_id": "all_rooms_reachable",
+        "details": {
+          "reachable": 19,
+          "room_nodes": 8
+        },
+        "passed": true
+      },
+      {
+        "check_id": "stairs_reachable_without_secret",
+        "details": {
+          "reachable_nodes": 19,
+          "secret_doors": 0
+        },
+        "passed": true
+      },
+      {
+        "check_id": "no_orphan_nodes",
+        "details": {
+          "orphans": []
+        },
+        "passed": true
+      }
+    ],
+    "passed": true
+  }
+}

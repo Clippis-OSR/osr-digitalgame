@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sww:generation_report.schema.json",
+  "title": "DungeonGenerationReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "level_id",
+    "seed",
+    "content_hash",
+    "rng_streams",
+    "parameters",
+    "roll_log",
+    "validation",
+    "summary"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^P4\\.9\\.[0-9]+(\\.[0-9]+)*$"
+    },
+    "level_id": {
+      "type": "string"
+    },
+    "seed": {
+      "type": "string"
+    },
+    "content_hash": {
+      "type": "string",
+      "minLength": 8
+    },
+    "rng_streams": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "roll_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step",
+          "stream",
+          "dice",
+          "result",
+          "table_id",
+          "choice"
+        ],
+        "properties": {
+          "step": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stream": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dice": {
+            "type": "string",
+            "minLength": 1
+          },
+          "result": {
+            "type": "integer"
+          },
+          "table_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "choice": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ref": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "passed",
+        "checks"
+      ],
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "check_id",
+              "passed"
+            ],
+            "properties": {
+              "check_id": {
+                "type": "string"
+              },
+              "passed": {
+                "type": "boolean"
+              },
+              "details": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rooms",
+        "doors",
+        "stairs",
+        "features",
+        "loops_added"
+      ],
+      "properties": {
+        "rooms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "doors": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stairs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "features": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "loops_added": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "content_validation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "stub_refs",
+            "missing_monster",
+            "missing_damage_profile",
+            "missing_ai_profile",
+            "missing_specials",
+            "total_issues"
+          ],
+          "properties": {
+            "stub_refs": {"type": "integer", "minimum": 0},
+            "missing_monster": {"type": "integer", "minimum": 0},
+            "missing_damage_profile": {"type": "integer", "minimum": 0},
+            "missing_ai_profile": {"type": "integer", "minimum": 0},
+            "missing_specials": {"type": "integer", "minimum": 0},
+            "total_issues": {"type": "integer", "minimum": 0}
+          }
+        }
+      }
+    }
+  }
+}
