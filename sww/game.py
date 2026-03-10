@@ -9891,30 +9891,37 @@ class Game:
         rooms[str(int(room_id))] = dict(rec)
 
     def _sync_room_to_delta(self, room_id: int, room: dict[str, Any]) -> None:
-        """Persist mutable room state into dungeon_instance.delta.
-
-        P6.1.0.4 stores only the minimum needed to prevent regeneration/drift.
-        """
+        """Persist mutable room state into dungeon_instance.delta."""
         if not getattr(self, "dungeon_instance", None):
             return
         rec: dict[str, Any] = dict(self._get_dungeon_delta_room(room_id) or {})
-        rec["cleared"] = bool(room.get("cleared", False))
-        if "treasure_taken" in room:
-            rec["treasure_taken"] = bool(room.get("treasure_taken", False))
-        if "boss_loot_taken" in room:
-            rec["boss_loot_taken"] = bool(room.get("boss_loot_taken", False))
-        if "trap_disarmed" in room:
-            rec["trap_disarmed"] = bool(room.get("trap_disarmed", False))
-        if "trap_found" in room:
-            rec["trap_found"] = bool(room.get("trap_found", False))
-        if "trap_triggered" in room:
-            rec["trap_triggered"] = bool(room.get("trap_triggered", False))
-        if "secret_found" in room:
-            rec["secret_found"] = bool(room.get("secret_found", False))
-        if "entered" in room:
-            rec["entered"] = bool(room.get("entered", False))
+
+        # Preserve already-captured local delta hints when present.
+        if isinstance(room.get("_delta"), dict):
+            rec.update(dict(room.get("_delta") or {}))
+
+        bool_fields = (
+            "cleared",
+            "treasure_taken",
+            "boss_loot_taken",
+            "trap_disarmed",
+            "trap_found",
+            "trap_triggered",
+            "secret_found",
+            "entered",
+            "event_done",
+            "feature_done",
+            "shrine_done",
+            "puzzle_done",
+            "container_looted",
+        )
+        for key in bool_fields:
+            if key in room or key in rec:
+                rec[key] = bool(room.get(key, rec.get(key, False)))
+
         if isinstance(room.get("doors"), dict):
             rec["doors"] = dict(room.get("doors") or {})
+
         self._set_dungeon_delta_room(room_id, rec)
 
     def _get_dungeon_stocking_room(self, room_id: int) -> dict[str, Any]:
