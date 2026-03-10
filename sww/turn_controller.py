@@ -20,7 +20,6 @@ from .intents import (
 from .pathing import bfs_movement_range, dijkstra_shortest_path
 from .targeting import valid_melee_targets, valid_missile_targets, spell_aoe_preview_tiles
 from .combat_legality import grid_target_is_attackable
-from .status_lifecycle import apply_status
 
 from .rules import morale_check
 
