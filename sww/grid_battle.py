@@ -97,9 +97,7 @@ class GridBattle:
         ent.x, ent.y = x, y
         self.move_points_left[eid] = max(0, int(self.move_points_left.get(eid, 0)) - 1)
         # Moving breaks "take cover".
-        st = getattr(ent.actor, "status", {}) or {}
-        st.pop("cover", None)
-        ent.actor.status = st
+        clear_status(ent.actor, "cover")
         return True
 
     def adjacent(self, a: GridEntity, b: GridEntity) -> bool:
@@ -128,10 +126,8 @@ class GridBattle:
                 break
         if not adjacent_cover:
             return False
-        st = getattr(ent.actor, "status", {}) or {}
         # Prototype: good cover if you take the action.
-        st["cover"] = -4
-        ent.actor.status = st
+        apply_status(ent.actor, "cover", -4)
         return True
 
     def attack(self, attacker_id: str, target_id: str, mode: str) -> bool:
@@ -452,9 +448,7 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
             moved_points += step_cost
             moved_tiles += 1
             # Moving breaks "take cover".
-            st = getattr(u.actor, "status", {}) or {}
-            st.pop("cover", None)
-            u.actor.status = st
+            clear_status(u.actor, "cover")
 
             # Opportunity attacks: enemies that were adjacent to old_pos but are no longer adjacent now.
             new_adj = {e.unit_id for e in adj_enemies(u.pos)}
@@ -498,9 +492,7 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
                 break
         if not ok:
             return events
-        st = getattr(u.actor, "status", {}) or {}
-        st["cover"] = -4
-        u.actor.status = st
+        apply_status(u.actor, "cover", -4)
         u.actions_remaining = max(0, int(u.actions_remaining) - 1)
         events.append(evt("TAKE_COVER", unit_id=u.unit_id))
         return events
@@ -695,8 +687,7 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
                 tu.actor.hp = before - dmg
                 events.append(evt("DAMAGE", src=u.unit_id, tgt=tu.unit_id, amount=dmg, kind="fire"))
                 # mark burning
-                tu.actor.status.setdefault("burning", 0)
-                tu.actor.status["burning"] = max(int(tu.actor.status["burning"]), 2)
+                apply_status(tu.actor, "burning", 2, mode="max")
                 events.append(evt("EFFECT_APPLIED", tgt=tu.unit_id, kind="burning", rounds=2))
         elif cmd.item_id == "holy_water":
             for tu in affected_units:
@@ -711,8 +702,7 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
         elif cmd.item_id == "net":
             for tu in affected_units:
                 # Simple: set 'entangled' rounds=2 (movement halved / no move) handled by controller.
-                tu.actor.status.setdefault("entangled", 0)
-                tu.actor.status["entangled"] = max(int(tu.actor.status["entangled"]), 2)
+                apply_status(tu.actor, "entangled", 2, mode="max")
                 events.append(evt("EFFECT_APPLIED", tgt=tu.unit_id, kind="entangled", rounds=2))
         elif cmd.item_id == "caltrops":
             # Create rubble on target tile (difficult terrain). If unit on tile, deal 1 dmg.
@@ -828,8 +818,7 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
                     u.actor.spells_prepared.remove(spell_name)
                 except Exception:
                     pass
-            st_now.pop("casting", None)
-            u.actor.status = st_now
+            clear_status(u.actor, "casting")
             u.actions_remaining = max(0, int(u.actions_remaining) - 1)
             return events
 
@@ -930,9 +919,7 @@ def resolve_command(game, state: GridBattleState, cmd: Command) -> list[BattleEv
 
                 # Clear casting marker (spell is now resolved).
         try:
-            st2 = getattr(u.actor, "status", {}) or {}
-            st2.pop("casting", None)
-            u.actor.status = st2
+            clear_status(u.actor, "casting")
         except Exception:
             pass
 

@@ -11105,9 +11105,7 @@ class Game:
                                     except Exception:
                                         pass
                                     if not passed:
-                                        f.effects = list(getattr(f, "effects", []) or [])
-                                        if "fled" not in f.effects:
-                                            f.effects.append("fled")
+                                        leave_combat(f, marker="fled")
                                         try:
                                             self.battle_evt("UNIT_ROUTED", unit_id=getattr(f,"name","?"))
                                         except Exception:
@@ -11260,9 +11258,7 @@ class Game:
                                 if not bool(getattr(self, "_battle_buffer_active", False)):
                                     self.ui.log("The enemies throw down their weapons and offer surrender!")
                                 for x in living_now:
-                                    x.effects = list(getattr(x, "effects", []) or [])
-                                    if "surrendered" not in x.effects:
-                                        x.effects.append("surrendered")
+                                    leave_combat(x, marker="surrendered")
                                     try:
                                         self.battle_evt("UNIT_SURRENDERED", unit_id=getattr(x,"name","?"))
                                     except Exception:
@@ -11276,9 +11272,7 @@ class Game:
                                     self.ui.log("The enemies lose heart and flee!")
                                 # Mark all foes as fled so the combat ends cleanly.
                                 for x in living_now:
-                                    x.effects = list(getattr(x, "effects", []) or [])
-                                    if "fled" not in x.effects:
-                                        x.effects.append("fled")
+                                    leave_combat(x, marker="fled")
                                     try:
                                         self.battle_evt("UNIT_ROUTED", unit_id=getattr(x,"name","?"))
                                     except Exception:
@@ -11956,11 +11950,7 @@ class Game:
                         pending = [f for f in foes if int(getattr(f, 'hp', 0) or 0) > 0 and 'flee_pending' in (getattr(f, 'effects', []) or [])]
                         if pending:
                             for f in pending:
-                                fx = list(getattr(f, 'effects', []) or [])
-                                fx = [e for e in fx if e != 'flee_pending']
-                                if 'fled' not in fx:
-                                    fx.append('fled')
-                                f.effects = fx
+                                leave_combat(f, marker='fled', remove_effects=('flee_pending',))
                     except Exception:
                         pass
 
@@ -13336,8 +13326,6 @@ class Game:
             u.effects = list(getattr(u, "effects", []) or [])
             if "turned" not in u.effects:
                 u.effects.append("turned")
-            if "fled" not in u.effects:
-                u.effects.append("fled")
 
         def _mark_destroyed(u: Actor):
             u.hp = -1
