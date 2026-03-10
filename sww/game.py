@@ -27,6 +27,9 @@ from .effects import EffectsManager, Hook
 from .replay import ReplayLog
 from .validation import validate_state
 from .monster_ai import coerce_profile, choose_target, party_role
+from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat
+from .status_lifecycle import tick_round_statuses, cleanup_actor_battle_status
+from .ai_capabilities import detect_capabilities, choose_attack_mode
 from .commands import (
     Command,
     CommandResult,
@@ -11217,10 +11220,9 @@ class Game:
                         # At melee distance (10 ft or less), foes should generally not use
                         # missile weapons; this also matches the timing assumptions in the
                         # legacy strict-replay fixtures.
-                        if prof.use_missile_if_available and self._weapon_kind(f) == "missile" and int(combat_distance_ft) > 10:
-                            action_plan[id(f)] = {"type": "missile", "actor": f, "target": target}
-                        else:
-                            action_plan[id(f)] = {"type": "melee", "actor": f, "target": target}
+                        caps = detect_capabilities(f, self)
+                        mode = choose_attack_mode(capabilities=caps, combat_distance_ft=combat_distance_ft, prefer_ranged=bool(prof.use_missile_if_available))
+                        action_plan[id(f)] = {"type": mode, "actor": f, "target": target}
 
                     # ---- Action selection / declaration (party first, then foes AI) ----
                     for a in self.party.living():
@@ -11448,10 +11450,8 @@ class Game:
                             try:
                                 mb = self.effects_mgr.query_modifiers(actor)
                                 if mb.forced_retreat:
-                                    # PCs cower; monsters flee.
-                                    if _effective_side(actor) == "foe":
-                                        if 'fled' not in (getattr(actor, 'effects', []) or []):
-                                            actor.effects = list(getattr(actor, 'effects', []) or []) + ['fled']
+                                    retreat_state = apply_forced_retreat(actor)
+                                    if retreat_state == "flee":
                                         self.ui.log(f"{actor.name} flees in terror!")
                                     else:
                                         self.ui.log(f"{actor.name} cowers in fear!")
@@ -11519,10 +11519,11 @@ class Game:
                                 if tgt is None:
                                     break
                                 shot_mod = int(darkness_penalty) + int(rng_mod)
-                                if int(combat_distance_ft) <= 0:
-                                    shot_mod += -4
+                                sim_pen = shooting_into_melee_penalty(combat_distance_ft)
+                                if int(sim_pen) != 0:
+                                    shot_mod += int(sim_pen)
                                     try:
-                                        self.battle_evt("ACTION_MODIFIER", actor=self._battle_label_for(actor), target=self._battle_label_for(tgt), reason="shooting_into_melee", value=-4)
+                                        self.battle_evt("ACTION_MODIFIER", actor=self._battle_label_for(actor), target=self._battle_label_for(tgt), reason="shooting_into_melee", value=int(sim_pen))
                                     except Exception:
                                         pass
                                 try:
@@ -11585,8 +11586,8 @@ class Game:
                         # the party is 4-wide). This is important for fixture replay order.
                         foe_frontage = None
                         try:
-                            if side == "foe" and int(combat_distance_ft) <= 10:
-                                foe_frontage = max(1, len(list(self.party.living())))
+                            if side == "foe":
+                                foe_frontage = foe_frontage_limit(combat_distance_ft, len(list(self.party.living())))
                         except Exception:
                             foe_frontage = None
                         foe_melee_used = 0
@@ -11634,9 +11635,8 @@ class Game:
                             try:
                                 mb = self.effects_mgr.query_modifiers(actor)
                                 if mb.forced_retreat:
-                                    if _effective_side(actor) == "foe":
-                                        if 'fled' not in (getattr(actor, 'effects', []) or []):
-                                            actor.effects = list(getattr(actor, 'effects', []) or []) + ['fled']
+                                    retreat_state = apply_forced_retreat(actor)
+                                    if retreat_state == "flee":
                                         self.ui.log(f"{actor.name} flees in terror!")
                                     else:
                                         self.ui.log(f"{actor.name} cowers in fear!")
@@ -12116,26 +12116,7 @@ class Game:
         except Exception:
             pass
 
-        for a in actors:
-            st = getattr(a, "status", None)
-            if not isinstance(st, dict) or not st:
-                continue
-
-            # ints are duration counters
-            for k in list(st.keys()):
-                v = st.get(k)
-                if isinstance(v, int):
-                    if v > 0:
-                        st[k] = v - 1
-                    if st.get(k) == 0:
-                        st.pop(k, None)
-                elif isinstance(v, dict) and "rounds" in v:
-                    try:
-                        v["rounds"] = int(v.get("rounds", 0)) - 1
-                    except Exception:
-                        v["rounds"] = 0
-                    if int(v.get("rounds", 0)) <= 0:
-                        st.pop(k, None)
+        tick_round_statuses(actors, phase="start")
 
     def _resolve_attack(self, attacker: Actor, defender: Actor, to_hit_mod: int = 0, round_no: int = 1, kind_override: str | None = None, combat_foes: list[Actor] | None = None):
         # Strict replay diagnostics: tag RNG consumption with high-level context.
@@ -12379,6 +12360,12 @@ class Game:
 
 
     def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
+        try:
+            if int(getattr(target, "hp", 0) or 0) <= 0:
+                cleanup_actor_battle_status(target)
+        except Exception:
+            pass
+
         """Hardening: centralized death cleanup.
 
         Removes sticky control effects (grapple/engulf/swallow) so combat state
@@ -13482,7 +13469,7 @@ class Game:
             # even if you weren't explicitly hit earlier in the round.
             # Rule: if casting while at melee distance, roll 1d20; on 1–2 the spell is disrupted.
             try:
-                if combat_distance_ft is not None and int(combat_distance_ft) <= 10:
+                if is_melee_engaged(combat_distance_ft):
                     roll = int(self.dice.d(20))
                     if roll <= 2:
                         self.battle_evt("SPELL_DISRUPTED", caster_id=caster.name, spell=str(spell_name), roll=int(roll), reason="melee")
