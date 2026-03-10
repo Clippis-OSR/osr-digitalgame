@@ -1828,6 +1828,16 @@ class Game:
     # Wilderness command handlers
     # -----------------
 
+    def _advance_wilderness_clock(self, *, travel_turns: int = 0, watch_turns: int = 0, encounter_ticks: int = 0) -> None:
+        ts = getattr(self, "travel_state", None)
+        if ts is None:
+            self.travel_state = TravelState(location="wilderness")
+            ts = self.travel_state
+        if hasattr(ts, "advance_clock"):
+            ts.advance_clock(travel_turns=int(travel_turns), watch_turns=int(watch_turns), encounter_ticks=int(encounter_ticks))
+        else:
+            ts.travel_turns = int(getattr(ts, "travel_turns", 0) or 0) + max(0, int(travel_turns))
+
     def _cmd_advance_watch(self, watches: int) -> CommandResult:
         w = max(0, int(watches))
         if w <= 0:
@@ -1952,6 +1962,8 @@ class Game:
 
             self._consume_rations(1)
             self._advance_watch(int(wps_eff))
+            self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
+            self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
             self._wilderness_encounter_check(hx2, encounter_mod=int(enc_mod) + int(terr_enc_mod))
 
 
@@ -2010,6 +2022,8 @@ class Game:
 
         self._consume_rations(1)
         self._advance_watch(int(wps_eff))
+        self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
+        self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
         self._wilderness_encounter_check(hx2, encounter_mod=int(enc_mod) + int(terr_enc_mod))
 
 
@@ -2083,6 +2097,8 @@ class Game:
 
             self._consume_rations(1)
             self._advance_watch(int(wps_eff))
+            self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
+            self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
             self._wilderness_encounter_check(hx2, encounter_mod=int(enc_mod) + int(terr_enc_mod))
 
 
