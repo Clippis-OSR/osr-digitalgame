@@ -8,10 +8,18 @@ from typing import Any, Dict, Optional
 
 from .models import Actor, Party, Stats
 from .travel_state import TravelState
+from .events import (
+    normalize_player_event,
+    append_player_event,
+    project_clues_from_events,
+    project_discoveries_from_events,
+    project_rumors_from_events,
+    project_district_notes_from_events,
+)
 
 # Increment whenever the on-disk schema changes.
 # We write both "save_version" and the legacy "version" key for compatibility.
-SAVE_VERSION = 10
+SAVE_VERSION = 11
 
 class SaveSchemaError(ValueError):
     """Raised when a save file is missing required keys or has invalid types."""
@@ -160,6 +168,7 @@ def validate_and_guard_save_data(data: Any, strict: bool) -> Dict[str, Any]:
     _ensure_dict(data, "wilderness", "wilderness", default={}, strict=False)
     _ensure_dict(data, "replay", "replay", default={}, strict=False)
     _ensure_dict(data, "journal", "journal", default={}, strict=False)
+    _ensure_dict(data, "events", "events", default={}, strict=False)
     _ensure_dict(data, "factions", "factions", default={}, strict=False)
     _ensure_dict(data, "clocks", "clocks", default={}, strict=False)
     _ensure_dict(data, "contracts", "contracts", default={}, strict=False)
@@ -208,6 +217,12 @@ def validate_and_guard_save_data(data: Any, strict: bool) -> Dict[str, Any]:
         if strict:
             _schema_fail("dungeon.dungeon_rooms", f"expected object, got {_type_name(dung.get('dungeon_rooms'))}")
         dung["dungeon_rooms"] = {}
+
+    ev = data["events"]
+    if not isinstance(ev.get("event_history", []), list):
+        if strict:
+            _schema_fail("events.event_history", f"expected array, got {_type_name(ev.get('event_history'))}")
+        ev["event_history"] = []
 
     # Replay essentials
     rep = data["replay"]
@@ -508,6 +523,16 @@ def game_to_dict(game: Any) -> Dict[str, Any]:
             "discoveries": list(getattr(game, "discovery_log", []) or []),
             "rumors": list(getattr(game, "rumors", []) or []),
             "dungeon_clues": list(getattr(game, "dungeon_clues", []) or []),
+            "district_notes": list(getattr(game, "district_notes", []) or []),
+        },
+        "events": {
+            "event_history": [
+                e for e in (
+                    normalize_player_event(x)
+                    for x in (getattr(game, "event_history", []) or [])
+                )
+                if isinstance(e, dict)
+            ],
         },
         "factions": {
             "factions": list(getattr(game, "factions", {}).values()) if isinstance(getattr(game, "factions", {}), dict) else [],
@@ -799,6 +824,19 @@ def _migrate_9_to_10(data: Dict[str, Any]) -> Dict[str, Any]:
     data["version"] = 10
     return data
 
+
+
+def _migrate_10_to_11(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Add canonical persisted player-facing event history container."""
+    ev = data.get("events") or {}
+    if not isinstance(ev, dict):
+        ev = {}
+    if not isinstance(ev.get("event_history", []), list):
+        ev["event_history"] = []
+    data["events"] = ev
+    data["save_version"] = 11
+    data["version"] = 11
+    return data
 MIGRATIONS = {
     1: _migrate_1_to_2,
     2: _migrate_2_to_3,
@@ -809,6 +847,7 @@ MIGRATIONS = {
     7: _migrate_7_to_8,
     8: _migrate_8_to_9,
     9: _migrate_9_to_10,
+    10: _migrate_10_to_11,
 }
 
 
@@ -1173,15 +1212,70 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     setattr(game, "travel_state", TravelState.from_dict(wild.get("travel_state", {})))
 
     j = data.get("journal", {}) or {}
-    setattr(game, "discovery_log", list(j.get("discoveries", []) or []))
-    setattr(game, "rumors", list(j.get("rumors", []) or []))
+    ev = data.get("events", {}) or {}
+    raw_event_history = ev.get("event_history", []) or []
+    event_history = [e for e in (normalize_player_event(x) for x in raw_event_history) if isinstance(e, dict)]
+
+    if not event_history:
+        for d in (j.get("discoveries", []) or []):
+            if isinstance(d, dict):
+                append_player_event(
+                    event_history,
+                    event_type="discovery.recorded",
+                    category="discovery",
+                    day=int(d.get("day", 1) or 1),
+                    watch=int(d.get("watch", 0) or 0),
+                    title=f"Discovery recorded: {str(d.get('name') or 'Unknown')}",
+                    payload=dict(d),
+                    refs={"hex": [int(d.get("q", 0) or 0), int(d.get("r", 0) or 0)]},
+                )
+        for r in (j.get("rumors", []) or []):
+            if isinstance(r, dict):
+                append_player_event(
+                    event_history,
+                    event_type="rumor.learned",
+                    category="rumor",
+                    day=int(r.get("day", 1) or 1),
+                    watch=int(r.get("watch", 0) or 0),
+                    title="Rumor learned",
+                    payload=dict(r),
+                    refs={"poi_id": str(r.get("poi_id") or ""), "hex": [int(r.get("q", 0) or 0), int(r.get("r", 0) or 0)]},
+                )
+        for c in (j.get("dungeon_clues", []) or []):
+            if isinstance(c, dict):
+                append_player_event(
+                    event_history,
+                    event_type="clue.found",
+                    category="clue",
+                    day=int(c.get("day", 1) or 1),
+                    watch=int(c.get("watch", 0) or 0),
+                    title=f"Clue noted: {str(c.get('text') or '')}",
+                    payload=dict(c),
+                    refs={"room_id": int(c.get("room_id", 0) or 0), "level": int(c.get("level", 0) or 0)},
+                )
+        for n in (j.get("district_notes", []) or []):
+            if isinstance(n, dict):
+                append_player_event(
+                    event_history,
+                    event_type="district.noted",
+                    category="district",
+                    day=int(n.get("day", 1) or 1),
+                    watch=int(n.get("watch", 0) or 0),
+                    title=str(n.get("text") or "District note"),
+                    payload=dict(n),
+                    refs={"cid": str(n.get("cid") or "")},
+                )
+
+    setattr(game, "event_history", event_history)
+    setattr(game, "discovery_log", project_discoveries_from_events(event_history))
+    setattr(game, "rumors", project_rumors_from_events(event_history))
+    setattr(game, "dungeon_clues", project_clues_from_events(event_history))
+    setattr(game, "district_notes", project_district_notes_from_events(event_history))
     try:
         if hasattr(game, "_ensure_minimal_rumor_surface"):
             game._ensure_minimal_rumor_surface()
     except Exception:
         pass
-    if not getattr(game, "dungeon_clues", None):
-        setattr(game, "dungeon_clues", list(j.get("dungeon_clues", []) or []))
 
     fac = data.get("factions", {}) or {}
     fac_list = list(fac.get("factions", []) or [])
