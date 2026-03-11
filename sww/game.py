@@ -22,6 +22,7 @@ from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
+from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
 from .contracts import generate_contracts, Contract
 from .events import (
@@ -5049,8 +5050,83 @@ class Game:
     # Party Creation (Guided) (P4.2)
     # -------------
 
+    def _guided_step_title(self, *, step: int, total_steps: int, label: str, name: str) -> None:
+        self.ui.title(f"Step {step}/{total_steps}: {label} — {name}")
+
+    def _guided_log_character_preview(
+        self,
+        *,
+        stats: Stats,
+        cls: str | None,
+        race: str | None,
+        alignment: str | None,
+        hp: int | None = None,
+        armor_name: str | None = None,
+        shield: bool = False,
+    ) -> None:
+        try:
+            from .attribute_rules import strength_mods, dexterity_mods, constitution_mods, xp_bonus_percent, cleric_bonus_first_level_spell
+            from .equipment import compute_ac_desc
+        except Exception:
+            return
+
+        active_cls = cls or "(not chosen)"
+        active_race = race or "(not chosen)"
+        active_alignment = alignment or "(not chosen)"
+        self.ui.log(f"Preview: {active_cls} | {active_race} | {active_alignment}")
+        self.ui.log(
+            f"  STR {stats.STR} DEX {stats.DEX} CON {stats.CON} INT {stats.INT} WIS {stats.WIS} CHA {stats.CHA}"
+        )
+
+        cls_for_mods = cls if cls else "Fighter"
+        sm = strength_mods(stats.STR, cls=cls_for_mods, fighter_only_bonuses=True)
+        dm = dexterity_mods(stats.DEX)
+        cm = constitution_mods(stats.CON)
+        hp_est = hp if hp is not None else max(1, 4 + int(cm.hp_per_hd))
+        ac_est = compute_ac_desc(
+            base_ac_desc=9,
+            armor_name=armor_name,
+            shield=shield,
+            dex_score=getattr(stats, "DEX", None),
+        )
+        self.ui.log(
+            f"  HP {hp_est} | AC {ac_est} | STR to-hit {sm.to_hit:+d}, STR dmg {sm.dmg:+d} | "
+            f"DEX missile {dm.missile_to_hit:+d}, AC shift {dm.ac_desc_mod:+d} | CON HP/HD {cm.hp_per_hd:+d}"
+        )
+        if cls:
+            xp_pct = xp_bonus_percent(cls=cls, stats=stats)
+            if xp_pct:
+                self.ui.log(f"  XP bonus: +{xp_pct}%")
+            if cls == "Cleric" and cleric_bonus_first_level_spell(stats.WIS):
+                self.ui.log("  Cleric note: WIS 15+ grants +1 first-level spell.")
+
+    def _class_choice_notes(self, cls: str) -> str:
+        from .class_eligibility import allowed_races_for_class, allowed_alignments_for_class
+
+        notes: list[str] = []
+        race_allow = allowed_races_for_class(cls)
+        align_allow = allowed_alignments_for_class(cls)
+        if race_allow is not None:
+            notes.append("race: " + ", ".join(race_allow))
+        if align_allow is not None:
+            notes.append("alignment: " + ", ".join(align_allow))
+        prime_attr = {
+            "Fighter": "prime attribute STR",
+            "Cleric": "prime attribute WIS",
+            "Thief": "prime attribute DEX",
+            "Magic-User": "prime attribute INT",
+            "Assassin": "prime attributes STR/DEX",
+            "Druid": "prime attributes WIS/CHA",
+            "Monk": "prime attributes STR/DEX/WIS/CON",
+            "Paladin": "prime attributes STR/CHA",
+            "Ranger": "prime attribute STR",
+        }.get(cls)
+        if prime_attr:
+            notes.append(prime_attr)
+        return " | ".join(notes)
+
     def create_party_guided(self):
-        """Guided party creation: roll -> assign -> class -> kit.
+        """Guided party creation: roll -> assign -> class -> race -> alignment -> gear -> review.
 
         This is intentionally text-UI friendly and deterministic (uses Dice).
         """
@@ -5058,7 +5134,6 @@ class Game:
         party_size = int(self.ui.prompt("How many PCs (1-6)?", "4") or "4")
         party_size = max(1, min(self.MAX_PCS, party_size))
 
-        # Roll method is chosen once per party (Option B).
         rm_i = self.ui.choose(
             "Attribute roll method",
             [
@@ -5073,35 +5148,33 @@ class Game:
         def _roll_one_stat() -> int:
             if roll_method == "3d6":
                 return self.dice.d(6) + self.dice.d(6) + self.dice.d(6)
-            # 4d6 drop lowest
             r = [self.dice.d(6) for _ in range(4)]
             r.sort()
             return int(r[1] + r[2] + r[3])
+
+        classes = ["Fighter", "Cleric", "Thief", "Magic-User", "Assassin", "Druid", "Monk", "Paladin", "Ranger"]
+        races = ["Human", "Elf", "Dwarf", "Halfling", "Half-elf"]
+        alignments = ["Law", "Neutrality", "Chaos"]
 
         for n in range(party_size):
             while True:
                 self.ui.hr()
                 name = self.ui.prompt(f"Name for PC #{n+1}:", f"Hero{n+1}") or f"Hero{n+1}"
 
-                # 1) Roll screen (six attribute scores)
-                rolls: list[int] = []
+                # Step 1: roll/reorder
                 while True:
                     rolls = [_roll_one_stat() for _ in range(6)]
                     original = list(rolls)
-
-                    # Keep/reroll loop
+                    reroll = False
                     while True:
-                        self.ui.title(f"Roll Attributes — {name}")
-                        self.ui.log(
-                            "Method: " + ("3d6 (Classic)" if roll_method == "3d6" else "4d6 drop lowest (Heroic)")
-                        )
+                        self._guided_step_title(step=1, total_steps=6, label="Roll Attributes", name=name)
+                        self.ui.log("Method: " + ("3d6 (Classic)" if roll_method == "3d6" else "4d6 drop lowest (Heroic)"))
                         self.ui.log("Rolled: " + ", ".join(str(x) for x in rolls))
                         j = self.ui.choose("Next step", ["Keep & Continue", "Reorder/Swap", "Reroll"])
                         if j == 2:
-                            # Reroll from scratch
+                            reroll = True
                             break
                         if j == 1:
-                            # Reorder view (pure convenience; no rules impact)
                             while True:
                                 self.ui.title(f"Reorder Rolls — {name}")
                                 self.ui.log("Current: " + " | ".join(f"{i+1}:{v}" for i, v in enumerate(rolls)))
@@ -5123,31 +5196,28 @@ class Game:
                                     if a != b:
                                         rolls[a], rolls[b] = rolls[b], rolls[a]
                             continue
-                        # Keep & continue
                         break
-
-                    if j == 2:
+                    if reroll:
                         continue
                     break
 
-                # 2) Assign screen
+                # Step 2: assign
                 remaining = list(rolls)
                 assigned: dict[str, int] = {}
                 for stat in ["STR", "DEX", "CON", "INT", "WIS", "CHA"]:
-                    self.ui.title(f"Assign Scores — {name}")
+                    self._guided_step_title(step=2, total_steps=6, label="Assign Attributes", name=name)
                     self.ui.log("Remaining: " + ", ".join(str(x) for x in remaining))
                     idx = self.ui.choose(f"Assign which value to {stat}?", [str(x) for x in remaining])
                     val = int(remaining.pop(idx))
                     assigned[stat] = val
-                    # Live preview for DEX/CON/CHA only (class-independent)
                     try:
                         from .attribute_rules import dexterity_mods, constitution_mods, max_special_hirelings
                         if stat == "DEX":
                             dm = dexterity_mods(val)
-                            self.ui.log(f"DEX preview: missile to-hit {dm.missile_to_hit:+d}, AC shift {dm.ac_desc_shift:+d} (descending)")
+                            self.ui.log(f"DEX preview: missile to-hit {dm.missile_to_hit:+d}, AC shift {dm.ac_desc_mod:+d} (descending)")
                         elif stat == "CON":
                             cm = constitution_mods(val)
-                            self.ui.log(f"CON preview: HP/HD {cm.hp_per_hd:+d}, raise-dead survival {cm.raise_dead_survival_pct}%")
+                            self.ui.log(f"CON preview: HP/HD {cm.hp_per_hd:+d}, raise-dead survival {cm.survive_raise_dead_pct}%")
                         elif stat == "CHA":
                             self.ui.log(f"CHA preview: max special hirelings {max_special_hirelings(val)}")
                     except Exception:
@@ -5162,102 +5232,159 @@ class Game:
                     CHA=int(assigned["CHA"]),
                 )
 
-                # 3) Class select (shows derived STR bonuses and XP bonus)
-                cls_i = self.ui.choose(
-                    "Choose class",
-                    ["Fighter", "Cleric", "Thief", "Magic-User", "Assassin", "Druid", "Monk", "Paladin", "Ranger"],
-                )
-                cls = ["Fighter", "Cleric", "Thief", "Magic-User", "Assassin", "Druid", "Monk", "Paladin", "Ranger"][cls_i]
-
-                # 3.5) Race select (P4.10.5)
-                race_i = self.ui.choose("Choose race", ["Human", "Elf", "Dwarf", "Halfling", "Half-elf"])
-                race = ["Human", "Elf", "Dwarf", "Halfling", "Half-elf"][race_i]
-
-                # Derived preview
-                try:
-                    from .attribute_rules import strength_mods, dexterity_mods, constitution_mods, xp_bonus_percent, cleric_bonus_first_level_spell
-                    sm = strength_mods(stats.STR, cls=cls, fighter_only_bonuses=True)
-                    dm = dexterity_mods(stats.DEX)
-                    cm = constitution_mods(stats.CON)
-                    xp_pct = xp_bonus_percent(cls=cls, stats=stats)
-                    self.ui.hr()
-                    self.ui.log(f"Derived: STR to-hit {sm.to_hit:+d}, STR dmg {sm.damage:+d} (fighter-only bonuses) | ")
-                    self.ui.log(f"        DEX missile {dm.missile_to_hit:+d}, AC shift {dm.ac_desc_shift:+d} | CON HP/HD {cm.hp_per_hd:+d}")
-                    if cls == "Cleric":
-                        b = cleric_bonus_first_level_spell(stats.WIS)
-                        if b:
-                            self.ui.log("        Cleric bonus: +1 first-level spell (WIS 15+)")
-                    if xp_pct:
-                        self.ui.log(f"        XP bonus: +{xp_pct}%")
-                except Exception:
-                    pass
-
-                ok = self.ui.choose("Accept this character?", ["Yes", "Redo this character"])
-                if ok != 0:
-                    continue
-
-                # Build PC
-                hd = self.class_hit_die(cls)
-                try:
-                    from .attribute_rules import constitution_mods
-                    con_hp = int(constitution_mods(stats.CON).hp_per_hd)
-                except Exception:
-                    con_hp = max(0, mod_ability(stats.CON))
-                hp = max(1, self.dice.d(hd) + con_hp)
-
-                pc = PC(
-                    name=name,
-                    race=race,
-                    hp=hp,
-                    hp_max=hp,
-                    ac_desc=9,
-                    hd=1,
-                    save=15,
-                    morale=9,
-                    alignment="Neutrality",
-                    is_pc=True,
-                    cls=cls,
-                    level=1,
-                    xp=0,
-                    stats=stats,
+                from .class_eligibility import (
+                    allowed_alignments_for_class,
+                    allowed_races_for_class,
+                    is_alignment_allowed,
+                    is_race_allowed,
                 )
 
-                # Derived class features.
-                try:
-                    self.recalc_pc_class_features(pc)
-                except Exception:
-                    pass
-                pc.effects = []
-                pc.weapon = None
-                pc.armor = None
-                pc.shield = False
+                while True:
+                    self._guided_step_title(step=3, total_steps=6, label="Choose Class", name=name)
+                    cls = classes[self.ui.choose("Choose class", [f"{c} — {self._class_choice_notes(c)}" for c in classes])]
+                    self._guided_log_character_preview(stats=stats, cls=cls, race=None, alignment=None)
 
-                # Kit
-                weapon = self.ui.choose("Starting weapon", ["Sword", "Spear", "Mace", "Dagger", "Staff"])
-                pc.weapon = ["Sword", "Spear", "Mace", "Dagger", "Staff"][weapon]
-                armor = self.ui.choose("Armor", ["None", "Leather", "Chain", "Plate"])
-                armor_name = ["None", "Leather", "Chain", "Plate"][armor]
-                if armor_name != "None":
-                    pc.armor = armor_name
-                    sh = self.ui.choose("Shield?", ["No", "Yes"])
-                    if sh == 1:
-                        pc.shield = True
+                    go_back_class = False
+                    while True:
+                        self._guided_step_title(step=4, total_steps=6, label="Choose Race", name=name)
+                        race_idx = self.ui.choose("Choose race", races + ["Back to Class"])
+                        if race_idx == len(races):
+                            go_back_class = True
+                            break
+                        race = races[race_idx]
+                        if not is_race_allowed(cls, race):
+                            allow = allowed_races_for_class(cls) or ()
+                            self.ui.log(f"{cls} is unavailable for {race}. Allowed races: {', '.join(allow)}.")
+                            continue
+                        self._guided_log_character_preview(stats=stats, cls=cls, race=race, alignment=None)
 
-                # Compute AC from chosen kit and DEX.
-                try:
-                    from .equipment import compute_ac_desc
-                    pc.ac_desc = compute_ac_desc(
-                        base_ac_desc=9,
-                        armor_name=pc.armor,
-                        shield=bool(pc.shield),
-                        dex_score=getattr(stats, "DEX", None),
-                    )
-                except Exception:
-                    pass
+                        while True:
+                            self._guided_step_title(step=5, total_steps=6, label="Choose Alignment", name=name)
+                            alignment_idx = self.ui.choose("Choose alignment", alignments + ["Back to Race"])
+                            if alignment_idx == len(alignments):
+                                break
+                            alignment = alignments[alignment_idx]
+                            if not is_alignment_allowed(cls, alignment):
+                                allow = allowed_alignments_for_class(cls) or ()
+                                self.ui.log(f"{cls} requires alignment: {', '.join(allow)}. You chose {alignment}.")
+                                continue
 
-                self.party.members.append(pc)
-                break
+                            hd = self.class_hit_die(cls)
+                            try:
+                                from .attribute_rules import constitution_mods
+                                con_hp = int(constitution_mods(stats.CON).hp_per_hd)
+                            except Exception:
+                                con_hp = max(0, mod_ability(stats.CON))
+                            hp = max(1, self.dice.d(hd) + con_hp)
 
+                            pc = PC(
+                                name=name,
+                                race=race,
+                                hp=hp,
+                                hp_max=hp,
+                                ac_desc=9,
+                                hd=1,
+                                save=15,
+                                morale=9,
+                                alignment=alignment,
+                                is_pc=True,
+                                cls=cls,
+                                level=1,
+                                xp=0,
+                                stats=stats,
+                            )
+                            try:
+                                self.recalc_pc_class_features(pc)
+                            except Exception:
+                                pass
+                            pc.effects = []
+
+                            while True:
+                                self._guided_step_title(step=5, total_steps=6, label="Choose Starting Equipment", name=name)
+                                kit = self.ui.choose("Equipment setup", ["Class starter kit", "Manual equipment pick", "Back to Alignment"])
+                                if kit == 2:
+                                    break
+                                if kit == 0:
+                                    weapon_name, armor_name, has_shield = {
+                                        "Fighter": ("Sword", "Chain", True),
+                                        "Cleric": ("Mace", "Chain", True),
+                                        "Thief": ("Dagger", "Leather", False),
+                                        "Magic-User": ("Staff", "None", False),
+                                        "Assassin": ("Sword", "Leather", False),
+                                        "Druid": ("Staff", "Leather", True),
+                                        "Monk": ("Staff", "None", False),
+                                        "Paladin": ("Sword", "Plate", True),
+                                        "Ranger": ("Sword", "Chain", False),
+                                    }.get(cls, ("Sword", "Leather", False))
+                                else:
+                                    weapon_name = ["Sword", "Spear", "Mace", "Dagger", "Staff"][
+                                        self.ui.choose("Starting weapon", ["Sword", "Spear", "Mace", "Dagger", "Staff"])
+                                    ]
+                                    armor_name = ["None", "Leather", "Chain", "Plate"][
+                                        self.ui.choose("Armor", ["None", "Leather", "Chain", "Plate"])
+                                    ]
+                                    has_shield = False
+                                    if armor_name != "None":
+                                        has_shield = self.ui.choose("Shield?", ["No", "Yes"]) == 1
+
+                                pc.weapon = weapon_name
+                                pc.armor = None if armor_name == "None" else armor_name
+                                pc.shield = has_shield
+                                try:
+                                    from .equipment import compute_ac_desc
+                                    pc.ac_desc = compute_ac_desc(
+                                        base_ac_desc=9,
+                                        armor_name=pc.armor,
+                                        shield=bool(pc.shield),
+                                        dex_score=getattr(stats, "DEX", None),
+                                    )
+                                except Exception:
+                                    pass
+
+                                self._guided_step_title(step=6, total_steps=6, label="Review Character", name=name)
+                                self._guided_log_character_preview(
+                                    stats=stats,
+                                    cls=cls,
+                                    race=race,
+                                    alignment=alignment,
+                                    hp=pc.hp,
+                                    armor_name=pc.armor,
+                                    shield=bool(pc.shield),
+                                )
+                                self.ui.log(f"Equipment: Weapon {pc.weapon} | Armor {pc.armor or 'None'} | Shield {'Yes' if pc.shield else 'No'}")
+                                self.ui.log("Party starting gold after creation: 100 gp (shared pool)")
+                                done = self.ui.choose(
+                                    "Confirm character",
+                                    ["Confirm & Add to Party", "Back to Equipment", "Back to Alignment", "Redo from Step 1"],
+                                )
+                                if done == 0:
+                                    self.party.members.append(pc)
+                                    go_back_class = False
+                                    break
+                                if done == 1:
+                                    continue
+                                if done == 2:
+                                    break
+                                go_back_class = True
+                                break
+
+                            if done == 0:
+                                break
+                            if done in (2, 3):
+                                break
+
+                        if done == 0:
+                            break
+                        if go_back_class:
+                            break
+
+                    if done == 0:
+                        break
+                    if go_back_class:
+                        continue
+
+                if done == 0:
+                    break
         # Starting supplies
         self.gold = 100
         self.torches = 3
@@ -10011,6 +10138,134 @@ class Game:
             lines.append(str(aft.get("text") or "").strip())
         return lines[:2]
 
+    def _mark_room_resolution_once(self, room: dict[str, Any], feature_id: str, *, mode: str = "resolve") -> bool:
+        """Return True on first resolution for this room feature, then persist the key."""
+        key = first_time_room_resolution_key(room, feature_id=feature_id, mode=mode)
+        d = room.get("_delta") if isinstance(room.get("_delta"), dict) else {}
+        keys = set(str(x) for x in (d.get("resolution_keys") or room.get("resolution_keys") or []) if str(x).strip())
+        if key in keys:
+            return False
+        keys.add(key)
+        ordered = sorted(keys)
+        room["resolution_keys"] = ordered
+        if isinstance(d, dict):
+            d["resolution_keys"] = ordered
+        return True
+
+    def _resolve_room_scene_profile(self, room: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any] | None:
+        scene = str(room.get("interaction_scene") or "").strip().lower()
+        tags = set(str(t).lower() for t in (ctx.get("room_tags") or []))
+        role = self._dungeon_room_role(int(ctx.get("room_id", room.get("id", 0)) or 0))
+
+        if scene in {"hazard", "secret", "lore", "occupant", "rest"}:
+            kind = scene
+        elif role in {"hazard"} or room.get("type") == "trap":
+            kind = "hazard"
+        elif role in {"clue", "shrine"} or "clue_target:boss" in tags or "clue_target:treasury" in tags:
+            kind = "lore"
+        elif (not ctx.get("secrets_found")) and ("secret" in tags or "role:transit" in tags or role == "transit"):
+            kind = "secret"
+        elif role in {"guard", "lair"} and not room.get("cleared"):
+            kind = "occupant"
+        else:
+            kind = "rest"
+
+        return {"kind": kind, "role": role}
+
+    def _run_room_interaction_scene(self, room: dict[str, Any]) -> None:
+        ctx = resolve_room_interaction_context(self, room)
+        profile = self._resolve_room_scene_profile(room, ctx)
+        if not profile:
+            return
+
+        kind = str(profile.get("kind") or "rest")
+        rid = int(ctx.get("room_id", room.get("id", self.current_room_id)) or self.current_room_id)
+
+        if kind == "hazard":
+            hazard_id = str(room.get("hazard_id") or room.get("trap_desc") or "hazard").strip().lower().replace(" ", "_")
+            if not self._mark_room_resolution_once(room, f"hazard:{hazard_id}", mode="scene"):
+                return
+            self.ui.log("The room is unstable: you can bypass, disarm, or risk pushing through.")
+            c = self.ui.choose("Hazard scene", ["Bypass carefully", "Disarm quickly", "Push through", "Leave it alone"])
+            if c == 3:
+                self.ui.log("You back off and mark the hazard for later.")
+                return
+            if c in (0, 1):
+                best_dex = 0
+                for pc in self.party.living():
+                    st = getattr(pc, "stats", None)
+                    try:
+                        best_dex = max(best_dex, int(getattr(st, "DEX", 0) or 0))
+                    except Exception:
+                        pass
+                odds = max(1, min(5, 1 + max(0, mod_ability(best_dex)) + (1 if c == 0 else 0)))
+                if self.dice.in_6(odds):
+                    room["hazard_resolved"] = True
+                    room["cleared"] = bool(room.get("cleared", False)) or (room.get("type") == "trap")
+                    self.ui.log("You clear a safe path through the hazard.")
+                    return
+            victim = self.dice_rng.choice(self.party.living()) if self.party.living() else None
+            if victim is not None:
+                dmg = int(self.dice.roll(str(room.get("hazard_damage") or room.get("trap_damage") or "1d4")).total)
+                victim.hp = max(-1, victim.hp - dmg)
+                self._notify_damage(victim, dmg, damage_types={"physical"})
+                self.ui.log(f"{victim.name} is clipped by debris for {dmg} damage.")
+            self.noise_level = min(5, int(getattr(self, "noise_level", 0) or 0) + 1)
+            return
+
+        if kind == "secret":
+            if not self._mark_room_resolution_once(room, "secret-probe", mode="scene"):
+                return
+            c = self.ui.choose("Secret signs", ["Search for concealed route", "Leave the walls untouched"])
+            if c != 0:
+                self.ui.log("You leave the suspicious masonry alone.")
+                return
+            before = bool(room.get("secret_found"))
+            self._reveal_room_secret_or_map(room, reveal_map=True)
+            after = bool(room.get("secret_found"))
+            if not before and after:
+                self._record_dungeon_clue("A concealed route branches from this room.", source="secret_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
+            return
+
+        if kind == "lore":
+            target = "deeper defenses" if "clue_target:boss" in set(ctx.get("room_tags") or []) else "hidden caches"
+            if not self._mark_room_resolution_once(room, f"lore:{target}", mode="scene"):
+                return
+            c = self.ui.choose("Lore scene", ["Study inscriptions", "Take charcoal rubbing", "Ignore and move on"])
+            if c == 2:
+                return
+            clue = f"Old markings hint at {target} beyond this level."
+            self._record_dungeon_clue(clue, source="lore_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
+            if c == 1:
+                self._grant_room_loot(gp=6, items=["Rubbing of warning sigils"], source="lore_scene")
+            return
+
+        if kind == "occupant":
+            if not self._mark_room_resolution_once(room, "passive-occupant", mode="scene"):
+                return
+            self.ui.log("A wary non-hostile occupant freezes in the torchlight.")
+            c = self.ui.choose("Occupant reaction", ["Offer aid", "Ask for warning", "Drive them off", "Leave quietly"])
+            if c == 0:
+                injured = [pc for pc in self.party.living() if pc.hp < pc.hp_max]
+                if injured:
+                    pc = injured[0]
+                    pc.hp = min(pc.hp_max, pc.hp + 2)
+                    self.ui.log(f"{pc.name} is steadied with rough field dressing (+2 HP).")
+                self._record_dungeon_clue("A survivor warns of unstable floors nearby.", source="occupant_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
+            elif c == 1:
+                self._record_dungeon_clue("A frightened delver mentions a hidden bypass behind cracked stone.", source="occupant_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
+            elif c == 2:
+                self.noise_level = min(5, int(getattr(self, "noise_level", 0) or 0) + 1)
+                self.ui.log("Your threats echo through the halls.")
+            return
+
+        if not self._mark_room_resolution_once(room, "staging-room", mode="scene"):
+            return
+        if bool(ctx.get("party_ready", True)):
+            self.ui.log("You find a brief staging moment to regroup and check routes.")
+        else:
+            self.ui.log("The room is calm enough for a quick breath before pressing on.")
+
     def _grant_room_loot(self, gp: int = 0, items: list[Any] | None = None, source: str = 'dungeon_feature') -> None:
         gp_i = int(gp or 0)
         items_l = list(items or [])
@@ -10033,7 +10288,8 @@ class Game:
             self.ui.log(f'You recover {gp_i} gp and {len(items_l)} item(s).')
 
     def _reveal_room_secret_or_map(self, room: dict[str, Any], reveal_map: bool = False) -> None:
-        rid = int(room.get('id', self.current_room_id) or self.current_room_id)
+        ctx = resolve_room_interaction_context(self, room)
+        rid = int(ctx.get('room_id', room.get('id', self.current_room_id)) or self.current_room_id)
         hidden: list[int] = []
         adj = self._dungeon_bp_adjacency() or {}
         for dest in adj.get(rid, []):
@@ -10042,17 +10298,21 @@ class Game:
                 hidden.append(int(dest))
         if hidden:
             dest = sorted(hidden)[0]
-            self._dungeon_reveal_secret_edge(rid, dest)
-            room['secret_found'] = True
-            self.ui.log('You uncover signs of a hidden way.')
+            if self._mark_room_resolution_once(room, f"secret_edge:{dest}", mode="discover"):
+                self._dungeon_reveal_secret_edge(rid, dest)
+                room['secret_found'] = True
+                self.ui.log('You uncover signs of a hidden way.')
             return
-        if reveal_map:
+        if reveal_map and self._mark_room_resolution_once(room, 'map-route-clue', mode='discover'):
             exits = sorted(int(v) for v in (room.get('exits') or {}).values())
             if exits:
                 self.ui.log('You piece together nearby routes: ' + ', '.join(f'room {v}' for v in exits[:4]) + '.')
 
     def _apply_room_event(self, room: dict[str, Any], event: dict[str, Any]) -> None:
+        ctx = resolve_room_interaction_context(self, room)
         self.ui.log(str(event.get('desc') or 'Something strange stirs in the room.'))
+        if bool(ctx.get("low_light")):
+            self.ui.log("Dim light makes the room's details hard to read.")
         eff = str(event.get('effect') or 'none').lower()
         if eff == 'noise':
             self.noise_level = min(5, int(getattr(self, 'noise_level', 0) or 0) + int(event.get('noise', 1) or 1))
@@ -10215,19 +10475,20 @@ class Game:
 
     def _handle_room_specials(self, room: dict[str, Any]) -> None:
         d = room.get('_delta') if isinstance(room.get('_delta'), dict) else {}
-        if room.get('room_event') and not room.get('event_done'):
+        self._run_room_interaction_scene(room)
+        if room.get('room_event') and not room.get('event_done') and self._mark_room_resolution_once(room, 'room_event', mode='resolve'):
             self._apply_room_event(room, room.get('room_event') or {})
             room['event_done'] = True
             d['event_done'] = True
-        if room.get('special_room') and not room.get('feature_done'):
+        if room.get('special_room') and not room.get('feature_done') and self._mark_room_resolution_once(room, 'special_room', mode='resolve'):
             self._handle_special_room_feature(room, room.get('special_room') or {})
             room['feature_done'] = True
             d['feature_done'] = True
-        if room.get('shrine') and not room.get('shrine_done'):
+        if room.get('shrine') and not room.get('shrine_done') and self._mark_room_resolution_once(room, 'shrine', mode='resolve'):
             self._handle_room_shrine(room, room.get('shrine') or {})
             room['shrine_done'] = True
             d['shrine_done'] = True
-        if room.get('puzzle') and not room.get('puzzle_done'):
+        if room.get('puzzle') and not room.get('puzzle_done') and self._mark_room_resolution_once(room, 'puzzle', mode='resolve'):
             self._handle_room_puzzle(room, room.get('puzzle') or {})
             room['puzzle_done'] = True
             d['puzzle_done'] = True
@@ -10287,8 +10548,15 @@ class Game:
 
     
     def _handle_room_trap(self, room: dict[str, Any]):
-        if room.get("trap_disarmed"):
+        ctx = resolve_room_interaction_context(self, room)
+        if room.get("trap_disarmed") or bool(ctx.get("hazards_resolved")):
             self.ui.log("A disarmed trap lies here.")
+            room["cleared"] = True
+            return
+
+        trap_key = str(room.get("trap_desc") or room.get("trap_damage") or "trap").strip().lower().replace(" ", "_")
+        if not self._mark_room_resolution_once(room, f"trap:{trap_key}", mode="trigger"):
+            room["trap_disarmed"] = True
             room["cleared"] = True
             return
 
@@ -10905,6 +11173,10 @@ class Game:
         if isinstance(room.get("doors"), dict):
             rec["doors"] = dict(room.get("doors") or {})
 
+        keys = room.get("resolution_keys", rec.get("resolution_keys", []))
+        if isinstance(keys, (list, tuple, set)):
+            rec["resolution_keys"] = sorted({str(x) for x in keys if str(x).strip()})
+
         self._set_dungeon_delta_room(room_id, rec)
 
     def _get_dungeon_stocking_room(self, room_id: int) -> dict[str, Any]:
@@ -11003,6 +11275,7 @@ class Game:
                 "title": room_title,
                 "desc": room_desc,
                 "stairs": {"up": ("stairs_up" in [t.lower() for t in tags]), "down": ("stairs_down" in [t.lower() for t in tags])},
+                "resolution_keys": sorted({str(x) for x in (drec.get("resolution_keys") or []) if str(x).strip()}),
                 "_delta": drec,
             }
 
