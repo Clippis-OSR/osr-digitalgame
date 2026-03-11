@@ -2418,15 +2418,19 @@ class Game:
         )
         self.travel_state.location = "town"
         self.travel_state.route_progress = 0
-        self._append_player_event(
+        returned_evt = self._append_player_event(
             "expedition.returned",
             category="expedition",
             title="Returned to Town",
             payload={"return_location": "town", "day_cost": int(day_cost)},
             refs={"hex": [0, 0]},
         )
+        # Resolve contracts before recap so outcomes are reflected in the same expedition window.
+        self._check_contracts_on_town_arrival()
         self.ui.title("Return to Town")
         self.ui.log(f"Travel time: {day_cost} day(s).")
+        for ln in self._build_expedition_recap_lines(returned_eid=int((returned_evt or {}).get("eid", 0) or 0)):
+            self.ui.log(ln)
         for pc in self.party.pcs():
             next_xp = int(self.xp_threshold_for_class(getattr(pc, "cls", "Fighter"), int(getattr(pc, "level", 1) or 1) + 1))
             cur_xp = int(getattr(pc, "xp", 0) or 0)
@@ -2436,6 +2440,104 @@ class Game:
             self.ui.log(f"- {pc.name}: Lv{pc.level} XP {cur_xp}/{next_xp} (to next: {remain}) HP {hp}/{hp_max}")
         day_txt = f"{day_cost} day" + ("s" if day_cost != 1 else "")
         return CommandResult(status="ok", messages=(f"You return to Town. ({day_txt})",))
+
+    def _build_expedition_recap_lines(self, *, returned_eid: int | None = None) -> list[str]:
+        """Build concise recap lines for the most recent expedition event window."""
+        rows = [e for e in (getattr(self, "event_history", []) or []) if isinstance(e, dict)]
+        if not rows:
+            return []
+        rows.sort(key=lambda e: int((e or {}).get("eid", 0) or 0))
+
+        end_eid = int(returned_eid or 0)
+        if end_eid <= 0:
+            for ev in reversed(rows):
+                if str((ev or {}).get("type") or "") == "expedition.returned":
+                    end_eid = int((ev or {}).get("eid", 0) or 0)
+                    break
+        if end_eid <= 0:
+            return []
+
+        start_ev = None
+        for ev in reversed(rows):
+            eid = int((ev or {}).get("eid", 0) or 0)
+            if eid >= end_eid:
+                continue
+            if str((ev or {}).get("type") or "") == "expedition.departed":
+                start_ev = ev
+                break
+        if start_ev is None:
+            return []
+
+        start_eid = int((start_ev or {}).get("eid", 0) or 0)
+        window = [ev for ev in rows if int((ev or {}).get("eid", 0) or 0) > start_eid and int((ev or {}).get("eid", 0) or 0) <= end_eid]
+        if not window:
+            return []
+
+        depth_max = 0
+        pois: list[str] = []
+        contracts: list[str] = []
+        rumors = 0
+        discoveries = 0
+        for ev in window:
+            et = str((ev or {}).get("type") or "")
+            payload = dict((ev or {}).get("payload") or {})
+            if et == "dungeon.depth_reached":
+                try:
+                    depth_max = max(depth_max, int(payload.get("depth", 0) or 0))
+                except Exception:
+                    pass
+            elif et == "poi.explored":
+                nm = str(payload.get("poi_name") or (ev or {}).get("title") or "").strip()
+                if nm and nm not in pois:
+                    pois.append(nm)
+            elif et == "contract.completed":
+                nm = str(payload.get("title") or "Contract").strip()
+                if nm and nm not in contracts:
+                    contracts.append(nm)
+            elif et == "rumor.learned":
+                rumors += 1
+            elif et == "discovery.recorded":
+                discoveries += 1
+
+        start_payload = dict((start_ev or {}).get("payload") or {})
+        start_gold = int(start_payload.get("gold_start", int(getattr(self, "gold", 0) or 0)) or 0)
+        start_xp_total = int(start_payload.get("party_xp_total", 0) or 0)
+        gold_gain = int(getattr(self, "gold", 0) or 0) - int(start_gold)
+        xp_total_now = sum(int(getattr(pc, "xp", 0) or 0) for pc in (self.party.pcs() or []))
+        xp_gain = int(xp_total_now) - int(start_xp_total)
+
+        injured = 0
+        fallen = 0
+        for pc in (self.party.pcs() or []):
+            hp = int(getattr(pc, "hp", 0) or 0)
+            hp_max = int(getattr(pc, "hp_max", 0) or 0)
+            if hp <= 0:
+                fallen += 1
+            elif hp < hp_max:
+                injured += 1
+
+        lines = ["Expedition Recap", "----------------"]
+        if depth_max > 0:
+            lines.append(f"Depth reached: {depth_max}")
+        if pois:
+            lines.append(f"POIs explored: {', '.join(pois[:3])}{'...' if len(pois) > 3 else ''}")
+        if contracts:
+            lines.append(f"Contracts completed: {', '.join(contracts[:3])}{'...' if len(contracts) > 3 else ''}")
+        if gold_gain:
+            lines.append(f"Gold gained: {gold_gain}")
+        if xp_gain:
+            lines.append(f"XP gained: {xp_gain}")
+        if discoveries:
+            lines.append(f"New discoveries: {discoveries}")
+        if rumors:
+            lines.append(f"New rumors: {rumors}")
+        if fallen > 0:
+            lines.append(f"Party condition: {fallen} fallen, {injured} injured")
+        elif injured > 0:
+            lines.append(f"Party condition: {injured} injured")
+        else:
+            lines.append("Party condition: ready")
+        return lines
 
     def _cmd_investigate_current_location(self) -> CommandResult:
         hx = self._ensure_current_hex()
@@ -2534,6 +2636,8 @@ class Game:
                 "destination_type": str((poi or {}).get("type") or "dungeon_entrance"),
                 "destination_id": str((poi or {}).get("id") or f"hex:{int(self.party_hex[0])},{int(self.party_hex[1])}:dungeon_entrance"),
                 "destination_name": str((poi or {}).get("name") or "Dungeon Entrance"),
+                "gold_start": int(getattr(self, "gold", 0) or 0),
+                "party_xp_total": int(sum(int(getattr(pc, "xp", 0) or 0) for pc in (self.party.pcs() or []))),
             },
             refs={"hex": [int(self.party_hex[0]), int(self.party_hex[1])]},
         )
