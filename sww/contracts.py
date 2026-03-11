@@ -27,6 +27,7 @@ class Contract:
 
     # Optional POI targeting / context
     target_poi_type: Optional[str] = None
+    target_poi_id: Optional[str] = None
     target_enemy_faction: Optional[str] = None
 
     accepted_day: Optional[int] = None
@@ -44,6 +45,7 @@ class Contract:
             "desc": self.desc,
             "target_hex": [int(self.target_hex[0]), int(self.target_hex[1])],
             "target_poi_type": self.target_poi_type,
+            "target_poi_id": self.target_poi_id,
             "target_enemy_faction": self.target_enemy_faction,
             "reward_gp": int(self.reward_gp),
             "rep_success": int(self.rep_success),
@@ -69,6 +71,7 @@ class Contract:
             rep_fail=int(d.get("rep_fail", 0)),
             deadline_day=int(d.get("deadline_day", 0)),
             target_poi_type=d.get("target_poi_type"),
+            target_poi_id=d.get("target_poi_id"),
             target_enemy_faction=d.get("target_enemy_faction"),
             accepted_day=d.get("accepted_day", None),
             status=str(d.get("status", "offered")),
@@ -154,6 +157,18 @@ def _pick_hex_with_poi(
     return (q, r)
 
 
+def _poi_id_at_hex(world_hexes: Dict[str, Any], q: int, r: int, expected_type: Optional[str] = None) -> Optional[str]:
+    hx = (world_hexes or {}).get(f"{int(q)},{int(r)}")
+    if not isinstance(hx, dict):
+        return None
+    poi = hx.get("poi") if isinstance(hx.get("poi"), dict) else None
+    if not isinstance(poi, dict):
+        return None
+    if expected_type and str(poi.get("type") or "") != str(expected_type):
+        return None
+    return str(poi.get("id") or f"hex:{int(q)},{int(r)}:{str(poi.get('type') or 'poi')}")
+
+
 def generate_contracts(
     rng: Any,
     factions: Dict[FactionId, Any],
@@ -186,6 +201,7 @@ def generate_contracts(
         # Determine target
         target: Tuple[int, int]
         target_poi_type: Optional[str] = None
+        target_poi_id: Optional[str] = None
         target_enemy_faction: Optional[str] = None
 
         if kind == "relic_shrine":
@@ -209,6 +225,9 @@ def generate_contracts(
             target = picked if picked else _pick_known_or_frontier_hex(rng, world_hexes)
         else:
             target = _pick_known_or_frontier_hex(rng, world_hexes)
+
+        if target_poi_type:
+            target_poi_id = _poi_id_at_hex(world_hexes, int(target[0]), int(target[1]), expected_type=target_poi_type)
 
         dist = hex_distance((0, 0), target)
         reward = 25 + dist * 10
@@ -258,6 +277,7 @@ def generate_contracts(
                 rep_success=rep_s,
                 rep_fail=rep_f,
                 target_poi_type=target_poi_type,
+                target_poi_id=target_poi_id,
                 target_enemy_faction=target_enemy_faction,
             )
         )

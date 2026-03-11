@@ -1777,7 +1777,8 @@ class Game:
         if len(active) >= 2:
             return CommandResult(status="error", messages=("You can only carry 2 active contracts at a time.",))
 
-        offers = list(self.contract_offers or [])
+        offers = [self._link_contract_to_poi(dict(x)) for x in list(self.contract_offers or [])]
+        self.contract_offers = [dict(x) for x in offers]
         c = next((x for x in offers if str(x.get("cid")) == str(cid)), None)
         if not c:
             return CommandResult(status="error", messages=("That contract is no longer available.",))
@@ -1785,7 +1786,7 @@ class Game:
         if c.get("status") == "accepted":
             return CommandResult(status="error", messages=("Already accepted.",))
 
-        c = dict(c)
+        c = self._link_contract_to_poi(dict(c))
         c["status"] = "accepted"
         c["accepted_day"] = int(self.campaign_day)
         c["visited_target"] = False
@@ -1798,7 +1799,9 @@ class Game:
             target_hex=c.get("target_hex"),
             district_objective=bool(c.get("district_objective", False)),
             source_hex=c.get("source_hex"),
+            target_poi_id=c.get("target_poi_id"),
         )
+        self._link_rumor_to_contract(c)
         if bool(c.get("district_objective", False)):
             try:
                 sh = tuple(c.get("source_hex") or [0, 0])
@@ -3295,7 +3298,7 @@ class Game:
 
         # Initialize weekly contract offers
         self.last_contract_day = int(self.campaign_day)
-        self.contract_offers = [c.to_dict() for c in generate_contracts(self.wilderness_rng, self.factions, self.world_hexes, self.campaign_day, n=3)]
+        self.contract_offers = [self._link_contract_to_poi(c.to_dict()) for c in generate_contracts(self.wilderness_rng, self.factions, self.world_hexes, self.campaign_day, n=3)]
         # Ensure POI-targeting contracts point to an actual POI, even beyond the currently explored frontier.
         for c in (self.contract_offers or []):
             poi_type = c.get("target_poi_type")
@@ -3403,7 +3406,7 @@ class Game:
         if (self.campaign_day - int(getattr(self, "last_contract_day", 0))) < 7:
             return
         self.last_contract_day = int(self.campaign_day)
-        self.contract_offers = [c.to_dict() for c in generate_contracts(self.wilderness_rng, self.factions, self.world_hexes, self.campaign_day, n=3)]
+        self.contract_offers = [self._link_contract_to_poi(c.to_dict()) for c in generate_contracts(self.wilderness_rng, self.factions, self.world_hexes, self.campaign_day, n=3)]
         # Ensure POI-targeting contracts point to an actual POI, even beyond the currently explored frontier.
         for c in (self.contract_offers or []):
             poi_type = c.get("target_poi_type")
@@ -13753,4 +13756,37 @@ class Game:
         except Exception as e:
             return CommandResult(status="error", messages=(f"Save/reload failed: {e}",))
         return CommandResult(status="ok", messages=((f"Save/reload ok: {note}".strip(),) if note else ()))
-#test
+    def _link_contract_to_poi(self, c: dict[str, Any]) -> dict[str, Any]:
+        d = dict(c or {})
+        th = tuple(d.get("target_hex") or [0, 0])
+        try:
+            q, r = int(th[0]), int(th[1])
+        except Exception:
+            return d
+        hx = (self.world_hexes or {}).get(f"{q},{r}")
+        if not isinstance(hx, dict):
+            return d
+        poi = hx.get("poi") if isinstance(hx.get("poi"), dict) else None
+        if not isinstance(poi, dict):
+            return d
+        ptype = str(d.get("target_poi_type") or "")
+        if ptype and str(poi.get("type") or "") != ptype:
+            return d
+        d["target_poi_id"] = str(poi.get("id") or f"hex:{q},{r}:{str(poi.get('type') or 'poi')}")
+        return d
+
+    def _link_rumor_to_contract(self, c: dict[str, Any]) -> None:
+        pid = str((c or {}).get("target_poi_id") or "")
+        cid = str((c or {}).get("cid") or "")
+        if not pid or not cid:
+            return
+        changed = False
+        for e in (self.rumors or []):
+            if str(e.get("poi_id") or "") == pid:
+                if str(e.get("linked_contract_cid") or "") != cid:
+                    e["linked_contract_cid"] = cid
+                    changed = True
+        if changed:
+            self.rumors = list(self.rumors or [])
+
+
