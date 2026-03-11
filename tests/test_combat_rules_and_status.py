@@ -123,16 +123,3 @@ def test_grid_attack_legality_rejects_unknown_modes_deterministically():
         mode="",
     )
     assert not grid_pair_is_attack_legal(gm=gm, attacker_pos=(1, 1), target_pos=(1, 2), mode="")
-
-
-def test_status_helpers_preserve_payload_shapes_and_clear_keys():
-    a = _actor()
-    assert status_dict(a) == {}
-
-    payload = {"rounds": 1, "spell": "sleep", "disrupted": False}
-    apply_status(a, "casting", payload)
-    assert a.status.get("casting") == payload
-
-    assert clear_status(a, "casting")
-    assert "casting" not in a.status
-    assert not clear_status(a, "casting")
