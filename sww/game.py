@@ -3640,10 +3640,8 @@ class Game:
         for c in offers:
             fid = c.get("faction_id")
             fname = (self.factions.get(fid) or {}).get("name", fid)
-            extra = ""
-            if c.get("target_poi_type"):
-                extra = f" [target: {c.get('target_poi_type')}@{tuple(c.get('target_hex') or [0,0])}]"
-            labels.append(f"{c.get('title')} — {fname}{extra} (reward {c.get('reward_gp')} gp, by day {c.get('deadline_day')})")
+            dest = self._contract_destination_label(c)
+            labels.append(f"{c.get('title')} — {fname} [destination: {dest}] (reward {c.get('reward_gp')} gp, by day {c.get('deadline_day')})")
         j = self.ui.choose("Available Offers", labels + ["Back"])
         if j == len(labels):
             return
@@ -4012,15 +4010,19 @@ class Game:
             return
         labels = []
         for c in active:
-            labels.append(f"{c.get('title')} (by day {c.get('deadline_day')})")
+            labels.append(f"{c.get('title')} [destination: {self._contract_destination_label(c)}] (by day {c.get('deadline_day')})")
         j = self.ui.choose("Active Contracts", labels + ["Back"])
         if j == len(labels):
             return
         c = active[j]
         self.ui.hr()
         self.ui.log(c.get("desc", ""))
+        self.ui.log(f"Destination: {self._contract_destination_label(c)}")
         self.ui.log(f"Target hex: {tuple(c.get('target_hex') or [0,0])}")
         self.ui.log(f"Visited target: {bool(c.get('visited_target', False))}")
+        linked = self._contract_rumor_link(c)
+        if linked:
+            self.ui.log(f"Linked rumor: {self._render_rumor_row(linked)}")
         k = self.ui.choose("Actions", ["Abandon", "Back"])
         if k == 0:
             res = self.dispatch(AbandonContract(str(c.get("cid"))))
@@ -4036,12 +4038,23 @@ class Game:
             except Exception:
                 continue
             if tq == q and tr == r:
+                first_visit = not bool(c.get("visited_target", False))
                 c["visited_target"] = True
+                if first_visit and str(c.get("target_poi_id") or ""):
+                    self.ui.log(f"Objective progress: reached destination for {c.get('title')}.")
+                    self.emit("contract_progress", cid=str(c.get("cid") or ""), stage="reached_target", target_hex=(tq, tr), target_poi_id=str(c.get("target_poi_id") or ""))
                 # For clear_lair, if lair already resolved, mark completion-ready.
                 if c.get("kind") == "clear_lair":
                     poi = hx.get("poi") if isinstance(hx, dict) else None
                     if poi and poi.get("type") == "lair" and bool(poi.get("resolved")):
                         c["visited_target"] = True
+                ready_now = self._contract_completion_ready(c, q=q, r=r, hx=hx)
+                if ready_now:
+                    c["completion_ready"] = True
+                    if not bool(c.get("completion_notified", False)):
+                        c["completion_notified"] = True
+                        self.ui.log(f"Objective ready: {c.get('title')} can be turned in at town.")
+                        self.emit("contract_progress", cid=str(c.get("cid") or ""), stage="completion_ready", target_hex=(tq, tr), target_poi_id=str(c.get("target_poi_id") or ""))
 
     def _contract_completion_ready(self, c: dict[str, Any], q: int | None = None, r: int | None = None, hx: dict[str, Any] | None = None) -> bool:
         """Return True when a contract's objective condition has been satisfied in-world.
@@ -4124,12 +4137,89 @@ class Game:
                     self.ui.log(f"District objective completed: {title}. Return to town to claim the reward.")
                     self.emit("district_objective_progress", cid=str(c.get("cid") or ""), stage="completed", target_hex=(tq, tr), distance=target_dist)
 
+    def _contract_town_report_line(self, c: dict[str, Any]) -> str:
+        title = str(c.get("title") or "Contract")
+        dest = self._contract_destination_label(c)
+        if bool(c.get("completion_ready", False)):
+            stage = "ready to turn in"
+        elif bool(c.get("visited_target", False)):
+            stage = "destination reached"
+        else:
+            stage = "in progress"
+        return f"Contract report: {title} — {dest} [{stage}]"
+
+    def _contract_turnin_result_lines(self, c: dict[str, Any]) -> list[str]:
+        title = str(c.get("title") or "Contract")
+        dest = self._contract_destination_label(c)
+        gp = int(c.get("reward_gp", 0) or 0)
+        rep = int(c.get("rep_success", 5) or 0)
+        fid = str(c.get("faction_id") or "")
+        fname = self._faction_name(fid)
+        lines = [f"Contract turned in: {title} at {dest}."]
+        lines.append(f"Reward received: +{gp} gp | Reputation: {rep:+d} ({fname}).")
+        return lines
+
+    def _ready_turnin_contracts(self) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        for c in (self.active_contracts or []):
+            if not isinstance(c, dict) or c.get("status") != "accepted":
+                continue
+            if not str(c.get("target_poi_id") or ""):
+                continue
+            if not bool(c.get("completion_ready", False)):
+                continue
+            rows.append(c)
+        rows.sort(key=lambda x: (int(x.get("deadline_day", 9999) or 9999), str(x.get("cid") or "")))
+        return rows
+
+    def _turn_in_contract(self, cid: str) -> CommandResult:
+        target = None
+        for c in (self.active_contracts or []):
+            if str(c.get("cid") or "") == str(cid) and c.get("status") == "accepted":
+                target = c
+                break
+        if not isinstance(target, dict):
+            return CommandResult(status="error", messages=("No such active contract.",))
+        if not bool(target.get("completion_ready", False)):
+            return CommandResult(status="error", messages=("That contract is not ready to turn in yet.",))
+        target["status"] = "completed"
+        self.gold += int(target.get("reward_gp", 0) or 0)
+        self.adjust_rep(target.get("faction_id"), int(target.get("rep_success", 5) or 5))
+        for line in self._contract_turnin_result_lines(target):
+            self.ui.log(line)
+        self.active_contracts = [c for c in (self.active_contracts or []) if str(c.get("cid") or "") != str(cid)]
+        self.emit("contract_turned_in", cid=str(cid), faction_id=target.get("faction_id"), reward_gp=int(target.get("reward_gp", 0) or 0), rep_delta=int(target.get("rep_success", 5) or 5))
+        return CommandResult(status="ok", messages=("Contract turned in.",))
+
+    def _town_turn_in_ready_contracts(self) -> None:
+        ready = self._ready_turnin_contracts()
+        if not ready:
+            self.ui.log("No ready POI-linked contracts to turn in.")
+            return
+        labels = [
+            f"{c.get('title')} — {self._contract_destination_label(c)} (reward {c.get('reward_gp')} gp)"
+            for c in ready
+        ]
+        j = self.ui.choose("Turn In Ready Contracts", labels + ["Back"])
+        if j == len(labels):
+            return
+        chosen = ready[j]
+        k = self.ui.choose("Turn in this contract?", ["Turn In", "Back"])
+        if k != 0:
+            return
+        res = self._turn_in_contract(str(chosen.get("cid") or ""))
+        if not res.ok and res.message:
+            self.ui.log(res.message)
+
     def _check_contracts_on_town_arrival(self):
         """Complete or fail contracts when in town."""
         changed = False
         for c in (self.active_contracts or []):
             if c.get("status") != "accepted":
                 continue
+            if str(c.get("target_poi_id") or "") and int(c.get("last_town_report_day", 0) or 0) != int(self.campaign_day):
+                self.ui.log(self._contract_town_report_line(c))
+                c["last_town_report_day"] = int(self.campaign_day)
             deadline = int(c.get("deadline_day", 0))
             if self.campaign_day > deadline:
                 c["status"] = "failed"
@@ -4138,44 +4228,10 @@ class Game:
                 changed = True
                 continue
 
-            # Determine completion
-            kind = c.get("kind")
-            th = c.get("target_hex") or [0, 0]
-            hk = f"{int(th[0])},{int(th[1])}"
-            hx = (self.world_hexes or {}).get(hk) or {}
-            poi = hx.get("poi") if isinstance(hx, dict) else None
-
-            if kind in ("scout", "escort"):
-                if bool(c.get("visited_target")):
-                    c["status"] = "completed"
-
-            elif kind == "clear_lair":
-                # Completed if target lair is resolved
-                if poi and poi.get("type") == "lair" and bool(poi.get("resolved")):
-                    c["status"] = "completed"
-
-            elif kind == "secure_entrance":
-                # Completed if entrance is sealed/secured
-                if poi and poi.get("type") == "dungeon_entrance" and bool(poi.get("sealed")):
-                    c["status"] = "completed"
-
-            elif kind == "relic_shrine":
-                # Completed if relic has been recovered from the shrine
-                if poi and poi.get("type") == "shrine" and bool(poi.get("relic_taken")):
-                    c["status"] = "completed"
-
-            elif kind == "strike_stronghold":
-                # Completed if an enemy lair is cleared or an enemy entrance is sealed.
-                if poi and poi.get("type") in ("lair", "dungeon_entrance"):
-                    if bool(poi.get("resolved")) or bool(poi.get("sealed")):
-                        c["status"] = "completed"
-
-
-            if c.get("status") == "completed":
-                self.gold += int(c.get("reward_gp", 0))
-                self.adjust_rep(c.get("faction_id"), int(c.get("rep_success", 5)))
-                self.ui.log(f"Contract completed: {c.get('title')} (+{c.get('reward_gp')} gp)")
-                changed = True
+            # Passive readiness detection only; successful turn-in is explicit via town action.
+            ready = self._contract_completion_ready(c)
+            if ready:
+                c["completion_ready"] = True
 
         if changed:
             # Keep only non-completed/non-failed in active list for clarity
@@ -5221,9 +5277,11 @@ class Game:
                 "Manage Retainers",
                 "Travel into Wilderness",
                 "Gather Rumors (5 gp)",
+                "Expedition Preparation",
                 "Rumors & Discoveries",
                 "View Factions",
                 "Faction Contracts",
+                "Turn In Ready Contracts",
                 "Faction Services",
                 "Save Game",
                 "Load Game",
@@ -5323,6 +5381,9 @@ class Game:
             elif sel_action == "Gather Rumors (5 gp)":
                 self.gather_rumors()
 
+            elif sel_action == "Expedition Preparation":
+                self._town_prepare_expedition()
+
             elif sel_action == "Rumors & Discoveries":
                 self.view_journal()
 
@@ -5331,6 +5392,9 @@ class Game:
 
             elif sel_action == "Faction Contracts":
                 self.view_contracts()
+
+            elif sel_action == "Turn In Ready Contracts":
+                self._town_turn_in_ready_contracts()
 
             elif sel_action == "Faction Services":
                 self.view_faction_services()
@@ -5681,6 +5745,169 @@ class Game:
             })
         entries.sort(key=lambda e: (e["deadline_day"], hex_distance(tuple(self.party_hex), tuple(e["target_hex"])) ))
         return entries
+
+    def _find_poi_by_id(self, poi_id: str) -> tuple[dict[str, Any], dict[str, Any], int, int] | None:
+        pid = str(poi_id or "").strip()
+        if not pid:
+            return None
+        for _k, hx in (self.world_hexes or {}).items():
+            if not isinstance(hx, dict):
+                continue
+            poi = hx.get("poi") if isinstance(hx.get("poi"), dict) else None
+            if not isinstance(poi, dict):
+                continue
+            if str(poi.get("id") or "") != pid:
+                continue
+            try:
+                q = int(hx.get("q"))
+                r = int(hx.get("r"))
+            except Exception:
+                q = r = 0
+            return poi, hx, q, r
+        return None
+
+    def _contract_rumor_link(self, c: dict[str, Any]) -> dict[str, Any] | None:
+        cid = str((c or {}).get("cid") or "")
+        pid = str((c or {}).get("target_poi_id") or "")
+        for e in (self.rumors or []):
+            if not isinstance(e, dict):
+                continue
+            if cid and str(e.get("linked_contract_cid") or "") == cid:
+                return e
+            if pid and str(e.get("poi_id") or "") == pid:
+                return e
+        return None
+
+    def _contract_destination_label(self, c: dict[str, Any]) -> str:
+        pid = str((c or {}).get("target_poi_id") or "")
+        if pid:
+            row = self._find_poi_by_id(pid)
+            if row is not None:
+                poi, _hx, q, r = row
+                state = "discovered" if bool(poi.get("discovered", False)) else "undiscovered"
+                return f"{self._poi_label(poi)} @ ({q},{r}) [{state}]"
+        th = tuple((c or {}).get("target_hex") or [0, 0])
+        try:
+            q, r = int(th[0]), int(th[1])
+        except Exception:
+            q, r = 0, 0
+        return f"Hex ({q},{r})"
+
+    def _render_rumor_row(self, e: dict[str, Any]) -> str:
+        text = f"Day {e.get('day')} | {e.get('hint')}"
+        pid = str(e.get("poi_id") or "")
+        if pid:
+            row = self._find_poi_by_id(pid)
+            if row is not None:
+                poi, _hx, q, r = row
+                state = "seen" if bool(e.get("seen", False)) else "unseen"
+                text += f" | Destination: {self._poi_label(poi)} @ ({q},{r}) [{state}]"
+        linked_cid = str(e.get("linked_contract_cid") or "")
+        if linked_cid:
+            text += f" | Linked contract: {linked_cid}"
+        return text
+
+    def _prep_hint_for_contract(self, c: dict[str, Any]) -> str:
+        ptype = str((c or {}).get("target_poi_type") or "")
+        if ptype in ("dungeon_entrance", "ruins", "lair"):
+            return "Bring extra torches and at least 2 rations."
+        if ptype in ("shrine", "faction_outpost", "caravan"):
+            return "Carry spare rations; expect a longer overland leg."
+        return "Travel kit check: food, light, and full HP where possible."
+
+    def _expedition_prep_rows(self) -> list[dict[str, Any]]:
+        rows: list[dict[str, Any]] = []
+        for c in (self.active_contracts or []):
+            if not isinstance(c, dict) or c.get("status") != "accepted":
+                continue
+            if not str(c.get("target_poi_id") or ""):
+                continue
+            linked = self._contract_rumor_link(c)
+            rows.append({
+                "cid": str(c.get("cid") or ""),
+                "title": str(c.get("title") or "Contract"),
+                "destination": self._contract_destination_label(c),
+                "deadline_day": int(c.get("deadline_day", 0) or 0),
+                "prep_hint": self._prep_hint_for_contract(c),
+                "rumor_seen": bool(linked.get("seen", False)) if isinstance(linked, dict) else False,
+            })
+        rows.sort(key=lambda x: (x["deadline_day"], x["cid"]))
+        return rows
+
+    def expedition_prep_snapshot(self) -> dict[str, Any]:
+        rows = self._expedition_prep_rows()
+        recommended_rations = max(2, 2 * max(1, len(rows)))
+        recommended_torches = max(2, 2 * max(1, len(rows)))
+        living = list(self.party.living())
+        hp_missing = int(sum(max(0, int(m.hp_max) - int(m.hp)) for m in living))
+        return {
+            "day": int(getattr(self, "campaign_day", 1) or 1),
+            "active_poi_objectives": int(len(rows)),
+            "gold": int(getattr(self, "gold", 0) or 0),
+            "rations": int(getattr(self, "rations", 0) or 0),
+            "torches": int(getattr(self, "torches", 0) or 0),
+            "recommended_rations": int(recommended_rations),
+            "recommended_torches": int(recommended_torches),
+            "hp_missing": hp_missing,
+            "contracts": rows,
+        }
+
+    def _prep_restock_options(self) -> list[tuple[str, int, int, int]]:
+        return [
+            ("Trail bundle", 8, 2, 2),
+            ("Rations pack", 6, 3, 0),
+            ("Torch bundle", 3, 0, 3),
+        ]
+
+    def _buy_prep_restock(self, idx: int) -> bool:
+        opts = self._prep_restock_options()
+        if idx < 0 or idx >= len(opts):
+            return False
+        name, cost, add_r, add_t = opts[idx]
+        if self.gold < int(cost):
+            self.ui.log(f"Not enough gold for {name.lower()}.")
+            return False
+        self.gold -= int(cost)
+        self.rations += int(add_r)
+        self.torches += int(add_t)
+        self.ui.log(f"You restock {name.lower()}: +{int(add_r)} rations, +{int(add_t)} torches.")
+        return True
+
+    def _town_prepare_expedition(self) -> None:
+        snap = self.expedition_prep_snapshot()
+        self.ui.title("Expedition Preparation")
+        self.ui.log(f"Active POI objectives: {snap.get('active_poi_objectives')}")
+        self.ui.log(
+            f"Supplies: rations {snap.get('rations')}/{snap.get('recommended_rations')} | "
+            f"torches {snap.get('torches')}/{snap.get('recommended_torches')}"
+        )
+        self.ui.log(f"Party wounds pending: {snap.get('hp_missing')} HP")
+        if not snap.get("contracts"):
+            self.ui.log("No accepted POI-linked contracts yet.")
+        else:
+            for row in list(snap.get("contracts") or [])[:6]:
+                self.ui.log(
+                    f"- [{row.get('cid')}] {row.get('title')} -> {row.get('destination')} "
+                    f"(due day {row.get('deadline_day')}, rumor {'seen' if row.get('rumor_seen') else 'unseen'})"
+                )
+                self.ui.log(f"  Prep: {row.get('prep_hint')}")
+
+        opts = [
+            "Buy trail bundle (8 gp): +2 rations, +2 torches",
+            "Buy rations pack (6 gp): +3 rations",
+            "Buy torch bundle (3 gp): +3 torches",
+            "Back",
+        ]
+        c = self.ui.choose("Prep Services", opts)
+        if c == 3:
+            return
+        if not self._buy_prep_restock(int(c)):
+            return
+        s2 = self.expedition_prep_snapshot()
+        self.ui.log(
+            f"Updated supplies: rations {s2.get('rations')}/{s2.get('recommended_rations')} | "
+            f"torches {s2.get('torches')}/{s2.get('recommended_torches')}"
+        )
 
 
     def _wilderness_telegraph_lines(self) -> list[str]:
@@ -6033,10 +6260,7 @@ class Game:
                     continue
                 self.ui.title("Rumors")
                 for e in list(self.rumors)[-30:][::-1]:
-                    locator = str(e.get('locator') or self._rumor_locator(int(e.get('q',0) or 0), int(e.get('r',0) or 0)))
-                    self.ui.log(
-                        f"Day {e.get('day')} | {e.get('hint')}"
-                    )
+                    self.ui.log(self._render_rumor_row(e))
             elif c == 2:
                 entries = self._district_objective_entries()
                 if not entries:
@@ -6048,6 +6272,12 @@ class Game:
                     self.ui.log(
                         f"{e.get('title')} — from {e.get('source_name')} | due day {e.get('deadline_day')} | {status}"
                     )
+                    c = next((x for x in (self.active_contracts or []) if str(x.get('cid') or '') == str(e.get('cid') or '')), None)
+                    if isinstance(c, dict):
+                        self.ui.log(f"  Destination: {self._contract_destination_label(c)}")
+                        linked = self._contract_rumor_link(c)
+                        if linked:
+                            self.ui.log(f"  Linked rumor: {self._render_rumor_row(linked)}")
                     self.ui.log(
                         f"  District clue: {e.get('target_hint')} | From here: {e.get('from_current')} | Reward: {e.get('reward_gp')} gp"
                     )
@@ -13788,5 +14018,4 @@ class Game:
                     changed = True
         if changed:
             self.rumors = list(self.rumors or [])
-
 
