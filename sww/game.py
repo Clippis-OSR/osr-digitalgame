@@ -30,7 +30,7 @@ from .validation import validate_state
 from .monster_ai import coerce_profile, choose_target, party_role
 from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat
 from .combat_legality import theater_target_is_valid
-from .status_lifecycle import tick_round_statuses, cleanup_actor_battle_status, status_dict, clear_status
+from .status_lifecycle import tick_round_statuses, cleanup_actor_battle_status
 from .ai_capabilities import detect_capabilities, choose_attack_mode
 from .commands import (
     Command,
@@ -12680,11 +12680,29 @@ class Game:
             return
 
 
-    def _cleanup_combat_actor_state(self, actor: Actor) -> None:
-        """Shared transient combat-status cleanup owner."""
+    def _leave_combat_actor(self, actor: Actor, *, marker: str = "fled", remove_effects: tuple[str, ...] = ()) -> None:
+        """Shared non-death leave-combat cleanup seam.
+
+        Preserves existing semantics: mark effect-based exit state and remove
+        transient combat-only statuses.
+        """
         if actor is None:
             return
+        effects = list(getattr(actor, "effects", []) or [])
+        for key in tuple(remove_effects or ()):
+            effects = [e for e in effects if str(e) != str(key)]
+        mk = str(marker or "").strip()
+        if mk and mk not in effects:
+            effects.append(mk)
+        actor.effects = effects
         cleanup_actor_battle_status(actor)
+
+    def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
+        try:
+            if int(getattr(target, "hp", 0) or 0) <= 0:
+                cleanup_actor_battle_status(target)
+        except Exception:
+            pass
 
     def _leave_combat_actor(self, actor: Actor, *, marker: str = "fled", remove_effects: tuple[str, ...] = ()) -> None:
         """Shared non-death leave-combat cleanup seam.
