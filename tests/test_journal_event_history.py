@@ -19,6 +19,7 @@ def test_discovery_emits_canonical_event_and_projects_journal():
     rows = [e for e in (g.event_history or []) if str(e.get("type") or "") == "discovery.recorded"]
     assert len(rows) >= 1
     d = rows[-1]
+    assert int(d.get("eid", -1)) >= 0
     assert str((d.get("payload") or {}).get("name") or "")
 
     discoveries = g._journal_discoveries()
@@ -41,6 +42,9 @@ def test_rumor_and_clue_events_persist_across_save_load():
     types = [str(e.get("type") or "") for e in (g2.event_history or [])]
     assert "rumor.learned" in types
     assert "clue.found" in types
+    eids = [int(e.get("eid", -1)) for e in (g2.event_history or [])]
+    assert eids == sorted(eids)
+    assert int(getattr(g2, "next_event_eid", 0)) == (max(eids) + 1 if eids else 0)
     assert g2._journal_rumors()
     assert g2._journal_clues()
 
@@ -86,6 +90,9 @@ def test_old_save_journal_migrates_to_event_history_once_without_duplication():
     g = _new_game(seed=2201)
     apply_game_dict(g, legacy)
     assert len(g.event_history) >= 4
+    migrated_eids = [int(e.get("eid", -1)) for e in (g.event_history or [])]
+    assert migrated_eids == sorted(migrated_eids)
+    assert int(getattr(g, "next_event_eid", 0)) == (max(migrated_eids) + 1 if migrated_eids else 0)
 
     out = game_to_dict(g)
     g2 = _new_game(seed=2202)
@@ -94,3 +101,21 @@ def test_old_save_journal_migrates_to_event_history_once_without_duplication():
     assert len(g2._journal_discoveries()) == 1
     assert len(g2._journal_rumors()) >= 1
     assert len(g2._journal_clues()) == 1
+
+
+def test_old_event_history_without_eids_gets_deterministic_ids_on_load():
+    g = _new_game(seed=2300)
+    g.gather_rumors()
+    payload = game_to_dict(g)
+    payload["events"]["event_history"] = [
+        {k: v for k, v in e.items() if k != "eid"}
+        for e in (payload.get("events", {}).get("event_history", []) or [])
+    ]
+    payload["events"].pop("next_eid", None)
+
+    g2 = _new_game(seed=2301)
+    apply_game_dict(g2, payload)
+
+    eids = [int(e.get("eid", -1)) for e in (g2.event_history or [])]
+    assert eids == list(range(len(eids)))
+    assert int(getattr(g2, "next_event_eid", 0)) == len(eids)

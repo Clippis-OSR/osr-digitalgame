@@ -21,6 +21,7 @@ class Event:
 
 @dataclass(frozen=True)
 class PlayerEvent:
+    eid: int
     type: str
     category: str
     day: int
@@ -33,6 +34,7 @@ class PlayerEvent:
 
     def to_dict(self) -> Dict[str, Any]:
         return {
+            "eid": int(self.eid or 0),
             "type": str(self.type or ""),
             "category": str(self.category or ""),
             "day": int(self.day or 1),
@@ -60,6 +62,7 @@ def normalize_player_event(raw: Dict[str, Any] | PlayerEvent | None) -> Dict[str
     if not isinstance(raw, dict):
         return None
     return {
+        "eid": _safe_int(raw.get("eid", 0), 0),
         "type": str(raw.get("type") or ""),
         "category": str(raw.get("category") or ""),
         "day": _safe_int(raw.get("day", 1), 1),
@@ -72,9 +75,16 @@ def normalize_player_event(raw: Dict[str, Any] | PlayerEvent | None) -> Dict[str
     }
 
 
+def _iter_events_in_eid_order(event_history: Iterable[Dict[str, Any]] | None) -> Iterable[Dict[str, Any]]:
+    rows = [x for x in (event_history or []) if isinstance(x, dict)]
+    rows.sort(key=lambda e: _safe_int((e or {}).get("eid", 0), 0))
+    return rows
+
+
 def append_player_event(
     event_history: list[dict[str, Any]],
     *,
+    eid: int,
     event_type: str,
     category: str,
     day: int,
@@ -86,6 +96,7 @@ def append_player_event(
 ) -> Dict[str, Any]:
     entry = normalize_player_event(
         PlayerEvent(
+            eid=_safe_int(eid, 0),
             type=str(event_type or ""),
             category=str(category or ""),
             day=_safe_int(day, 1),
@@ -99,6 +110,7 @@ def append_player_event(
     )
     if entry is None:
         entry = {
+            "eid": _safe_int(eid, 0),
             "type": str(event_type or ""),
             "category": str(category or ""),
             "day": _safe_int(day, 1),
@@ -116,7 +128,7 @@ def append_player_event(
 def project_discoveries_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     seen: set[tuple[int, int, str, str]] = set()
-    for ev in (event_history or []):
+    for ev in _iter_events_in_eid_order(event_history):
         if str((ev or {}).get("type") or "") != "discovery.recorded":
             continue
         p = dict((ev or {}).get("payload") or {})
@@ -140,7 +152,7 @@ def project_discoveries_from_events(event_history: Iterable[Dict[str, Any]] | No
 
 def project_rumors_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
-    for ev in (event_history or []):
+    for ev in _iter_events_in_eid_order(event_history):
         if str((ev or {}).get("type") or "") != "rumor.learned":
             continue
         p = dict((ev or {}).get("payload") or {})
@@ -151,7 +163,7 @@ def project_rumors_from_events(event_history: Iterable[Dict[str, Any]] | None) -
 def project_clues_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     seen: set[tuple[str, int]] = set()
-    for ev in (event_history or []):
+    for ev in _iter_events_in_eid_order(event_history):
         if str((ev or {}).get("type") or "") != "clue.found":
             continue
         p = dict((ev or {}).get("payload") or {})
@@ -167,7 +179,7 @@ def project_clues_from_events(event_history: Iterable[Dict[str, Any]] | None) ->
 
 def project_district_notes_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
-    for ev in (event_history or []):
+    for ev in _iter_events_in_eid_order(event_history):
         if str((ev or {}).get("type") or "") != "district.noted":
             continue
         p = dict((ev or {}).get("payload") or {})

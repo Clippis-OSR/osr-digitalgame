@@ -251,6 +251,7 @@ class Game:
         self.rumors: list[dict[str, Any]] = []
         self.dungeon_clues: list[dict[str, Any]] = []
         self.event_history: list[dict[str, Any]] = []
+        self.next_event_eid: int = 0
         self.district_notes: list[dict[str, Any]] = []
         self._ensure_minimal_rumor_surface()
 
@@ -316,8 +317,10 @@ class Game:
         refs: dict[str, Any] | None = None,
         visibility: str = "journal",
     ) -> dict[str, Any]:
-        return append_player_event(
+        eid = int(getattr(self, "next_event_eid", 0) or 0)
+        entry = append_player_event(
             getattr(self, "event_history", []),
+            eid=eid,
             event_type=event_type,
             category=category,
             day=int(getattr(self, "campaign_day", 1) or 1),
@@ -327,6 +330,8 @@ class Game:
             refs=dict(refs or {}),
             visibility=visibility,
         )
+        self.next_event_eid = eid + 1
+        return entry
 
     # -----------------
     # Battle events + buffered combat log (P6.4 UX)

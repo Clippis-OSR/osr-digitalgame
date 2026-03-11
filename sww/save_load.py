@@ -223,6 +223,10 @@ def validate_and_guard_save_data(data: Any, strict: bool) -> Dict[str, Any]:
         if strict:
             _schema_fail("events.event_history", f"expected array, got {_type_name(ev.get('event_history'))}")
         ev["event_history"] = []
+    try:
+        ev["next_eid"] = int(ev.get("next_eid", len(ev.get("event_history", []) or [])) or 0)
+    except Exception:
+        ev["next_eid"] = int(len(ev.get("event_history", []) or []))
 
     # Replay essentials
     rep = data["replay"]
@@ -526,6 +530,7 @@ def game_to_dict(game: Any) -> Dict[str, Any]:
             "district_notes": list(getattr(game, "district_notes", []) or []),
         },
         "events": {
+            "next_eid": int(getattr(game, "next_event_eid", len(getattr(game, "event_history", []) or [])) or 0),
             "event_history": [
                 e for e in (
                     normalize_player_event(x)
@@ -833,6 +838,7 @@ def _migrate_10_to_11(data: Dict[str, Any]) -> Dict[str, Any]:
         ev = {}
     if not isinstance(ev.get("event_history", []), list):
         ev["event_history"] = []
+    ev["next_eid"] = int(ev.get("next_eid", len(ev.get("event_history", []) or [])) or 0)
     data["events"] = ev
     data["save_version"] = 11
     data["version"] = 11
@@ -1215,12 +1221,20 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     ev = data.get("events", {}) or {}
     raw_event_history = ev.get("event_history", []) or []
     event_history = [e for e in (normalize_player_event(x) for x in raw_event_history) if isinstance(e, dict)]
+    for idx, ev_row in enumerate(event_history):
+        if int(ev_row.get("eid", 0) or 0) <= 0:
+            ev_row["eid"] = idx
+
+    next_eid = int(ev.get("next_eid", len(event_history)) or 0)
+    if event_history:
+        next_eid = max(next_eid, max(int((x or {}).get("eid", 0) or 0) for x in event_history) + 1)
 
     if not event_history:
         for d in (j.get("discoveries", []) or []):
             if isinstance(d, dict):
                 append_player_event(
                     event_history,
+                    eid=next_eid,
                     event_type="discovery.recorded",
                     category="discovery",
                     day=int(d.get("day", 1) or 1),
@@ -1229,10 +1243,12 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
                     payload=dict(d),
                     refs={"hex": [int(d.get("q", 0) or 0), int(d.get("r", 0) or 0)]},
                 )
+                next_eid += 1
         for r in (j.get("rumors", []) or []):
             if isinstance(r, dict):
                 append_player_event(
                     event_history,
+                    eid=next_eid,
                     event_type="rumor.learned",
                     category="rumor",
                     day=int(r.get("day", 1) or 1),
@@ -1241,10 +1257,12 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
                     payload=dict(r),
                     refs={"poi_id": str(r.get("poi_id") or ""), "hex": [int(r.get("q", 0) or 0), int(r.get("r", 0) or 0)]},
                 )
+                next_eid += 1
         for c in (j.get("dungeon_clues", []) or []):
             if isinstance(c, dict):
                 append_player_event(
                     event_history,
+                    eid=next_eid,
                     event_type="clue.found",
                     category="clue",
                     day=int(c.get("day", 1) or 1),
@@ -1253,10 +1271,12 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
                     payload=dict(c),
                     refs={"room_id": int(c.get("room_id", 0) or 0), "level": int(c.get("level", 0) or 0)},
                 )
+                next_eid += 1
         for n in (j.get("district_notes", []) or []):
             if isinstance(n, dict):
                 append_player_event(
                     event_history,
+                    eid=next_eid,
                     event_type="district.noted",
                     category="district",
                     day=int(n.get("day", 1) or 1),
@@ -1265,8 +1285,10 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
                     payload=dict(n),
                     refs={"cid": str(n.get("cid") or "")},
                 )
+                next_eid += 1
 
     setattr(game, "event_history", event_history)
+    setattr(game, "next_event_eid", int(next_eid))
     setattr(game, "discovery_log", project_discoveries_from_events(event_history))
     setattr(game, "rumors", project_rumors_from_events(event_history))
     setattr(game, "dungeon_clues", project_clues_from_events(event_history))
