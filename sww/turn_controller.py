@@ -18,7 +18,7 @@ from .intents import (
     IntentSelectUnit,
 )
 from .pathing import bfs_movement_range, dijkstra_shortest_path
-from .targeting import valid_melee_targets, valid_missile_targets, spell_aoe_preview_tiles
+from .targeting import spell_aoe_preview_tiles
 from .combat_legality import grid_target_is_attackable
 
 from .rules import morale_check
@@ -244,8 +244,15 @@ class TurnController:
                 tid = self.state.occupancy.get((tx, ty))
                 if tid and self.sel.pending_move_dest and self.sel.pending_move_path:
                     living = self._living_map_visible_to(side)
-                    valid = valid_melee_targets(active.unit_id, self.sel.pending_move_dest, active.side, living)
-                    if tid in valid:
+                    if grid_target_is_attackable(
+                        gm=self.state.gm,
+                        attacker_id=active.unit_id,
+                        attacker_pos=self.sel.pending_move_dest,
+                        attacker_side=active.side,
+                        target_id=tid,
+                        living=living,
+                        mode="melee",
+                    ):
                         cmd = CmdMoveThenMelee(unit_id=active.unit_id, path=list(self.sel.pending_move_path), target_id=tid)
                         self._declare(active.unit_id, cmd, events)
                 return events
@@ -809,8 +816,15 @@ class TurnController:
                 t = self.state.units.get(target_id)
                 if not a or not t or not a.is_alive() or not t.is_alive():
                     continue
-                valid = valid_melee_targets(attacker_id, a.pos, a.side, living)
-                if target_id not in valid:
+                if not grid_target_is_attackable(
+                    gm=self.state.gm,
+                    attacker_id=attacker_id,
+                    attacker_pos=a.pos,
+                    attacker_side=a.side,
+                    target_id=target_id,
+                    living=living,
+                    mode="melee",
+                ):
                     ev.append(evt("INFO", text=f"{attacker_id}: follow-up melee no longer valid."))
                     continue
                 new_events = resolve_command(self.game, self.state, CmdAttack(unit_id=attacker_id, target_id=target_id, mode="melee"))
