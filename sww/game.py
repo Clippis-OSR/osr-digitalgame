@@ -3640,10 +3640,8 @@ class Game:
         for c in offers:
             fid = c.get("faction_id")
             fname = (self.factions.get(fid) or {}).get("name", fid)
-            extra = ""
-            if c.get("target_poi_type"):
-                extra = f" [target: {c.get('target_poi_type')}@{tuple(c.get('target_hex') or [0,0])}]"
-            labels.append(f"{c.get('title')} — {fname}{extra} (reward {c.get('reward_gp')} gp, by day {c.get('deadline_day')})")
+            dest = self._contract_destination_label(c)
+            labels.append(f"{c.get('title')} — {fname} [destination: {dest}] (reward {c.get('reward_gp')} gp, by day {c.get('deadline_day')})")
         j = self.ui.choose("Available Offers", labels + ["Back"])
         if j == len(labels):
             return
@@ -4012,15 +4010,19 @@ class Game:
             return
         labels = []
         for c in active:
-            labels.append(f"{c.get('title')} (by day {c.get('deadline_day')})")
+            labels.append(f"{c.get('title')} [destination: {self._contract_destination_label(c)}] (by day {c.get('deadline_day')})")
         j = self.ui.choose("Active Contracts", labels + ["Back"])
         if j == len(labels):
             return
         c = active[j]
         self.ui.hr()
         self.ui.log(c.get("desc", ""))
+        self.ui.log(f"Destination: {self._contract_destination_label(c)}")
         self.ui.log(f"Target hex: {tuple(c.get('target_hex') or [0,0])}")
         self.ui.log(f"Visited target: {bool(c.get('visited_target', False))}")
+        linked = self._contract_rumor_link(c)
+        if linked:
+            self.ui.log(f"Linked rumor: {self._render_rumor_row(linked)}")
         k = self.ui.choose("Actions", ["Abandon", "Back"])
         if k == 0:
             res = self.dispatch(AbandonContract(str(c.get("cid"))))
@@ -5682,6 +5684,67 @@ class Game:
         entries.sort(key=lambda e: (e["deadline_day"], hex_distance(tuple(self.party_hex), tuple(e["target_hex"])) ))
         return entries
 
+    def _find_poi_by_id(self, poi_id: str) -> tuple[dict[str, Any], dict[str, Any], int, int] | None:
+        pid = str(poi_id or "").strip()
+        if not pid:
+            return None
+        for _k, hx in (self.world_hexes or {}).items():
+            if not isinstance(hx, dict):
+                continue
+            poi = hx.get("poi") if isinstance(hx.get("poi"), dict) else None
+            if not isinstance(poi, dict):
+                continue
+            if str(poi.get("id") or "") != pid:
+                continue
+            try:
+                q = int(hx.get("q"))
+                r = int(hx.get("r"))
+            except Exception:
+                q = r = 0
+            return poi, hx, q, r
+        return None
+
+    def _contract_rumor_link(self, c: dict[str, Any]) -> dict[str, Any] | None:
+        cid = str((c or {}).get("cid") or "")
+        pid = str((c or {}).get("target_poi_id") or "")
+        for e in (self.rumors or []):
+            if not isinstance(e, dict):
+                continue
+            if cid and str(e.get("linked_contract_cid") or "") == cid:
+                return e
+            if pid and str(e.get("poi_id") or "") == pid:
+                return e
+        return None
+
+    def _contract_destination_label(self, c: dict[str, Any]) -> str:
+        pid = str((c or {}).get("target_poi_id") or "")
+        if pid:
+            row = self._find_poi_by_id(pid)
+            if row is not None:
+                poi, _hx, q, r = row
+                state = "discovered" if bool(poi.get("discovered", False)) else "undiscovered"
+                return f"{self._poi_label(poi)} @ ({q},{r}) [{state}]"
+        th = tuple((c or {}).get("target_hex") or [0, 0])
+        try:
+            q, r = int(th[0]), int(th[1])
+        except Exception:
+            q, r = 0, 0
+        return f"Hex ({q},{r})"
+
+    def _render_rumor_row(self, e: dict[str, Any]) -> str:
+        text = f"Day {e.get('day')} | {e.get('hint')}"
+        pid = str(e.get("poi_id") or "")
+        if pid:
+            row = self._find_poi_by_id(pid)
+            if row is not None:
+                poi, _hx, q, r = row
+                state = "seen" if bool(e.get("seen", False)) else "unseen"
+                text += f" | Destination: {self._poi_label(poi)} @ ({q},{r}) [{state}]"
+        linked_cid = str(e.get("linked_contract_cid") or "")
+        if linked_cid:
+            text += f" | Linked contract: {linked_cid}"
+        return text
+
 
     def _wilderness_telegraph_lines(self) -> list[str]:
         """Return compact boardgame-like wilderness telegraph lines.
@@ -6033,10 +6096,7 @@ class Game:
                     continue
                 self.ui.title("Rumors")
                 for e in list(self.rumors)[-30:][::-1]:
-                    locator = str(e.get('locator') or self._rumor_locator(int(e.get('q',0) or 0), int(e.get('r',0) or 0)))
-                    self.ui.log(
-                        f"Day {e.get('day')} | {e.get('hint')}"
-                    )
+                    self.ui.log(self._render_rumor_row(e))
             elif c == 2:
                 entries = self._district_objective_entries()
                 if not entries:
@@ -6048,6 +6108,12 @@ class Game:
                     self.ui.log(
                         f"{e.get('title')} — from {e.get('source_name')} | due day {e.get('deadline_day')} | {status}"
                     )
+                    c = next((x for x in (self.active_contracts or []) if str(x.get('cid') or '') == str(e.get('cid') or '')), None)
+                    if isinstance(c, dict):
+                        self.ui.log(f"  Destination: {self._contract_destination_label(c)}")
+                        linked = self._contract_rumor_link(c)
+                        if linked:
+                            self.ui.log(f"  Linked rumor: {self._render_rumor_row(linked)}")
                     self.ui.log(
                         f"  District clue: {e.get('target_hint')} | From here: {e.get('from_current')} | Reward: {e.get('reward_gp')} gp"
                     )
@@ -13788,5 +13854,4 @@ class Game:
                     changed = True
         if changed:
             self.rumors = list(self.rumors or [])
-
 
