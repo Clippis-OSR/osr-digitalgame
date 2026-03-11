@@ -4038,12 +4038,23 @@ class Game:
             except Exception:
                 continue
             if tq == q and tr == r:
+                first_visit = not bool(c.get("visited_target", False))
                 c["visited_target"] = True
+                if first_visit and str(c.get("target_poi_id") or ""):
+                    self.ui.log(f"Objective progress: reached destination for {c.get('title')}.")
+                    self.emit("contract_progress", cid=str(c.get("cid") or ""), stage="reached_target", target_hex=(tq, tr), target_poi_id=str(c.get("target_poi_id") or ""))
                 # For clear_lair, if lair already resolved, mark completion-ready.
                 if c.get("kind") == "clear_lair":
                     poi = hx.get("poi") if isinstance(hx, dict) else None
                     if poi and poi.get("type") == "lair" and bool(poi.get("resolved")):
                         c["visited_target"] = True
+                ready_now = self._contract_completion_ready(c, q=q, r=r, hx=hx)
+                if ready_now:
+                    c["completion_ready"] = True
+                    if not bool(c.get("completion_notified", False)):
+                        c["completion_notified"] = True
+                        self.ui.log(f"Objective ready: {c.get('title')} can be turned in at town.")
+                        self.emit("contract_progress", cid=str(c.get("cid") or ""), stage="completion_ready", target_hex=(tq, tr), target_poi_id=str(c.get("target_poi_id") or ""))
 
     def _contract_completion_ready(self, c: dict[str, Any], q: int | None = None, r: int | None = None, hx: dict[str, Any] | None = None) -> bool:
         """Return True when a contract's objective condition has been satisfied in-world.
@@ -4126,12 +4137,26 @@ class Game:
                     self.ui.log(f"District objective completed: {title}. Return to town to claim the reward.")
                     self.emit("district_objective_progress", cid=str(c.get("cid") or ""), stage="completed", target_hex=(tq, tr), distance=target_dist)
 
+    def _contract_town_report_line(self, c: dict[str, Any]) -> str:
+        title = str(c.get("title") or "Contract")
+        dest = self._contract_destination_label(c)
+        if bool(c.get("completion_ready", False)):
+            stage = "ready to turn in"
+        elif bool(c.get("visited_target", False)):
+            stage = "destination reached"
+        else:
+            stage = "in progress"
+        return f"Contract report: {title} — {dest} [{stage}]"
+
     def _check_contracts_on_town_arrival(self):
         """Complete or fail contracts when in town."""
         changed = False
         for c in (self.active_contracts or []):
             if c.get("status") != "accepted":
                 continue
+            if str(c.get("target_poi_id") or "") and int(c.get("last_town_report_day", 0) or 0) != int(self.campaign_day):
+                self.ui.log(self._contract_town_report_line(c))
+                c["last_town_report_day"] = int(self.campaign_day)
             deadline = int(c.get("deadline_day", 0))
             if self.campaign_day > deadline:
                 c["status"] = "failed"
@@ -4176,7 +4201,7 @@ class Game:
             if c.get("status") == "completed":
                 self.gold += int(c.get("reward_gp", 0))
                 self.adjust_rep(c.get("faction_id"), int(c.get("rep_success", 5)))
-                self.ui.log(f"Contract completed: {c.get('title')} (+{c.get('reward_gp')} gp)")
+                self.ui.log(f"Contract completed: {c.get('title')} @ {self._contract_destination_label(c)} (+{c.get('reward_gp')} gp)")
                 changed = True
 
         if changed:
