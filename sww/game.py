@@ -242,6 +242,7 @@ class Game:
         self.discovery_log: list[dict[str, Any]] = []
         self.rumors: list[dict[str, Any]] = []
         self.dungeon_clues: list[dict[str, Any]] = []
+        self._ensure_minimal_rumor_surface()
 
         # Factions (persistent)
         # Stored as dict keyed by faction id; values are plain dicts for easy JSON save.
@@ -5539,6 +5540,8 @@ class Game:
             return
         kind = str(poi.get("type") or "poi")
         name = str(poi.get("name") or "Unknown")
+        poi_id = str(poi.get("id") or f"hex:{q},{r}:{kind}")
+        self._mark_rumors_seen_for_poi(poi_id)
         note = str(poi.get("notes") or "")
         entry = {
             "day": int(getattr(self, "campaign_day", 1)),
@@ -5740,6 +5743,62 @@ class Game:
         lines.extend(site_msgs[:2])
         return lines
 
+    def _surface_poi_rumor(self, q: int, r: int, *, source: str = "system", cost: int = 0) -> bool:
+        """Add a deterministic rumor entry for an existing POI, deduplicated by POI id."""
+        k = f"{int(q)},{int(r)}"
+        hx = (self.world_hexes or {}).get(k)
+        if not isinstance(hx, dict):
+            return False
+        poi = hx.get("poi") if isinstance(hx.get("poi"), dict) else None
+        if not isinstance(poi, dict):
+            return False
+
+        poi_id = str(poi.get("id") or f"hex:{int(q)},{int(r)}:{str(poi.get('type') or 'poi')}")
+        poi_kind = str(poi.get("type") or "poi")
+
+        for e in (self.rumors or []):
+            if str(e.get("poi_id") or "") == poi_id:
+                return False
+
+        hint = self._rumor_hint(poi_kind, str(hx.get("terrain", "clear")))
+        locator = self._rumor_locator(int(q), int(r))
+        full_hint = f"{hint} Look {locator}."
+
+        self.rumors.append({
+            "day": int(getattr(self, "campaign_day", 1)),
+            "q": int(q),
+            "r": int(r),
+            "terrain": str(hx.get("terrain", "clear")),
+            "kind": poi_kind,
+            "hint": full_hint,
+            "locator": locator,
+            "cost": int(cost),
+            "poi_id": poi_id,
+            "source": str(source or "system"),
+            "seen": bool(poi.get("discovered", False)),
+        })
+        poi["rumored"] = True
+        hx["poi"] = poi
+        self.world_hexes[k] = hx
+        return True
+
+    def _ensure_minimal_rumor_surface(self) -> None:
+        """Minimal deterministic rumor seed for known core destinations."""
+        self._ensure_canonical_dungeon_entrance()
+        self._surface_poi_rumor(int(DUNGEON_ENTRANCE_HEX[0]), int(DUNGEON_ENTRANCE_HEX[1]), source="canonical", cost=0)
+
+    def _mark_rumors_seen_for_poi(self, poi_id: str) -> None:
+        pid = str(poi_id or "").strip()
+        if not pid:
+            return
+        changed = False
+        for e in (self.rumors or []):
+            if str(e.get("poi_id") or "") == pid and not bool(e.get("seen", False)):
+                e["seen"] = True
+                changed = True
+        if changed:
+            self.rumors = list(self.rumors or [])
+
     def _weighted_rumor_choice(self, candidates, missing_new_types: set[str] | None = None):
         missing_new_types = set(missing_new_types or set())
         weighted = []
@@ -5873,6 +5932,9 @@ class Game:
                 "hint": full_hint,
                 "locator": locator,
                 "cost": cost,
+                "poi_id": str(poi.get("id") or f"hex:{q},{r}:{str(poi.get('type') or 'poi')}"),
+                "source": "town_rumor",
+                "seen": bool(poi.get("discovered", False)),
             }
         )
         self.ui.log(f"Rumor: {full_hint}")

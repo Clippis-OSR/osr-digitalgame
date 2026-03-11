@@ -1175,6 +1175,11 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     j = data.get("journal", {}) or {}
     setattr(game, "discovery_log", list(j.get("discoveries", []) or []))
     setattr(game, "rumors", list(j.get("rumors", []) or []))
+    try:
+        if hasattr(game, "_ensure_minimal_rumor_surface"):
+            game._ensure_minimal_rumor_surface()
+    except Exception:
+        pass
     if not getattr(game, "dungeon_clues", None):
         setattr(game, "dungeon_clues", list(j.get("dungeon_clues", []) or []))
 
