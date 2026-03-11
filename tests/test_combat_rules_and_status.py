@@ -1,7 +1,9 @@
 from sww.models import Actor
 from sww.combat_rules import is_melee_engaged, can_use_missile, shooting_into_melee_penalty, foe_frontage_limit, apply_forced_retreat
-from sww.status_lifecycle import apply_status, tick_round_statuses, cleanup_actor_battle_status
+from sww.status_lifecycle import apply_status, tick_round_statuses, cleanup_actor_battle_status, clear_status, status_dict
 from sww.ai_capabilities import detect_capabilities, choose_attack_mode
+from sww.grid_map import GridMap
+from sww.combat_legality import grid_target_is_attackable, grid_pair_is_attack_legal
 
 
 class DummyGame:
@@ -56,3 +58,81 @@ def test_ai_capability_seam():
     assert "ranged" in caps and "spellcasting" in caps
     assert choose_attack_mode(capabilities=caps, combat_distance_ft=30, prefer_ranged=True) == "missile"
     assert choose_attack_mode(capabilities=caps, combat_distance_ft=10, prefer_ranged=True) == "melee"
+
+
+def test_grid_attack_legality_seam_matches_pair_checks():
+    gm = GridMap.empty(5, 5)
+    living = {
+        "pc1": ("pc", (1, 1)),
+        "foe_adj": ("foe", (2, 1)),
+        "foe_far": ("foe", (4, 4)),
+    }
+
+    assert grid_target_is_attackable(
+        gm=gm,
+        attacker_id="pc1",
+        attacker_pos=(1, 1),
+        attacker_side="pc",
+        target_id="foe_adj",
+        living=living,
+        mode="melee",
+    )
+    assert not grid_target_is_attackable(
+        gm=gm,
+        attacker_id="pc1",
+        attacker_pos=(1, 1),
+        attacker_side="pc",
+        target_id="foe_far",
+        living=living,
+        mode="melee",
+    )
+
+    assert grid_target_is_attackable(
+        gm=gm,
+        attacker_id="pc1",
+        attacker_pos=(1, 1),
+        attacker_side="pc",
+        target_id="foe_adj",
+        living=living,
+        mode="missile",
+    )
+    assert grid_target_is_attackable(
+        gm=gm,
+        attacker_id="pc1",
+        attacker_pos=(1, 1),
+        attacker_side="pc",
+        target_id="foe_far",
+        living=living,
+        mode="missile",
+    )
+
+    assert grid_pair_is_attack_legal(gm=gm, attacker_pos=(1, 1), target_pos=(2, 1), mode="melee")
+    assert not grid_pair_is_attack_legal(gm=gm, attacker_pos=(1, 1), target_pos=(4, 4), mode="melee")
+
+
+def test_grid_attack_legality_rejects_unknown_modes_deterministically():
+    gm = GridMap.empty(3, 3)
+    living = {"pc1": ("pc", (1, 1)), "foe1": ("foe", (1, 2))}
+    assert not grid_target_is_attackable(
+        gm=gm,
+        attacker_id="pc1",
+        attacker_pos=(1, 1),
+        attacker_side="pc",
+        target_id="foe1",
+        living=living,
+        mode="",
+    )
+    assert not grid_pair_is_attack_legal(gm=gm, attacker_pos=(1, 1), target_pos=(1, 2), mode="")
+
+
+def test_status_helpers_preserve_payload_shapes_and_clear_keys():
+    a = _actor()
+    assert status_dict(a) == {}
+
+    payload = {"rounds": 1, "spell": "sleep", "disrupted": False}
+    apply_status(a, "casting", payload)
+    assert a.status.get("casting") == payload
+
+    assert clear_status(a, "casting")
+    assert "casting" not in a.status
+    assert not clear_status(a, "casting")
