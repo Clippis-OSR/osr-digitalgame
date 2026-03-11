@@ -1923,6 +1923,14 @@ class Game:
         ts.condition_started_clock = started
         ts.wilderness_clock_turns = clock
 
+    def _wilderness_encounter_due(self) -> bool:
+        ts = getattr(self, "travel_state", None)
+        if ts is None:
+            return False
+        ticks = int(getattr(ts, "encounter_clock_ticks", 0) or 0)
+        next_tick = int(getattr(ts, "encounter_next_check_tick", 1) or 1)
+        return ticks >= max(1, next_tick)
+
     def _cmd_advance_watch(self, watches: int) -> CommandResult:
         w = max(0, int(watches))
         if w <= 0:
@@ -2402,8 +2410,12 @@ class Game:
             distance=int(plan.get("distance", 0) or 0),
             modifiers=[{"reason": str(name), "delta": int(delta)} for (name, delta) in list(plan.get("modifiers", []))],
         )
+        self._advance_wilderness_clock(
+            travel_turns=int(max(1, day_cost)),
+            watch_turns=int(max(1, day_cost)) * int(self.WATCHES_PER_DAY),
+            encounter_ticks=1,
+        )
         self.travel_state.location = "town"
-        self.travel_state.travel_turns = int(getattr(self.travel_state, "travel_turns", 0)) + int(max(1, day_cost))
         self.travel_state.route_progress = 0
         self.ui.title("Return to Town")
         self.ui.log(f"Travel time: {day_cost} day(s).")
