@@ -119,3 +119,25 @@ def test_old_event_history_without_eids_gets_deterministic_ids_on_load():
     eids = [int(e.get("eid", -1)) for e in (g2.event_history or [])]
     assert eids == list(range(len(eids)))
     assert int(getattr(g2, "next_event_eid", 0)) == len(eids)
+
+
+def test_load_normalizes_out_of_order_or_duplicate_eids_to_strict_monotonic_sequence():
+    g = _new_game(seed=2400)
+    g.gather_rumors()
+    payload = game_to_dict(g)
+    hist = list(payload.get("events", {}).get("event_history", []) or [])
+    if len(hist) < 2:
+        raise AssertionError("expected at least two events for normalization test")
+
+    # Corrupt to non-monotonic/duplicate ids.
+    hist[0]["eid"] = 5
+    hist[1]["eid"] = 5
+    payload["events"]["event_history"] = list(reversed(hist))
+    payload["events"]["next_eid"] = 1
+
+    g2 = _new_game(seed=2401)
+    apply_game_dict(g2, payload)
+
+    eids = [int(e.get("eid", -1)) for e in (g2.event_history or [])]
+    assert eids == list(range(len(eids)))
+    assert int(getattr(g2, "next_event_eid", 0)) == len(eids)

@@ -1222,12 +1222,19 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     raw_event_history = ev.get("event_history", []) or []
     event_history = [e for e in (normalize_player_event(x) for x in raw_event_history) if isinstance(e, dict)]
     for idx, ev_row in enumerate(event_history):
-        if int(ev_row.get("eid", 0) or 0) <= 0:
+        if int(ev_row.get("eid", -1) or -1) < 0:
             ev_row["eid"] = idx
+
+    # Canonicalize loaded history ordering/identity for deterministic replay and projection behavior.
+    event_history.sort(key=lambda row: int((row or {}).get("eid", 0) or 0))
+    for idx, ev_row in enumerate(event_history):
+        ev_row["eid"] = idx
 
     next_eid = int(ev.get("next_eid", len(event_history)) or 0)
     if event_history:
         next_eid = max(next_eid, max(int((x or {}).get("eid", 0) or 0) for x in event_history) + 1)
+    if next_eid <= len(event_history) - 1:
+        next_eid = len(event_history)
 
     if not event_history:
         for d in (j.get("discoveries", []) or []):
