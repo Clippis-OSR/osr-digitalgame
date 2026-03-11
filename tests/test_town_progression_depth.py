@@ -86,3 +86,15 @@ def test_return_to_town_and_training_show_progression_feedback():
     assert any("to next:" in ln for ln in g.ui.lines)
     assert any("Training Hero for level" in ln for ln in g.ui.lines)
     assert any("Level-up summary:" in ln for ln in g.ui.lines)
+
+
+def test_prep_minor_healing_shortcut_does_not_charge_when_uninjured():
+    ui = _SeqUI([1])
+    g = Game(ui, dice_seed=20030, wilderness_seed=20031)
+    g.gold = 50
+    g.party.members = [_pc(hp=8, hp_max=8)]
+
+    g._town_prepare_expedition()
+
+    assert g.gold == 50
+    assert any("No one needs healing right now." in ln for ln in g.ui.lines)

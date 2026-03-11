@@ -5329,6 +5329,30 @@ class Game:
         self.ui.log("Purchased basic delve kit: +6 rations, +4 torches, +20 arrows, +20 bolts.")
         return True
 
+    def _town_minor_healing_rite(self, *, cost: int = 8, pool: int = 8, label: str = "Temple rites mend wounds") -> bool:
+        injured = [m for m in self.party.living() if int(getattr(m, "hp", 0) or 0) < int(getattr(m, "hp_max", 0) or 0)]
+        if not injured:
+            self.ui.log("No one needs healing right now.")
+            return False
+        if self.gold < int(cost):
+            self.ui.log("Not enough gold.")
+            return False
+        self.gold -= int(cost)
+        rem = int(pool)
+        healed = 0
+        for m in sorted(injured, key=lambda a: (int(a.hp) / max(1, int(a.hp_max)), int(a.hp))):
+            if rem <= 0:
+                break
+            need = max(0, int(m.hp_max) - int(m.hp))
+            if need <= 0:
+                continue
+            amt = min(need, rem)
+            m.hp = int(m.hp) + int(amt)
+            rem -= int(amt)
+            healed += int(amt)
+        self.ui.log(f"{label}. (Healed {healed} HP total.)")
+        return True
+
     def _town_temple_healing(self) -> None:
         injured = [m for m in self.party.living() if int(getattr(m, "hp", 0) or 0) < int(getattr(m, "hp_max", 0) or 0)]
         if not injured:
@@ -5346,20 +5370,7 @@ class Game:
             if self.gold < 8:
                 self.ui.log("Not enough gold.")
                 return
-            self.gold -= 8
-            pool = 8
-            healed = 0
-            for m in sorted(injured, key=lambda a: (int(a.hp) / max(1, int(a.hp_max)), int(a.hp))):
-                if pool <= 0:
-                    break
-                need = max(0, int(m.hp_max) - int(m.hp))
-                if need <= 0:
-                    continue
-                amt = min(need, pool)
-                m.hp = int(m.hp) + int(amt)
-                pool -= int(amt)
-                healed += int(amt)
-            self.ui.log(f"Temple rites mend wounds. (Healed {healed} HP total.)")
+            self._town_minor_healing_rite(cost=8, pool=8, label="Temple rites mend wounds")
             return
         if self.gold < full_cost:
             self.ui.log("Not enough gold.")
@@ -5468,23 +5479,7 @@ class Game:
         if c == 0:
             self._town_buy_basic_resupply()
         elif c == 1:
-            if self.gold < 8:
-                self.ui.log("Not enough gold.")
-                return
-            self.gold -= 8
-            pool = 8
-            healed = 0
-            for m in sorted(self.party.living(), key=lambda a: (int(a.hp) / max(1, int(a.hp_max)), int(a.hp))):
-                if pool <= 0:
-                    break
-                need = max(0, int(m.hp_max) - int(m.hp))
-                if need <= 0:
-                    continue
-                amt = min(need, pool)
-                m.hp = int(m.hp) + int(amt)
-                pool -= int(amt)
-                healed += int(amt)
-            self.ui.log(f"Temple attendants patch up the party. (Healed {healed} HP total.)")
+            self._town_minor_healing_rite(cost=8, pool=8, label="Temple attendants patch up the party")
         elif c == 2:
             self._town_services_menu()
 
