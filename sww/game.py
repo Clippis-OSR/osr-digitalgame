@@ -5252,6 +5252,7 @@ class Game:
                 "Rumors & Discoveries",
                 "View Factions",
                 "Faction Contracts",
+                "Turn In Ready Contracts",
                 "Faction Services",
                 "Save Game",
                 "Load Game",
@@ -5362,6 +5363,9 @@ class Game:
 
             elif sel_action == "Faction Contracts":
                 self.view_contracts()
+
+            elif sel_action == "Turn In Ready Contracts":
+                self._town_turn_in_ready_contracts()
 
             elif sel_action == "Faction Services":
                 self.view_faction_services()
