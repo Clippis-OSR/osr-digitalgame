@@ -19,7 +19,7 @@ from .encounters import EncounterGenerator
 from .equipment import EquipmentDB
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
-from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
+from .wilderness import ensure_hex, neighbors, hex_distance, force_poi, first_time_poi_resolution_key
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
 from .contracts import generate_contracts, Contract
@@ -2006,6 +2006,28 @@ class Game:
             return (1, 2)
         return (0, 0)
 
+    def resolve_travel_context(self, hx: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Return normalized wilderness travel context for encounter/discovery/rumor logic."""
+        hex_row = hx if isinstance(hx, dict) else self._ensure_current_hex()
+        terrain = str((hex_row or {}).get("terrain", "clear") or "clear")
+        travel_mode = str(getattr(self, "wilderness_travel_mode", "normal") or "normal").lower()
+        _steps, _wps, mode_enc_mod = self._wilderness_travel_params()
+        _wps_mod, terr_enc_mod = self._terrain_travel_mods(terrain)
+        watch_name = self._watch_name()
+        members = list(getattr(getattr(self, "party", None), "members", []) or [])
+        living = list(getattr(getattr(self, "party", None), "living", lambda: [])() or [])
+        low_supplies = int(getattr(self, "rations", 0) or 0) < max(1, len(members))
+        return {
+            "terrain": terrain,
+            "pace": travel_mode,
+            "watch": watch_name,
+            "on_road": terrain == "road",
+            "party_ready": bool(living),
+            "low_supplies": bool(low_supplies),
+            "encounter_mod": int(mode_enc_mod) + int(terr_enc_mod),
+            "discovery_mod": 1 if terrain == "road" else 0,
+        }
+
     def _cmd_travel_direction(self, direction: str) -> CommandResult:
 
 
@@ -2024,7 +2046,7 @@ class Game:
         src = tuple(self.party_hex)
 
 
-        steps, wps, enc_mod = self._wilderness_travel_params()
+        steps, wps, _enc_mod = self._wilderness_travel_params()
 
 
         cur = tuple(self.party_hex)
@@ -2050,15 +2072,15 @@ class Game:
 
             # Destination hex determines travel friction and encounter bias.
             hx2 = self._ensure_current_hex()
-            terrain = str(hx2.get("terrain", "clear"))
-            wps_mod, terr_enc_mod = self._terrain_travel_mods(terrain)
+            ctx = self.resolve_travel_context(hx2)
+            wps_mod, _terr_enc_mod = self._terrain_travel_mods(str(ctx.get("terrain") or "clear"))
             wps_eff = max(1, int(wps) + int(wps_mod))
 
             self._consume_rations(1)
             self._advance_watch(int(wps_eff))
             self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
             self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
-            self._wilderness_encounter_check(hx2, encounter_mod=int(enc_mod) + int(terr_enc_mod))
+            self._wilderness_encounter_check(hx2, encounter_mod=int(ctx.get("encounter_mod", 0)))
 
 
             # If the party was wiped in an encounter, stop travel chain.
@@ -2101,7 +2123,7 @@ class Game:
         # TravelToHex is an explicit single-step move.
 
 
-        steps, wps, enc_mod = self._wilderness_travel_params()
+        steps, wps, _enc_mod = self._wilderness_travel_params()
 
 
         # Respect travel mode pacing but do not chain beyond the explicit destination.
@@ -2110,15 +2132,15 @@ class Game:
         self.party_hex = dest
 
         hx2 = self._ensure_current_hex()
-        terrain = str(hx2.get("terrain", "clear"))
-        wps_mod, terr_enc_mod = self._terrain_travel_mods(terrain)
+        ctx = self.resolve_travel_context(hx2)
+        wps_mod, _terr_enc_mod = self._terrain_travel_mods(str(ctx.get("terrain") or "clear"))
         wps_eff = max(1, int(wps) + int(wps_mod))
 
         self._consume_rations(1)
         self._advance_watch(int(wps_eff))
         self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
         self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
-        self._wilderness_encounter_check(hx2, encounter_mod=int(enc_mod) + int(terr_enc_mod))
+        self._wilderness_encounter_check(hx2, encounter_mod=int(ctx.get("encounter_mod", 0)))
 
 
         self.emit("traveled", mode="to_hex", src=src, dest=dest, travel_mode=str(getattr(self,'wilderness_travel_mode','normal')))
@@ -2137,7 +2159,7 @@ class Game:
             return CommandResult(status="error", messages=("You are already at Town.",))
 
 
-        steps, wps, enc_mod = self._wilderness_travel_params()
+        steps, wps, _enc_mod = self._wilderness_travel_params()
 
 
         src = tuple(self.party_hex)
@@ -2185,15 +2207,15 @@ class Game:
             self.party_hex = best
 
             hx2 = self._ensure_current_hex()
-            terrain = str(hx2.get("terrain", "clear"))
-            wps_mod, terr_enc_mod = self._terrain_travel_mods(terrain)
+            ctx = self.resolve_travel_context(hx2)
+            wps_mod, _terr_enc_mod = self._terrain_travel_mods(str(ctx.get("terrain") or "clear"))
             wps_eff = max(1, int(wps) + int(wps_mod))
 
             self._consume_rations(1)
             self._advance_watch(int(wps_eff))
             self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
             self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
-            self._wilderness_encounter_check(hx2, encounter_mod=int(enc_mod) + int(terr_enc_mod))
+            self._wilderness_encounter_check(hx2, encounter_mod=int(ctx.get("encounter_mod", 0)))
 
 
             if not self.party.living():
@@ -2547,7 +2569,7 @@ class Game:
         q, r = int(self.party_hex[0]), int(self.party_hex[1])
         poi_type = str(poi.get("type") or "poi")
         poi_name = str(poi.get("name") or "Point of Interest")
-        poi_id = str(poi.get("id") or f"hex:{q},{r}:{poi_type}")
+        poi_id = first_time_poi_resolution_key(poi, q=q, r=r, mode="explore")
         if not bool(poi.get("explored", False)):
             poi["explored"] = True
             if isinstance(hx, dict):
@@ -5898,10 +5920,14 @@ class Game:
 
         discovered = bool(existing.get("discovered", False))
         resolved = bool(existing.get("resolved", False))
+        explored = bool(existing.get("explored", False))
+        rumored = bool(existing.get("rumored", False))
 
         if str(existing.get("id") or "") == canonical_id:
             discovered = bool(existing.get("discovered", False))
             resolved = bool(existing.get("resolved", False))
+            explored = bool(existing.get("explored", False))
+            rumored = bool(existing.get("rumored", False))
 
         hx.poi = {
             "id": canonical_id,
@@ -5910,6 +5936,8 @@ class Game:
             "notes": "A known stair descending into the depths near town.",
             "discovered": discovered,
             "resolved": resolved,
+            "explored": explored,
+            "rumored": rumored,
             "canonical": True,
         }
         self.world_hexes[hx.key()] = hx.to_dict()
@@ -5940,6 +5968,7 @@ class Game:
                 "notes": notes,
                 "discovered": bool(existing.get("discovered", False)),
                 "resolved": bool(existing.get("resolved", False)),
+                "explored": bool(existing.get("explored", False)),
                 "rumored": bool(existing.get("rumored", False)),
                 "secondary": True,
             }
@@ -6050,7 +6079,7 @@ class Game:
             return
         kind = str(poi.get("type") or "poi")
         name = str(poi.get("name") or "Unknown")
-        poi_id = str(poi.get("id") or f"hex:{q},{r}:{kind}")
+        poi_id = first_time_poi_resolution_key(poi, q=q, r=r, mode="explore")
         self._mark_rumors_seen_for_poi(poi_id)
         note = str(poi.get("notes") or "")
         entry = {
@@ -6328,7 +6357,7 @@ class Game:
         if not isinstance(poi, dict):
             return False
 
-        poi_id = str(poi.get("id") or f"hex:{int(q)},{int(r)}:{str(poi.get('type') or 'poi')}")
+        poi_id = first_time_poi_resolution_key(poi, q=int(q), r=int(r), mode="explore")
         poi_kind = str(poi.get("type") or "poi")
 
         for e in (self._journal_rumors() or []):
@@ -6543,7 +6572,7 @@ class Game:
             "hint": full_hint,
             "locator": locator,
             "cost": cost,
-            "poi_id": str(poi.get("id") or f"hex:{q},{r}:{str(poi.get('type') or 'poi')}"),
+            "poi_id": first_time_poi_resolution_key(poi, q=int(q), r=int(r), mode="explore"),
             "source": "town_rumor",
             "seen": bool(poi.get("discovered", False)),
         }
@@ -6719,7 +6748,8 @@ class Game:
         encounter_mod can be used by travel modes (cautious/forced) to slightly shift encounter chance.
         """
         # Moderate: base 1-in-6 per watch, +1 at night.
-        base = 1 + (1 if self._watch_name() == "Night" else 0)
+        ctx = self.resolve_travel_context(hx)
+        base = 1 + (1 if str(ctx.get("watch") or "") == "Night" else 0)
 
         # Heat / contested territory increases patrol intensity.
         heat = int(hx.get("heat", 0) or 0)
@@ -7770,7 +7800,8 @@ class Game:
     def _wilderness_hud_lines(self) -> list[str]:
         q, r = tuple(getattr(self, "party_hex", (0, 0)))
         hx = self._ensure_current_hex()
-        terrain = str((hx or {}).get("terrain", "clear"))
+        ctx = self.resolve_travel_context(hx)
+        terrain = str(ctx.get("terrain") or "clear")
         heat = int((hx or {}).get("heat", 0) or 0)
         dist = int(hex_distance((0, 0), (q, r)))
         anc = self._get_forward_anchor()
@@ -7781,7 +7812,7 @@ class Game:
             if anc.get("expires_day") is not None:
                 anchor_txt += f" until day {int(anc.get('expires_day', 0) or 0)}"
         return [
-            f"Day {int(getattr(self, 'campaign_day', 1) or 1)} — {self._watch_name()} | Hex ({q},{r}) | {terrain.title()} | Heat {heat} | Dist {dist} | Travel {str(getattr(self, 'wilderness_travel_mode', 'normal')).title()}",
+            f"Day {int(getattr(self, 'campaign_day', 1) or 1)} — {str(ctx.get('watch') or self._watch_name())} | Hex ({q},{r}) | {terrain.title()} | Heat {heat} | Dist {dist} | Travel {str(ctx.get('pace') or getattr(self, 'wilderness_travel_mode', 'normal')).title()}",
             self._party_hud_summary(),
             f"Supplies: {int(getattr(self, 'gold', 0) or 0)} gp | Rations {int(getattr(self, 'rations', 0) or 0)} | Torches {int(getattr(self, 'torches', 0) or 0)}",
             self._light_hud_summary(),
@@ -14458,7 +14489,7 @@ class Game:
         ptype = str(d.get("target_poi_type") or "")
         if ptype and str(poi.get("type") or "") != ptype:
             return d
-        d["target_poi_id"] = str(poi.get("id") or f"hex:{q},{r}:{str(poi.get('type') or 'poi')}")
+        d["target_poi_id"] = first_time_poi_resolution_key(poi, q=q, r=r, mode="explore")
         return d
 
     def _link_rumor_to_contract(self, c: dict[str, Any]) -> None:

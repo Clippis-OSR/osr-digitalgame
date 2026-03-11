@@ -4,6 +4,26 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple
 
 
+def first_time_poi_resolution_key(poi: dict[str, Any], *, q: int | None = None, r: int | None = None, mode: str = "explore") -> str:
+    """Return a stable first-time gate key for POI interactions.
+
+    Prefer persisted POI ids. Fall back to deterministic structural identity only.
+    """
+    p = poi if isinstance(poi, dict) else {}
+    pid = str(p.get("id") or "").strip()
+    if pid:
+        return pid
+
+    ptype = str(p.get("type") or "poi").strip() or "poi"
+    if q is not None and r is not None:
+        return f"hex:{int(q)},{int(r)}:{ptype}"
+
+    seed = p.get("seed")
+    if seed is not None:
+        return f"seed:{ptype}:{int(seed)}"
+    return f"{ptype}:unknown"
+
+
 # Axial coordinates (q, r)
 # Directions are ordered to be stable for UI and random choices.
 DIRECTIONS: Dict[str, Tuple[int, int]] = {
