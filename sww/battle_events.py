@@ -99,24 +99,28 @@ def format_event(e: BattleEvent) -> str:
         return f"{d.get('unit_id', '?')} takes cover."
     if k == "ATTACK":
         mode = d.get("mode", "")
-        res = d.get("result", None)
-        rr = f" [{res}]" if res else ""
+        res = str(d.get("result", "") or "").strip().lower()
         mm = f" ({mode})" if mode else ""
         roll = d.get("roll", None)
         total = d.get("total", None)
         need = d.get("need", None)
-        rt = ""
+        details = ""
         if roll is not None and total is not None and need is not None:
-            rt = f" (roll {roll} → {total} vs {need})"
+            details = f" (roll {roll} → {total} vs {need})"
         elif roll is not None:
-            rt = f" (roll {roll})"
-        return f"{d.get('attacker_id', '?')} attacks {d.get('target_id', '?')}{mm}{rr}{rt}."
+            details = f" (roll {roll})"
+        if res:
+            return f"{d.get('attacker_id', '?')} attacks {d.get('target_id', '?')}{mm}: {res}.{details}"
+        return f"{d.get('attacker_id', '?')} attacks {d.get('target_id', '?')}{mm}.{details}"
     if k == "DAMAGE":
         hp = d.get("hp", None)
         hpmax = d.get("hp_max", None)
         tail = ""
         if hp is not None and hpmax is not None:
             tail = f" (HP {hp}/{hpmax})"
+        src = d.get("source_id", None)
+        if src:
+            return f"{src} deals {d.get('amount', 0)} damage to {d.get('target_id', '?')}.{tail}"
         return f"{d.get('target_id', '?')} takes {d.get('amount', 0)} damage.{tail}"
 
     if k == "HEAL":
@@ -131,15 +135,15 @@ def format_event(e: BattleEvent) -> str:
         roll = d.get("roll", None)
         need = d.get("need", None)
         res = d.get("result", None)
-        rr = f" [{res}]" if res else ""
+        rr = f": {res}" if res else ""
         rt = ""
         if roll is not None and need is not None:
             rt = f" (roll {roll} vs {need})"
         sp = f" vs {spell}" if spell else ""
-        return f"{d.get('unit_id','?')} saves ({d.get('save','?')}){sp}.{rr}{rt}"
+        return f"{d.get('unit_id','?')} saves ({d.get('save','?')}){sp}{rr}.{rt}"
 
     if k == "UNIT_DIED":
-        return f"{d.get('unit_id', '?')} is slain!"
+        return f"{d.get('unit_id', '?')} dies."
     if k == "OPPORTUNITY_ATTACK_TRIGGERED":
         return f"{d.get('attacker_id', '?')} makes an opportunity attack on {d.get('target_id', '?')}."
     if k == "SPELL_CAST":
@@ -153,7 +157,7 @@ def format_event(e: BattleEvent) -> str:
         return f"{d.get('spell','?')} affects {d.get('count',0)} target(s){dt}."
 
     if k == "ROUND_STARTED":
-        return f"Round {d.get('round_no', '?')} (initiative: {d.get('side_first', '?')} first)."
+        return f"Round {d.get('round_no', '?')} begins (initiative: {d.get('side_first', '?')} first)."
     if k == "PHASE_STARTED":
         return f"Phase: {d.get('phase', '?')}"
     if k == "ACTION_DECLARED":
@@ -186,7 +190,7 @@ def format_event(e: BattleEvent) -> str:
     if k == "UNIT_FALLBACK":
         return f"{d.get('unit_id','?')} falls back!"
     if k == "UNIT_ROUTED":
-        return f"{d.get('unit_id','?')} routs!"
+        return f"{d.get('unit_id','?')} flees!"
     if k == "UNIT_SURRENDERED":
         return f"{d.get('unit_id','?')} surrenders!"
 
@@ -208,11 +212,18 @@ def format_event(e: BattleEvent) -> str:
     if k == "ITEM_THROWN":
         return f"{d.get('unit','?')} throws {d.get('item','?')}."
     if k == "EFFECT_APPLIED":
-        return f"{d.get('tgt','?')} gains {d.get('kind','?')}."
+        return f"{d.get('tgt','?')} is affected by {d.get('kind','?')}."
+    if k == "EFFECT_REFRESHED":
+        return f"{d.get('kind','?').title()} on {d.get('tgt','?')} is refreshed."
     if k == "EFFECT_REMOVED":
-        return f"{d.get('tgt','?')} loses {d.get('kind','?')}."
+        reason = str(d.get("reason", "") or "").strip()
+        if reason in ("resisted", "save_success"):
+            return f"{d.get('tgt','?')} resists {d.get('kind','?')}."
+        if reason:
+            return f"{d.get('kind','?').title()} is removed from {d.get('tgt','?')} ({reason})."
+        return f"{d.get('kind','?').title()} is removed from {d.get('tgt','?')}."
     if k == "EFFECT_EXPIRED":
-        return f"{d.get('tgt','?')}'s {d.get('kind','?')} ends."
+        return f"{d.get('kind','?').title()} on {d.get('tgt','?')} expires."
     if k == "TERRAIN_CHANGED":
         return f"Terrain changed at ({d.get('x','?')},{d.get('y','?')}): {d.get('tile','?')}."
     if k in ("XP_AWARDED","XP_EARNED"):
