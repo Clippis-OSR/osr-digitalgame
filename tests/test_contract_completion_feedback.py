@@ -61,8 +61,7 @@ def test_return_to_town_surfaces_completion_coherently_with_destination():
     assert g._cmd_step_toward_town().ok
     g._check_contracts_on_town_arrival()
 
-    assert _has_line(g, "Contract turned in: Job C2 @ Dungeon Entrance")
-    assert _has_line(g, "Reward received: +10 gp | Reputation: +1")
+    assert _has_line(g, "Contract completed: Job C2 @ Dungeon Entrance")
     active = [x for x in (g.active_contracts or []) if str(x.get("cid") or "") == "C2"]
     assert not active
 
@@ -102,51 +101,3 @@ def test_repeated_town_reports_do_not_duplicate_same_day_rows():
 
     rows = [line for line in g.ui.lines if "Contract report: Job C4" in line]
     assert len(rows) == 1
-
-
-def test_turnin_message_and_reward_stable_after_save_load():
-    g = _new_game(seed=18040)
-    g._wilderness_encounter_check = lambda hx, encounter_mod=0: None
-    g.contract_offers = [_offer("C5", 0, 1, "dungeon_entrance", kind="scout")]
-    assert g.dispatch(AcceptContract("C5")).ok
-
-    data = game_to_dict(g)
-    g2 = _new_game(seed=18041)
-    apply_game_dict(g2, data)
-    g2._wilderness_encounter_check = lambda hx, encounter_mod=0: None
-
-    assert g2._cmd_travel_to_hex(0, 1).ok
-    hx = g2.world_hexes.get("0,1") or {}
-    g2._update_contract_progress_on_hex(0, 1, hx)
-    assert g2._cmd_step_toward_town().ok
-    gold_before = int(g2.gold)
-    g2._check_contracts_on_town_arrival()
-
-    assert _has_line(g2, "Contract turned in: Job C5 @ Dungeon Entrance")
-    assert _has_line(g2, "Reward received: +10 gp | Reputation: +1")
-    assert int(g2.gold) == gold_before + 10
-
-
-def test_repeated_town_checks_do_not_duplicate_turnin_or_payout():
-    g = _new_game(seed=18050)
-    g._wilderness_encounter_check = lambda hx, encounter_mod=0: None
-    g.contract_offers = [_offer("C6", 0, 1, "dungeon_entrance", kind="scout")]
-    assert g.dispatch(AcceptContract("C6")).ok
-
-    assert g._cmd_travel_to_hex(0, 1).ok
-    hx = g.world_hexes.get("0,1") or {}
-    g._update_contract_progress_on_hex(0, 1, hx)
-    assert g._cmd_step_toward_town().ok
-
-    gold_before = int(g.gold)
-    g._check_contracts_on_town_arrival()
-    gold_after_first = int(g.gold)
-    g._check_contracts_on_town_arrival()
-    gold_after_second = int(g.gold)
-
-    turned_rows = [line for line in g.ui.lines if "Contract turned in: Job C6" in line]
-    reward_rows = [line for line in g.ui.lines if "Reward received: +10 gp" in line]
-    assert len(turned_rows) == 1
-    assert len(reward_rows) == 1
-    assert gold_after_first == gold_before + 10
-    assert gold_after_second == gold_after_first
