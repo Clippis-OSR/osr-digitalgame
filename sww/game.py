@@ -5049,8 +5049,83 @@ class Game:
     # Party Creation (Guided) (P4.2)
     # -------------
 
+    def _guided_step_title(self, *, step: int, total_steps: int, label: str, name: str) -> None:
+        self.ui.title(f"Step {step}/{total_steps}: {label} — {name}")
+
+    def _guided_log_character_preview(
+        self,
+        *,
+        stats: Stats,
+        cls: str | None,
+        race: str | None,
+        alignment: str | None,
+        hp: int | None = None,
+        armor_name: str | None = None,
+        shield: bool = False,
+    ) -> None:
+        try:
+            from .attribute_rules import strength_mods, dexterity_mods, constitution_mods, xp_bonus_percent, cleric_bonus_first_level_spell
+            from .equipment import compute_ac_desc
+        except Exception:
+            return
+
+        active_cls = cls or "(not chosen)"
+        active_race = race or "(not chosen)"
+        active_alignment = alignment or "(not chosen)"
+        self.ui.log(f"Preview: {active_cls} | {active_race} | {active_alignment}")
+        self.ui.log(
+            f"  STR {stats.STR} DEX {stats.DEX} CON {stats.CON} INT {stats.INT} WIS {stats.WIS} CHA {stats.CHA}"
+        )
+
+        cls_for_mods = cls if cls else "Fighter"
+        sm = strength_mods(stats.STR, cls=cls_for_mods, fighter_only_bonuses=True)
+        dm = dexterity_mods(stats.DEX)
+        cm = constitution_mods(stats.CON)
+        hp_est = hp if hp is not None else max(1, 4 + int(cm.hp_per_hd))
+        ac_est = compute_ac_desc(
+            base_ac_desc=9,
+            armor_name=armor_name,
+            shield=shield,
+            dex_score=getattr(stats, "DEX", None),
+        )
+        self.ui.log(
+            f"  HP {hp_est} | AC {ac_est} | STR to-hit {sm.to_hit:+d}, STR dmg {sm.dmg:+d} | "
+            f"DEX missile {dm.missile_to_hit:+d}, AC shift {dm.ac_desc_mod:+d} | CON HP/HD {cm.hp_per_hd:+d}"
+        )
+        if cls:
+            xp_pct = xp_bonus_percent(cls=cls, stats=stats)
+            if xp_pct:
+                self.ui.log(f"  XP bonus: +{xp_pct}%")
+            if cls == "Cleric" and cleric_bonus_first_level_spell(stats.WIS):
+                self.ui.log("  Cleric note: WIS 15+ grants +1 first-level spell.")
+
+    def _class_choice_notes(self, cls: str) -> str:
+        from .class_eligibility import allowed_races_for_class, allowed_alignments_for_class
+
+        notes: list[str] = []
+        race_allow = allowed_races_for_class(cls)
+        align_allow = allowed_alignments_for_class(cls)
+        if race_allow is not None:
+            notes.append("race: " + ", ".join(race_allow))
+        if align_allow is not None:
+            notes.append("alignment: " + ", ".join(align_allow))
+        prime_attr = {
+            "Fighter": "prime attribute STR",
+            "Cleric": "prime attribute WIS",
+            "Thief": "prime attribute DEX",
+            "Magic-User": "prime attribute INT",
+            "Assassin": "prime attributes STR/DEX",
+            "Druid": "prime attributes WIS/CHA",
+            "Monk": "prime attributes STR/DEX/WIS/CON",
+            "Paladin": "prime attributes STR/CHA",
+            "Ranger": "prime attribute STR",
+        }.get(cls)
+        if prime_attr:
+            notes.append(prime_attr)
+        return " | ".join(notes)
+
     def create_party_guided(self):
-        """Guided party creation: roll -> assign -> class -> kit.
+        """Guided party creation: roll -> assign -> class -> race -> alignment -> gear -> review.
 
         This is intentionally text-UI friendly and deterministic (uses Dice).
         """
@@ -5058,7 +5133,6 @@ class Game:
         party_size = int(self.ui.prompt("How many PCs (1-6)?", "4") or "4")
         party_size = max(1, min(self.MAX_PCS, party_size))
 
-        # Roll method is chosen once per party (Option B).
         rm_i = self.ui.choose(
             "Attribute roll method",
             [
@@ -5073,35 +5147,33 @@ class Game:
         def _roll_one_stat() -> int:
             if roll_method == "3d6":
                 return self.dice.d(6) + self.dice.d(6) + self.dice.d(6)
-            # 4d6 drop lowest
             r = [self.dice.d(6) for _ in range(4)]
             r.sort()
             return int(r[1] + r[2] + r[3])
+
+        classes = ["Fighter", "Cleric", "Thief", "Magic-User", "Assassin", "Druid", "Monk", "Paladin", "Ranger"]
+        races = ["Human", "Elf", "Dwarf", "Halfling", "Half-elf"]
+        alignments = ["Law", "Neutrality", "Chaos"]
 
         for n in range(party_size):
             while True:
                 self.ui.hr()
                 name = self.ui.prompt(f"Name for PC #{n+1}:", f"Hero{n+1}") or f"Hero{n+1}"
 
-                # 1) Roll screen (six attribute scores)
-                rolls: list[int] = []
+                # Step 1: roll/reorder
                 while True:
                     rolls = [_roll_one_stat() for _ in range(6)]
                     original = list(rolls)
-
-                    # Keep/reroll loop
+                    reroll = False
                     while True:
-                        self.ui.title(f"Roll Attributes — {name}")
-                        self.ui.log(
-                            "Method: " + ("3d6 (Classic)" if roll_method == "3d6" else "4d6 drop lowest (Heroic)")
-                        )
+                        self._guided_step_title(step=1, total_steps=6, label="Roll Attributes", name=name)
+                        self.ui.log("Method: " + ("3d6 (Classic)" if roll_method == "3d6" else "4d6 drop lowest (Heroic)"))
                         self.ui.log("Rolled: " + ", ".join(str(x) for x in rolls))
                         j = self.ui.choose("Next step", ["Keep & Continue", "Reorder/Swap", "Reroll"])
                         if j == 2:
-                            # Reroll from scratch
+                            reroll = True
                             break
                         if j == 1:
-                            # Reorder view (pure convenience; no rules impact)
                             while True:
                                 self.ui.title(f"Reorder Rolls — {name}")
                                 self.ui.log("Current: " + " | ".join(f"{i+1}:{v}" for i, v in enumerate(rolls)))
@@ -5123,31 +5195,28 @@ class Game:
                                     if a != b:
                                         rolls[a], rolls[b] = rolls[b], rolls[a]
                             continue
-                        # Keep & continue
                         break
-
-                    if j == 2:
+                    if reroll:
                         continue
                     break
 
-                # 2) Assign screen
+                # Step 2: assign
                 remaining = list(rolls)
                 assigned: dict[str, int] = {}
                 for stat in ["STR", "DEX", "CON", "INT", "WIS", "CHA"]:
-                    self.ui.title(f"Assign Scores — {name}")
+                    self._guided_step_title(step=2, total_steps=6, label="Assign Attributes", name=name)
                     self.ui.log("Remaining: " + ", ".join(str(x) for x in remaining))
                     idx = self.ui.choose(f"Assign which value to {stat}?", [str(x) for x in remaining])
                     val = int(remaining.pop(idx))
                     assigned[stat] = val
-                    # Live preview for DEX/CON/CHA only (class-independent)
                     try:
                         from .attribute_rules import dexterity_mods, constitution_mods, max_special_hirelings
                         if stat == "DEX":
                             dm = dexterity_mods(val)
-                            self.ui.log(f"DEX preview: missile to-hit {dm.missile_to_hit:+d}, AC shift {dm.ac_desc_shift:+d} (descending)")
+                            self.ui.log(f"DEX preview: missile to-hit {dm.missile_to_hit:+d}, AC shift {dm.ac_desc_mod:+d} (descending)")
                         elif stat == "CON":
                             cm = constitution_mods(val)
-                            self.ui.log(f"CON preview: HP/HD {cm.hp_per_hd:+d}, raise-dead survival {cm.raise_dead_survival_pct}%")
+                            self.ui.log(f"CON preview: HP/HD {cm.hp_per_hd:+d}, raise-dead survival {cm.survive_raise_dead_pct}%")
                         elif stat == "CHA":
                             self.ui.log(f"CHA preview: max special hirelings {max_special_hirelings(val)}")
                     except Exception:
@@ -5162,102 +5231,159 @@ class Game:
                     CHA=int(assigned["CHA"]),
                 )
 
-                # 3) Class select (shows derived STR bonuses and XP bonus)
-                cls_i = self.ui.choose(
-                    "Choose class",
-                    ["Fighter", "Cleric", "Thief", "Magic-User", "Assassin", "Druid", "Monk", "Paladin", "Ranger"],
-                )
-                cls = ["Fighter", "Cleric", "Thief", "Magic-User", "Assassin", "Druid", "Monk", "Paladin", "Ranger"][cls_i]
-
-                # 3.5) Race select (P4.10.5)
-                race_i = self.ui.choose("Choose race", ["Human", "Elf", "Dwarf", "Halfling", "Half-elf"])
-                race = ["Human", "Elf", "Dwarf", "Halfling", "Half-elf"][race_i]
-
-                # Derived preview
-                try:
-                    from .attribute_rules import strength_mods, dexterity_mods, constitution_mods, xp_bonus_percent, cleric_bonus_first_level_spell
-                    sm = strength_mods(stats.STR, cls=cls, fighter_only_bonuses=True)
-                    dm = dexterity_mods(stats.DEX)
-                    cm = constitution_mods(stats.CON)
-                    xp_pct = xp_bonus_percent(cls=cls, stats=stats)
-                    self.ui.hr()
-                    self.ui.log(f"Derived: STR to-hit {sm.to_hit:+d}, STR dmg {sm.damage:+d} (fighter-only bonuses) | ")
-                    self.ui.log(f"        DEX missile {dm.missile_to_hit:+d}, AC shift {dm.ac_desc_shift:+d} | CON HP/HD {cm.hp_per_hd:+d}")
-                    if cls == "Cleric":
-                        b = cleric_bonus_first_level_spell(stats.WIS)
-                        if b:
-                            self.ui.log("        Cleric bonus: +1 first-level spell (WIS 15+)")
-                    if xp_pct:
-                        self.ui.log(f"        XP bonus: +{xp_pct}%")
-                except Exception:
-                    pass
-
-                ok = self.ui.choose("Accept this character?", ["Yes", "Redo this character"])
-                if ok != 0:
-                    continue
-
-                # Build PC
-                hd = self.class_hit_die(cls)
-                try:
-                    from .attribute_rules import constitution_mods
-                    con_hp = int(constitution_mods(stats.CON).hp_per_hd)
-                except Exception:
-                    con_hp = max(0, mod_ability(stats.CON))
-                hp = max(1, self.dice.d(hd) + con_hp)
-
-                pc = PC(
-                    name=name,
-                    race=race,
-                    hp=hp,
-                    hp_max=hp,
-                    ac_desc=9,
-                    hd=1,
-                    save=15,
-                    morale=9,
-                    alignment="Neutrality",
-                    is_pc=True,
-                    cls=cls,
-                    level=1,
-                    xp=0,
-                    stats=stats,
+                from .class_eligibility import (
+                    allowed_alignments_for_class,
+                    allowed_races_for_class,
+                    is_alignment_allowed,
+                    is_race_allowed,
                 )
 
-                # Derived class features.
-                try:
-                    self.recalc_pc_class_features(pc)
-                except Exception:
-                    pass
-                pc.effects = []
-                pc.weapon = None
-                pc.armor = None
-                pc.shield = False
+                while True:
+                    self._guided_step_title(step=3, total_steps=6, label="Choose Class", name=name)
+                    cls = classes[self.ui.choose("Choose class", [f"{c} — {self._class_choice_notes(c)}" for c in classes])]
+                    self._guided_log_character_preview(stats=stats, cls=cls, race=None, alignment=None)
 
-                # Kit
-                weapon = self.ui.choose("Starting weapon", ["Sword", "Spear", "Mace", "Dagger", "Staff"])
-                pc.weapon = ["Sword", "Spear", "Mace", "Dagger", "Staff"][weapon]
-                armor = self.ui.choose("Armor", ["None", "Leather", "Chain", "Plate"])
-                armor_name = ["None", "Leather", "Chain", "Plate"][armor]
-                if armor_name != "None":
-                    pc.armor = armor_name
-                    sh = self.ui.choose("Shield?", ["No", "Yes"])
-                    if sh == 1:
-                        pc.shield = True
+                    go_back_class = False
+                    while True:
+                        self._guided_step_title(step=4, total_steps=6, label="Choose Race", name=name)
+                        race_idx = self.ui.choose("Choose race", races + ["Back to Class"])
+                        if race_idx == len(races):
+                            go_back_class = True
+                            break
+                        race = races[race_idx]
+                        if not is_race_allowed(cls, race):
+                            allow = allowed_races_for_class(cls) or ()
+                            self.ui.log(f"{cls} is unavailable for {race}. Allowed races: {', '.join(allow)}.")
+                            continue
+                        self._guided_log_character_preview(stats=stats, cls=cls, race=race, alignment=None)
 
-                # Compute AC from chosen kit and DEX.
-                try:
-                    from .equipment import compute_ac_desc
-                    pc.ac_desc = compute_ac_desc(
-                        base_ac_desc=9,
-                        armor_name=pc.armor,
-                        shield=bool(pc.shield),
-                        dex_score=getattr(stats, "DEX", None),
-                    )
-                except Exception:
-                    pass
+                        while True:
+                            self._guided_step_title(step=5, total_steps=6, label="Choose Alignment", name=name)
+                            alignment_idx = self.ui.choose("Choose alignment", alignments + ["Back to Race"])
+                            if alignment_idx == len(alignments):
+                                break
+                            alignment = alignments[alignment_idx]
+                            if not is_alignment_allowed(cls, alignment):
+                                allow = allowed_alignments_for_class(cls) or ()
+                                self.ui.log(f"{cls} requires alignment: {', '.join(allow)}. You chose {alignment}.")
+                                continue
 
-                self.party.members.append(pc)
-                break
+                            hd = self.class_hit_die(cls)
+                            try:
+                                from .attribute_rules import constitution_mods
+                                con_hp = int(constitution_mods(stats.CON).hp_per_hd)
+                            except Exception:
+                                con_hp = max(0, mod_ability(stats.CON))
+                            hp = max(1, self.dice.d(hd) + con_hp)
 
+                            pc = PC(
+                                name=name,
+                                race=race,
+                                hp=hp,
+                                hp_max=hp,
+                                ac_desc=9,
+                                hd=1,
+                                save=15,
+                                morale=9,
+                                alignment=alignment,
+                                is_pc=True,
+                                cls=cls,
+                                level=1,
+                                xp=0,
+                                stats=stats,
+                            )
+                            try:
+                                self.recalc_pc_class_features(pc)
+                            except Exception:
+                                pass
+                            pc.effects = []
+
+                            while True:
+                                self._guided_step_title(step=5, total_steps=6, label="Choose Starting Equipment", name=name)
+                                kit = self.ui.choose("Equipment setup", ["Class starter kit", "Manual equipment pick", "Back to Alignment"])
+                                if kit == 2:
+                                    break
+                                if kit == 0:
+                                    weapon_name, armor_name, has_shield = {
+                                        "Fighter": ("Sword", "Chain", True),
+                                        "Cleric": ("Mace", "Chain", True),
+                                        "Thief": ("Dagger", "Leather", False),
+                                        "Magic-User": ("Staff", "None", False),
+                                        "Assassin": ("Sword", "Leather", False),
+                                        "Druid": ("Staff", "Leather", True),
+                                        "Monk": ("Staff", "None", False),
+                                        "Paladin": ("Sword", "Plate", True),
+                                        "Ranger": ("Sword", "Chain", False),
+                                    }.get(cls, ("Sword", "Leather", False))
+                                else:
+                                    weapon_name = ["Sword", "Spear", "Mace", "Dagger", "Staff"][
+                                        self.ui.choose("Starting weapon", ["Sword", "Spear", "Mace", "Dagger", "Staff"])
+                                    ]
+                                    armor_name = ["None", "Leather", "Chain", "Plate"][
+                                        self.ui.choose("Armor", ["None", "Leather", "Chain", "Plate"])
+                                    ]
+                                    has_shield = False
+                                    if armor_name != "None":
+                                        has_shield = self.ui.choose("Shield?", ["No", "Yes"]) == 1
+
+                                pc.weapon = weapon_name
+                                pc.armor = None if armor_name == "None" else armor_name
+                                pc.shield = has_shield
+                                try:
+                                    from .equipment import compute_ac_desc
+                                    pc.ac_desc = compute_ac_desc(
+                                        base_ac_desc=9,
+                                        armor_name=pc.armor,
+                                        shield=bool(pc.shield),
+                                        dex_score=getattr(stats, "DEX", None),
+                                    )
+                                except Exception:
+                                    pass
+
+                                self._guided_step_title(step=6, total_steps=6, label="Review Character", name=name)
+                                self._guided_log_character_preview(
+                                    stats=stats,
+                                    cls=cls,
+                                    race=race,
+                                    alignment=alignment,
+                                    hp=pc.hp,
+                                    armor_name=pc.armor,
+                                    shield=bool(pc.shield),
+                                )
+                                self.ui.log(f"Equipment: Weapon {pc.weapon} | Armor {pc.armor or 'None'} | Shield {'Yes' if pc.shield else 'No'}")
+                                self.ui.log("Party starting gold after creation: 100 gp (shared pool)")
+                                done = self.ui.choose(
+                                    "Confirm character",
+                                    ["Confirm & Add to Party", "Back to Equipment", "Back to Alignment", "Redo from Step 1"],
+                                )
+                                if done == 0:
+                                    self.party.members.append(pc)
+                                    go_back_class = False
+                                    break
+                                if done == 1:
+                                    continue
+                                if done == 2:
+                                    break
+                                go_back_class = True
+                                break
+
+                            if done == 0:
+                                break
+                            if done in (2, 3):
+                                break
+
+                        if done == 0:
+                            break
+                        if go_back_class:
+                            break
+
+                    if done == 0:
+                        break
+                    if go_back_class:
+                        continue
+
+                if done == 0:
+                    break
         # Starting supplies
         self.gold = 100
         self.torches = 3
