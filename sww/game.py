@@ -22,6 +22,7 @@ from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
+from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
 from .contracts import generate_contracts, Contract
 from .events import (
@@ -10137,6 +10138,134 @@ class Game:
             lines.append(str(aft.get("text") or "").strip())
         return lines[:2]
 
+    def _mark_room_resolution_once(self, room: dict[str, Any], feature_id: str, *, mode: str = "resolve") -> bool:
+        """Return True on first resolution for this room feature, then persist the key."""
+        key = first_time_room_resolution_key(room, feature_id=feature_id, mode=mode)
+        d = room.get("_delta") if isinstance(room.get("_delta"), dict) else {}
+        keys = set(str(x) for x in (d.get("resolution_keys") or room.get("resolution_keys") or []) if str(x).strip())
+        if key in keys:
+            return False
+        keys.add(key)
+        ordered = sorted(keys)
+        room["resolution_keys"] = ordered
+        if isinstance(d, dict):
+            d["resolution_keys"] = ordered
+        return True
+
+    def _resolve_room_scene_profile(self, room: dict[str, Any], ctx: dict[str, Any]) -> dict[str, Any] | None:
+        scene = str(room.get("interaction_scene") or "").strip().lower()
+        tags = set(str(t).lower() for t in (ctx.get("room_tags") or []))
+        role = self._dungeon_room_role(int(ctx.get("room_id", room.get("id", 0)) or 0))
+
+        if scene in {"hazard", "secret", "lore", "occupant", "rest"}:
+            kind = scene
+        elif role in {"hazard"} or room.get("type") == "trap":
+            kind = "hazard"
+        elif role in {"clue", "shrine"} or "clue_target:boss" in tags or "clue_target:treasury" in tags:
+            kind = "lore"
+        elif (not ctx.get("secrets_found")) and ("secret" in tags or "role:transit" in tags or role == "transit"):
+            kind = "secret"
+        elif role in {"guard", "lair"} and not room.get("cleared"):
+            kind = "occupant"
+        else:
+            kind = "rest"
+
+        return {"kind": kind, "role": role}
+
+    def _run_room_interaction_scene(self, room: dict[str, Any]) -> None:
+        ctx = resolve_room_interaction_context(self, room)
+        profile = self._resolve_room_scene_profile(room, ctx)
+        if not profile:
+            return
+
+        kind = str(profile.get("kind") or "rest")
+        rid = int(ctx.get("room_id", room.get("id", self.current_room_id)) or self.current_room_id)
+
+        if kind == "hazard":
+            hazard_id = str(room.get("hazard_id") or room.get("trap_desc") or "hazard").strip().lower().replace(" ", "_")
+            if not self._mark_room_resolution_once(room, f"hazard:{hazard_id}", mode="scene"):
+                return
+            self.ui.log("The room is unstable: you can bypass, disarm, or risk pushing through.")
+            c = self.ui.choose("Hazard scene", ["Bypass carefully", "Disarm quickly", "Push through", "Leave it alone"])
+            if c == 3:
+                self.ui.log("You back off and mark the hazard for later.")
+                return
+            if c in (0, 1):
+                best_dex = 0
+                for pc in self.party.living():
+                    st = getattr(pc, "stats", None)
+                    try:
+                        best_dex = max(best_dex, int(getattr(st, "DEX", 0) or 0))
+                    except Exception:
+                        pass
+                odds = max(1, min(5, 1 + max(0, mod_ability(best_dex)) + (1 if c == 0 else 0)))
+                if self.dice.in_6(odds):
+                    room["hazard_resolved"] = True
+                    room["cleared"] = bool(room.get("cleared", False)) or (room.get("type") == "trap")
+                    self.ui.log("You clear a safe path through the hazard.")
+                    return
+            victim = self.dice_rng.choice(self.party.living()) if self.party.living() else None
+            if victim is not None:
+                dmg = int(self.dice.roll(str(room.get("hazard_damage") or room.get("trap_damage") or "1d4")).total)
+                victim.hp = max(-1, victim.hp - dmg)
+                self._notify_damage(victim, dmg, damage_types={"physical"})
+                self.ui.log(f"{victim.name} is clipped by debris for {dmg} damage.")
+            self.noise_level = min(5, int(getattr(self, "noise_level", 0) or 0) + 1)
+            return
+
+        if kind == "secret":
+            if not self._mark_room_resolution_once(room, "secret-probe", mode="scene"):
+                return
+            c = self.ui.choose("Secret signs", ["Search for concealed route", "Leave the walls untouched"])
+            if c != 0:
+                self.ui.log("You leave the suspicious masonry alone.")
+                return
+            before = bool(room.get("secret_found"))
+            self._reveal_room_secret_or_map(room, reveal_map=True)
+            after = bool(room.get("secret_found"))
+            if not before and after:
+                self._record_dungeon_clue("A concealed route branches from this room.", source="secret_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
+            return
+
+        if kind == "lore":
+            target = "deeper defenses" if "clue_target:boss" in set(ctx.get("room_tags") or []) else "hidden caches"
+            if not self._mark_room_resolution_once(room, f"lore:{target}", mode="scene"):
+                return
+            c = self.ui.choose("Lore scene", ["Study inscriptions", "Take charcoal rubbing", "Ignore and move on"])
+            if c == 2:
+                return
+            clue = f"Old markings hint at {target} beyond this level."
+            self._record_dungeon_clue(clue, source="lore_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
+            if c == 1:
+                self._grant_room_loot(gp=6, items=["Rubbing of warning sigils"], source="lore_scene")
+            return
+
+        if kind == "occupant":
+            if not self._mark_room_resolution_once(room, "passive-occupant", mode="scene"):
+                return
+            self.ui.log("A wary non-hostile occupant freezes in the torchlight.")
+            c = self.ui.choose("Occupant reaction", ["Offer aid", "Ask for warning", "Drive them off", "Leave quietly"])
+            if c == 0:
+                injured = [pc for pc in self.party.living() if pc.hp < pc.hp_max]
+                if injured:
+                    pc = injured[0]
+                    pc.hp = min(pc.hp_max, pc.hp + 2)
+                    self.ui.log(f"{pc.name} is steadied with rough field dressing (+2 HP).")
+                self._record_dungeon_clue("A survivor warns of unstable floors nearby.", source="occupant_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
+            elif c == 1:
+                self._record_dungeon_clue("A frightened delver mentions a hidden bypass behind cracked stone.", source="occupant_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
+            elif c == 2:
+                self.noise_level = min(5, int(getattr(self, "noise_level", 0) or 0) + 1)
+                self.ui.log("Your threats echo through the halls.")
+            return
+
+        if not self._mark_room_resolution_once(room, "staging-room", mode="scene"):
+            return
+        if bool(ctx.get("party_ready", True)):
+            self.ui.log("You find a brief staging moment to regroup and check routes.")
+        else:
+            self.ui.log("The room is calm enough for a quick breath before pressing on.")
+
     def _grant_room_loot(self, gp: int = 0, items: list[Any] | None = None, source: str = 'dungeon_feature') -> None:
         gp_i = int(gp or 0)
         items_l = list(items or [])
@@ -10159,7 +10288,8 @@ class Game:
             self.ui.log(f'You recover {gp_i} gp and {len(items_l)} item(s).')
 
     def _reveal_room_secret_or_map(self, room: dict[str, Any], reveal_map: bool = False) -> None:
-        rid = int(room.get('id', self.current_room_id) or self.current_room_id)
+        ctx = resolve_room_interaction_context(self, room)
+        rid = int(ctx.get('room_id', room.get('id', self.current_room_id)) or self.current_room_id)
         hidden: list[int] = []
         adj = self._dungeon_bp_adjacency() or {}
         for dest in adj.get(rid, []):
@@ -10168,17 +10298,21 @@ class Game:
                 hidden.append(int(dest))
         if hidden:
             dest = sorted(hidden)[0]
-            self._dungeon_reveal_secret_edge(rid, dest)
-            room['secret_found'] = True
-            self.ui.log('You uncover signs of a hidden way.')
+            if self._mark_room_resolution_once(room, f"secret_edge:{dest}", mode="discover"):
+                self._dungeon_reveal_secret_edge(rid, dest)
+                room['secret_found'] = True
+                self.ui.log('You uncover signs of a hidden way.')
             return
-        if reveal_map:
+        if reveal_map and self._mark_room_resolution_once(room, 'map-route-clue', mode='discover'):
             exits = sorted(int(v) for v in (room.get('exits') or {}).values())
             if exits:
                 self.ui.log('You piece together nearby routes: ' + ', '.join(f'room {v}' for v in exits[:4]) + '.')
 
     def _apply_room_event(self, room: dict[str, Any], event: dict[str, Any]) -> None:
+        ctx = resolve_room_interaction_context(self, room)
         self.ui.log(str(event.get('desc') or 'Something strange stirs in the room.'))
+        if bool(ctx.get("low_light")):
+            self.ui.log("Dim light makes the room's details hard to read.")
         eff = str(event.get('effect') or 'none').lower()
         if eff == 'noise':
             self.noise_level = min(5, int(getattr(self, 'noise_level', 0) or 0) + int(event.get('noise', 1) or 1))
@@ -10341,19 +10475,20 @@ class Game:
 
     def _handle_room_specials(self, room: dict[str, Any]) -> None:
         d = room.get('_delta') if isinstance(room.get('_delta'), dict) else {}
-        if room.get('room_event') and not room.get('event_done'):
+        self._run_room_interaction_scene(room)
+        if room.get('room_event') and not room.get('event_done') and self._mark_room_resolution_once(room, 'room_event', mode='resolve'):
             self._apply_room_event(room, room.get('room_event') or {})
             room['event_done'] = True
             d['event_done'] = True
-        if room.get('special_room') and not room.get('feature_done'):
+        if room.get('special_room') and not room.get('feature_done') and self._mark_room_resolution_once(room, 'special_room', mode='resolve'):
             self._handle_special_room_feature(room, room.get('special_room') or {})
             room['feature_done'] = True
             d['feature_done'] = True
-        if room.get('shrine') and not room.get('shrine_done'):
+        if room.get('shrine') and not room.get('shrine_done') and self._mark_room_resolution_once(room, 'shrine', mode='resolve'):
             self._handle_room_shrine(room, room.get('shrine') or {})
             room['shrine_done'] = True
             d['shrine_done'] = True
-        if room.get('puzzle') and not room.get('puzzle_done'):
+        if room.get('puzzle') and not room.get('puzzle_done') and self._mark_room_resolution_once(room, 'puzzle', mode='resolve'):
             self._handle_room_puzzle(room, room.get('puzzle') or {})
             room['puzzle_done'] = True
             d['puzzle_done'] = True
@@ -10413,8 +10548,15 @@ class Game:
 
     
     def _handle_room_trap(self, room: dict[str, Any]):
-        if room.get("trap_disarmed"):
+        ctx = resolve_room_interaction_context(self, room)
+        if room.get("trap_disarmed") or bool(ctx.get("hazards_resolved")):
             self.ui.log("A disarmed trap lies here.")
+            room["cleared"] = True
+            return
+
+        trap_key = str(room.get("trap_desc") or room.get("trap_damage") or "trap").strip().lower().replace(" ", "_")
+        if not self._mark_room_resolution_once(room, f"trap:{trap_key}", mode="trigger"):
+            room["trap_disarmed"] = True
             room["cleared"] = True
             return
 
@@ -11031,6 +11173,10 @@ class Game:
         if isinstance(room.get("doors"), dict):
             rec["doors"] = dict(room.get("doors") or {})
 
+        keys = room.get("resolution_keys", rec.get("resolution_keys", []))
+        if isinstance(keys, (list, tuple, set)):
+            rec["resolution_keys"] = sorted({str(x) for x in keys if str(x).strip()})
+
         self._set_dungeon_delta_room(room_id, rec)
 
     def _get_dungeon_stocking_room(self, room_id: int) -> dict[str, Any]:
@@ -11129,6 +11275,7 @@ class Game:
                 "title": room_title,
                 "desc": room_desc,
                 "stairs": {"up": ("stairs_up" in [t.lower() for t in tags]), "down": ("stairs_down" in [t.lower() for t in tags])},
+                "resolution_keys": sorted({str(x) for x in (drec.get("resolution_keys") or []) if str(x).strip()}),
                 "_delta": drec,
             }
 
