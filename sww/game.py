@@ -30,7 +30,7 @@ from .validation import validate_state
 from .monster_ai import coerce_profile, choose_target, party_role
 from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat
 from .combat_legality import theater_target_is_valid
-from .status_lifecycle import tick_round_statuses, cleanup_actor_battle_status, status_dict, clear_status
+from .status_lifecycle import tick_round_statuses, cleanup_actor_battle_status
 from .ai_capabilities import detect_capabilities, choose_attack_mode
 from .commands import (
     Command,
