@@ -1,6 +1,6 @@
 from sww.models import Actor
 from sww.combat_rules import is_melee_engaged, can_use_missile, shooting_into_melee_penalty, foe_frontage_limit, apply_forced_retreat
-from sww.status_lifecycle import apply_status, tick_round_statuses, cleanup_actor_battle_status
+from sww.status_lifecycle import apply_status, tick_round_statuses, cleanup_actor_battle_status, clear_status, status_dict
 from sww.ai_capabilities import detect_capabilities, choose_attack_mode
 from sww.grid_map import GridMap
 from sww.combat_legality import grid_target_is_attackable, grid_pair_is_attack_legal
