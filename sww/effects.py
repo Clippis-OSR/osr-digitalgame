@@ -109,6 +109,8 @@ class EffectsManager:
                 if callable(be) and bool(getattr(self.game, "_battle_buffer_active", False)):
                     if name == "effect_applied":
                         be("EFFECT_APPLIED", tgt=str((data or {}).get("target", "")), kind=str((data or {}).get("kind", "")))
+                    elif name == "effect_refreshed":
+                        be("EFFECT_REFRESHED", tgt=str((data or {}).get("target", "")), kind=str((data or {}).get("kind", "")))
                     elif name == "effect_removed":
                         reason = str((data or {}).get("reason", ""))
                         kind = str((data or {}).get("kind", ""))
@@ -255,6 +257,10 @@ class EffectsManager:
                     container[existing_id] = old
                     inst = old
                     inst["instance_id"] = existing_id
+                    self._emit(
+                        "effect_refreshed",
+                        {"kind": kind, "target": target.name, "instance_id": existing_id, "source": inst.get("source")},
+                    )
 
         # Store and apply
         container[instance_id] = inst
