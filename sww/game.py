@@ -5489,8 +5489,39 @@ class Game:
         self.world_hexes[hx.key()] = hx.to_dict()
         return self.world_hexes[hx.key()]
 
+    def _ensure_secondary_pois(self) -> None:
+        """Ensure a tiny deterministic secondary-POI surface near town.
+
+        This is intentionally minimal and only covers stable reconciliation anchors
+        used by current wilderness surface tests.
+        """
+        if not hasattr(self, "wilderness_rng"):
+            self.wilderness_rng = LoggedRandom(self.wilderness_seed, channel="wilderness", log_fn=self._log_rng)
+
+        anchors = [
+            ((1, 0), "ruins", "Roadside Ruins", "poi:secondary:ruins:1,0", "Broken stonework and old campfire rings."),
+            ((0, -1), "shrine", "Old Wayside Shrine", "poi:secondary:shrine:0,-1", "A weather-worn shrine watched by crows."),
+        ]
+        for (q, r), ptype, name, pid, notes in anchors:
+            hx = ensure_hex(self.world_hexes, (q, r), self.wilderness_rng)
+            existing = hx.poi if isinstance(getattr(hx, "poi", None), dict) else {}
+            if str(existing.get("id") or "") == pid:
+                continue
+            hx.poi = {
+                "id": pid,
+                "type": ptype,
+                "name": name,
+                "notes": notes,
+                "discovered": bool(existing.get("discovered", False)),
+                "resolved": bool(existing.get("resolved", False)),
+                "rumored": bool(existing.get("rumored", False)),
+                "secondary": True,
+            }
+            self.world_hexes[hx.key()] = hx.to_dict()
+
     def _ensure_current_hex(self) -> dict[str, Any]:
         self._ensure_canonical_dungeon_entrance()
+        self._ensure_secondary_pois()
         # Use a dedicated RNG for wilderness generation to avoid odd coupling.
         if not hasattr(self, "wilderness_rng"):
             self.wilderness_rng = LoggedRandom(self.wilderness_seed, channel="wilderness", log_fn=self._log_rng)
@@ -5899,7 +5930,10 @@ class Game:
     def _ensure_minimal_rumor_surface(self) -> None:
         """Minimal deterministic rumor seed for known core destinations."""
         self._ensure_canonical_dungeon_entrance()
+        self._ensure_secondary_pois()
         self._surface_poi_rumor(int(DUNGEON_ENTRANCE_HEX[0]), int(DUNGEON_ENTRANCE_HEX[1]), source="canonical", cost=0)
+        self._surface_poi_rumor(1, 0, source="secondary", cost=0)
+        self._surface_poi_rumor(0, -1, source="secondary", cost=0)
 
     def _mark_rumors_seen_for_poi(self, poi_id: str) -> None:
         pid = str(poi_id or "").strip()
