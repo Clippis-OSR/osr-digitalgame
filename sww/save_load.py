@@ -1220,21 +1220,42 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     j = data.get("journal", {}) or {}
     ev = data.get("events", {}) or {}
     raw_event_history = ev.get("event_history", []) or []
-    event_history = [e for e in (normalize_player_event(x) for x in raw_event_history) if isinstance(e, dict)]
-    for idx, ev_row in enumerate(event_history):
-        if int(ev_row.get("eid", -1) or -1) < 0:
-            ev_row["eid"] = idx
 
-    # Canonicalize loaded history ordering/identity for deterministic replay and projection behavior.
-    event_history.sort(key=lambda row: int((row or {}).get("eid", 0) or 0))
-    for idx, ev_row in enumerate(event_history):
-        ev_row["eid"] = idx
+    event_history: list[dict[str, Any]] = []
+    needs_reassign = False
+    seen_eids: set[int] = set()
+    last_eid: int | None = None
+    for raw in raw_event_history:
+        row = normalize_player_event(raw)
+        if not isinstance(row, dict):
+            continue
+        eid_raw = row.get("eid", None)
+        try:
+            eid_val = int(eid_raw)
+        except Exception:
+            eid_val = -1
+        if eid_val < 0:
+            needs_reassign = True
+        row["eid"] = int(eid_val)
+        if int(row["eid"]) in seen_eids:
+            needs_reassign = True
+        if last_eid is not None and int(row["eid"]) <= int(last_eid):
+            needs_reassign = True
+        seen_eids.add(int(row["eid"]))
+        last_eid = int(row["eid"])
+        event_history.append(row)
 
-    next_eid = int(ev.get("next_eid", len(event_history)) or 0)
-    if event_history:
-        next_eid = max(next_eid, max(int((x or {}).get("eid", 0) or 0) for x in event_history) + 1)
-    if next_eid <= len(event_history) - 1:
+    if needs_reassign:
+        for idx, row in enumerate(event_history):
+            row["eid"] = idx
         next_eid = len(event_history)
+    elif event_history:
+        max_eid = max(int((x or {}).get("eid", 0) or 0) for x in event_history)
+        next_eid = _safe_int(ev.get("next_eid", max_eid + 1), max_eid + 1)
+        if next_eid <= max_eid:
+            next_eid = max_eid + 1
+    else:
+        next_eid = 0
 
     if not event_history:
         for d in (j.get("discoveries", []) or []):

@@ -318,6 +318,15 @@ class Game:
         visibility: str = "journal",
     ) -> dict[str, Any]:
         eid = int(getattr(self, "next_event_eid", 0) or 0)
+        history = list(getattr(self, "event_history", []) or [])
+        if history:
+            try:
+                max_eid = max(int((row or {}).get("eid", -1) or -1) for row in history if isinstance(row, dict))
+            except Exception:
+                max_eid = -1
+            if eid <= int(max_eid):
+                eid = int(max_eid) + 1
+                self.next_event_eid = int(eid)
         entry = append_player_event(
             getattr(self, "event_history", []),
             eid=eid,

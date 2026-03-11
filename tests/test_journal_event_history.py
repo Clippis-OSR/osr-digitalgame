@@ -141,3 +141,97 @@ def test_load_normalizes_out_of_order_or_duplicate_eids_to_strict_monotonic_sequ
     eids = [int(e.get("eid", -1)) for e in (g2.event_history or [])]
     assert eids == list(range(len(eids)))
     assert int(getattr(g2, "next_event_eid", 0)) == len(eids)
+
+
+def _mk_event(eid, etype="rumor.learned", payload=None):
+    return {
+        "eid": eid,
+        "type": etype,
+        "category": "rumor",
+        "day": 1,
+        "watch": 0,
+        "title": "x",
+        "payload": dict(payload or {}),
+        "refs": {},
+        "visibility": "journal",
+        "schema": 1,
+    }
+
+
+def test_load_recomputes_next_eid_when_missing():
+    payload = game_to_dict(_new_game(seed=2500))
+    payload["events"]["event_history"] = [_mk_event(0), _mk_event(1), _mk_event(2)]
+    payload["events"].pop("next_eid", None)
+    g = _new_game(seed=2501)
+    apply_game_dict(g, payload)
+    eids = [int(e.get("eid", -1)) for e in (g.event_history or [])]
+    assert eids[:3] == [0, 1, 2]
+    assert int(getattr(g, "next_event_eid", -1)) == (max(eids) + 1 if eids else 0)
+
+
+def test_load_recomputes_next_eid_when_stale():
+    payload = game_to_dict(_new_game(seed=2510))
+    payload["events"]["event_history"] = [_mk_event(5), _mk_event(6), _mk_event(7)]
+    payload["events"]["next_eid"] = 2
+    g = _new_game(seed=2511)
+    apply_game_dict(g, payload)
+    eids = [int(e.get("eid", -1)) for e in (g.event_history or [])]
+    assert eids[:3] == [5, 6, 7]
+    assert int(getattr(g, "next_event_eid", -1)) == (max(eids) + 1 if eids else 0)
+
+
+def test_load_normalizes_non_int_next_eid():
+    payload = game_to_dict(_new_game(seed=2520))
+    payload["events"]["event_history"] = [_mk_event(2), _mk_event(4)]
+    payload["events"]["next_eid"] = "abc"
+    g = _new_game(seed=2521)
+    apply_game_dict(g, payload)
+    eids = [int(e.get("eid", -1)) for e in (g.event_history or [])]
+    assert eids[:2] == [2, 4]
+    assert int(getattr(g, "next_event_eid", -1)) == (max(eids) + 1 if eids else 0)
+
+
+def test_load_reassigns_eids_when_history_has_invalid_or_duplicate_ids():
+    payload = game_to_dict(_new_game(seed=2530))
+    payload["events"]["event_history"] = [
+        _mk_event(3, payload={"hint": "a"}),
+        _mk_event("bad", payload={"hint": "b"}),
+        _mk_event(3, payload={"hint": "c"}),
+        {k: v for k, v in _mk_event(9, payload={"hint": "d"}).items() if k != "eid"},
+    ]
+    payload["events"]["next_eid"] = -5
+    g = _new_game(seed=2531)
+    apply_game_dict(g, payload)
+    eids = [int(e.get("eid", -1)) for e in (g.event_history or [])]
+    assert eids == list(range(len(eids)))
+    assert int(getattr(g, "next_event_eid", -1)) == len(eids)
+
+
+def test_append_player_event_bumps_counter_if_needed():
+    g = _new_game(seed=2540)
+    g.event_history = [_mk_event(10, etype="discovery.recorded", payload={"name": "X", "q": 0, "r": 0, "kind": "poi"})]
+    g.next_event_eid = 1
+    g._append_player_event(
+        "rumor.learned",
+        category="rumor",
+        title="r",
+        payload={"hint": "h"},
+        refs={},
+    )
+    assert int(g.event_history[-1].get("eid", -1)) == 11
+    assert int(g.next_event_eid) == 12
+
+
+def test_projection_order_stable_after_normalization():
+    payload = game_to_dict(_new_game(seed=2550))
+    payload["events"]["event_history"] = [
+        _mk_event(2, payload={"hint": "first", "day": 1}),
+        _mk_event(2, payload={"hint": "second", "day": 1}),
+        _mk_event(1, payload={"hint": "third", "day": 1}),
+    ]
+    payload["events"]["next_eid"] = 1
+    g = _new_game(seed=2551)
+    apply_game_dict(g, payload)
+    rumors = g._journal_rumors()
+    hints = [str(r.get("hint") or "") for r in rumors]
+    assert hints[:3] == ["first", "second", "third"]
