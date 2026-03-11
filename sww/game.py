@@ -3557,77 +3557,7 @@ class Game:
                 self._contracts_view_offers()
             elif i == 1:
                 self._contracts_view_active()
-
-            elif i == 4:
-                # Promote a hired retainer into a full PC slot (replacement / advancement).
-                if len(self.party.pcs()) >= self.MAX_PCS:
-                    self.ui.log(f"Party already has {self.MAX_PCS} PCs. Drop a dead PC first to free a slot.")
-                    continue
-                candidates = [r for r in self.hired_retainers if not getattr(r, "on_expedition", False)]
-                if not candidates:
-                    self.ui.log("No hired retainers available to promote.")
-                    continue
-                labels = [f"{r.name} (HP {r.hp}/{r.hp_max}, Loyalty {r.loyalty})" for r in candidates]
-                j = self.ui.choose("Promote which retainer?", labels + ["Back"])
-                if j == len(labels):
-                    continue
-                r = candidates[j]
-
-                class_choices = ["Fighter","Cleric","Magic-User","Thief","Assassin","Ranger","Paladin","Druid","Monk"]
-                ci = self.ui.choose("Choose class for promoted PC", class_choices)
-                cls = class_choices[ci]
-                alignment = "Neutrality"
-                if cls == "Paladin":
-                    alignment = "Law"
-
-                stats = Stats(
-                    STR=self.dice.d(6) + self.dice.d(6) + self.dice.d(6),
-                    DEX=self.dice.d(6) + self.dice.d(6) + self.dice.d(6),
-                    CON=self.dice.d(6) + self.dice.d(6) + self.dice.d(6),
-                    INT=self.dice.d(6) + self.dice.d(6) + self.dice.d(6),
-                    WIS=self.dice.d(6) + self.dice.d(6) + self.dice.d(6),
-                    CHA=self.dice.d(6) + self.dice.d(6) + self.dice.d(6),
-                )
-                hd = self.class_hit_die(cls)
-                hp = max(1, self.dice.d(hd) + max(0, mod_ability(stats.CON)))
-
-                pc = PC(
-                    name=r.name,
-                    race=getattr(r, "race", "Human"),
-                    hp=hp,
-                    hp_max=hp,
-                    ac_desc=9,
-                    hd=1,
-                    save=15,
-                    morale=9,
-                    alignment=alignment,
-                    is_pc=True,
-                    cls=cls,
-                    level=1,
-                    xp=0,
-                    stats=stats,
-                )
-                pc.weapon = getattr(r, "weapon", None)
-                pc.armor = getattr(r, "armor", None)
-                pc.shield = getattr(r, "shield", False)
-                pc.shield_name = getattr(r, "shield_name", None)
-
-                for lst in (self.hired_retainers, self.active_retainers, self.retainer_roster):
-                    if r in lst:
-                        lst.remove(r)
-
-                replaced = False
-                for idx_m, m in enumerate(self.party.members):
-                    if m is r:
-                        self.party.members[idx_m] = pc
-                        replaced = True
-                        break
-                if not replaced:
-                    self.party.members.append(pc)
-
-                self.recalc_pc_class_features(pc)
-                self.ui.log(f"Promoted {r.name} to a level 1 {cls}.")
-            elif i == 5:
+            else:
                 return
 
     def _contracts_view_offers(self):
