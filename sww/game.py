@@ -7984,6 +7984,7 @@ class Game:
             self.ui.log(f"Day {self.campaign_day} — {self._watch_name()} | Hex ({q},{r}) | Terrain: {terrain}{fac_txt} | Heat: {int(hx.get('heat', 0) or 0)} | Distance from Town: {dist}")
             self.ui.log(f"Gold: {self.gold} gp | Rations: {self.rations} | Torches: {self.torches}")
             self.ui.log(f"Travel mode: {str(getattr(self,'wilderness_travel_mode','normal')).title()}")
+            self.ui.log(f"Travel condition: {str(getattr(self.travel_state, 'travel_condition', 'clear')).title()}")
             anc = self._get_forward_anchor()
             if anc:
                 aq, ar = (anc.get("hex") or [0, 0])[:2]
