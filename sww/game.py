@@ -29,6 +29,7 @@ from .events import (
     project_clues_from_events,
     project_discoveries_from_events,
     project_district_notes_from_events,
+    project_expeditions_from_events,
     project_rumors_from_events,
 )
 from .effects import EffectsManager, Hook
@@ -1923,6 +1924,14 @@ class Game:
         ts.condition_started_clock = started
         ts.wilderness_clock_turns = clock
 
+    def _wilderness_encounter_due(self) -> bool:
+        ts = getattr(self, "travel_state", None)
+        if ts is None:
+            return False
+        ticks = int(getattr(ts, "encounter_clock_ticks", 0) or 0)
+        next_tick = int(getattr(ts, "encounter_next_check_tick", 1) or 1)
+        return ticks >= max(1, next_tick)
+
     def _cmd_advance_watch(self, watches: int) -> CommandResult:
         w = max(0, int(watches))
         if w <= 0:
@@ -2402,9 +2411,20 @@ class Game:
             distance=int(plan.get("distance", 0) or 0),
             modifiers=[{"reason": str(name), "delta": int(delta)} for (name, delta) in list(plan.get("modifiers", []))],
         )
+        self._advance_wilderness_clock(
+            travel_turns=int(max(1, day_cost)),
+            watch_turns=int(max(1, day_cost)) * int(self.WATCHES_PER_DAY),
+            encounter_ticks=1,
+        )
         self.travel_state.location = "town"
-        self.travel_state.travel_turns = int(getattr(self.travel_state, "travel_turns", 0)) + int(max(1, day_cost))
         self.travel_state.route_progress = 0
+        self._append_player_event(
+            "expedition.returned",
+            category="expedition",
+            title="Returned to Town",
+            payload={"return_location": "town", "day_cost": int(day_cost)},
+            refs={"hex": [0, 0]},
+        )
         self.ui.title("Return to Town")
         self.ui.log(f"Travel time: {day_cost} day(s).")
         for pc in self.party.pcs():
@@ -2422,7 +2442,23 @@ class Game:
         poi = hx.get("poi") if isinstance(hx, dict) else None
         if not poi:
             return CommandResult(status="info", messages=("There is nothing notable here.",))
-        self.emit("poi_investigation_started", poi_type=poi.get("type"), poi_name=poi.get("name"))
+        q, r = int(self.party_hex[0]), int(self.party_hex[1])
+        poi_type = str(poi.get("type") or "poi")
+        poi_name = str(poi.get("name") or "Point of Interest")
+        poi_id = str(poi.get("id") or f"hex:{q},{r}:{poi_type}")
+        if not bool(poi.get("explored", False)):
+            poi["explored"] = True
+            if isinstance(hx, dict):
+                hx["poi"] = poi
+                self.world_hexes[f"{q},{r}"] = hx
+            self._append_player_event(
+                "poi.explored",
+                category="expedition",
+                title=f"Explored {poi_name}",
+                payload={"poi_id": poi_id, "poi_type": poi_type, "poi_name": poi_name},
+                refs={"poi_id": poi_id, "hex": [q, r]},
+            )
+        self.emit("poi_investigation_started", poi_type=poi_type, poi_name=poi_name)
         self._handle_current_hex_poi()
         return CommandResult(status="ok")
 
@@ -2490,6 +2526,17 @@ class Game:
             self._passive_room_entry_checks(r0)
 
         self.travel_state.location = "dungeon"
+        self._append_player_event(
+            "expedition.departed",
+            category="expedition",
+            title="Expedition departed",
+            payload={
+                "destination_type": str((poi or {}).get("type") or "dungeon_entrance"),
+                "destination_id": str((poi or {}).get("id") or f"hex:{int(self.party_hex[0])},{int(self.party_hex[1])}:dungeon_entrance"),
+                "destination_name": str((poi or {}).get("name") or "Dungeon Entrance"),
+            },
+            refs={"hex": [int(self.party_hex[0]), int(self.party_hex[1])]},
+        )
         self.emit("dungeon_entered", room_id=int(self.current_room_id), expeditions=int(self.expeditions))
         return CommandResult(status="ok")
 
@@ -3282,7 +3329,16 @@ class Game:
             return CommandResult(status="error", messages=("Invalid stairs direction.",))
 
         # Keep legacy depth-scaled systems coherent with active dungeon level.
+        prev_depth = int(getattr(self, "dungeon_depth", 1) or 1)
         self.dungeon_depth = int(self.dungeon_level)
+        if int(self.dungeon_depth) > int(prev_depth):
+            self._append_player_event(
+                "dungeon.depth_reached",
+                category="expedition",
+                title=f"Reached dungeon depth {int(self.dungeon_depth)}",
+                payload={"depth": int(self.dungeon_depth)},
+                refs={"hex": [int(self.party_hex[0]), int(self.party_hex[1])]},
+            )
 
         # Instance-driven (P6.1): do not swap per-level room caches.
         # Rooms are keyed by id in the blueprint, and 'level' maps to blueprint floors.
@@ -4246,6 +4302,17 @@ class Game:
                 self.gold += int(c.get("reward_gp", 0))
                 self.adjust_rep(c.get("faction_id"), int(c.get("rep_success", 5)))
                 self.ui.log(f"Contract completed: {c.get('title')} @ {self._contract_destination_label(c)} (+{c.get('reward_gp')} gp)")
+                self._append_player_event(
+                    "contract.completed",
+                    category="expedition",
+                    title=f"Completed contract: {str(c.get('title') or 'Contract')}",
+                    payload={
+                        "cid": str(c.get("cid") or ""),
+                        "title": str(c.get("title") or "Contract"),
+                        "reward_gp": int(c.get("reward_gp", 0) or 0),
+                    },
+                    refs={"cid": str(c.get("cid") or "")},
+                )
                 changed = True
 
         if changed:
@@ -6475,11 +6542,14 @@ class Game:
         self.district_notes = list(rows)
         return rows
 
+    def _journal_expeditions(self) -> list[dict[str, Any]]:
+        return project_expeditions_from_events(getattr(self, "event_history", []))
+
     def view_journal(self):
         """Show discoveries, rumors, and active district objectives."""
         while True:
-            c = self.ui.choose("Rumors & Discoveries", ["View Discoveries", "View Rumors", "View District Objectives", "View Dungeon Clues", "Back"])
-            if c == 4:
+            c = self.ui.choose("Rumors & Discoveries", ["View Discoveries", "View Rumors", "View District Objectives", "View Dungeon Clues", "View Expedition History", "Back"])
+            if c == 5:
                 return
             if c == 0:
                 discoveries = self._journal_discoveries()
@@ -6520,7 +6590,7 @@ class Game:
                     self.ui.log(
                         f"  District clue: {e.get('target_hint')} | From here: {e.get('from_current')} | Reward: {e.get('reward_gp')} gp"
                     )
-            else:
+            elif c == 3:
                 clues = self._journal_clues()
                 if not clues:
                     self.ui.log('No dungeon clues yet.')
@@ -6528,6 +6598,14 @@ class Game:
                 self.ui.title('Dungeon Clues')
                 for e in clues[-30:][::-1]:
                     self.ui.log(f"Day {e.get('day')} | L{e.get('level')} room {e.get('room_id')} | {e.get('text')}")
+            else:
+                rows = self._journal_expeditions()
+                if not rows:
+                    self.ui.log('No expedition history yet.')
+                    continue
+                self.ui.title('Expedition History')
+                for e in rows[-30:][::-1]:
+                    self.ui.log(f"Day {e.get('day')} {self._watch_name_of(e.get('watch', 0))} | {e.get('title')}")
 
     
     def _wilderness_encounter_check(self, hx: dict[str, Any], *, encounter_mod: int = 0):

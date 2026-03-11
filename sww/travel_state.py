@@ -20,6 +20,8 @@ class TravelState:
     travel_turns: int = 0
     route_progress: int = 0
     wilderness_clock_turns: int = 0
+    encounter_clock_ticks: int = 0
+    encounter_next_check_tick: int = 1
     condition_started_clock: int = 0
     travel_condition: str = "clear"
 
@@ -33,6 +35,11 @@ class TravelState:
         de = max(0, int(encounter_ticks or 0))
         self.travel_turns = int(self.travel_turns or 0) + dt
         self.wilderness_clock_turns = int(self.wilderness_clock_turns or 0) + dt + dw + de
+        self.encounter_clock_ticks = int(getattr(self, "encounter_clock_ticks", 0) or 0) + de
+        next_tick = int(getattr(self, "encounter_next_check_tick", 1) or 1)
+        if next_tick <= int(self.encounter_clock_ticks):
+            next_tick = int(self.encounter_clock_ticks) + 1
+        self.encounter_next_check_tick = max(1, next_tick)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -40,6 +47,8 @@ class TravelState:
             "travel_turns": int(self.travel_turns or 0),
             "route_progress": int(self.route_progress or 0),
             "wilderness_clock_turns": int(self.wilderness_clock_turns or 0),
+            "encounter_clock_ticks": int(getattr(self, "encounter_clock_ticks", 0) or 0),
+            "encounter_next_check_tick": int(getattr(self, "encounter_next_check_tick", 1) or 1),
             "condition_started_clock": int(self.condition_started_clock or 0),
             "travel_condition": str(self.travel_condition or "clear"),
         }
@@ -64,6 +73,14 @@ class TravelState:
         except Exception:
             wilderness_clock_turns = 0
         try:
+            encounter_clock_ticks = int(data.get("encounter_clock_ticks", 0) or 0)
+        except Exception:
+            encounter_clock_ticks = 0
+        try:
+            encounter_next_check_tick = int(data.get("encounter_next_check_tick", 1) or 1)
+        except Exception:
+            encounter_next_check_tick = 1
+        try:
             condition_started_clock = int(data.get("condition_started_clock", 0) or 0)
         except Exception:
             condition_started_clock = 0
@@ -71,12 +88,16 @@ class TravelState:
         if travel_condition not in ("clear", "wind", "rain", "fog"):
             travel_condition = "clear"
         wilderness_clock_turns = max(0, wilderness_clock_turns)
+        encounter_clock_ticks = max(0, encounter_clock_ticks)
+        encounter_next_check_tick = max(encounter_clock_ticks + 1, max(1, encounter_next_check_tick))
         condition_started_clock = max(0, min(condition_started_clock, wilderness_clock_turns))
         return cls(
             location=location,
             travel_turns=max(0, travel_turns),
             route_progress=max(0, route_progress),
             wilderness_clock_turns=wilderness_clock_turns,
+            encounter_clock_ticks=encounter_clock_ticks,
+            encounter_next_check_tick=encounter_next_check_tick,
             condition_started_clock=condition_started_clock,
             travel_condition=travel_condition,
         )

@@ -62,6 +62,7 @@ def test_return_to_town_surfaces_completion_coherently_with_destination():
     g._check_contracts_on_town_arrival()
 
     assert _has_line(g, "Contract completed: Job C2 @ Dungeon Entrance")
+    assert any(str(e.get("type") or "") == "contract.completed" and str((e.get("payload") or {}).get("cid") or "") == "C2" for e in (g.event_history or []))
     active = [x for x in (g.active_contracts or []) if str(x.get("cid") or "") == "C2"]
     assert not active
 

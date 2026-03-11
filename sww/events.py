@@ -177,6 +177,25 @@ def project_clues_from_events(event_history: Iterable[Dict[str, Any]] | None) ->
     return out
 
 
+
+
+def project_expeditions_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for ev in _iter_events_in_eid_order(event_history):
+        et = str((ev or {}).get("type") or "")
+        if et not in ("expedition.departed", "expedition.returned", "poi.explored", "dungeon.depth_reached", "contract.completed"):
+            continue
+        p = dict((ev or {}).get("payload") or {})
+        row = {
+            "day": _safe_int((ev or {}).get("day", p.get("day", 1)), 1),
+            "watch": _safe_int((ev or {}).get("watch", p.get("watch", 0)), 0),
+            "type": et,
+            "title": str((ev or {}).get("title") or ""),
+            "payload": p,
+        }
+        out.append(row)
+    return out
+
 def project_district_notes_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for ev in _iter_events_in_eid_order(event_history):
