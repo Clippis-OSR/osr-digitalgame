@@ -21,6 +21,7 @@ from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
+from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
 from .contracts import generate_contracts, Contract
 from .events import (
@@ -142,7 +143,7 @@ class Game:
         )
         self.equipdb = EquipmentDB()
 
-        # Wilderness travel mode (cautious/normal/forced)
+        # Wilderness travel mode (careful/normal/fast)
         self.wilderness_travel_mode = "normal"
 
         # Rules toggles (strict RAW defaults)
@@ -1970,7 +1971,9 @@ class Game:
 
     def _cmd_set_travel_mode(self, mode: str) -> CommandResult:
         mode = str(mode or "").strip().lower()
-        if mode not in ("cautious", "normal", "forced"):
+        aliases = {"cautious": "careful", "forced": "fast"}
+        mode = aliases.get(mode, mode)
+        if mode not in ("careful", "normal", "fast"):
             return CommandResult(status="error", messages=("Invalid travel mode.",))
         before = str(getattr(self, "wilderness_travel_mode", "normal") or "normal")
         self.wilderness_travel_mode = mode
@@ -1979,11 +1982,12 @@ class Game:
 
     def _wilderness_travel_params(self) -> tuple[int, int, int]:
         """Return (steps, watches_per_step, encounter_mod) for the current travel mode."""
-        mode = str(getattr(self, "wilderness_travel_mode", "normal") or "normal").lower()
-        if mode == "cautious":
-            return (1, 2, -1)
-        if mode == "forced":
-            return (2, 1, +1)
+        ctx = resolve_travel_context(self)
+        mode = str(ctx.get("pace") or "normal")
+        if mode == "careful":
+            return (1, 2, int(ctx.get("encounter_mod", -1)))
+        if mode == "fast":
+            return (2, 1, int(ctx.get("encounter_mod", +1)))
         return (1, 1, 0)
 
     def _terrain_travel_mods(self, terrain: str) -> tuple[int, int]:
@@ -2548,7 +2552,14 @@ class Game:
         poi_type = str(poi.get("type") or "poi")
         poi_name = str(poi.get("name") or "Point of Interest")
         poi_id = str(poi.get("id") or f"hex:{q},{r}:{poi_type}")
-        if not bool(poi.get("explored", False)):
+        poi["id"] = poi_id
+        poi["q"] = int(q)
+        poi["r"] = int(r)
+        explore_key = first_time_poi_resolution_key(poi, mode="explore")
+        resolved_keys = set(str(x) for x in (poi.get("resolution_keys") or []))
+        if explore_key not in resolved_keys:
+            resolved_keys.add(explore_key)
+            poi["resolution_keys"] = sorted(resolved_keys)
             poi["explored"] = True
             if isinstance(hx, dict):
                 hx["poi"] = poi
@@ -2557,7 +2568,7 @@ class Game:
                 "poi.explored",
                 category="expedition",
                 title=f"Explored {poi_name}",
-                payload={"poi_id": poi_id, "poi_type": poi_type, "poi_name": poi_name},
+                payload={"poi_id": poi_id, "poi_type": poi_type, "poi_name": poi_name, "resolution_key": explore_key},
                 refs={"poi_id": poi_id, "hex": [q, r]},
             )
         self.emit("poi_investigation_started", poi_type=poi_type, poi_name=poi_name)
@@ -4159,7 +4170,7 @@ class Game:
         self.ui.log(f"You take a guarded rest and recover your bearings. (+1 watch, healed {healed} HP total.)")
         if fid:
             self.adjust_rep(fid, +1)
-        self._set_forward_anchor(hx, kind="faction_outpost", name=f"{fname} outpost", fid=fid)
+        self._set_forward_anchor(hx, kind="outpost", name=f"{fname} outpost", fid=fid)
 
     def _outpost_limited_healing(self, fid: str, fname: str, hx: dict[str, Any]):
         if self.gold < 8:
@@ -4181,7 +4192,7 @@ class Game:
         self.ui.log(f"The outpost chirurgeon treats the party's worst wounds. (Recovered {healed} HP total.)")
         if fid:
             self.adjust_rep(fid, +1)
-        self._set_forward_anchor(hx, kind="faction_outpost", name=f"{fname} outpost", fid=fid)
+        self._set_forward_anchor(hx, kind="outpost", name=f"{fname} outpost", fid=fid)
 
     def _contracts_view_active(self):
         active = [c for c in (self.active_contracts or []) if c.get("status") == "accepted"]
@@ -5460,9 +5471,12 @@ class Game:
 
         active_poi_objectives = len(contracts)
         party_size = max(1, len(getattr(self.party, "members", []) or []))
-        recommended_rations = max(6, party_size * 2 + active_poi_objectives * 2)
+        ctx = resolve_travel_context(self)
+        pace = str(ctx.get("pace") or "normal")
+        pace_ration_mod = 1 if pace == "careful" else (-1 if pace == "fast" else 0)
+        recommended_rations = max(6, party_size * 2 + active_poi_objectives * 2 + pace_ration_mod)
         has_dungeon = any(str((c or {}).get("target_poi_type") or "") == "dungeon_entrance" for c in accepted)
-        recommended_torches = max(3, 2 + active_poi_objectives + (2 if has_dungeon else 0))
+        recommended_torches = max(3, 2 + active_poi_objectives + (2 if has_dungeon else 0) + (1 if pace == "careful" else 0))
         recommended_arrows = max(20, 20 + active_poi_objectives * 10)
         recommended_bolts = max(10, 10 + active_poi_objectives * 10)
         warnings: list[str] = []
@@ -5477,6 +5491,8 @@ class Game:
         injured_members = [m for m in self.party.living() if int(getattr(m, "hp", 0) or 0) < int(getattr(m, "hp_max", 0) or 0)]
         if injured_members:
             warnings.append(f"{len(injured_members)} party member(s) are still injured.")
+        if bool(ctx.get("low_supplies", False)):
+            warnings.append("Current stocks are low for wilderness pace and party size.")
         return {
             "active_poi_objectives": int(active_poi_objectives),
             "recommended_rations": int(recommended_rations),
@@ -5967,9 +5983,12 @@ class Game:
             self._assign_poi_faction(d)
             hx.poi = d.get("poi")
         if hx.poi and not bool(hx.poi.get("discovered", False)):
-            hx.poi["discovered"] = True
-            # First-time discovery: add to journal.
-            self._add_discovery(hx)
+            ctx = resolve_travel_context(self)
+            discover_chance = max(1, min(6, 5 + int(ctx.get("discovery_mod", 0))))
+            if self.dice.in_6(discover_chance):
+                hx.poi["discovered"] = True
+                # First-time discovery: add to journal.
+                self._add_discovery(hx)
         self.world_hexes[hx.key()] = hx.to_dict()
         # Reveal neighbors as "known" (generated but undiscovered) so frontier expands.
         for _d, pos in neighbors(self.party_hex).items():
@@ -6026,7 +6045,7 @@ class Game:
                 pool = [fid for fid, f in (self.factions or {}).items() if f.get("ftype") in ("guild", "religious")]
                 if pool:
                     poi["faction_id"] = self.dice_rng.choice(pool)
-        elif ptype == "faction_outpost":
+        elif ptype in ("faction_outpost", "outpost"):
             pool = [fid for fid, f in (self.factions or {}).items() if not bool(f.get("is_town_guild"))]
             if pool:
                 poi["faction_id"] = self.dice_rng.choice(pool)
@@ -6089,9 +6108,40 @@ class Game:
             return f"Smoke was once seen from an abandoned camp in the {terrain}."
         if kind == "caravan":
             return f"Travelers speak of a caravan moving through the {terrain}."
-        if kind == "faction_outpost":
+        if kind in ("faction_outpost", "outpost"):
             return f"A guarded outpost is said to watch the {terrain}."
         return f"Something noteworthy is rumored in the {terrain}."
+
+    def _rumor_meta(self, kind: str, terrain: str) -> dict[str, str]:
+        k = str(kind or "poi")
+        if k in ("dungeon_entrance", "ruins", "shrine"):
+            rumor_type = "location"
+        elif k in ("lair", "faction_outpost", "outpost"):
+            rumor_type = "threat"
+        elif k in ("caravan", "abandoned_camp"):
+            rumor_type = "opportunity"
+        else:
+            rumor_type = "location"
+        risk_hint = "moderate"
+        reward_hint = "scouting lead"
+        if k in ("lair", "dungeon_entrance"):
+            risk_hint = "high"
+            reward_hint = "loot and progress"
+        elif k in ("caravan", "shrine"):
+            risk_hint = "low"
+            reward_hint = "support and resources"
+        elif k == "abandoned_camp":
+            risk_hint = "swingy"
+            reward_hint = "supplies and clues"
+        if str(terrain or "") in ("swamp", "mountain"):
+            risk_hint = "elevated"
+        return {
+            "rumor_type": rumor_type,
+            "poi_hint": k,
+            "risk_hint": risk_hint,
+            "reward_hint": reward_hint,
+            "timed": "yes" if rumor_type in ("threat", "opportunity") else "no",
+        }
 
     def _rumor_locator(self, q: int, r: int) -> str:
         """Human-friendly direction cue for a wilderness rumor."""
@@ -6249,6 +6299,10 @@ class Game:
                 poi, _hx, q, r = row
                 state = "seen" if bool(e.get("seen", False)) else "unseen"
                 text += f" | Destination: {self._poi_label(poi)} @ ({q},{r}) [{state}]"
+        if e.get("rumor_type"):
+            text += f" | Type: {str(e.get('rumor_type')).title()}"
+        if e.get("risk_hint"):
+            text += f" | Risk: {e.get('risk_hint')}"
         linked_cid = str(e.get("linked_contract_cid") or "")
         if linked_cid:
             text += f" | Linked contract: {linked_cid}"
@@ -6339,6 +6393,7 @@ class Game:
         locator = self._rumor_locator(int(q), int(r))
         full_hint = f"{hint} Look {locator}."
 
+        meta = self._rumor_meta(poi_kind, str(hx.get("terrain", "clear")))
         rumor_entry = {
             "day": int(getattr(self, "campaign_day", 1)),
             "q": int(q),
@@ -6351,6 +6406,7 @@ class Game:
             "poi_id": poi_id,
             "source": str(source or "system"),
             "seen": bool(poi.get("discovered", False)),
+            **meta,
         }
         self._append_player_event(
             "rumor.learned",
@@ -6415,7 +6471,7 @@ class Game:
                 weight *= 4.0
             if kind == "caravan":
                 weight *= 2.0 if terrain in ("road", "clear") else 1.3
-            elif kind == "faction_outpost":
+            elif kind in ("faction_outpost", "outpost"):
                 weight *= 2.5 if (poi.get("faction_id") or hx.get("faction_id")) else 1.4
             elif kind == "abandoned_camp":
                 weight *= 1.8 if terrain in ("forest", "hills", "road", "clear") else 1.2
@@ -6445,7 +6501,7 @@ class Game:
             self.ui.log(f"Not enough gold. Need {cost} gp.")
             return
 
-        preferred_new_types = {"abandoned_camp", "caravan", "faction_outpost"}
+        preferred_new_types = {"abandoned_camp", "caravan", "outpost"}
         missing_new_types = preferred_new_types.difference({str(e.get("kind") or "") for e in (self.rumors or [])})
 
         # Sometimes the rumor is political rather than a specific POI.
@@ -6526,7 +6582,9 @@ class Game:
         self.world_hexes[f"{q},{r}"] = hx
 
         self.gold -= cost
-        hint = self._rumor_hint(str(poi.get("type")), str(hx.get("terrain", "clear")))
+        poi_kind = str(poi.get("type") or "poi")
+        hint = self._rumor_hint(poi_kind, str(hx.get("terrain", "clear")))
+        meta = self._rumor_meta(poi_kind, str(hx.get("terrain", "clear")))
         fid = poi.get("faction_id") or hx.get("faction_id")
         if fid and (fid in (self.factions or {})):
             fname = (self.factions.get(fid) or {}).get("name")
@@ -6539,13 +6597,14 @@ class Game:
             "q": q,
             "r": r,
             "terrain": str(hx.get("terrain", "clear")),
-            "kind": str(poi.get("type") or "poi"),
+            "kind": poi_kind,
             "hint": full_hint,
             "locator": locator,
             "cost": cost,
             "poi_id": str(poi.get("id") or f"hex:{q},{r}:{str(poi.get('type') or 'poi')}"),
             "source": "town_rumor",
             "seen": bool(poi.get("discovered", False)),
+            **meta,
         }
         self._append_player_event(
             "rumor.learned",
@@ -6712,6 +6771,59 @@ class Game:
                     self.ui.log(f"Day {e.get('day')} {self._watch_name_of(e.get('watch', 0))} | {e.get('title')}")
 
     
+    def _resolve_wilderness_scene(self, hx: dict[str, Any], *, chance: int) -> bool:
+        """Resolve lightweight non-combat wilderness scenes. Returns True if handled."""
+        ctx = resolve_travel_context(self)
+        wdie = getattr(self, "wilderness_dice", None) or self.dice
+        families = ["hostile", "hazard", "social", "omen", "opportunity"]
+        idx = max(0, min(len(families) - 1, int(wdie.d(6) + int(ctx.get("discovery_mod", 0)) - 2)))
+        family = families[idx]
+        if family == "hostile":
+            return False
+        self.ui.title("Wilderness Scene")
+        if family == "hazard":
+            c = self.ui.choose("A hazard blocks your way.", ["Push through", "Reroute", "Slow and secure footing"])
+            if c == 0:
+                if self.dice.in_6(2):
+                    self.ui.log("You lose time and take minor scrapes.")
+                    self._advance_watch(1)
+                    for m in self.party.living()[:1]:
+                        m.hp = max(-1, int(m.hp) - 1)
+                else:
+                    self.ui.log("You force a path through.")
+            elif c == 1:
+                self.ui.log("You reroute safely but lose time.")
+                self._advance_watch(1)
+            else:
+                self.ui.log("Careful footing avoids mishap.")
+            return True
+        if family == "social":
+            c = self.ui.choose("You meet travelers on the route.", ["Trade news", "Keep distance"])
+            if c == 0:
+                self.ui.log("You exchange route talk and gain a lead.")
+                self._surface_poi_rumor(int(hx.get("q", 0)), int(hx.get("r", 0)), source="travel_social", cost=0)
+            else:
+                self.ui.log("You pass without incident.")
+            return True
+        if family == "omen":
+            self.ui.log("Signs in the wild point toward nearby trouble or opportunity.")
+            if self.dice.in_6(max(1, min(6, 2 + int(ctx.get("discovery_mod", 0))))):
+                self._surface_poi_rumor(int(hx.get("q", 0)), int(hx.get("r", 0)), source="travel_omen", cost=0)
+                self.ui.log("You mark the signs for later investigation.")
+            return True
+        if family == "opportunity":
+            c = self.ui.choose("A quick opportunity appears.", ["Scavenge supplies", "Take shortcut", "Ignore"])
+            if c == 0:
+                self.rations = int(getattr(self, "rations", 0) or 0) + 2
+                self.ui.log("You recover usable trail rations.")
+            elif c == 1:
+                self.ui.log("You find a shortcut and make good time.")
+                self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0) or 0) + 1
+            else:
+                self.ui.log("You keep to your planned route.")
+            return True
+        return False
+
     def _wilderness_encounter_check(self, hx: dict[str, Any], *, encounter_mod: int = 0):
         """Check and potentially run a wilderness encounter.
 
@@ -6719,7 +6831,8 @@ class Game:
         encounter_mod can be used by travel modes (cautious/forced) to slightly shift encounter chance.
         """
         # Moderate: base 1-in-6 per watch, +1 at night.
-        base = 1 + (1 if self._watch_name() == "Night" else 0)
+        ctx = resolve_travel_context(self)
+        base = 1 + (1 if str(ctx.get("watch") or "") == "Night" else 0)
 
         # Heat / contested territory increases patrol intensity.
         heat = int(hx.get("heat", 0) or 0)
@@ -6743,7 +6856,7 @@ class Game:
             patrol_bonus += 1
         patrol_bonus = min(2, patrol_bonus)
 
-        chance = min(6, base + patrol_bonus + int(encounter_mod))
+        chance = min(6, base + patrol_bonus + int(encounter_mod) + int(ctx.get("encounter_mod", 0)))
 
         # Safe passage reduces encounter pressure in a faction's territory for a short time.
         if fid and isinstance(getattr(self, "safe_passage", None), dict):
@@ -6758,6 +6871,8 @@ class Game:
         wrng = getattr(self, "wilderness_encounter_rng", None) or getattr(self, "wilderness_rng", None) or self.dice_rng
 
         if wdie.in_6(chance):
+            if self._resolve_wilderness_scene(hx, chance=int(chance)):
+                return
             terrain = str(hx.get("terrain", "clear"))
             if terrain == "road":
                 terrain = "clear"
@@ -6963,7 +7078,12 @@ class Game:
 
         poi_type = str(poi.get("type") or "")
         name = str(poi.get("name") or "POI")
-        resolved = bool(poi.get("resolved", False))
+        poi.setdefault("id", str(poi.get("id") or f"hex:{q},{r}:{poi_type or 'poi'}"))
+        poi["q"] = int(q)
+        poi["r"] = int(r)
+        resolved_keys = set(str(x) for x in (poi.get("resolution_keys") or []))
+        interact_key = first_time_poi_resolution_key(poi, mode="interact")
+        resolved = bool(poi.get("resolved", False)) or (interact_key in resolved_keys)
 
         self.ui.title(name)
         if poi.get("notes"):
@@ -7178,7 +7298,7 @@ class Game:
             poi["resolved"] = True
 
         # --- FACTION OUTPOST ---
-        elif poi_type == "faction_outpost":
+        elif poi_type in ("faction_outpost", "outpost"):
             fid = str(poi.get("faction_id") or hx.get("faction_id") or "")
             fname = self._faction_name(fid)
             rep = self.faction_rep(fid)
@@ -7200,7 +7320,7 @@ class Game:
                     self.ui.log("The sentries have nothing useful to add.")
                 if fid:
                     self.adjust_rep(fid, +1)
-                self._set_forward_anchor(hx, kind="faction_outpost", name=f"{fname} outpost", fid=fid)
+                self._set_forward_anchor(hx, kind="outpost", name=f"{fname} outpost", fid=fid)
             elif c == 1:
                 if rep < -20:
                     self.ui.log(f"{fname} refuses to vouch for you.")
@@ -7212,13 +7332,13 @@ class Game:
                 self.ui.log(f"{fname} marks your company as tolerated for now.")
                 if fid:
                     self.adjust_rep(fid, +2)
-                self._set_forward_anchor(hx, kind="faction_outpost", name=f"{fname} outpost", fid=fid)
+                self._set_forward_anchor(hx, kind="outpost", name=f"{fname} outpost", fid=fid)
             elif c == 2:
                 self._outpost_guarded_rest(fid, fname, hx)
             elif c == 3:
                 self._outpost_limited_healing(fid, fname, hx)
             else:
-                self._set_forward_anchor(hx, kind="faction_outpost", name=f"{fname} outpost", fid=fid)
+                self._set_forward_anchor(hx, kind="outpost", name=f"{fname} outpost", fid=fid)
                 self._view_faction_jobs(fid, source_name=f"{fname} outpost", source_hex=hx)
             poi["resolved"] = True
 
@@ -7314,6 +7434,9 @@ class Game:
         else:
             self.ui.log("Nothing you can use here right now.")
 
+        if bool(poi.get("resolved", False)):
+            resolved_keys.add(interact_key)
+            poi["resolution_keys"] = sorted(resolved_keys)
         # Persist any changes
         hx["poi"] = poi
         self.world_hexes[k] = hx
@@ -7391,6 +7514,7 @@ class Game:
                 "abandoned_camp": "C",
                 "caravan": "V",
                 "faction_outpost": "O",
+                "outpost": "O",
             }.get(ptype, "P")
         terrain = str((hx or {}).get("terrain", "clear"))
         return {
@@ -8709,11 +8833,11 @@ class Game:
                 continue
 
             if choice == 3:
-                modes = ["Cautious", "Normal", "Forced"]
-                mi = self.ui.choose("Travel Mode", ["Cautious (slower, fewer encounters)", "Normal", "Forced (faster, more encounters)", "Back"])
+                modes = ["Careful", "Normal", "Fast"]
+                mi = self.ui.choose("Travel Mode", ["Careful (slower, safer, better scouting)", "Normal", "Fast (quicker, riskier, fewer leads)", "Back"])
                 if mi == 3:
                     continue
-                mode = {0: "cautious", 1: "normal", 2: "forced"}.get(mi, "normal")
+                mode = {0: "careful", 1: "normal", 2: "fast"}.get(mi, "normal")
                 res = self.dispatch(SetTravelMode(mode))
                 if res.message:
                     self.ui.log(res.message)
