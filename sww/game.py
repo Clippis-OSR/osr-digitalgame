@@ -5223,6 +5223,7 @@ class Game:
                 "Manage Retainers",
                 "Travel into Wilderness",
                 "Gather Rumors (5 gp)",
+                "Expedition Preparation",
                 "Rumors & Discoveries",
                 "View Factions",
                 "Faction Contracts",
@@ -5324,6 +5325,9 @@ class Game:
 
             elif sel_action == "Gather Rumors (5 gp)":
                 self.gather_rumors()
+
+            elif sel_action == "Expedition Preparation":
+                self._town_prepare_expedition()
 
             elif sel_action == "Rumors & Discoveries":
                 self.view_journal()
