@@ -23,7 +23,14 @@ from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
 from .contracts import generate_contracts, Contract
-from .events import EventLog
+from .events import (
+    EventLog,
+    append_player_event,
+    project_clues_from_events,
+    project_discoveries_from_events,
+    project_district_notes_from_events,
+    project_rumors_from_events,
+)
 from .effects import EffectsManager, Hook
 from .replay import ReplayLog
 from .validation import validate_state
@@ -243,6 +250,9 @@ class Game:
         self.discovery_log: list[dict[str, Any]] = []
         self.rumors: list[dict[str, Any]] = []
         self.dungeon_clues: list[dict[str, Any]] = []
+        self.event_history: list[dict[str, Any]] = []
+        self.next_event_eid: int = 0
+        self.district_notes: list[dict[str, Any]] = []
         self._ensure_minimal_rumor_surface()
 
         # Factions (persistent)
@@ -296,6 +306,41 @@ class Game:
             room_id=int(getattr(self, "current_room_id", 0)),
             party_hex=tuple(getattr(self, "party_hex", (0, 0))),
         )
+
+    def _append_player_event(
+        self,
+        event_type: str,
+        *,
+        category: str,
+        title: str,
+        payload: dict[str, Any] | None = None,
+        refs: dict[str, Any] | None = None,
+        visibility: str = "journal",
+    ) -> dict[str, Any]:
+        eid = int(getattr(self, "next_event_eid", 0) or 0)
+        history = list(getattr(self, "event_history", []) or [])
+        if history:
+            try:
+                max_eid = max(int((row or {}).get("eid", -1) or -1) for row in history if isinstance(row, dict))
+            except Exception:
+                max_eid = -1
+            if eid <= int(max_eid):
+                eid = int(max_eid) + 1
+                self.next_event_eid = int(eid)
+        entry = append_player_event(
+            getattr(self, "event_history", []),
+            eid=eid,
+            event_type=event_type,
+            category=category,
+            day=int(getattr(self, "campaign_day", 1) or 1),
+            watch=int(getattr(self, "day_watch", 0) or 0),
+            title=title,
+            payload=dict(payload or {}),
+            refs=dict(refs or {}),
+            visibility=visibility,
+        )
+        self.next_event_eid = eid + 1
+        return entry
 
     # -----------------
     # Battle events + buffered combat log (P6.4 UX)
@@ -4089,11 +4134,27 @@ class Game:
             title = str(c.get("title") or "District objective")
             if announce and c["in_target_district"] and not bool(c.get("district_entered_notified", False)):
                 c["district_entered_notified"] = True
+                note_text = f"Entered target district for {title}."
+                self._append_player_event(
+                    "district.noted",
+                    category="district",
+                    title=note_text,
+                    payload={"day": int(getattr(self, "campaign_day", 1)), "watch": int(getattr(self, "day_watch", 0)), "cid": str(c.get("cid") or ""), "text": note_text, "target_hex": [int(tq), int(tr)]},
+                    refs={"cid": str(c.get("cid") or "")},
+                )
                 self.ui.log(f"District objective: You enter the target district for {title}.")
                 self.emit("district_objective_progress", cid=str(c.get("cid") or ""), stage="entered_district", target_hex=(tq, tr), distance=target_dist)
             if announce and c["near_target"] and not bool(c.get("near_target_notified", False)):
                 c["near_target_notified"] = True
                 self.ui.log(f"District objective: You are near the objective site for {title}.")
+                note_text = f"Near district objective for {title}."
+                self._append_player_event(
+                    "district.noted",
+                    category="district",
+                    title=note_text,
+                    payload={"day": int(getattr(self, "campaign_day", 1)), "watch": int(getattr(self, "day_watch", 0)), "cid": str(c.get("cid") or ""), "text": note_text, "target_hex": [int(tq), int(tr)]},
+                    refs={"cid": str(c.get("cid") or "")},
+                )
                 self.emit("district_objective_progress", cid=str(c.get("cid") or ""), stage="near_objective", target_hex=(tq, tr), distance=target_dist)
             ready = self._contract_completion_ready(c, q=pq, r=pr, hx=hx if (pq == tq and pr == tr) else None)
             if ready:
@@ -4101,6 +4162,14 @@ class Game:
                 if announce and not bool(c.get("completion_notified", False)):
                     c["completion_notified"] = True
                     self.ui.log(f"District objective completed: {title}. Return to town to claim the reward.")
+                    note_text = f"District objective complete for {title}."
+                    self._append_player_event(
+                        "district.noted",
+                        category="district",
+                        title=note_text,
+                        payload={"day": int(getattr(self, "campaign_day", 1)), "watch": int(getattr(self, "day_watch", 0)), "cid": str(c.get("cid") or ""), "text": note_text, "target_hex": [int(tq), int(tr)]},
+                        refs={"cid": str(c.get("cid") or "")},
+                    )
                     self.emit("district_objective_progress", cid=str(c.get("cid") or ""), stage="completed", target_hex=(tq, tr), distance=target_dist)
 
     def _contract_town_report_line(self, c: dict[str, Any]) -> str:
@@ -5639,10 +5708,14 @@ class Game:
             "name": name,
             "note": note,
         }
-        # Avoid duplicates if something re-triggers discovery.
-        if any((e.get("q"), e.get("r"), e.get("kind"), e.get("name")) == (q, r, kind, name) for e in self.discovery_log):
-            return
-        self.discovery_log.append(entry)
+        self._append_player_event(
+            "discovery.recorded",
+            category="discovery",
+            title=f"Discovery recorded: {name}",
+            payload=entry,
+            refs={"poi_id": poi_id, "hex": [q, r]},
+        )
+        self.discovery_log = project_discoveries_from_events(getattr(self, "event_history", []))
         self.ui.log(f"Discovery recorded: {name} at Hex ({q},{r}).")
 
     def _rumor_hint(self, kind: str, terrain: str) -> str:
@@ -5788,7 +5861,7 @@ class Game:
     def _contract_rumor_link(self, c: dict[str, Any]) -> dict[str, Any] | None:
         cid = str((c or {}).get("cid") or "")
         pid = str((c or {}).get("target_poi_id") or "")
-        for e in (self.rumors or []):
+        for e in (self._journal_rumors() or []):
             if not isinstance(e, dict):
                 continue
             if cid and str(e.get("linked_contract_cid") or "") == cid:
@@ -5903,7 +5976,7 @@ class Game:
         poi_id = str(poi.get("id") or f"hex:{int(q)},{int(r)}:{str(poi.get('type') or 'poi')}")
         poi_kind = str(poi.get("type") or "poi")
 
-        for e in (self.rumors or []):
+        for e in (self._journal_rumors() or []):
             if str(e.get("poi_id") or "") == poi_id:
                 return False
 
@@ -5911,7 +5984,7 @@ class Game:
         locator = self._rumor_locator(int(q), int(r))
         full_hint = f"{hint} Look {locator}."
 
-        self.rumors.append({
+        rumor_entry = {
             "day": int(getattr(self, "campaign_day", 1)),
             "q": int(q),
             "r": int(r),
@@ -5923,7 +5996,15 @@ class Game:
             "poi_id": poi_id,
             "source": str(source or "system"),
             "seen": bool(poi.get("discovered", False)),
-        })
+        }
+        self._append_player_event(
+            "rumor.learned",
+            category="rumor",
+            title="Rumor surfaced",
+            payload=rumor_entry,
+            refs={"poi_id": poi_id, "hex": [int(q), int(r)]},
+        )
+        self.rumors = project_rumors_from_events(getattr(self, "event_history", []))
         poi["rumored"] = True
         hx["poi"] = poi
         self.world_hexes[k] = hx
@@ -5937,17 +6018,35 @@ class Game:
         self._surface_poi_rumor(1, 0, source="secondary", cost=0)
         self._surface_poi_rumor(0, -1, source="secondary", cost=0)
 
+    def _update_rumor_events(self, poi_id: str, updates: dict[str, Any]) -> None:
+        pid = str(poi_id or "").strip()
+        if not pid:
+            return
+        changed = False
+        for ev in (getattr(self, "event_history", []) or []):
+            if str((ev or {}).get("type") or "") != "rumor.learned":
+                continue
+            payload = ev.get("payload") if isinstance(ev, dict) else None
+            if not isinstance(payload, dict):
+                continue
+            if str(payload.get("poi_id") or "") != pid:
+                continue
+            payload.update(dict(updates or {}))
+            ev["payload"] = payload
+            changed = True
+        if changed:
+            self.rumors = project_rumors_from_events(getattr(self, "event_history", []))
+
     def _mark_rumors_seen_for_poi(self, poi_id: str) -> None:
         pid = str(poi_id or "").strip()
         if not pid:
             return
         changed = False
-        for e in (self.rumors or []):
+        for e in (self._journal_rumors() or []):
             if str(e.get("poi_id") or "") == pid and not bool(e.get("seen", False)):
-                e["seen"] = True
                 changed = True
         if changed:
-            self.rumors = list(self.rumors or [])
+            self._update_rumor_events(pid, {"seen": True})
 
     def _weighted_rumor_choice(self, candidates, missing_new_types: set[str] | None = None):
         missing_new_types = set(missing_new_types or set())
@@ -6009,7 +6108,7 @@ class Game:
                     locator = self._rumor_locator(q, r)
                     hint = f"{f.get('name','A faction')} is stirring in the {terrain}, {locator}."
                     self.gold -= cost
-                    self.rumors.append({
+                    rumor_entry = {
                         "day": int(getattr(self, "campaign_day", 1)),
                         "q": q,
                         "r": r,
@@ -6019,7 +6118,15 @@ class Game:
                         "locator": locator,
                         "cost": cost,
                         "faction_id": str(f.get("fid") or ""),
-                    })
+                    }
+                    self._append_player_event(
+                        "rumor.learned",
+                        category="rumor",
+                        title="Rumor learned",
+                        payload=rumor_entry,
+                        refs={"hex": [int(q), int(r)]},
+                    )
+                    self.rumors = project_rumors_from_events(getattr(self, "event_history", []))
                     self.ui.log(f"Rumor: {hint}")
                     return
 
@@ -6072,21 +6179,27 @@ class Game:
                 hint = f"{hint} Folk say it has ties to {fname}."
         locator = self._rumor_locator(q, r)
         full_hint = f"{hint} Look {locator}."
-        self.rumors.append(
-            {
-                "day": int(getattr(self, "campaign_day", 1)),
-                "q": q,
-                "r": r,
-                "terrain": str(hx.get("terrain", "clear")),
-                "kind": str(poi.get("type") or "poi"),
-                "hint": full_hint,
-                "locator": locator,
-                "cost": cost,
-                "poi_id": str(poi.get("id") or f"hex:{q},{r}:{str(poi.get('type') or 'poi')}"),
-                "source": "town_rumor",
-                "seen": bool(poi.get("discovered", False)),
-            }
+        rumor_entry = {
+            "day": int(getattr(self, "campaign_day", 1)),
+            "q": q,
+            "r": r,
+            "terrain": str(hx.get("terrain", "clear")),
+            "kind": str(poi.get("type") or "poi"),
+            "hint": full_hint,
+            "locator": locator,
+            "cost": cost,
+            "poi_id": str(poi.get("id") or f"hex:{q},{r}:{str(poi.get('type') or 'poi')}"),
+            "source": "town_rumor",
+            "seen": bool(poi.get("discovered", False)),
+        }
+        self._append_player_event(
+            "rumor.learned",
+            category="rumor",
+            title="Rumor learned",
+            payload=rumor_entry,
+            refs={"poi_id": str(rumor_entry.get("poi_id") or ""), "hex": [int(q), int(r)]},
         )
+        self.rumors = project_rumors_from_events(getattr(self, "event_history", []))
         self.ui.log(f"Rumor: {full_hint}")
 
     def _generate_frontier_poi_for_rumor(self, preferred_kinds: set[str] | None = None):
@@ -6158,6 +6271,26 @@ class Game:
 
         return 0, 0, None
 
+    def _journal_discoveries(self) -> list[dict[str, Any]]:
+        rows = project_discoveries_from_events(getattr(self, "event_history", []))
+        self.discovery_log = list(rows)
+        return rows
+
+    def _journal_rumors(self) -> list[dict[str, Any]]:
+        rows = project_rumors_from_events(getattr(self, "event_history", []))
+        self.rumors = list(rows)
+        return rows
+
+    def _journal_clues(self) -> list[dict[str, Any]]:
+        rows = project_clues_from_events(getattr(self, "event_history", []))
+        self.dungeon_clues = list(rows)
+        return rows
+
+    def _journal_district_notes(self) -> list[dict[str, Any]]:
+        rows = project_district_notes_from_events(getattr(self, "event_history", []))
+        self.district_notes = list(rows)
+        return rows
+
     def view_journal(self):
         """Show discoveries, rumors, and active district objectives."""
         while True:
@@ -6165,21 +6298,23 @@ class Game:
             if c == 4:
                 return
             if c == 0:
-                if not self.discovery_log:
+                discoveries = self._journal_discoveries()
+                if not discoveries:
                     self.ui.log("No discoveries yet.")
                     continue
                 self.ui.title("Discoveries")
                 # Show most recent first
-                for e in list(self.discovery_log)[-30:][::-1]:
+                for e in list(discoveries)[-30:][::-1]:
                     self.ui.log(
                         f"Day {e.get('day')} {self._watch_name_of(e.get('watch',0))} | Hex ({e.get('q')},{e.get('r')}) | {e.get('name')}"
                     )
             elif c == 1:
-                if not self.rumors:
+                rumors = self._journal_rumors()
+                if not rumors:
                     self.ui.log("No rumors yet.")
                     continue
                 self.ui.title("Rumors")
-                for e in list(self.rumors)[-30:][::-1]:
+                for e in list(rumors)[-30:][::-1]:
                     self.ui.log(self._render_rumor_row(e))
             elif c == 2:
                 entries = self._district_objective_entries()
@@ -6202,7 +6337,7 @@ class Game:
                         f"  District clue: {e.get('target_hint')} | From here: {e.get('from_current')} | Reward: {e.get('reward_gp')} gp"
                     )
             else:
-                clues = list(getattr(self, 'dungeon_clues', []) or [])
+                clues = self._journal_clues()
                 if not clues:
                     self.ui.log('No dungeon clues yet.')
                     continue
@@ -8849,7 +8984,14 @@ class Game:
             "text": clue,
             "source": str(source or "room"),
         }
-        self.dungeon_clues.append(entry)
+        self._append_player_event(
+            "clue.found",
+            category="clue",
+            title=f"Clue noted: {clue}",
+            payload=entry,
+            refs={"room_id": int(rid), "level": int(lvl)},
+        )
+        self.dungeon_clues = project_clues_from_events(getattr(self, "event_history", []))
         try:
             self.emit("dungeon_clue_found", text=clue, source=str(source or "room"), level=int(lvl), room_id=int(rid))
         except Exception:
@@ -13944,10 +14086,9 @@ class Game:
         if not pid or not cid:
             return
         changed = False
-        for e in (self.rumors or []):
+        for e in (self._journal_rumors() or []):
             if str(e.get("poi_id") or "") == pid:
                 if str(e.get("linked_contract_cid") or "") != cid:
-                    e["linked_contract_cid"] = cid
                     changed = True
         if changed:
-            self.rumors = list(self.rumors or [])
+            self._update_rumor_events(pid, {"linked_contract_cid": cid})

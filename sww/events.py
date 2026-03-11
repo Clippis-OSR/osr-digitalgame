@@ -1,23 +1,9 @@
-"""Lightweight event log.
-
-This is the first step toward a more event-driven architecture.
-
-Today the game is primarily an imperative loop (UI -> Game methods). We add an
-event stream that the UI, scripted runner, tests, and future tooling can
-observe *without* changing gameplay.
-
-Events are NOT (yet) persisted in save files. They are meant for:
-- journaling
-- debugging
-- deterministic test assertions
-
-Later refactor steps can promote selected events into a persisted "journal".
-"""
+"""Lightweight event log and persisted player-facing journal events."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Iterable, Optional
 
 
 @dataclass(frozen=True)
@@ -31,6 +17,180 @@ class Event:
     room_id: int
     hex_q: int
     hex_r: int
+
+
+@dataclass(frozen=True)
+class PlayerEvent:
+    eid: int
+    type: str
+    category: str
+    day: int
+    watch: int
+    title: str
+    payload: Dict[str, Any]
+    refs: Dict[str, Any]
+    visibility: str = "journal"
+    schema: int = 1
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "eid": int(self.eid or 0),
+            "type": str(self.type or ""),
+            "category": str(self.category or ""),
+            "day": int(self.day or 1),
+            "watch": int(self.watch or 0),
+            "title": str(self.title or ""),
+            "payload": dict(self.payload or {}),
+            "refs": dict(self.refs or {}),
+            "visibility": str(self.visibility or "journal"),
+            "schema": int(self.schema or 1),
+        }
+
+
+def _safe_int(v: Any, default: int = 0) -> int:
+    try:
+        return int(v)
+    except Exception:
+        return default
+
+
+def normalize_player_event(raw: Dict[str, Any] | PlayerEvent | None) -> Dict[str, Any] | None:
+    if raw is None:
+        return None
+    if isinstance(raw, PlayerEvent):
+        return raw.to_dict()
+    if not isinstance(raw, dict):
+        return None
+    return {
+        "eid": _safe_int(raw.get("eid", 0), 0),
+        "type": str(raw.get("type") or ""),
+        "category": str(raw.get("category") or ""),
+        "day": _safe_int(raw.get("day", 1), 1),
+        "watch": _safe_int(raw.get("watch", 0), 0),
+        "title": str(raw.get("title") or ""),
+        "payload": dict(raw.get("payload") or {}),
+        "refs": dict(raw.get("refs") or {}),
+        "visibility": str(raw.get("visibility") or "journal"),
+        "schema": _safe_int(raw.get("schema", 1), 1),
+    }
+
+
+def _iter_events_in_eid_order(event_history: Iterable[Dict[str, Any]] | None) -> Iterable[Dict[str, Any]]:
+    rows = [x for x in (event_history or []) if isinstance(x, dict)]
+    rows.sort(key=lambda e: _safe_int((e or {}).get("eid", 0), 0))
+    return rows
+
+
+def append_player_event(
+    event_history: list[dict[str, Any]],
+    *,
+    eid: int,
+    event_type: str,
+    category: str,
+    day: int,
+    watch: int,
+    title: str,
+    payload: Optional[Dict[str, Any]] = None,
+    refs: Optional[Dict[str, Any]] = None,
+    visibility: str = "journal",
+) -> Dict[str, Any]:
+    entry = normalize_player_event(
+        PlayerEvent(
+            eid=_safe_int(eid, 0),
+            type=str(event_type or ""),
+            category=str(category or ""),
+            day=_safe_int(day, 1),
+            watch=_safe_int(watch, 0),
+            title=str(title or ""),
+            payload=dict(payload or {}),
+            refs=dict(refs or {}),
+            visibility=str(visibility or "journal"),
+            schema=1,
+        )
+    )
+    if entry is None:
+        entry = {
+            "eid": _safe_int(eid, 0),
+            "type": str(event_type or ""),
+            "category": str(category or ""),
+            "day": _safe_int(day, 1),
+            "watch": _safe_int(watch, 0),
+            "title": str(title or ""),
+            "payload": dict(payload or {}),
+            "refs": dict(refs or {}),
+            "visibility": str(visibility or "journal"),
+            "schema": 1,
+        }
+    event_history.append(entry)
+    return entry
+
+
+def project_discoveries_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    seen: set[tuple[int, int, str, str]] = set()
+    for ev in _iter_events_in_eid_order(event_history):
+        if str((ev or {}).get("type") or "") != "discovery.recorded":
+            continue
+        p = dict((ev or {}).get("payload") or {})
+        row = {
+            "day": _safe_int((ev or {}).get("day", p.get("day", 1)), 1),
+            "watch": _safe_int((ev or {}).get("watch", p.get("watch", 0)), 0),
+            "q": _safe_int(p.get("q", 0), 0),
+            "r": _safe_int(p.get("r", 0), 0),
+            "terrain": str(p.get("terrain") or ""),
+            "kind": str(p.get("kind") or "poi"),
+            "name": str(p.get("name") or "Unknown"),
+            "note": str(p.get("note") or ""),
+        }
+        sig = (int(row["q"]), int(row["r"]), str(row["kind"]), str(row["name"]))
+        if sig in seen:
+            continue
+        seen.add(sig)
+        out.append(row)
+    return out
+
+
+def project_rumors_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for ev in _iter_events_in_eid_order(event_history):
+        if str((ev or {}).get("type") or "") != "rumor.learned":
+            continue
+        p = dict((ev or {}).get("payload") or {})
+        out.append(dict(p))
+    return out
+
+
+def project_clues_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    seen: set[tuple[str, int]] = set()
+    for ev in _iter_events_in_eid_order(event_history):
+        if str((ev or {}).get("type") or "") != "clue.found":
+            continue
+        p = dict((ev or {}).get("payload") or {})
+        text = str(p.get("text") or "").strip()
+        lvl = _safe_int(p.get("level", 0), 0)
+        sig = (text, lvl)
+        if not text or sig in seen:
+            continue
+        seen.add(sig)
+        out.append(dict(p))
+    return out
+
+
+def project_district_notes_from_events(event_history: Iterable[Dict[str, Any]] | None) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for ev in _iter_events_in_eid_order(event_history):
+        if str((ev or {}).get("type") or "") != "district.noted":
+            continue
+        p = dict((ev or {}).get("payload") or {})
+        if not p:
+            p = {
+                "day": _safe_int((ev or {}).get("day", 1), 1),
+                "watch": _safe_int((ev or {}).get("watch", 0), 0),
+                "text": str((ev or {}).get("title") or ""),
+            }
+        out.append(p)
+    return out
 
 
 class EventLog:
@@ -62,7 +222,6 @@ class EventLog:
         if data is None:
             payload = {}
         else:
-            # Allow dataclass payloads for typed events.
             try:
                 import dataclasses
                 if dataclasses.is_dataclass(data):
