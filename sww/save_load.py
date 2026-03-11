@@ -1171,16 +1171,6 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     fa = wild.get("forward_anchor", None)
     setattr(game, "forward_anchor", fa if isinstance(fa, dict) else None)
     setattr(game, "travel_state", TravelState.from_dict(wild.get("travel_state", {})))
-    try:
-        if hasattr(game, "_update_wilderness_condition"):
-            game._update_wilderness_condition()
-    except Exception:
-        pass
-    try:
-        if hasattr(game, "_ensure_canonical_dungeon_entrance"):
-            game._ensure_canonical_dungeon_entrance()
-    except Exception:
-        pass
 
     j = data.get("journal", {}) or {}
     setattr(game, "discovery_log", list(j.get("discoveries", []) or []))
