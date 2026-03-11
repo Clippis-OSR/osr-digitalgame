@@ -102,7 +102,7 @@ def roll_poi(rng: Any, dist_from_town: int, terrain: str) -> Optional[dict[str, 
         "dungeon_entrance": 0.14,
         "abandoned_camp": 0.10,
         "caravan": 0.08,
-        "faction_outpost": 0.06,
+        "outpost": 0.06,
     }
 
     # Distance ramp (moderate): more lairs/entrances as you push outward.
@@ -126,15 +126,15 @@ def roll_poi(rng: Any, dist_from_town: int, terrain: str) -> Optional[dict[str, 
         base["ruins"] += 0.03
         base["lair"] += 0.02
         base["shrine"] -= 0.02
-        base["faction_outpost"] += 0.02
+        base["outpost"] += 0.02
     elif terrain in ("mountain",):
         base["dungeon_entrance"] += 0.06
         base["ruins"] -= 0.04
-        base["faction_outpost"] += 0.02
+        base["outpost"] += 0.02
     elif terrain in ("road", "clear"):
         base["ruins"] += 0.02
         base["caravan"] += 0.05
-        base["faction_outpost"] += 0.01
+        base["outpost"] += 0.01
 
     # Clamp to avoid negative weights.
     for k in list(base.keys()):
@@ -146,7 +146,7 @@ def roll_poi(rng: Any, dist_from_town: int, terrain: str) -> Optional[dict[str, 
     dungeon_w = base["dungeon_entrance"]
     camp_w = base["abandoned_camp"]
     caravan_w = base["caravan"]
-    outpost_w = base["faction_outpost"]
+    outpost_w = base["outpost"]
     total = dungeon_w + lair_w + shrine_w + ruins_w + camp_w + caravan_w + outpost_w
     roll = rng.random() * total
 
@@ -241,7 +241,7 @@ def roll_poi(rng: Any, dist_from_town: int, terrain: str) -> Optional[dict[str, 
         }
         name = rng.choice(outpost_names.get(terrain, outpost_names["clear"]))
         return {
-            "type": "faction_outpost",
+            "type": "outpost",
             "name": name,
             "discovered": False,
             "resolved": False,
@@ -360,7 +360,7 @@ def force_poi(rng: Any, dist_from_town: int, terrain: str) -> dict[str, Any]:
         "dungeon_entrance": 0.14,
         "abandoned_camp": 0.10,
         "caravan": 0.08,
-        "faction_outpost": 0.06,
+        "outpost": 0.06,
     }
 
     base["dungeon_entrance"] += min(0.10, dist_from_town * 0.01)
@@ -381,15 +381,15 @@ def force_poi(rng: Any, dist_from_town: int, terrain: str) -> dict[str, Any]:
         base["ruins"] += 0.03
         base["lair"] += 0.02
         base["shrine"] -= 0.02
-        base["faction_outpost"] += 0.02
+        base["outpost"] += 0.02
     elif terrain in ("mountain",):
         base["dungeon_entrance"] += 0.06
         base["ruins"] -= 0.04
-        base["faction_outpost"] += 0.02
+        base["outpost"] += 0.02
     elif terrain in ("road", "clear"):
         base["ruins"] += 0.02
         base["caravan"] += 0.05
-        base["faction_outpost"] += 0.01
+        base["outpost"] += 0.01
 
     for k in list(base.keys()):
         base[k] = max(0.02, float(base[k]))
@@ -398,7 +398,10 @@ def force_poi(rng: Any, dist_from_town: int, terrain: str) -> dict[str, Any]:
     shrine_w = base["shrine"]
     lair_w = base["lair"]
     dungeon_w = base["dungeon_entrance"]
-    total = ruins_w + shrine_w + lair_w + dungeon_w
+    camp_w = base["abandoned_camp"]
+    caravan_w = base["caravan"]
+    outpost_w = base["outpost"]
+    total = ruins_w + shrine_w + lair_w + dungeon_w + camp_w + caravan_w + outpost_w
     roll = rng.random() * total
 
     if roll < ruins_w:
@@ -407,8 +410,14 @@ def force_poi(rng: Any, dist_from_town: int, terrain: str) -> dict[str, Any]:
         poi_type = "shrine"
     elif roll < ruins_w + shrine_w + lair_w:
         poi_type = "lair"
-    else:
+    elif roll < ruins_w + shrine_w + lair_w + dungeon_w:
         poi_type = "dungeon_entrance"
+    elif roll < ruins_w + shrine_w + lair_w + dungeon_w + camp_w:
+        poi_type = "abandoned_camp"
+    elif roll < ruins_w + shrine_w + lair_w + dungeon_w + camp_w + caravan_w:
+        poi_type = "caravan"
+    else:
+        poi_type = "outpost"
 
     # Provide a minimal persistent POI structure; name/flavor is assigned by the game layer.
     return {
