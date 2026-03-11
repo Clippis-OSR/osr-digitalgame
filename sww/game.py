@@ -1282,7 +1282,8 @@ class Game:
         if self._combat_target_is_valid(current, enemies):
             return plan
         if enemies:
-            new_target = self.dice_rng.choice(list(enemies))
+            ordered = sorted(list(enemies), key=lambda e: self._battle_label_for(e))
+            new_target = self.dice_rng.choice(ordered)
             out = dict(plan)
             out['target'] = new_target
             try:
@@ -11442,7 +11443,7 @@ class Game:
                                     except Exception:
                                         pass
                                     if not passed:
-                                        leave_combat(f, marker="fled")
+                                        self._leave_combat_actor(f, marker="fled")
                                         try:
                                             self.battle_evt("UNIT_ROUTED", unit_id=getattr(f,"name","?"))
                                         except Exception:
@@ -11595,7 +11596,7 @@ class Game:
                                 if not bool(getattr(self, "_battle_buffer_active", False)):
                                     self.ui.log("The enemies throw down their weapons and offer surrender!")
                                 for x in living_now:
-                                    leave_combat(x, marker="surrendered")
+                                    self._leave_combat_actor(x, marker="surrendered")
                                     try:
                                         self.battle_evt("UNIT_SURRENDERED", unit_id=getattr(x,"name","?"))
                                     except Exception:
@@ -11609,7 +11610,7 @@ class Game:
                                     self.ui.log("The enemies lose heart and flee!")
                                 # Mark all foes as fled so the combat ends cleanly.
                                 for x in living_now:
-                                    leave_combat(x, marker="fled")
+                                    self._leave_combat_actor(x, marker="fled")
                                     try:
                                         self.battle_evt("UNIT_ROUTED", unit_id=getattr(x,"name","?"))
                                     except Exception:
@@ -12283,7 +12284,7 @@ class Game:
                         pending = [f for f in foes if int(getattr(f, 'hp', 0) or 0) > 0 and 'flee_pending' in (getattr(f, 'effects', []) or [])]
                         if pending:
                             for f in pending:
-                                leave_combat(f, marker='fled', remove_effects=('flee_pending',))
+                                self._leave_combat_actor(f, marker='fled', remove_effects=('flee_pending',))
                     except Exception:
                         pass
 
@@ -12678,6 +12679,23 @@ class Game:
         except Exception:
             return
 
+
+    def _leave_combat_actor(self, actor: Actor, *, marker: str = "fled", remove_effects: tuple[str, ...] = ()) -> None:
+        """Shared non-death leave-combat cleanup seam.
+
+        Preserves existing semantics: mark effect-based exit state and remove
+        transient combat-only statuses.
+        """
+        if actor is None:
+            return
+        effects = list(getattr(actor, "effects", []) or [])
+        for key in tuple(remove_effects or ()):
+            effects = [e for e in effects if str(e) != str(key)]
+        mk = str(marker or "").strip()
+        if mk and mk not in effects:
+            effects.append(mk)
+        actor.effects = effects
+        cleanup_actor_battle_status(actor)
 
     def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
         try:

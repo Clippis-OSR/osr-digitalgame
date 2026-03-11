@@ -77,6 +77,11 @@ class TurnController:
         a = self.active()
         self.sel.selected_unit_id = a.unit_id if a else None
 
+    @staticmethod
+    def _ordered_units(units: list[UnitState]) -> list[UnitState]:
+        """Stable deterministic unit ordering for state-affecting decisions."""
+        return sorted(list(units or []), key=lambda u: str(getattr(u, "unit_id", "")))
+
     # ---------- intents (player) ----------
     def handle_intent(self, intent: Intent) -> list[BattleEvent]:
         events: list[BattleEvent] = []
@@ -509,8 +514,8 @@ class TurnController:
         if getattr(self.state, "foe_reaction", "unseen") != "unseen":
             return []
         # Any visible contact counts.
-        pcs = [u for u in self.state.living_units().values() if u.side == "pc"]
-        foes = [u for u in self.state.living_units().values() if u.side == "foe" and u.morale_state != "surrender"]
+        pcs = self._ordered_units([u for u in self.state.living_units().values() if u.side == "pc"])
+        foes = self._ordered_units([u for u in self.state.living_units().values() if u.side == "foe" and u.morale_state != "surrender"])
         if not pcs or not foes:
             return []
         from .stealth import lit_tiles_for_side
@@ -541,8 +546,8 @@ class TurnController:
         # Reaction check on first LOS contact.
         ev.extend(self._check_first_contact_los())
 
-        pcs = [u for u in self.state.units.values() if u.side == "pc" and u.is_alive()]
-        foes = [u for u in self.state.units.values() if u.side == "foe"]
+        pcs = self._ordered_units([u for u in self.state.units.values() if u.side == "pc" and u.is_alive()])
+        foes = self._ordered_units([u for u in self.state.units.values() if u.side == "foe"])
 
         # If combat ended due to friendly parley, do not award monster XP/loot.
         if getattr(self.state, "foe_reaction", "") == "friendly":
@@ -879,7 +884,7 @@ class TurnController:
         # Reaction check on first LOS contact.
         ev.extend(self._check_first_contact_los())
 
-        living = [u for u in self.state.units.values() if u.side == side and u.is_alive()]
+        living = self._ordered_units([u for u in self.state.units.values() if u.side == side and u.is_alive()])
         if not living:
             return ev
         # Fearless units (morale None) ignore checks.
