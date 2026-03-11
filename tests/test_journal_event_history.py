@@ -235,3 +235,55 @@ def test_projection_order_stable_after_normalization():
     rumors = g._journal_rumors()
     hints = [str(r.get("hint") or "") for r in rumors]
     assert hints[:3] == ["first", "second", "third"]
+
+
+def test_expedition_events_emit_and_project_across_loop():
+    g = _new_game(seed=2600)
+    g._wilderness_encounter_check = lambda hx, encounter_mod=0: None
+
+    assert g._cmd_enter_dungeon().ok
+    room = g._ensure_room(g.current_room_id)
+    room.setdefault("stairs", {})["down"] = True
+    assert g._cmd_dungeon_use_stairs("down").ok
+    assert g._cmd_dungeon_leave().ok
+    g.party_hex = (2, 0)
+    g.world_hexes["2,0"] = {
+        "q": 2,
+        "r": 0,
+        "terrain": "clear",
+        "poi": {"id": "poi:test:ruins", "type": "ruins", "name": "Test Ruins", "resolved": True},
+    }
+    assert g._cmd_investigate_current_location().ok
+    assert g._cmd_step_toward_town().ok
+    assert g._cmd_return_to_town().ok
+
+    types = [str(e.get("type") or "") for e in (g.event_history or [])]
+    assert "expedition.departed" in types
+    assert "dungeon.depth_reached" in types
+    assert "poi.explored" in types
+    assert "expedition.returned" in types
+
+    rows = g._journal_expeditions()
+    row_types = [str(r.get("type") or "") for r in rows]
+    assert "expedition.departed" in row_types
+    assert "dungeon.depth_reached" in row_types
+    assert "poi.explored" in row_types
+    assert "expedition.returned" in row_types
+
+
+def test_expedition_event_history_persists_save_load():
+    g = _new_game(seed=2610)
+    g._wilderness_encounter_check = lambda hx, encounter_mod=0: None
+
+    assert g._cmd_enter_dungeon().ok
+    assert g._cmd_dungeon_leave().ok
+    assert g._cmd_return_to_town().ok
+
+    data = game_to_dict(g)
+    g2 = _new_game(seed=2611)
+    apply_game_dict(g2, data)
+
+    rows = g2._journal_expeditions()
+    row_types = [str(r.get("type") or "") for r in rows]
+    assert "expedition.departed" in row_types
+    assert "expedition.returned" in row_types
