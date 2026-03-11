@@ -2405,6 +2405,15 @@ class Game:
         self.travel_state.location = "town"
         self.travel_state.travel_turns = int(getattr(self.travel_state, "travel_turns", 0)) + int(max(1, day_cost))
         self.travel_state.route_progress = 0
+        self.ui.title("Return to Town")
+        self.ui.log(f"Travel time: {day_cost} day(s).")
+        for pc in self.party.pcs():
+            next_xp = int(self.xp_threshold_for_class(getattr(pc, "cls", "Fighter"), int(getattr(pc, "level", 1) or 1) + 1))
+            cur_xp = int(getattr(pc, "xp", 0) or 0)
+            remain = max(0, next_xp - cur_xp)
+            hp = int(getattr(pc, "hp", 0) or 0)
+            hp_max = int(getattr(pc, "hp_max", 0) or 0)
+            self.ui.log(f"- {pc.name}: Lv{pc.level} XP {cur_xp}/{next_xp} (to next: {remain}) HP {hp}/{hp_max}")
         day_txt = f"{day_cost} day" + ("s" if day_cost != 1 else "")
         return CommandResult(status="ok", messages=(f"You return to Town. ({day_txt})",))
 
@@ -5283,25 +5292,201 @@ class Game:
         recommended_rations = max(6, party_size * 2 + active_poi_objectives * 2)
         has_dungeon = any(str((c or {}).get("target_poi_type") or "") == "dungeon_entrance" for c in accepted)
         recommended_torches = max(3, 2 + active_poi_objectives + (2 if has_dungeon else 0))
+        recommended_arrows = max(20, 20 + active_poi_objectives * 10)
+        recommended_bolts = max(10, 10 + active_poi_objectives * 10)
+        warnings: list[str] = []
+        if int(getattr(self, "rations", 0) or 0) < int(recommended_rations):
+            warnings.append("Low rations for planned objectives.")
+        if int(getattr(self, "torches", 0) or 0) < int(recommended_torches):
+            warnings.append("Low torches for expected dungeon depth.")
+        if int(getattr(self, "arrows", 0) or 0) < int(recommended_arrows):
+            warnings.append("Arrow stocks are low for ranged support.")
+        if int(getattr(self, "bolts", 0) or 0) < int(recommended_bolts):
+            warnings.append("Bolt stocks are low for crossbow support.")
+        injured_members = [m for m in self.party.living() if int(getattr(m, "hp", 0) or 0) < int(getattr(m, "hp_max", 0) or 0)]
+        if injured_members:
+            warnings.append(f"{len(injured_members)} party member(s) are still injured.")
         return {
             "active_poi_objectives": int(active_poi_objectives),
             "recommended_rations": int(recommended_rations),
             "recommended_torches": int(recommended_torches),
+            "recommended_arrows": int(recommended_arrows),
+            "recommended_bolts": int(recommended_bolts),
+            "warnings": warnings,
             "contracts": contracts,
         }
+
+    def _town_buy_basic_resupply(self) -> bool:
+        cost = 16
+        if self.gold < cost:
+            self.ui.log(f"Not enough gold. Need {cost} gp.")
+            return False
+        self.gold -= cost
+        self.rations = int(getattr(self, "rations", 0) or 0) + 6
+        self.torches = int(getattr(self, "torches", 0) or 0) + 4
+        self.arrows = int(getattr(self, "arrows", 0) or 0) + 20
+        self.bolts = int(getattr(self, "bolts", 0) or 0) + 20
+        self.ui.log("Purchased basic delve kit: +6 rations, +4 torches, +20 arrows, +20 bolts.")
+        return True
+
+    def _town_temple_healing(self) -> None:
+        injured = [m for m in self.party.living() if int(getattr(m, "hp", 0) or 0) < int(getattr(m, "hp_max", 0) or 0)]
+        if not injured:
+            self.ui.log("No one needs temple healing right now.")
+            return
+        total_missing = sum(max(0, int(m.hp_max) - int(m.hp)) for m in injured)
+        full_cost = max(6, total_missing * 2)
+        c = self.ui.choose(
+            f"Temple healing ({len(injured)} injured, {total_missing} HP missing)",
+            ["Minor rite (8 gp): restore up to 8 HP total", f"Full recovery ({full_cost} gp)", "Back"],
+        )
+        if c == 2:
+            return
+        if c == 0:
+            if self.gold < 8:
+                self.ui.log("Not enough gold.")
+                return
+            self.gold -= 8
+            pool = 8
+            healed = 0
+            for m in sorted(injured, key=lambda a: (int(a.hp) / max(1, int(a.hp_max)), int(a.hp))):
+                if pool <= 0:
+                    break
+                need = max(0, int(m.hp_max) - int(m.hp))
+                if need <= 0:
+                    continue
+                amt = min(need, pool)
+                m.hp = int(m.hp) + int(amt)
+                pool -= int(amt)
+                healed += int(amt)
+            self.ui.log(f"Temple rites mend wounds. (Healed {healed} HP total.)")
+            return
+        if self.gold < full_cost:
+            self.ui.log("Not enough gold.")
+            return
+        self.gold -= full_cost
+        for m in injured:
+            m.hp = int(m.hp_max)
+        self.ui.log(f"Temple recovery completed. (Healed {total_missing} HP total.)")
+
+    def _town_identify_items(self) -> None:
+        unknown = [it for it in (self.party_items or []) if isinstance(it, dict) and bool(it.get("true_name")) and not bool(it.get("identified", False))]
+        if not unknown:
+            self.ui.log("No unidentified magic items in party loot.")
+            return
+        cost_each = 12
+        c = self.ui.choose("Sage Appraisal", [f"Identify one item ({cost_each} gp)", f"Identify all ({len(unknown) * cost_each} gp)", "Back"])
+        if c == 2:
+            return
+        if c == 1:
+            all_cost = int(len(unknown) * cost_each)
+            if self.gold < all_cost:
+                self.ui.log("Not enough gold.")
+                return
+            self.gold -= all_cost
+            for it in unknown:
+                it["identified"] = True
+                it["name"] = str(it.get("true_name") or it.get("name") or "Unknown Item")
+            self.ui.log(f"The sage identifies {len(unknown)} item(s).")
+            return
+        labels = [f"{idx + 1}. {str(it.get('name') or 'Unknown')}" for idx, it in enumerate(unknown)]
+        j = self.ui.choose("Identify which item?", labels + ["Back"])
+        if j == len(labels):
+            return
+        if self.gold < cost_each:
+            self.ui.log("Not enough gold.")
+            return
+        self.gold -= cost_each
+        target = unknown[j]
+        target["identified"] = True
+        target["name"] = str(target.get("true_name") or target.get("name") or "Unknown Item")
+        self.ui.log(f"Identified: {target.get('name')}.")
+
+    def _town_lodging_service(self) -> None:
+        opts = [
+            ("Common room (8 gp): +1 day, restore 50% missing HP", 8, 0.5),
+            ("Private inn room (18 gp): +1 day, full heal", 18, 1.0),
+            ("Comfortable suites (30 gp): +1 day, full heal and calmer nerves", 30, 1.0),
+        ]
+        c = self.ui.choose("Lodging", [x[0] for x in opts] + ["Back"])
+        if c == len(opts):
+            return
+        _, cost, frac = opts[c]
+        if self.gold < cost:
+            self.ui.log("Not enough gold.")
+            return
+        self.gold -= int(cost)
+        healed = 0
+        for m in self.party.members:
+            need = max(0, int(getattr(m, "hp_max", 0) or 0) - int(getattr(m, "hp", 0) or 0))
+            if need <= 0:
+                continue
+            amt = need if frac >= 1.0 else max(1, int(round(need * frac)))
+            amt = min(need, int(amt))
+            m.hp = int(getattr(m, "hp", 0) or 0) + amt
+            healed += amt
+        self.campaign_day += 1
+        self.noise_level = max(0, int(getattr(self, "noise_level", 0) or 0) - (2 if c >= 1 else 1))
+        self.ui.log(f"You settle in for the night. (-{cost} gp, healed {healed} HP total)")
+
+    def _town_services_menu(self) -> None:
+        while True:
+            self.ui.hr()
+            self.ui.log(f"Gold: {self.gold} gp")
+            c = self.ui.choose("Town Services", ["Temple healing", "Sage identification", "Buy basic delve kit (16 gp)", "Lodging", "Back"])
+            if c == 4:
+                return
+            if c == 0:
+                self._town_temple_healing()
+            elif c == 1:
+                self._town_identify_items()
+            elif c == 2:
+                self._town_buy_basic_resupply()
+            elif c == 3:
+                self._town_lodging_service()
 
     def _town_prepare_expedition(self) -> None:
         snap = self.expedition_prep_snapshot()
         self.ui.title("Expedition Preparation")
         self.ui.log(f"Active objectives: {int(snap.get('active_poi_objectives', 0) or 0)}")
-        self.ui.log(f"Recommended supplies: {int(snap.get('recommended_rations', 0) or 0)} rations, {int(snap.get('recommended_torches', 0) or 0)} torches")
+        self.ui.log(
+            f"Recommended supplies: {int(snap.get('recommended_rations', 0) or 0)} rations, "
+            f"{int(snap.get('recommended_torches', 0) or 0)} torches, "
+            f"{int(snap.get('recommended_arrows', 0) or 0)} arrows, "
+            f"{int(snap.get('recommended_bolts', 0) or 0)} bolts"
+        )
+        for line in list(snap.get("warnings") or []):
+            self.ui.log(f"! {line}")
         rows = list(snap.get("contracts") or [])
-        if not rows:
+        if rows:
+            for row in rows[:6]:
+                self.ui.log(f"- {row.get('title')} ({row.get('cid')}): {row.get('destination')}")
+                self.ui.log(f"  Prep: {row.get('prep_hint')}")
+        else:
             self.ui.log("No active contracts. Plan a general frontier run.")
-            return
-        for row in rows[:6]:
-            self.ui.log(f"- {row.get('title')} ({row.get('cid')}): {row.get('destination')}")
-            self.ui.log(f"  Prep: {row.get('prep_hint')}")
+        c = self.ui.choose("Prep shortcuts", ["Buy basic delve kit (16 gp)", "Temple minor healing (8 gp)", "Open Town Services", "Back"])
+        if c == 0:
+            self._town_buy_basic_resupply()
+        elif c == 1:
+            if self.gold < 8:
+                self.ui.log("Not enough gold.")
+                return
+            self.gold -= 8
+            pool = 8
+            healed = 0
+            for m in sorted(self.party.living(), key=lambda a: (int(a.hp) / max(1, int(a.hp_max)), int(a.hp))):
+                if pool <= 0:
+                    break
+                need = max(0, int(m.hp_max) - int(m.hp))
+                if need <= 0:
+                    continue
+                amt = min(need, pool)
+                m.hp = int(m.hp) + int(amt)
+                pool -= int(amt)
+                healed += int(amt)
+            self.ui.log(f"Temple attendants patch up the party. (Healed {healed} HP total.)")
+        elif c == 2:
+            self._town_services_menu()
 
 
     def town_loop(self):
@@ -5335,6 +5520,7 @@ class Game:
                 "Travel into Wilderness",
                 "Gather Rumors (5 gp)",
                 "Expedition Preparation",
+                "Town Services",
                 "Rumors & Discoveries",
                 "View Factions",
                 "Faction Contracts",
@@ -5440,6 +5626,9 @@ class Game:
 
             elif sel_action == "Expedition Preparation":
                 self._town_prepare_expedition()
+
+            elif sel_action == "Town Services":
+                self._town_services_menu()
 
             elif sel_action == "Rumors & Discoveries":
                 self.view_journal()
@@ -8425,12 +8614,18 @@ class Game:
                     self.ui.log(f"Not enough gold to train {pc.name}. Need {fee} gp.")
                     break
                 self.gold -= fee
+                self.ui.log(f"Training {pc.name} for level {pc.level + 1}. (-{fee} gp)")
                 self.level_up_pc(pc)
                 any_trained = True
         if not any_trained:
             self.ui.log("No one is ready to level up (or you lack training gold).")
 
     def level_up_pc(self, pc: PC):
+        prev_level = int(getattr(pc, "level", 1) or 1)
+        prev_hp_max = int(getattr(pc, "hp_max", 0) or 0)
+        prev_save = int(getattr(pc, "save", 0) or 0)
+        prev_slots = dict(getattr(pc, "spell_slots", {}) or {})
+
         new_level = pc.level + 1
         hd = self.class_hit_die(pc.cls)
         roll = self.dice.d(hd)
@@ -8448,6 +8643,15 @@ class Game:
             self.recalc_pc_class_features(pc)
         except Exception:
             pass
+
+        new_slots = dict(getattr(pc, "spell_slots", {}) or {})
+        new_save = int(getattr(pc, "save", prev_save) or prev_save)
+        self.ui.log(
+            f"Level-up summary: Lv {prev_level}->{pc.level} | "
+            f"HP {prev_hp_max}->{pc.hp_max} | Save {prev_save}->{new_save}"
+        )
+        if prev_slots != new_slots:
+            self.ui.log(f"Spell slots: {prev_slots or {}} -> {new_slots or {}}")
 
     def prepare_spells_menu(self, *, in_dungeon: bool) -> None:
         """Prepare spells for spellcasters.
