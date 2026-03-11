@@ -12704,6 +12704,24 @@ class Game:
         except Exception:
             pass
 
+    def _leave_combat_actor(self, actor: Actor, *, marker: str = "fled", remove_effects: tuple[str, ...] = ()) -> None:
+        """Shared non-death leave-combat cleanup seam.
+
+        Preserves existing semantics: mark effect-based exit state and remove
+        transient combat-only statuses.
+        """
+        if actor is None:
+            return
+        effects = list(getattr(actor, "effects", []) or [])
+        for key in tuple(remove_effects or ()):
+            effects = [e for e in effects if str(e) != str(key)]
+        mk = str(marker or "").strip()
+        if mk and mk not in effects:
+            effects.append(mk)
+        actor.effects = effects
+        self._cleanup_combat_actor_state(actor)
+
+    def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
         """Hardening: centralized death cleanup.
 
         Removes sticky control effects (grapple/engulf/swallow) so combat state
@@ -12711,7 +12729,7 @@ class Game:
         """
         try:
             if int(getattr(target, "hp", 0) or 0) <= 0:
-                cleanup_actor_battle_status(target)
+                self._cleanup_combat_actor_state(target)
         except Exception:
             pass
 

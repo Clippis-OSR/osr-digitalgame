@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from sww.models import Actor
 from sww.combat_rules import is_melee_engaged, can_use_missile, shooting_into_melee_penalty, foe_frontage_limit, apply_forced_retreat
 from sww.status_lifecycle import apply_status, tick_round_statuses, cleanup_actor_battle_status, clear_status, status_dict
