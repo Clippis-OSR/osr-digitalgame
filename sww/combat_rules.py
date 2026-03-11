@@ -130,3 +130,22 @@ def apply_forced_retreat(actor) -> str:
     if 'fled' not in effects:
         effects.append('fled')
     return 'flee'
+
+
+def is_active_hostile_target(target, enemies: list) -> bool:
+    """Shared theater target legality helper (read-only)."""
+    if target is None:
+        return False
+    if target not in list(enemies or []):
+        return False
+    try:
+        if int(getattr(target, "hp", 0) or 0) <= 0:
+            return False
+    except Exception:
+        return False
+    effects = getattr(target, "effects", None)
+    if isinstance(effects, list):
+        blocked = {"fled", "surrendered", "dead"}
+        if any(str(e).strip().lower() in blocked for e in effects):
+            return False
+    return True

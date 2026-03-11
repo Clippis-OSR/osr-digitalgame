@@ -29,6 +29,7 @@ from .replay import ReplayLog
 from .validation import validate_state
 from .monster_ai import coerce_profile, choose_target, party_role
 from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat
+from .combat_legality import theater_target_is_valid
 from .status_lifecycle import tick_round_statuses, cleanup_actor_battle_status
 from .ai_capabilities import detect_capabilities, choose_attack_mode
 from .commands import (
@@ -1281,7 +1282,8 @@ class Game:
         if self._combat_target_is_valid(current, enemies):
             return plan
         if enemies:
-            new_target = self.dice_rng.choice(list(enemies))
+            ordered = sorted(list(enemies), key=lambda e: self._battle_label_for(e))
+            new_target = self.dice_rng.choice(ordered)
             out = dict(plan)
             out['target'] = new_target
             try:
@@ -10963,7 +10965,6 @@ class Game:
                 # foes are surprised for the first round.
                 if bool(getattr(self, "party_stealth_success", False)):
                     for f in foes:
-                        f.status = getattr(f, "status", {}) or {}
                         # We tick durations at the *start* of the round, so use 2 to cover round 1.
                         apply_status(f, "surprised", 2, mode="max")
                     self.ui.log("You catch them off-guard! (foes surprised)")
@@ -10981,12 +10982,10 @@ class Game:
                     foes_surprise = self.dice.d(6) <= 2
                     if party_surprise:
                         for a in self.party.living():
-                            a.status = getattr(a, "status", {}) or {}
                             apply_status(a, "surprised", 2, mode="max")
                         self.ui.log("Surprise! Your party is caught off-guard.")
                     if foes_surprise:
                         for f in foes:
-                            f.status = getattr(f, "status", {}) or {}
                             apply_status(f, "surprised", 2, mode="max")
                         self.ui.log("Surprise! The enemies are caught off-guard.")
 
@@ -11000,7 +10999,6 @@ class Game:
                 if not in_dungeon_ctx:
                     any_cover = False
                     for a in (self.party.living() + foes):
-                        a.status = getattr(a, "status", {}) or {}
                         roll = self.dice.d(6)
                         if roll <= 3:
                             apply_status(a, "cover", -2)
@@ -11009,7 +11007,7 @@ class Game:
                             apply_status(a, "cover", -4)
                             any_cover = True
                         else:
-                            a.status.pop("cover", None)
+                            clear_status(a, "cover")
                     if any_cover:
                         self.ui.log("Combat begins with scattered cover in the wilderness.")
 
@@ -11112,7 +11110,6 @@ class Game:
                                     self.ui.log("You catch the fleeing enemies!")
                                     for f in fled:
                                         f.effects = [e for e in (getattr(f, 'effects', []) or []) if e != 'fled']
-                                        f.status = getattr(f, 'status', {}) or {}
                                         apply_status(f, "surprised", 2, mode="max")
                                     combat_distance_ft = 40
                                 else:
@@ -11446,7 +11443,7 @@ class Game:
                                     except Exception:
                                         pass
                                     if not passed:
-                                        leave_combat(f, marker="fled")
+                                        self._leave_combat_actor(f, marker="fled")
                                         try:
                                             self.battle_evt("UNIT_ROUTED", unit_id=getattr(f,"name","?"))
                                         except Exception:
@@ -11599,7 +11596,7 @@ class Game:
                                 if not bool(getattr(self, "_battle_buffer_active", False)):
                                     self.ui.log("The enemies throw down their weapons and offer surrender!")
                                 for x in living_now:
-                                    leave_combat(x, marker="surrendered")
+                                    self._leave_combat_actor(x, marker="surrendered")
                                     try:
                                         self.battle_evt("UNIT_SURRENDERED", unit_id=getattr(x,"name","?"))
                                     except Exception:
@@ -11613,7 +11610,7 @@ class Game:
                                     self.ui.log("The enemies lose heart and flee!")
                                 # Mark all foes as fled so the combat ends cleanly.
                                 for x in living_now:
-                                    leave_combat(x, marker="fled")
+                                    self._leave_combat_actor(x, marker="fled")
                                     try:
                                         self.battle_evt("UNIT_ROUTED", unit_id=getattr(x,"name","?"))
                                     except Exception:
@@ -11658,7 +11655,6 @@ class Game:
                                 if chase_foes > chase_party:
                                     self.ui.log("They catch you as you flee!")
                                     for a in self.party.living():
-                                        a.status = getattr(a, "status", {}) or {}
                                         apply_status(a, "surprised", 2, mode="max")
                                     combat_distance_ft = 30
                                 else:
@@ -11792,8 +11788,7 @@ class Game:
 
                             # P1.1: rate of fire for missile weapons.
                             shots, half_rate = self._missile_rate_of_fire(actor)
-                            st = getattr(actor, "status", {}) or {}
-                            actor.status = st  # ensure dict
+                            st = status_dict(actor)
 
                             # Half-rate weapons (e.g. heavy crossbow): one shot every other round.
                             if half_rate:
@@ -12271,10 +12266,8 @@ class Game:
                             combat_distance_ft = 0
                             # Cover is lost once combatants are fully engaged in melee.
                             for a in (self.party.living() + [f for f in foes if f.hp > 0]):
-                                st = getattr(a, 'status', {}) or {}
-                                if 'cover' in st:
-                                    st.pop('cover', None)
-                                    a.status = st
+                                if 'cover' in status_dict(a):
+                                    clear_status(a, 'cover')
                             self.ui.log('Combatants close to melee range (0 ft). Cover is lost.')
                         else:
                             self.ui.log(f'Combatants advance; range now {int(combat_distance_ft)} ft.')
@@ -12291,7 +12284,7 @@ class Game:
                         pending = [f for f in foes if int(getattr(f, 'hp', 0) or 0) > 0 and 'flee_pending' in (getattr(f, 'effects', []) or [])]
                         if pending:
                             for f in pending:
-                                leave_combat(f, marker='fled', remove_effects=('flee_pending',))
+                                self._leave_combat_actor(f, marker='fled', remove_effects=('flee_pending',))
                     except Exception:
                         pass
 
@@ -12587,7 +12580,7 @@ class Game:
                     pass
                         # Strict replay diagnostics: record last damage application on the defender.
             try:
-                dst_now2 = getattr(defender, 'status', {}) or {}
+                dst_now2 = status_dict(defender)
                 dst_now2['_last_damage'] = {
                     'round': int(round_no),
                     'attacker': str(getattr(attacker, 'name', '')),
@@ -12596,18 +12589,16 @@ class Game:
                     'dealt': int(dealt),
                     'after_hp': int(getattr(defender, 'hp', 0) or 0),
                 }
-                defender.status = dst_now2
             except Exception:
                 pass
 
 # P0.75: Spell disruption. If the defender is in the middle of casting,
             # taking damage before end-of-round resolution disrupts the spell.
-            dst_now = getattr(defender, "status", {}) or {}
+            dst_now = status_dict(defender)
             casting = dst_now.get("casting")
             if isinstance(casting, dict) and not bool(casting.get("disrupted", False)):
                 casting["disrupted"] = True
                 dst_now["casting"] = casting
-                defender.status = dst_now
                 # Typed spell disruption event (and optional legacy log).
                 try:
                     self.battle_evt("SPELL_DISRUPTED", caster_id=getattr(defender, "name", "?"), reason="hit", round_no=int(round_no))
@@ -12689,6 +12680,23 @@ class Game:
             return
 
 
+    def _leave_combat_actor(self, actor: Actor, *, marker: str = "fled", remove_effects: tuple[str, ...] = ()) -> None:
+        """Shared non-death leave-combat cleanup seam.
+
+        Preserves existing semantics: mark effect-based exit state and remove
+        transient combat-only statuses.
+        """
+        if actor is None:
+            return
+        effects = list(getattr(actor, "effects", []) or [])
+        for key in tuple(remove_effects or ()):
+            effects = [e for e in effects if str(e) != str(key)]
+        mk = str(marker or "").strip()
+        if mk and mk not in effects:
+            effects.append(mk)
+        actor.effects = effects
+        cleanup_actor_battle_status(actor)
+
     def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
         try:
             if int(getattr(target, "hp", 0) or 0) <= 0:
@@ -12696,6 +12704,24 @@ class Game:
         except Exception:
             pass
 
+    def _leave_combat_actor(self, actor: Actor, *, marker: str = "fled", remove_effects: tuple[str, ...] = ()) -> None:
+        """Shared non-death leave-combat cleanup seam.
+
+        Preserves existing semantics: mark effect-based exit state and remove
+        transient combat-only statuses.
+        """
+        if actor is None:
+            return
+        effects = list(getattr(actor, "effects", []) or [])
+        for key in tuple(remove_effects or ()):
+            effects = [e for e in effects if str(e) != str(key)]
+        mk = str(marker or "").strip()
+        if mk and mk not in effects:
+            effects.append(mk)
+        actor.effects = effects
+        self._cleanup_combat_actor_state(actor)
+
+    def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
         """Hardening: centralized death cleanup.
 
         Removes sticky control effects (grapple/engulf/swallow) so combat state
@@ -12703,7 +12729,7 @@ class Game:
         """
         try:
             if int(getattr(target, "hp", 0) or 0) <= 0:
-                cleanup_actor_battle_status(target)
+                self._cleanup_combat_actor_state(target)
         except Exception:
             pass
 
@@ -13465,7 +13491,6 @@ class Game:
             except Exception:
                 pass
             if bool(params.get("stun_swallower_on_escape", False)):
-                sw.status = getattr(sw, "status", {}) or {}
                 apply_status(sw, "held", 1, mode="max")
 
     def _resolve_grapple_special(self, attacker: Actor, defender: Actor, spec: dict, *, round_no: int = 1) -> None:
@@ -13662,7 +13687,6 @@ class Game:
             return
 
         def _mark_turned(u: Actor):
-            u.status = getattr(u, "status", {}) or {}
             apply_status(u, "turned", duration, mode="max")
             u.effects = list(getattr(u, "effects", []) or [])
             if "turned" not in u.effects:
@@ -13740,14 +13764,13 @@ class Game:
         sp = self.content.get_spell(spell_ident)
         spell_name = getattr(sp, "name", spell_ident)
 
-        st = getattr(caster, "status", {}) or {}
+        st = status_dict(caster)
         # If already casting, don't allow a second declaration.
         if isinstance(st.get("casting"), dict):
             self.ui.log(f"{caster.name} is already casting!")
             return
 
-        st["casting"] = {"rounds": 1, "spell": spell_ident, "disrupted": False}
-        caster.status = st
+        apply_status(caster, "casting", {"rounds": 1, "spell": spell_ident, "disrupted": False})
         pending_spells.append({"caster": caster, "spell": spell_ident})
         self.ui.log(f"{caster.name} begins casting {spell_name}...")
 
@@ -13769,14 +13792,13 @@ class Game:
             if not caster or getattr(caster, "hp", 0) <= 0:
                 continue
 
-            st = getattr(caster, "status", {}) or {}
+            st = status_dict(caster)
             casting = st.get("casting")
             if not isinstance(casting, dict):
                 continue
             if str(casting.get("spell", "")).strip().lower() != str(spell_ident).strip().lower():
                 # Something changed; skip.
-                st.pop("casting", None)
-                caster.status = st
+                clear_status(caster, "casting")
                 continue
 
             sp = self.content.get_spell(str(spell_ident))
@@ -13794,8 +13816,7 @@ class Game:
                     self.battle_evt("SPELL_SPENT", caster_id=caster.name, spell=str(spell_name), remaining=len(list(getattr(caster,'spells_prepared',[]) or [])))
                 except Exception:
                     pass
-                st.pop("casting", None)
-                caster.status = st
+                clear_status(caster, "casting")
                 continue
 
             # P0.75 (fixture compatibility): casting while engaged in melee can be disrupted
@@ -13815,8 +13836,7 @@ class Game:
                             self.battle_evt("SPELL_SPENT", caster_id=caster.name, spell=str(spell_name), remaining=len(list(getattr(caster,'spells_prepared',[]) or [])))
                         except Exception:
                             pass
-                        st.pop("casting", None)
-                        caster.status = st
+                        clear_status(caster, "casting")
                         continue
             except Exception:
                 pass
@@ -13825,20 +13845,17 @@ class Game:
             block_reason = action_block_reason(caster, for_casting=True)
             if block_reason is not None:
                 self.ui.log(f"{caster.name} cannot cast due to {block_reason}!")
-                st.pop("casting", None)
-                caster.status = st
+                clear_status(caster, "casting")
                 continue
             try:
                 mb = self.effects_mgr.query_modifiers(caster)
                 if mb.forced_retreat:
                     self.ui.log(f"{caster.name} is too terrified to cast!")
-                    st.pop("casting", None)
-                    caster.status = st
+                    clear_status(caster, "casting")
                     continue
                 if not mb.can_act:
                     self.ui.log(f"{caster.name} cannot act and loses the chance to cast!")
-                    st.pop("casting", None)
-                    caster.status = st
+                    clear_status(caster, "casting")
                     continue
             except Exception:
                 pass
@@ -13853,8 +13870,7 @@ class Game:
             if not ok:
                 self.ui.log(f"{caster.name}'s spell fizzles (not usable right now).")
                 # In this engine, a fizzle does NOT consume the spell.
-                st.pop("casting", None)
-                caster.status = st
+                clear_status(caster, "casting")
                 continue
 
             # Consume only after successfully applying.
@@ -13868,8 +13884,7 @@ class Game:
             except Exception:
                 pass
             self.ui.log(f"{caster.name} casts {spell_name}!")
-            st.pop("casting", None)
-            caster.status = st
+            clear_status(caster, "casting")
     # -----------------
     # Test / fixtures helpers
     # -----------------

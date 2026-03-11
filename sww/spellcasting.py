@@ -583,7 +583,13 @@ def apply_spell_in_combat(
         if s == "charm person":
             apply_status(target, "charmed", 999)
             _be(game, "EFFECT_APPLIED", tgt=target.name, kind="charmed")
-            leave_combat(target, marker='fled')  # treated as out of fight
+            if hasattr(game, '_leave_combat_actor'):
+                game._leave_combat_actor(target, marker='fled')  # treated as out of fight
+            else:
+                effects = list(getattr(target, 'effects', []) or [])
+                if 'fled' not in effects:
+                    effects.append('fled')
+                target.effects = effects
             game.ui.log(f"{target.name} is charmed and stops fighting!")
         else:
             apply_status(target, "held", 6, mode="max")
