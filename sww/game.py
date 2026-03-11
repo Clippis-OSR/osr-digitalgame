@@ -1841,6 +1841,40 @@ class Game:
             ts.advance_clock(travel_turns=int(travel_turns), watch_turns=int(watch_turns), encounter_ticks=int(encounter_ticks))
         else:
             ts.travel_turns = int(getattr(ts, "travel_turns", 0) or 0) + max(0, int(travel_turns))
+            ts.wilderness_clock_turns = int(getattr(ts, "wilderness_clock_turns", 0) or 0) + max(0, int(travel_turns)) + max(0, int(watch_turns)) + max(0, int(encounter_ticks))
+        self._update_wilderness_condition()
+
+    def _update_wilderness_condition(self) -> None:
+        """Keep a tiny deterministic wilderness-condition surface in sync with travel clocks."""
+        ts = getattr(self, "travel_state", None)
+        if ts is None:
+            self.travel_state = TravelState(location="wilderness")
+            ts = self.travel_state
+
+        clock = max(0, int(getattr(ts, "wilderness_clock_turns", 0) or 0))
+        started = max(0, int(getattr(ts, "condition_started_clock", 0) or 0))
+        if started > clock:
+            started = clock
+        cond = str(getattr(ts, "travel_condition", "clear") or "clear").strip().lower()
+        allowed = ("clear", "wind", "rain", "fog")
+
+        reroll = cond not in allowed or (clock - started) >= 12
+        if reroll:
+            bucket = int(clock // 12)
+            roll = int((int(getattr(self, "wilderness_seed", 0) or 0) + bucket) % 10)
+            if roll <= 4:
+                cond = "clear"
+            elif roll <= 6:
+                cond = "wind"
+            elif roll <= 8:
+                cond = "rain"
+            else:
+                cond = "fog"
+            started = clock
+
+        ts.travel_condition = cond
+        ts.condition_started_clock = started
+        ts.wilderness_clock_turns = clock
 
     def _cmd_advance_watch(self, watches: int) -> CommandResult:
         w = max(0, int(watches))
@@ -5146,6 +5180,57 @@ class Game:
                 self.gold -= cost
                 actor.armor = str(a.get("name"))
                 self.ui.log(f"{actor.name} dons {actor.armor}.")
+
+    def expedition_prep_snapshot(self) -> dict[str, Any]:
+        """Deterministic town-prep surface for active objective planning."""
+        accepted = [c for c in (self.active_contracts or []) if isinstance(c, dict) and c.get("status") == "accepted"]
+        contracts: list[dict[str, Any]] = []
+        seen: set[str] = set()
+        for c in accepted:
+            cid = str(c.get("cid") or "")
+            if cid and cid in seen:
+                continue
+            if cid:
+                seen.add(cid)
+            ptype = str(c.get("target_poi_type") or "")
+            prep_hint = "Bring standard field supplies."
+            if ptype == "dungeon_entrance":
+                prep_hint = "Bring extra torches and a backup light source."
+            elif ptype in ("lair", "stronghold"):
+                prep_hint = "Bring extra rations and healing supplies."
+            elif ptype == "shrine":
+                prep_hint = "Bring offerings and spare rations for a longer detour."
+            contracts.append({
+                "cid": cid,
+                "title": str(c.get("title") or "Contract"),
+                "destination": self._contract_destination_label(c),
+                "prep_hint": prep_hint,
+            })
+
+        active_poi_objectives = len(contracts)
+        party_size = max(1, len(getattr(self.party, "members", []) or []))
+        recommended_rations = max(6, party_size * 2 + active_poi_objectives * 2)
+        has_dungeon = any(str((c or {}).get("target_poi_type") or "") == "dungeon_entrance" for c in accepted)
+        recommended_torches = max(3, 2 + active_poi_objectives + (2 if has_dungeon else 0))
+        return {
+            "active_poi_objectives": int(active_poi_objectives),
+            "recommended_rations": int(recommended_rations),
+            "recommended_torches": int(recommended_torches),
+            "contracts": contracts,
+        }
+
+    def _town_prepare_expedition(self) -> None:
+        snap = self.expedition_prep_snapshot()
+        self.ui.title("Expedition Preparation")
+        self.ui.log(f"Active objectives: {int(snap.get('active_poi_objectives', 0) or 0)}")
+        self.ui.log(f"Recommended supplies: {int(snap.get('recommended_rations', 0) or 0)} rations, {int(snap.get('recommended_torches', 0) or 0)} torches")
+        rows = list(snap.get("contracts") or [])
+        if not rows:
+            self.ui.log("No active contracts. Plan a general frontier run.")
+            return
+        for row in rows[:6]:
+            self.ui.log(f"- {row.get('title')} ({row.get('cid')}): {row.get('destination')}")
+            self.ui.log(f"  Prep: {row.get('prep_hint')}")
 
 
     def town_loop(self):
@@ -13817,4 +13902,3 @@ class Game:
                     changed = True
         if changed:
             self.rumors = list(self.rumors or [])
-
