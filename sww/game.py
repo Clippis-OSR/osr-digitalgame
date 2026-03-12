@@ -19,7 +19,7 @@ from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
 from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
-from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_known_name
+from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_known_name, owned_item_brief_label
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
@@ -27,12 +27,15 @@ from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .town_services import identify_cost_gp, identify_item_in_town
 from .loot_pool import (
     add_generated_treasure_to_pool,
-    assign_loot_to_actor,
     create_loot_pool,
-    leave_loot_behind,
     loot_pool_entries_as_legacy_dicts,
 )
 from .coin_rewards import CoinDestination, grant_coin_reward
+from .ownership_service import (
+    move_item_loot_pool_to_actor,
+    move_item_loot_pool_to_stash,
+    remove_owned_item,
+)
 from .reward_bundle import apply_reward_bundle, empty_reward_bundle, reward_bundle_add_coins, reward_bundle_add_item
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
@@ -516,6 +519,25 @@ class Game:
             self._encounter_start_xp_sum = 0
         # collected deltas
         self._encounter_loot_events: list[dict[str, object]] = []
+
+    def _combat_loot_item_names_delta(self, start_entry_ids: set[str] | None = None) -> list[str]:
+        """Best-effort combat loot item delta from ownership-first loot pool state.
+
+        Transitional fallback: if loot_pool is unavailable, callers may still rely
+        on legacy `party_items` snapshots.
+        """
+        try:
+            now_entries = list(getattr(getattr(self, "loot_pool", None), "entries", []) or [])
+            start_ids = set(str(x) for x in (start_entry_ids or set()) if str(x).strip())
+            out: list[str] = []
+            for e in now_entries:
+                eid = str(getattr(e, "entry_id", "") or "")
+                if eid and eid in start_ids:
+                    continue
+                out.append(str(getattr(e, "name", "loot") or "loot"))
+            return out
+        except Exception:
+            return []
 
     def _encounter_note_loot(self, *, gp: int = 0, items: list | None = None, source: str = "loot") -> None:
         if not bool(getattr(self, "_encounter_capture_active", False)):
@@ -5548,6 +5570,27 @@ class Game:
         self._sync_legacy_party_items_from_loot_pool()
         return True
 
+
+    def _reward_source_uses_legacy_party_items_mirror(self, source: str) -> bool:
+        """Compatibility routing for legacy `party_items` mirror updates.
+
+        Room treasure intake is explicitly migrated to loot_pool ownership and
+        should not inject into anonymous shared `party_items` on award.
+        """
+        src = str(source or "").strip().lower()
+        if src == "room_treasure":
+            return False
+        # TODO(ownership-migration): migrate `boss_spoils` to skip legacy mirror.
+        # TODO(ownership-migration): migrate post-combat loot recap away from
+        # `party_items` deltas and onto loot_pool ownership events.
+        return True
+
+    def _sync_legacy_party_items_for_reward_source(self, source: str) -> None:
+        """Compatibility wrapper to isolate remaining shared-loot bridge usage."""
+        if not self._reward_source_uses_legacy_party_items_mirror(source):
+            return
+        self._sync_legacy_party_items_from_loot_pool()
+
     def _coin_destination_label(self, destination: str) -> str:
         d = str(destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT)
         if d in {CoinDestination.TREASURY, CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT}:
@@ -5721,20 +5764,48 @@ class Game:
         if li == len(loot_labels):
             return
 
-        who_labels = [a.name for a in living]
-        wi = self.ui.choose("Assign to who?", who_labels + ["Back"])
-        if wi == len(who_labels):
-            return
-
-        actor = living[wi]
         picked = entries[li]
-        ok = assign_loot_to_actor(self.loot_pool, actor, picked.entry_id)
-        if not ok:
-            self.ui.log("Could not assign item to inventory.")
+        dest_opts = ["Assign to party member"]
+        can_stash = str(getattr(getattr(self, "travel_state", None), "location", "town") or "town").strip().lower() == "town"
+        if can_stash:
+            dest_opts.append("Send to stash")
+        dest_opts.append("Leave behind")
+        dest_opts.append("Back")
+
+        di = self.ui.choose("Loot destination?", dest_opts)
+        if di == len(dest_opts) - 1:
             return
 
+        if dest_opts[di] == "Assign to party member":
+            who_labels = [a.name for a in living]
+            wi = self.ui.choose("Assign to who?", who_labels + ["Back"])
+            if wi == len(who_labels):
+                return
+            actor = living[wi]
+            moved = move_item_loot_pool_to_actor(self.loot_pool, actor, picked.entry_id)
+            if not moved.ok:
+                self.ui.log("Could not assign item to inventory.")
+                return
+            self._sync_legacy_party_items_from_loot_pool()
+            self.ui.log(f"Assigned {str(getattr(picked, 'name', 'loot') or 'loot')} to {actor.name}.")
+            return
+
+        if dest_opts[di] == "Send to stash":
+            moved = move_item_loot_pool_to_stash(self.loot_pool, self, picked.entry_id)
+            if not moved.ok:
+                self.ui.log("Could not move item to stash.")
+                return
+            self._sync_legacy_party_items_from_loot_pool()
+            self.ui.log(f"Moved {str(getattr(picked, 'name', 'loot') or 'loot')} to stash.")
+            return
+
+        # Leave behind: explicit discard from pending shared loot pool.
+        removed = remove_owned_item(self, source_kind="legacy", reference_id=str(getattr(picked, "entry_id", "") or ""), quantity=max(1, int(getattr(picked, "quantity", 1) or 1)))
+        if not removed.ok:
+            self.ui.log("Could not leave item behind.")
+            return
         self._sync_legacy_party_items_from_loot_pool()
-        self.ui.log(f"Assigned {str(getattr(picked, 'name', 'loot') or 'loot')} to {actor.name}.")
+        self.ui.log(f"Left {str(getattr(picked, 'name', 'loot') or 'loot')} behind.")
 
     def _buy_item_for_actor(self, actor: Actor, *, name: str, kind: str, auto_equip: bool) -> bool:
         """Create bought item instance in actor inventory and optionally auto-equip legacy fields."""
@@ -7584,15 +7655,24 @@ class Game:
             gp = self.dice.d(6) * 10 + self.dice.d(6) * 10
             grant_coin_reward(self, gp, source="wilderness_ruins", destination=CoinDestination.TREASURY)
             self.ui.log(f"You find {gp} gp in old coin.")
+            found_items: list[dict[str, Any]] = []
             if self.dice.d(6) >= 5:
                 it = self.treasure.roll_minor_gem_or_jewelry()
-                self.party_items.append({"name": it.name, "kind": it.kind, "gp_value": it.gp_value})
-                self.ui.log(f"You also find: {it.name}.")
+                found_items.append({"name": it.name, "kind": it.kind, "gp_value": it.gp_value})
             if self.dice.d(6) == 6:
                 items = self.treasure.roll_minor_magic_item()
                 for it2 in items:
-                    self.party_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
-                    self.ui.log(f"Magic! {it2.name}.")
+                    found_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
+            if found_items:
+                # Transitional bridge: generated wilderness loot now enters the
+                # pending loot pool first; `party_items` is only synced mirror state.
+                added_items = self._ingest_reward_items_to_loot_pool(found_items, source="wilderness_ruins")
+                for it in added_items:
+                    nm = str(it.get("name") or "item")
+                    if str(it.get("kind") or "").lower() in {"potion", "scroll", "ring", "wand", "relic"}:
+                        self.ui.log(f"Magic! {nm}.")
+                    else:
+                        self.ui.log(f"You also find: {nm}.")
             poi["resolved"] = True
 
         # --- SHRINE ---
@@ -7639,7 +7719,12 @@ class Game:
                         if not self.party.living():
                             return
                 relic_name = f"Relic of {name}"
-                self.party_items.append({"name": relic_name, "kind": "relic", "gp_value": 150})
+                # Transitional bridge: relic creation routes through loot pool ownership
+                # stage before any explicit actor/stash assignment.
+                self._ingest_reward_items_to_loot_pool(
+                    [{"name": relic_name, "kind": "relic", "gp_value": 150}],
+                    source="wilderness_shrine",
+                )
                 self.ui.log(f"You recover a relic: {relic_name}.")
                 poi["relic_taken"] = True
                 self.adjust_rep(str(poi.get("faction_id") or ""), +10)
@@ -7675,15 +7760,23 @@ class Game:
             bonus_gp = self.dice.d(6) * 50
             grant_coin_reward(self, bonus_gp, source="wilderness_lair", destination=CoinDestination.TREASURY)
             self.ui.log(f"In the lair you find {bonus_gp} gp and valuables.")
+            found_items: list[dict[str, Any]] = []
             if self.dice.d(6) >= 4:
                 it = self.treasure.roll_medium_gem_or_jewelry()
-                self.party_items.append({"name": it.name, "kind": it.kind, "gp_value": it.gp_value})
-                self.ui.log(f"You recover: {it.name}.")
+                found_items.append({"name": it.name, "kind": it.kind, "gp_value": it.gp_value})
             if self.dice.d(6) >= 5:
                 items = self.treasure.roll_medium_magic_item()
                 for it2 in items:
-                    self.party_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
-                    self.ui.log(f"Magic! {it2.name}.")
+                    found_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
+            if found_items:
+                # Transitional bridge: generated lair loot enters pending loot pool.
+                added_items = self._ingest_reward_items_to_loot_pool(found_items, source="wilderness_lair")
+                for it in added_items:
+                    nm = str(it.get("name") or "item")
+                    if str(it.get("kind") or "").lower() in {"potion", "scroll", "ring", "wand", "relic"}:
+                        self.ui.log(f"Magic! {nm}.")
+                    else:
+                        self.ui.log(f"You recover: {nm}.")
             poi["resolved"] = True
 
         # --- ABANDONED CAMP ---
@@ -9473,49 +9566,179 @@ class Game:
             pass
         self.ui.log(f"Prepared {len(caster.spells_prepared)} spell(s) for {caster.name}.")
 
-    def sell_loot(self):
-        # Transitional compatibility: selling still consumes shared party loot pool.
-        # TODO(inventory-migration): support selling directly from actor inventories.
-        # Compatibility note: sale proceeds still settle into shared treasury until
-        # actor/stash-specific coin ownership is fully migrated.
-        from_legacy_compat = bool(self._ensure_loot_pool_hydrated_from_legacy())
-        entries = list(getattr(self.loot_pool, "entries", []) or [])
-        if not entries:
-            self.ui.log("You have no loot to sell.")
-            return
-        labels = []
-        sellables = []
-        for e in entries:
-            val = int(getattr(e, "gp_value", 0) or 0)
-            if val <= 0:
+    def _sale_unit_value_gp(self, item: Any) -> int:
+        md = dict(getattr(item, "metadata", {}) or {})
+        return max(0, int(md.get("value_gp", md.get("gp_value", 0)) or 0))
+
+    def _sale_price_gp(self, *, unit_value_gp: int, quantity: int) -> int:
+        gross = max(0, int(unit_value_gp or 0)) * max(1, int(quantity or 1))
+        if gross <= 0:
+            return 0
+        return max(1, int(gross * 0.5))
+
+    def list_sellable_items(self, *, include_legacy_compat: bool = False) -> list[dict[str, Any]]:
+        """List sellable rows with explicit ownership source metadata."""
+        rows: list[dict[str, Any]] = []
+
+        # Preferred ownership-aware sources: actor inventories then party stash.
+        for actor in list(getattr(getattr(self, "party", None), "members", []) or []):
+            if actor is None:
                 continue
-            price = max(1, int(val * 0.5))
-            u = ("unidentified" if not bool(getattr(e, "identified", True)) else "identified")
-            qty = int(getattr(e, "quantity", 1) or 1)
-            qtxt = f" x{qty}" if qty > 1 else ""
-            labels.append(f"{e.name} ({e.kind}, {u}){qtxt} sell {price} gp")
-            sellables.append((e.entry_id, price, e.name, self._loot_sale_source_label(e, from_legacy_compat=from_legacy_compat)))
+            try:
+                actor.ensure_inventory_initialized()
+            except Exception:
+                continue
+            for item in list(getattr(getattr(actor, "inventory", None), "items", []) or []):
+                qty = max(1, int(getattr(item, "quantity", 1) or 1))
+                unit = self._sale_unit_value_gp(item)
+                price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
+                if price <= 0:
+                    continue
+                nm = owned_item_brief_label(item)
+                rows.append({
+                    "source_kind": "actor",
+                    "owner": str(getattr(actor, "name", "actor") or "actor"),
+                    "instance_id": str(getattr(item, "instance_id", "") or ""),
+                    "name": nm,
+                    "quantity": qty,
+                    "identified": bool(getattr(item, "identified", True)),
+                    "price_gp": int(price),
+                    "label": f"{nm} (actor:{getattr(actor, 'name', 'actor')}) sell {price} gp",
+                })
+
+        stash_items = list(getattr(getattr(self, "party_stash", None), "items", []) or [])
+        for item in stash_items:
+            qty = max(1, int(getattr(item, "quantity", 1) or 1))
+            unit = self._sale_unit_value_gp(item)
+            price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
+            if price <= 0:
+                continue
+            nm = owned_item_brief_label(item)
+            rows.append({
+                "source_kind": "stash",
+                "owner": "stash",
+                "instance_id": str(getattr(item, "instance_id", "") or ""),
+                "name": nm,
+                "quantity": qty,
+                "identified": bool(getattr(item, "identified", True)),
+                "price_gp": int(price),
+                "label": f"{nm} (stash) sell {price} gp",
+            })
+
+        if include_legacy_compat:
+            # Transitional compatibility fallback only: anonymous pending loot pool entries.
+            from_legacy_compat = bool(self._ensure_loot_pool_hydrated_from_legacy())
+            for e in list(getattr(self.loot_pool, "entries", []) or []):
+                val = int(getattr(e, "gp_value", 0) or 0)
+                if val <= 0:
+                    continue
+                qty = int(getattr(e, "quantity", 1) or 1)
+                price = self._sale_price_gp(unit_value_gp=val, quantity=qty)
+                u = ("unidentified" if not bool(getattr(e, "identified", True)) else "identified")
+                qtxt = f" x{qty}" if qty > 1 else ""
+                rows.append({
+                    "source_kind": "legacy",
+                    "owner": self._loot_sale_source_label(e, from_legacy_compat=from_legacy_compat),
+                    "entry_id": str(getattr(e, "entry_id", "") or ""),
+                    "name": str(getattr(e, "name", "loot") or "loot"),
+                    "quantity": qty,
+                    "identified": bool(getattr(e, "identified", True)),
+                    "price_gp": int(price),
+                    "label": f"{e.name} ({u}, legacy) {qtxt}sell {price} gp".replace("  ", " "),
+                })
+        return rows
+
+    def sell_actor_item(self, actor: Actor, instance_id: str, *, source: str = "sell_loot") -> bool:
+        item = find_item_on_actor(actor, instance_id)
+        if item is None:
+            return False
+        qty = max(1, int(getattr(item, "quantity", 1) or 1))
+        price = self._sale_price_gp(unit_value_gp=self._sale_unit_value_gp(item), quantity=qty)
+        if price <= 0:
+            return False
+        sold_name = owned_item_brief_label(item)
+        removed = remove_owned_item(self, source_kind="actor", reference_id=instance_id, actor=actor, quantity=qty)
+        if not bool(getattr(removed, "ok", False)):
+            return False
+        coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
+        self.ui.log(f"Sold {sold_name} (actor:{actor.name}) for {price} gp to {self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
+        return True
+
+    def sell_stash_item(self, instance_id: str, *, source: str = "sell_loot") -> bool:
+        stash = getattr(self, "party_stash", None)
+        if stash is None:
+            return False
+        iid = str(instance_id or "")
+        item = next((it for it in list(getattr(stash, "items", []) or []) if str(getattr(it, "instance_id", "") or "") == iid), None)
+        if item is None:
+            return False
+        qty = max(1, int(getattr(item, "quantity", 1) or 1))
+        price = self._sale_price_gp(unit_value_gp=self._sale_unit_value_gp(item), quantity=qty)
+        if price <= 0:
+            return False
+        sold_name = owned_item_brief_label(item)
+        removed = remove_owned_item(self, source_kind="stash", reference_id=iid, quantity=qty)
+        if not bool(getattr(removed, "ok", False)):
+            return False
+        coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
+        self.ui.log(f"Sold {sold_name} (stash) for {price} gp to {self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
+        return True
+
+    def sell_legacy_party_item(self, entry_id: str, *, source: str = "sell_loot") -> bool:
+        """Transitional-only sale path for anonymous legacy pooled loot."""
+        entries = list(getattr(self.loot_pool, "entries", []) or [])
+        pick = next((e for e in entries if str(getattr(e, "entry_id", "") or "") == str(entry_id or "")), None)
+        if pick is None:
+            return False
+        qty = max(1, int(getattr(pick, "quantity", 1) or 1))
+        val = max(0, int(getattr(pick, "gp_value", 0) or 0))
+        price = self._sale_price_gp(unit_value_gp=val, quantity=qty)
+        if price <= 0:
+            return False
+        sold_name = str(getattr(pick, "name", "loot") or "loot")
+        sold_from = self._loot_sale_source_label(pick, from_legacy_compat=True)
+        removed = remove_owned_item(self, source_kind="legacy", reference_id=str(entry_id or ""), quantity=qty)
+        if not bool(getattr(removed, "ok", False)):
+            return False
+        self._sync_legacy_party_items_from_loot_pool()
+        coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
+        self.ui.log(f"Sold {sold_name} ({sold_from}) for {price} gp to {self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
+        return True
+
+    def sell_loot(self):
+        """Sell owned items first; use legacy pooled loot only via explicit fallback."""
+        sellables = self.list_sellable_items(include_legacy_compat=False)
+        using_legacy = False
         if not sellables:
-            self.ui.log("No sellable items with gp value in inventory.")
-            return
+            compat = self.list_sellable_items(include_legacy_compat=True)
+            compat = [r for r in compat if str(r.get("source_kind")) == "legacy"]
+            if not compat:
+                self.ui.log("You have no loot to sell.")
+                return
+            c = self.ui.choose("No owned sellables found. Use legacy pooled loot compatibility sale?", ["Yes", "No"])
+            if c != 0:
+                return
+            sellables = compat
+            using_legacy = True
+
+        labels = [str(r.get("label") or "Sell item") for r in sellables]
         c = self.ui.choose("Sell which?", labels + ["Back"])
         if c == len(labels):
             return
-        entry_id, price, sold_name, sold_from = sellables[c]
-        if not leave_loot_behind(self.loot_pool, entry_id):
+        row = dict(sellables[c] or {})
+        sk = str(row.get("source_kind") or "")
+        ok = False
+        if sk == "actor":
+            actor_name = str(row.get("owner") or "")
+            actor = next((a for a in list(getattr(getattr(self, "party", None), "members", []) or []) if str(getattr(a, "name", "") or "") == actor_name), None)
+            if actor is not None:
+                ok = self.sell_actor_item(actor, str(row.get("instance_id") or ""), source="sell_loot")
+        elif sk == "stash":
+            ok = self.sell_stash_item(str(row.get("instance_id") or ""), source="sell_loot")
+        elif sk == "legacy" and using_legacy:
+            ok = self.sell_legacy_party_item(str(row.get("entry_id") or ""), source="sell_loot")
+        if not ok:
             self.ui.log("Could not complete sale.")
-            return
-        self._sync_legacy_party_items_from_loot_pool()
-        coin_res = grant_coin_reward(
-            self,
-            price,
-            source="sell_loot",
-            destination=CoinDestination.TREASURY,
-        )
-        self.ui.log(
-            f"Sold {sold_name} ({sold_from}) for {price} gp to "
-            f"{self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}."
-        )
 
     # -------------
     # Expedition assembly
@@ -10655,7 +10878,7 @@ class Game:
             coin_destination=CoinDestination.TREASURY,
             identify_magic=False,
         )
-        self._sync_legacy_party_items_from_loot_pool()
+        self._sync_legacy_party_items_for_reward_source(str(source))
         items_l = loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=list(applied.items_added or []))) if applied.items_added else []
         try:
             self._encounter_note_loot(gp=int(applied.coins_gp_awarded), items=items_l, source=str(source))
@@ -12362,13 +12585,21 @@ class Game:
             except Exception:
                 pass
             combat_start_gold: int = int(getattr(self, 'gold', 0) or 0)
+            combat_start_loot_entry_ids: set[str] = set()
             combat_start_items_count: int = 0
-            combat_start_items_snapshot: list = []
             try:
-                combat_start_items_snapshot = list(getattr(self, 'party_items', []) or [])
-                combat_start_items_count = int(len(combat_start_items_snapshot))
+                combat_start_loot_entry_ids = {
+                    str(getattr(e, 'entry_id', '') or '')
+                    for e in list(getattr(getattr(self, 'loot_pool', None), 'entries', []) or [])
+                    if str(getattr(e, 'entry_id', '') or '').strip()
+                }
             except Exception:
-                combat_start_items_snapshot = []
+                combat_start_loot_entry_ids = set()
+            # Transitional fallback snapshot for any legacy paths still writing
+            # directly to party_items during migration.
+            try:
+                combat_start_items_count = int(len(list(getattr(self, 'party_items', []) or [])))
+            except Exception:
                 combat_start_items_count = 0
             # XP earned during this combat (for summary/journal).
             try:
@@ -13841,11 +14072,18 @@ class Game:
                     except Exception:
                         loot_gp = 0
                     try:
-                        cur_items = list(getattr(self, 'party_items', []) or [])
-                        if int(combat_start_items_count) >= 0 and len(cur_items) >= int(combat_start_items_count):
-                            loot_items = cur_items[int(combat_start_items_count):]
+                        loot_items = self._combat_loot_item_names_delta(combat_start_loot_entry_ids)
                     except Exception:
                         loot_items = []
+                    if not loot_items:
+                        # Transitional fallback: some legacy paths may still append
+                        # directly into party_items until fully migrated.
+                        try:
+                            cur_items = list(getattr(self, 'party_items', []) or [])
+                            if int(combat_start_items_count) >= 0 and len(cur_items) >= int(combat_start_items_count):
+                                loot_items = [str(getattr(x, 'get', lambda k, d=None: None)('name') or x) for x in cur_items[int(combat_start_items_count):]]
+                        except Exception:
+                            loot_items = []
 
                     sevt = self.battle_evt(
                         "COMBAT_SUMMARY",
@@ -13856,7 +14094,7 @@ class Game:
                         foes={"defeated": foes_defeated, "fled": foes_fled, "surrendered": foes_surr},
                         xp_earned=int(xp_earned),
                         loot_gp=int(loot_gp),
-                        loot_items=[str(getattr(x, 'get', lambda k, d=None: None)('name') or x) for x in (loot_items or [])],
+                        loot_items=list(loot_items or []),
                     )
                     # If we're inside a room-level encounter capture window, defer printing
                     # so we can unify combat + post-combat rewards into one Encounter Recap panel.

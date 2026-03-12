@@ -1560,6 +1560,8 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
             _canonicalize_actor_monster_id(m)
     except Exception:
         pass
+    # Compatibility bridge: legacy shared party_items is still loaded for old
+    # saves/UI paths, then reconciled against loot_pool below.
     setattr(game, "party_items", list(camp.get("party_items", []) or []))
     lp = camp.get("loot_pool") if isinstance(camp.get("loot_pool"), dict) else None
     if lp is not None:

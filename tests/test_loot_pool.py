@@ -72,7 +72,8 @@ def test_room_treasure_path_adds_items_to_loot_pool():
 
     assert g.gold == 12
     assert len(g.loot_pool.entries) == 1
-    assert len(g.party_items) == 1
+    # Migrated room-treasure path should not inject directly into legacy shared loot.
+    assert len(g.party_items) == 0
     assert room["treasure_taken"] is True
 
 
@@ -105,7 +106,8 @@ def test_room_treasure_uses_coin_reward_service_once(monkeypatch):
     assert calls[0][0] == 12
     assert calls[0][1].get("source") == "room_treasure"
     assert len(g.loot_pool.entries) == 1
-    assert len(g.party_items) == 1
+    # Room treasure now stays in pending loot until explicit assignment.
+    assert len(g.party_items) == 0
 
 
 def test_boss_reward_uses_coin_reward_service_without_double_credit(monkeypatch):
@@ -272,3 +274,65 @@ def test_sell_loot_uses_centralized_coin_reward_service(monkeypatch):
     assert len(calls) == 1
     assert calls[0][0] == 15
     assert calls[0][1].get("source") == "sell_loot"
+
+
+def test_room_treasure_pending_item_can_be_assigned_to_specific_actor_inventory():
+    g = Game(HeadlessUI(), dice_seed=30230, wilderness_seed=30231)
+    actor = Actor(name="Nora", hp=5, hp_max=5, ac_desc=8, hd=1, save=15, is_pc=True)
+
+    g._grant_room_loot(gp=0, items=[{"name": "Room Spear", "kind": "weapon", "gp_value": 3}], source="room_treasure")
+
+    assert len(g.loot_pool.entries) == 1
+    # Regression check: migrated room-treasure intake does not auto-populate shared legacy loot.
+    assert len(g.party_items) == 0
+
+    entry = g.loot_pool.entries[0]
+    assert assign_loot_to_actor(g.loot_pool, actor, entry.entry_id) is True
+    assert len(actor.inventory.items) == 1
+    assert str(actor.inventory.items[0].name) == "Room Spear"
+    assert len(g.loot_pool.entries) == 0
+
+
+def test_unidentified_loot_assignment_to_actor_preserves_identified_state():
+    pool = create_loot_pool()
+    _, added = add_generated_treasure_to_pool(
+        pool,
+        items=[{"name": "Cloudy Potion", "true_name": "Potion of Healing", "kind": "potion"}],
+        identify_magic=False,
+    )
+    a = Actor(name="Vera", hp=4, hp_max=4, ac_desc=8, hd=1, save=15, is_pc=True)
+
+    ok = assign_loot_to_actor(pool, a, added[0].entry_id)
+
+    assert ok is True
+    assert len(a.inventory.items) == 1
+    assert a.inventory.items[0].identified is False
+
+
+def test_room_loot_end_to_end_assignment_menu_to_actor_inventory():
+    g = Game(HeadlessUI(), dice_seed=30240, wilderness_seed=30241)
+    actor = Actor(name="Rin", hp=5, hp_max=5, ac_desc=8, hd=1, save=15, is_pc=True)
+    g.party.members = [actor]
+
+    g._grant_room_loot(gp=0, items=[{"name": "Room Knife", "kind": "weapon", "gp_value": 2}], source="room_treasure")
+    assert len(g.loot_pool.entries) == 1
+
+    g.assign_party_loot_to_character()
+
+    assert len(g.loot_pool.entries) == 0
+    assert any(str(getattr(it, "name", "")) == "Room Knife" for it in (actor.inventory.items or []))
+
+
+def test_combat_loot_delta_prefers_loot_pool_entries_over_legacy_party_items():
+    g = Game(HeadlessUI(), dice_seed=30250, wilderness_seed=30251)
+    _gp, added = add_generated_treasure_to_pool(g.loot_pool, items=[{"name": "Old Gem", "kind": "treasure", "gp_value": 10}])
+    start_ids = {str(added[0].entry_id)}
+
+    add_generated_treasure_to_pool(g.loot_pool, items=[{"name": "New Gem", "kind": "treasure", "gp_value": 20}])
+    # Legacy mirror may be stale/empty; loot-pool delta should still report new item.
+    g.party_items = []
+
+    names = g._combat_loot_item_names_delta(start_ids)
+
+    assert "New Gem" in names
+    assert "Old Gem" not in names

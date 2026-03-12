@@ -73,7 +73,7 @@ def test_cursed_stuck_weapon_error_is_readable():
 
 
 def test_loot_assignment_options_show_identification_and_recipients():
-    ui = _CaptureUI(picks=[0, 2])  # pick first loot item, then Back at recipient chooser
+    ui = _CaptureUI(picks=[0, 0, 2])  # pick first loot item, choose actor destination, then Back at recipient chooser
     g = Game(ui, dice_seed=7020, wilderness_seed=7021)
     g.party.members = [_actor("A"), _actor("B")]
     g.loot_pool = create_loot_pool(
@@ -88,3 +88,35 @@ def test_loot_assignment_options_show_identification_and_recipients():
     assert loot_opts
     assert any("unidentified" in opt for opt in loot_opts)
     assert any("-> A, B" in opt for opt in loot_opts)
+
+
+def test_loot_assignment_can_send_item_to_stash_in_town():
+    ui = _CaptureUI(picks=[0, 1])  # pick item, choose stash destination
+    g = Game(ui, dice_seed=7030, wilderness_seed=7031)
+    g.party.members = [_actor("A")]
+    g.loot_pool = create_loot_pool(
+        entries=[LootEntry(entry_id="loot-2", kind="gem", name="Amber", quantity=1, gp_value=50, identified=True)],
+    )
+
+    g.assign_party_loot_to_character()
+
+    assert len(g.loot_pool.entries) == 0
+    assert len(g.party_stash.items) == 1
+
+
+def test_loot_assignment_can_leave_item_behind():
+    ui = _CaptureUI(picks=[0, 1])  # pick item, choose leave behind (no stash option outside town)
+    g = Game(ui, dice_seed=7040, wilderness_seed=7041)
+    g.party.members = [_actor("A")]
+    try:
+        g.travel_state.location = "dungeon"
+    except Exception:
+        pass
+    g.loot_pool = create_loot_pool(
+        entries=[LootEntry(entry_id="loot-3", kind="ring", name="Unknown Ring", quantity=1, gp_value=100, identified=False)],
+    )
+
+    g.assign_party_loot_to_character()
+
+    assert len(g.loot_pool.entries) == 0
+    assert len(g.party_stash.items) == 0

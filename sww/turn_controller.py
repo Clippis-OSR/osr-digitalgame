@@ -634,15 +634,31 @@ class TurnController:
                     take_loot = True
 
                 if take_loot:
-                    try:
-                        if mi:
-                            cur = list(getattr(self.game, "party_items", []) or [])
-                            cur.extend(mi)
-                            setattr(self.game, "party_items", cur)
-                    except Exception:
-                        pass
-                    if gp_total > 0:
-                        self.game.gold = int(getattr(self.game, "gold", 0) or 0) + gp_total
+                    # Ownership migration bridge: route combat loot through the same
+                    # reward intake used by room/wilderness flows (loot_pool first).
+                    if hasattr(self.game, "_grant_room_loot"):
+                        try:
+                            self.game._grant_room_loot(gp=int(gp_total), items=list(mi or []), source="combat_loot")
+                        except Exception:
+                            # TODO(ownership-migration): remove this fallback once all
+                            # runtimes are guaranteed to provide `_grant_room_loot`.
+                            if gp_total > 0:
+                                self.game.gold = int(getattr(self.game, "gold", 0) or 0) + gp_total
+                            try:
+                                if mi:
+                                    self.game._ingest_reward_items_to_loot_pool(list(mi or []), source="combat_loot")
+                            except Exception:
+                                pass
+                    else:
+                        # TODO(ownership-migration): legacy fallback when Game-like
+                        # adapters do not expose loot-pool reward helpers.
+                        if gp_total > 0:
+                            self.game.gold = int(getattr(self.game, "gold", 0) or 0) + gp_total
+                        try:
+                            if mi:
+                                self.game._ingest_reward_items_to_loot_pool(list(mi or []), source="combat_loot")
+                        except Exception:
+                            pass
                 else:
                     # Loot left behind: persist it into the current room so it can be collected later.
                     try:

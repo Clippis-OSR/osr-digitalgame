@@ -879,13 +879,18 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
         except Exception:
             pass
 
-        # Also mark party inventory items as having a magical aura (but not identified).
+        # Ownership-aware path: mark pending loot-pool entries as aura-bearing
+        # without forcing identification or writing directly to legacy party_items.
         try:
-            items = list(getattr(game, "party_items", []) or [])
-            for it in items:
-                if isinstance(it, dict):
-                    it["aura"] = True
-            setattr(game, "party_items", items)
+            for e in list(getattr(getattr(game, "loot_pool", None), "entries", []) or []):
+                if getattr(e, "metadata", None) is None:
+                    setattr(e, "metadata", {})
+                md = dict(getattr(e, "metadata", {}) or {})
+                md["aura"] = True
+                setattr(e, "metadata", md)
+            # Compatibility mirror for older menu surfaces.
+            if hasattr(game, "_sync_legacy_party_items_from_loot_pool"):
+                game._sync_legacy_party_items_from_loot_pool()
         except Exception:
             pass
         game.ui.log("You sense magical auras nearby.")

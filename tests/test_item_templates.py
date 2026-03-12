@@ -6,6 +6,8 @@ from sww.item_templates import (
     item_effects,
     item_is_cursed,
     item_is_magic,
+    owned_item_brief_label,
+    owned_item_display_name,
     item_unsupported_effect_types,
     template_weight_lb,
 )
@@ -61,3 +63,22 @@ def test_unsupported_effect_type_detection_is_explicit():
 def test_supported_effect_catalog_includes_expected_runtime_types():
     assert "attack_bonus" in SUPPORTED_ITEM_EFFECT_TYPES
     assert "spell_cast" in SUPPORTED_ITEM_EFFECT_TYPES
+
+
+def test_owned_item_display_name_hides_true_name_when_unidentified():
+    inst = build_item_instance("potion.potion_healing", identified=False)
+    # Keep true name internally but do not expose it in owned display helper.
+    inst.name = "Potion of Healing"
+
+    shown = owned_item_display_name(inst)
+
+    assert shown != "Potion of Healing"
+    assert "Unidentified" in shown
+
+
+def test_owned_item_brief_label_marks_unidentified_state():
+    inst = build_item_instance("ring.ring_protection_plus1", identified=False)
+
+    label = owned_item_brief_label(inst)
+
+    assert "unidentified" in label.lower()
