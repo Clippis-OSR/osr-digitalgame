@@ -10,7 +10,7 @@ from .rng import LoggedRandom, make_seed
 from .event_types import CommandDispatched, StateDiff, ValidationIssues
 from .debug_diff import snapshot_state, diff_snapshots
 from .battle_events import BattleEvent, evt, format_event
-from .models import Actor, Party, Stats, mod_ability
+from .models import Actor, Party, PartyStash, Stats, mod_ability
 from .rules import attack_roll_needed, morale_check
 from .content import Content
 from .treasure import TreasureGenerator
@@ -25,6 +25,7 @@ from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .town_services import identify_cost_gp, identify_item_in_town
+from .loot_pool import create_loot_pool
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
@@ -183,6 +184,9 @@ class Game:
         self.expeditions = 0
         self.terrain = "clear"
         self.party_items: list[dict[str, Any]] = []
+        # Town-only party stash for non-carried gear/treasure; excluded from
+        # expedition encumbrance because items are not physically carried.
+        self.party_stash = PartyStash()
         self.loot_pool = create_loot_pool()
         self.torches = 3
         self.oil_flasks = 0

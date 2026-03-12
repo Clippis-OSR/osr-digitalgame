@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .item_templates import get_item_template, item_effects, item_is_cursed, item_known_name
-from .models import Actor, ItemInstance
+from .models import Actor, ItemInstance, PartyStash
 
 
 @dataclass(frozen=True)
@@ -97,6 +97,169 @@ def can_actor_wear_item(actor: Actor, instance_id: str) -> InventoryServiceResul
         return InventoryServiceResult(ok=False, error=f"cannot wear more {wc} items ({limit} max)", item=item)
     return InventoryServiceResult(ok=True, item=item, quantity_changed=0)
 
+
+
+
+def _ensure_party_stash_ready(stash_or_game: Any) -> PartyStash:
+    """Return a PartyStash from either a stash object or a game container."""
+    if isinstance(stash_or_game, PartyStash):
+        return stash_or_game
+    existing = getattr(stash_or_game, "party_stash", None)
+    if isinstance(existing, PartyStash):
+        return existing
+    stash = PartyStash()
+    try:
+        setattr(stash_or_game, "party_stash", stash)
+    except Exception:
+        pass
+    return stash
+
+
+def _stash_access_allowed(stash_or_game: Any, *, in_town: bool) -> bool:
+    if not bool(in_town):
+        return False
+    # Expedition vs town rule: when a Game-like object is provided, stash access
+    # is limited to town context so dungeon/wilderness inventory pressure remains.
+    travel_state = getattr(stash_or_game, "travel_state", None)
+    if travel_state is None:
+        return True
+    loc = str(getattr(travel_state, "location", "town") or "town").strip().lower()
+    return loc == "town"
+
+
+def move_item_actor_to_stash(
+    actor: Actor,
+    stash_or_game: Any,
+    instance_id: str,
+    *,
+    quantity: int = 1,
+    in_town: bool = True,
+) -> InventoryServiceResult:
+    """Move an item stack/partial stack from actor inventory into town stash."""
+    if not _stash_access_allowed(stash_or_game, in_town=in_town):
+        return InventoryServiceResult(ok=False, error="stash access is town-only")
+    _ensure_actor_ready(actor)
+    stash = _ensure_party_stash_ready(stash_or_game)
+
+    src_item = find_item_on_actor(actor, instance_id)
+    if src_item is None:
+        return InventoryServiceResult(ok=False, error="source item not found")
+
+    q = int(quantity or 0)
+    if q <= 0:
+        return InventoryServiceResult(ok=False, error="quantity must be >= 1")
+    if int(src_item.quantity or 0) < q:
+        return InventoryServiceResult(ok=False, error="insufficient quantity")
+
+    # Preserve existing cursed/unequip safety through remove service.
+    if int(src_item.quantity or 0) == q:
+        removed = remove_item_from_actor(actor, instance_id, q)
+        if not removed.ok or removed.item is None:
+            return removed
+        moved = removed.item
+    else:
+        removed = remove_item_from_actor(actor, instance_id, q)
+        if not removed.ok:
+            return removed
+        moved = ItemInstance(
+            instance_id=f"{src_item.instance_id}:stash:{q}",
+            template_id=src_item.template_id,
+            name=src_item.name,
+            category=src_item.category,
+            quantity=q,
+            identified=bool(src_item.identified),
+            cursed_known=bool(src_item.cursed_known),
+            custom_label=src_item.custom_label,
+            equipped=False,
+            magic_bonus=int(src_item.magic_bonus or 0),
+            metadata=dict(src_item.metadata or {}),
+        )
+
+    stash.items.append(moved)
+    return InventoryServiceResult(ok=True, item=moved, quantity_changed=q)
+
+
+def move_item_stash_to_actor(
+    stash_or_game: Any,
+    actor: Actor,
+    instance_id: str,
+    *,
+    quantity: int = 1,
+    in_town: bool = True,
+) -> InventoryServiceResult:
+    """Move an item from party stash back into an actor inventory."""
+    if not _stash_access_allowed(stash_or_game, in_town=in_town):
+        return InventoryServiceResult(ok=False, error="stash access is town-only")
+    _ensure_actor_ready(actor)
+    stash = _ensure_party_stash_ready(stash_or_game)
+
+    iid = str(instance_id or "")
+    item = next((it for it in list(stash.items or []) if str(getattr(it, "instance_id", "")) == iid), None)
+    if item is None:
+        return InventoryServiceResult(ok=False, error="stash item not found")
+
+    q = int(quantity or 0)
+    if q <= 0:
+        return InventoryServiceResult(ok=False, error="quantity must be >= 1")
+    if int(item.quantity or 0) < q:
+        return InventoryServiceResult(ok=False, error="insufficient quantity")
+
+    removed_full = False
+    if int(item.quantity or 0) == q:
+        stash.items = [it for it in list(stash.items or []) if str(getattr(it, "instance_id", "")) != iid]
+        moved = item
+        removed_full = True
+    else:
+        item.quantity = int(item.quantity) - q
+        moved = ItemInstance(
+            instance_id=f"{item.instance_id}:withdraw:{q}",
+            template_id=item.template_id,
+            name=item.name,
+            category=item.category,
+            quantity=q,
+            identified=bool(item.identified),
+            cursed_known=bool(item.cursed_known),
+            custom_label=item.custom_label,
+            equipped=False,
+            magic_bonus=int(item.magic_bonus or 0),
+            metadata=dict(item.metadata or {}),
+        )
+
+    added = add_item_to_actor(actor, moved)
+    if not added.ok:
+        # rollback
+        if removed_full:
+            stash.items.append(item)
+        else:
+            item.quantity = int(item.quantity or 0) + q
+        return added
+    return InventoryServiceResult(ok=True, item=moved, quantity_changed=q)
+
+
+def list_stash_items(stash_or_game: Any) -> list[ItemInstance]:
+    stash = _ensure_party_stash_ready(stash_or_game)
+    return list(stash.items or [])
+
+
+def stash_sellable_summary(stash_or_game: Any) -> dict[str, Any]:
+    """Summarize sellable value in stash for simple town UI surfaces."""
+    stash = _ensure_party_stash_ready(stash_or_game)
+    total_gp = 0
+    rows: list[dict[str, Any]] = []
+    for item in list(stash.items or []):
+        md = dict(getattr(item, "metadata", {}) or {})
+        each = int(md.get("value_gp", 0) or 0)
+        qty = int(getattr(item, "quantity", 1) or 1)
+        subtotal = max(0, each) * max(1, qty)
+        total_gp += subtotal
+        rows.append({
+            "instance_id": str(getattr(item, "instance_id", "")),
+            "name": str(getattr(item, "name", "Item")),
+            "quantity": qty,
+            "value_gp_each": each,
+            "value_gp_total": subtotal,
+        })
+    return {"items": rows, "total_value_gp": int(total_gp)}
 
 def _ensure_actor_ready(actor: Actor) -> None:
     actor.ensure_inventory_initialized()
