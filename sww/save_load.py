@@ -6,7 +6,14 @@ from dataclasses import asdict, is_dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
-from .models import Actor, Party, Stats
+from .models import (
+    Actor,
+    CharacterEquipment,
+    CharacterInventory,
+    ItemInstance,
+    Party,
+    Stats,
+)
 from .travel_state import TravelState
 from .events import (
     normalize_player_event,
@@ -19,7 +26,7 @@ from .events import (
 
 # Increment whenever the on-disk schema changes.
 # We write both "save_version" and the legacy "version" key for compatibility.
-SAVE_VERSION = 11
+SAVE_VERSION = 13
 
 class SaveSchemaError(ValueError):
     """Raised when a save file is missing required keys or has invalid types."""
@@ -292,11 +299,154 @@ def _dict_to_stats(d: Optional[dict]) -> Optional[Stats]:
     return Stats(**d)
 
 
+
+
+def _item_instance_to_dict(item: Any) -> dict:
+    if isinstance(item, ItemInstance):
+        return {
+            "instance_id": str(item.instance_id or ""),
+            "template_id": str(item.template_id or ""),
+            "name": str(item.name or ""),
+            "category": str(item.category or "misc"),
+            "quantity": int(item.quantity or 1),
+            "identified": bool(item.identified),
+            "equipped": bool(item.equipped),
+            "magic_bonus": int(item.magic_bonus or 0),
+            "metadata": dict(item.metadata or {}),
+        }
+    if isinstance(item, dict):
+        return {
+            "instance_id": str(item.get("instance_id") or ""),
+            "template_id": str(item.get("template_id") or item.get("item_id") or ""),
+            "name": str(item.get("name") or ""),
+            "category": str(item.get("category") or item.get("kind") or "misc"),
+            "quantity": int(item.get("quantity", 1) or 1),
+            "identified": bool(item.get("identified", True)),
+            "equipped": bool(item.get("equipped", False)),
+            "magic_bonus": int(item.get("magic_bonus", 0) or 0),
+            "metadata": dict(item.get("metadata") or item.get("data") or {}),
+        }
+    return {
+        "instance_id": "",
+        "template_id": "",
+        "name": "",
+        "category": "misc",
+        "quantity": 1,
+        "identified": True,
+        "equipped": False,
+        "magic_bonus": 0,
+        "metadata": {},
+    }
+
+
+def _dict_to_item_instance(d: Any) -> ItemInstance:
+    if not isinstance(d, dict):
+        return ItemInstance(instance_id="", template_id="", name="", category="misc")
+    return ItemInstance(
+        instance_id=str(d.get("instance_id") or ""),
+        template_id=str(d.get("template_id") or d.get("item_id") or ""),
+        name=str(d.get("name") or ""),
+        category=str(d.get("category") or d.get("kind") or "misc"),
+        quantity=int(d.get("quantity", 1) or 1),
+        identified=bool(d.get("identified", True)),
+        equipped=bool(d.get("equipped", False)),
+        magic_bonus=int(d.get("magic_bonus", 0) or 0),
+        metadata=dict(d.get("metadata") or d.get("data") or {}),
+    )
+
+
+def _inventory_to_dict(inv: Any) -> dict:
+    if isinstance(inv, CharacterInventory):
+        items = [_item_instance_to_dict(it) for it in (inv.items or [])]
+        return {
+            "items": items,
+            "coins_gp": int(inv.coins_gp or 0),
+            "coins_sp": int(inv.coins_sp or 0),
+            "coins_cp": int(inv.coins_cp or 0),
+            "torches": int(inv.torches or 0),
+            "rations": int(inv.rations or 0),
+            "ammo": dict(inv.ammo or {}),
+        }
+    if isinstance(inv, dict):
+        return {
+            "items": [_item_instance_to_dict(it) for it in (inv.get("items") or [])],
+            "coins_gp": int(inv.get("coins_gp", 0) or 0),
+            "coins_sp": int(inv.get("coins_sp", 0) or 0),
+            "coins_cp": int(inv.get("coins_cp", 0) or 0),
+            "torches": int(inv.get("torches", 0) or 0),
+            "rations": int(inv.get("rations", 0) or 0),
+            "ammo": dict(inv.get("ammo") or {}),
+        }
+    return {"items": [], "coins_gp": 0, "coins_sp": 0, "coins_cp": 0, "torches": 0, "rations": 0, "ammo": {}}
+
+
+def _dict_to_inventory(d: Any) -> CharacterInventory:
+    if not isinstance(d, dict):
+        return CharacterInventory()
+    return CharacterInventory(
+        items=[_dict_to_item_instance(it) for it in (d.get("items") or [])],
+        coins_gp=int(d.get("coins_gp", 0) or 0),
+        coins_sp=int(d.get("coins_sp", 0) or 0),
+        coins_cp=int(d.get("coins_cp", 0) or 0),
+        torches=int(d.get("torches", 0) or 0),
+        rations=int(d.get("rations", 0) or 0),
+        ammo=dict(d.get("ammo") or {}),
+    )
+
+
+def _equipment_to_dict(eq: Any) -> dict:
+    if isinstance(eq, CharacterEquipment):
+        return {
+            "armor": eq.armor,
+            "shield": eq.shield,
+            "main_hand": eq.main_hand,
+            "off_hand": eq.off_hand,
+            "missile_weapon": eq.missile_weapon,
+            "ammo_kind": eq.ammo_kind,
+            "worn_misc": list(eq.worn_misc or []),
+        }
+    if isinstance(eq, dict):
+        return {
+            "armor": eq.get("armor"),
+            "shield": eq.get("shield"),
+            "main_hand": eq.get("main_hand"),
+            "off_hand": eq.get("off_hand"),
+            "missile_weapon": eq.get("missile_weapon"),
+            "ammo_kind": eq.get("ammo_kind") or eq.get("ammo"),
+            "worn_misc": list(eq.get("worn_misc") or []),
+        }
+    return {
+        "armor": None, "shield": None, "main_hand": None, "off_hand": None,
+        "missile_weapon": None, "ammo_kind": None, "worn_misc": []
+    }
+
+
+def _dict_to_equipment(d: Any) -> CharacterEquipment:
+    if not isinstance(d, dict):
+        return CharacterEquipment()
+    return CharacterEquipment(
+        armor=d.get("armor"),
+        shield=d.get("shield"),
+        main_hand=d.get("main_hand"),
+        off_hand=d.get("off_hand"),
+        missile_weapon=d.get("missile_weapon"),
+        ammo_kind=d.get("ammo_kind") or d.get("ammo"),
+        worn_misc=list(d.get("worn_misc") or []),
+    )
+
 def actor_to_dict(a: Any) -> dict:
     """Serialize an Actor/PC/retainer into JSON-friendly dict.
 
+    TODO(inventory-migration): keep writing legacy weapon/armor/shield fields
+    until all runtime systems read CharacterEquipment directly.
+
     We store core Actor fields plus any extra attributes present (e.g., PC cls/level/xp/stats).
     """
+    if hasattr(a, "ensure_inventory_initialized"):
+        a.ensure_inventory_initialized()
+    if hasattr(a, "sync_legacy_equipment_to_new"):
+        a.sync_legacy_equipment_to_new()
+
     base = {
         "monster_id": getattr(a, "monster_id", None),
         "name": getattr(a, "name", ""),
@@ -324,6 +474,8 @@ def actor_to_dict(a: Any) -> dict:
         "armor": getattr(a, "armor", None),
         "shield": bool(getattr(a, "shield", False)),
         "shield_name": getattr(a, "shield_name", None),
+        "inventory": _inventory_to_dict(getattr(a, "inventory", None)),
+        "equipment": _equipment_to_dict(getattr(a, "equipment", None)),
     }
 
     # PC extras (best-effort)
@@ -336,13 +488,64 @@ def actor_to_dict(a: Any) -> dict:
     return base
 
 
+
+def migrate_legacy_actor_payload(payload: Any) -> dict:
+    """Normalize legacy/new actor payloads into the transitional actor schema.
+
+    Backward compatibility behavior:
+    - Old saves missing `inventory`/`equipment` are initialized to empty defaults.
+    - Legacy equipment fields are mirrored into `equipment` when possible.
+
+    Temporary migration note:
+    - Once all systems use `Actor.inventory` and `Actor.equipment`, this helper
+      (and legacy field mirroring) should be removed.
+    """
+    p = dict(payload or {}) if isinstance(payload, dict) else {}
+
+    inv = p.get("inventory") if isinstance(p.get("inventory"), dict) else {}
+    inv = {
+        "items": list(inv.get("items") or []),
+        "coins_gp": int(inv.get("coins_gp", 0) or 0),
+        "coins_sp": int(inv.get("coins_sp", 0) or 0),
+        "coins_cp": int(inv.get("coins_cp", 0) or 0),
+        "torches": int(inv.get("torches", 0) or 0),
+        "rations": int(inv.get("rations", 0) or 0),
+        "ammo": dict(inv.get("ammo") or {}),
+    }
+
+    eq = p.get("equipment") if isinstance(p.get("equipment"), dict) else {}
+    if "ammo_kind" not in eq and "ammo" in eq:
+        eq["ammo_kind"] = eq.get("ammo")
+    eq = {
+        "armor": eq.get("armor") if eq.get("armor") is not None else p.get("armor"),
+        "shield": eq.get("shield") if eq.get("shield") is not None else (p.get("shield_name") if p.get("shield") else None),
+        "main_hand": eq.get("main_hand") if eq.get("main_hand") is not None else p.get("weapon"),
+        "off_hand": eq.get("off_hand"),
+        "missile_weapon": eq.get("missile_weapon"),
+        "ammo_kind": eq.get("ammo_kind"),
+        "worn_misc": list(eq.get("worn_misc") or []),
+    }
+
+    p["inventory"] = inv
+    p["equipment"] = eq
+    return p
+
+
+def actor_from_dict(d: dict) -> Actor:
+    """Rehydrate an Actor/PC from payload (compat alias around dict_to_actor)."""
+    return dict_to_actor(d)
+
 def dict_to_actor(d: dict) -> Actor:
     """Rehydrate an Actor/PC.
+
+    Migration note: both new inventory/equipment payloads and legacy weapon/armor
+    fields are accepted in this transitional phase.
 
     If the project defines a PC class (e.g., sww.game.PC), we will instantiate it for PCs.
     Otherwise we fall back to Actor and attach extra attributes.
     """
-    is_pc = bool(d.get("is_pc"))
+    payload = migrate_legacy_actor_payload(d)
+    is_pc = bool(payload.get("is_pc"))
 
     PC_cls = None
     if is_pc:
@@ -355,44 +558,55 @@ def dict_to_actor(d: dict) -> Actor:
     cls_ = PC_cls if (is_pc and PC_cls is not None) else Actor
 
     a = cls_(  # type: ignore[call-arg]
-        name=d.get("name", ""),
-        hp=int(d.get("hp", 0)),
-        hp_max=int(d.get("hp_max", 0)),
-        ac_desc=int(d.get("ac_desc", 9)),
-        hd=int(d.get("hd", 1)),
-        save=int(d.get("save", 16)),
-        morale=d.get("morale", None),
-        alignment=d.get("alignment", "Neutrality"),
+        name=payload.get("name", ""),
+        hp=int(payload.get("hp", 0)),
+        hp_max=int(payload.get("hp_max", 0)),
+        ac_desc=int(payload.get("ac_desc", 9)),
+        hd=int(payload.get("hd", 1)),
+        save=int(payload.get("save", 16)),
+        morale=payload.get("morale", None),
+        alignment=payload.get("alignment", "Neutrality"),
         is_pc=is_pc,
-        effects=list(d.get("effects", []) or []),
-        special_text=d.get("special_text", ""),
-        tags=list(d.get("tags", []) or []),
-        spells_known=list(d.get("spells_known", []) or []),
-        spells_prepared=list(d.get("spells_prepared", []) or []),
-        status=dict(d.get("status", {}) or {}),
-        effect_instances=dict(d.get("effect_instances", {}) or {}),
-        is_retainer=bool(d.get("is_retainer", False)),
-        loyalty=int(d.get("loyalty", 7)),
-        wage_gp=int(d.get("wage_gp", 0)),
-        treasure_share=int(d.get("treasure_share", 1)),
-        on_expedition=bool(d.get("on_expedition", False)),
-        weapon=d.get("weapon", None),
-        armor=d.get("armor", None),
-        shield=bool(d.get("shield", False)),
-        shield_name=d.get("shield_name", None),
+        effects=list(payload.get("effects", []) or []),
+        special_text=payload.get("special_text", ""),
+        tags=list(payload.get("tags", []) or []),
+        spells_known=list(payload.get("spells_known", []) or []),
+        spells_prepared=list(payload.get("spells_prepared", []) or []),
+        status=dict(payload.get("status", {}) or {}),
+        effect_instances=dict(payload.get("effect_instances", {}) or {}),
+        is_retainer=bool(payload.get("is_retainer", False)),
+        loyalty=int(payload.get("loyalty", 7)),
+        wage_gp=int(payload.get("wage_gp", 0)),
+        treasure_share=int(payload.get("treasure_share", 1)),
+        on_expedition=bool(payload.get("on_expedition", False)),
+        weapon=payload.get("weapon", None),
+        armor=payload.get("armor", None),
+        shield=bool(payload.get("shield", False)),
+        shield_name=payload.get("shield_name", None),
+        inventory=_dict_to_inventory(payload.get("inventory")),
+        equipment=_dict_to_equipment(payload.get("equipment")),
     )
+
+    if hasattr(a, "ensure_inventory_initialized"):
+        a.ensure_inventory_initialized()
+    if hasattr(a, "ensure_equipment_initialized"):
+        a.ensure_equipment_initialized()
+    if hasattr(a, "sync_legacy_equipment_to_new"):
+        a.sync_legacy_equipment_to_new()
+    if hasattr(a, "sync_new_equipment_to_legacy"):
+        a.sync_new_equipment_to_legacy()
 
     # Attach PC extras if needed
     if is_pc:
-        setattr(a, "cls", d.get("cls", "Fighter"))
-        setattr(a, "level", int(d.get("level", 1)))
-        setattr(a, "xp", int(d.get("xp", 0)))
-        setattr(a, "stats", _dict_to_stats(d.get("stats")))
+        setattr(a, "cls", payload.get("cls", "Fighter"))
+        setattr(a, "level", int(payload.get("level", 1)))
+        setattr(a, "xp", int(payload.get("xp", 0)))
+        setattr(a, "stats", _dict_to_stats(payload.get("stats")))
 
     # P3.1.15: preserve stable monster identifier for non-PC actors
-    if d.get("monster_id") is not None:
+    if payload.get("monster_id") is not None:
         try:
-            setattr(a, "monster_id", d.get("monster_id"))
+            setattr(a, "monster_id", payload.get("monster_id"))
         except Exception:
             pass
 
@@ -405,7 +619,7 @@ def party_to_dict(p: Party) -> dict:
 
 def dict_to_party(d: dict) -> Party:
     p = Party()
-    p.members = [dict_to_actor(x) for x in (d.get("members") or [])]
+    p.members = [actor_from_dict(x) for x in (d.get("members") or [])]
     return p
 
 
@@ -843,6 +1057,137 @@ def _migrate_10_to_11(data: Dict[str, Any]) -> Dict[str, Any]:
     data["save_version"] = 11
     data["version"] = 11
     return data
+
+
+def _migrate_11_to_12(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Add per-character inventory/equipment containers with safe defaults."""
+    camp = data.get("campaign") or {}
+    party = (camp.get("party") or {}).get("members") or []
+
+    def _seed_actor(m: dict) -> None:
+        if not isinstance(m, dict):
+            return
+        m.setdefault("inventory", {"items": [], "coins_gp": 0, "coins_sp": 0, "coins_cp": 0, "torches": 0, "rations": 0, "ammo": {}})
+        if not isinstance(m.get("inventory"), dict):
+            m["inventory"] = {"items": [], "coins_gp": 0, "coins_sp": 0, "coins_cp": 0, "torches": 0, "rations": 0, "ammo": {}}
+        m.setdefault("equipment", {
+            "armor": m.get("armor"),
+            "shield": m.get("shield_name") if m.get("shield") else None,
+            "main_hand": m.get("weapon"),
+            "off_hand": None,
+            "missile_weapon": None,
+            "ammo_kind": None,
+            "worn_misc": [],
+        })
+        if not isinstance(m.get("equipment"), dict):
+            m["equipment"] = {
+                "armor": m.get("armor"),
+                "shield": m.get("shield_name") if m.get("shield") else None,
+                "main_hand": m.get("weapon"),
+                "off_hand": None,
+                "missile_weapon": None,
+                "ammo_kind": None,
+                "worn_misc": [],
+            }
+
+    if isinstance(party, list):
+        for m in party:
+            _seed_actor(m)
+
+    ret = data.get("retainers") or {}
+    if isinstance(ret, dict):
+        for key in ("retainer_board", "retainer_roster", "active_retainers", "hired_retainers"):
+            arr = ret.get(key) or []
+            if isinstance(arr, list):
+                for m in arr:
+                    _seed_actor(m)
+
+    dung = data.get("dungeon") or {}
+    rooms = dung.get("dungeon_rooms") if isinstance(dung, dict) else None
+    if isinstance(rooms, dict):
+        for room in rooms.values():
+            if not isinstance(room, dict):
+                continue
+            foes = room.get("foes")
+            if isinstance(foes, list):
+                for f in foes:
+                    _seed_actor(f)
+
+    data["save_version"] = 12
+    data["version"] = 12
+    return data
+
+
+
+def _migrate_12_to_13(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize new inventory/equipment payload keys to the current schema."""
+    camp = data.get("campaign") or {}
+    party = (camp.get("party") or {}).get("members") or []
+
+    def _normalize_actor(m: dict) -> None:
+        if not isinstance(m, dict):
+            return
+        inv = m.get("inventory") if isinstance(m.get("inventory"), dict) else {}
+        inv.setdefault("items", [])
+        inv["coins_gp"] = int(inv.get("coins_gp", 0) or 0)
+        inv["coins_sp"] = int(inv.get("coins_sp", 0) or 0)
+        inv["coins_cp"] = int(inv.get("coins_cp", 0) or 0)
+        inv["torches"] = int(inv.get("torches", 0) or 0)
+        inv["rations"] = int(inv.get("rations", 0) or 0)
+        inv["ammo"] = dict(inv.get("ammo") or {})
+        norm_items = []
+        for it in (inv.get("items") or []):
+            if not isinstance(it, dict):
+                continue
+            norm_items.append({
+                "instance_id": str(it.get("instance_id") or ""),
+                "template_id": str(it.get("template_id") or it.get("item_id") or ""),
+                "name": str(it.get("name") or ""),
+                "category": str(it.get("category") or it.get("kind") or "misc"),
+                "quantity": int(it.get("quantity", 1) or 1),
+                "identified": bool(it.get("identified", True)),
+                "equipped": bool(it.get("equipped", False)),
+                "magic_bonus": int(it.get("magic_bonus", 0) or 0),
+                "metadata": dict(it.get("metadata") or it.get("data") or {}),
+            })
+        inv["items"] = norm_items
+        m["inventory"] = inv
+
+        eq = m.get("equipment") if isinstance(m.get("equipment"), dict) else {}
+        if "ammo_kind" not in eq and "ammo" in eq:
+            eq["ammo_kind"] = eq.get("ammo")
+        eq.setdefault("armor", m.get("armor"))
+        eq.setdefault("shield", m.get("shield_name") if m.get("shield") else None)
+        eq.setdefault("main_hand", m.get("weapon"))
+        eq.setdefault("off_hand", None)
+        eq.setdefault("missile_weapon", None)
+        eq.setdefault("ammo_kind", None)
+        eq["worn_misc"] = list(eq.get("worn_misc") or [])
+        m["equipment"] = eq
+
+    if isinstance(party, list):
+        for m in party:
+            _normalize_actor(m)
+
+    ret = data.get("retainers") or {}
+    if isinstance(ret, dict):
+        for key in ("retainer_board", "retainer_roster", "active_retainers", "hired_retainers"):
+            for m in (ret.get(key) or []):
+                _normalize_actor(m)
+
+    dung = data.get("dungeon") or {}
+    rooms = dung.get("dungeon_rooms") if isinstance(dung, dict) else None
+    if isinstance(rooms, dict):
+        for room in rooms.values():
+            if not isinstance(room, dict):
+                continue
+            for m in (room.get("foes") or []):
+                _normalize_actor(m)
+
+    data["save_version"] = 13
+    data["version"] = 13
+    return data
+
 MIGRATIONS = {
     1: _migrate_1_to_2,
     2: _migrate_2_to_3,
@@ -854,6 +1199,8 @@ MIGRATIONS = {
     8: _migrate_8_to_9,
     9: _migrate_9_to_10,
     10: _migrate_10_to_11,
+    11: _migrate_11_to_12,
+    12: _migrate_12_to_13,
 }
 
 
