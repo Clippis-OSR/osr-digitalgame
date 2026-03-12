@@ -10886,6 +10886,9 @@ class Game:
         older menus, but reward intake should write loot_pool first.
         """
         _gp_pool, added = add_generated_treasure_to_pool(self.loot_pool, gp=0, items=list(items or []), identify_magic=False)
+        # TODO(ownership-migration): make legacy mirror sync source-aware so
+        # wilderness reward sources can stop touching `party_items` once readers
+        # are fully migrated.
         self._sync_legacy_party_items_from_loot_pool()
         return loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=list(added or [])))
 
