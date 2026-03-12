@@ -47,19 +47,3 @@ Compatibility aliases currently normalize:
 Unsupported effect types are intentionally not executed here. They are surfaced explicitly via helper detection (`item_unsupported_effect_types`) so downstream systems can fail fast or ignore by policy.
 
 This is deliberate: effect *transport* and effect *execution* are decoupled until combat/spell integrations are implemented in focused slices.
-
-
-## Identification lives on instances
-
-Identification and curse-knowledge are stored per owned `ItemInstance`, not on the template, because two copies of the same template may be known differently during play.
-
-Runtime helpers for UI/log surfaces:
-- `item_known_name(instance, template)`
-- `item_short_description(instance, template)`
-- `item_inspect_text(instance, template)`
-
-Unidentified fallback names currently include:
-- `Unfamiliar Ring`
-- `Cloudy Potion`
-- `Scroll with strange script`
-- `Runed Sword`

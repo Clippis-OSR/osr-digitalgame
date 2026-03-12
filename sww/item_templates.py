@@ -330,10 +330,7 @@ def item_is_magic(template_or_instance: ItemTemplate | ItemInstance | None) -> b
     if t is not None:
         return bool(t.magic)
     if isinstance(template_or_instance, ItemInstance):
-        md = dict(template_or_instance.metadata or {})
-        if "magic" in md:
-            return bool(md.get("magic"))
-        return "magic" in {str(x).lower() for x in list(md.get("tags") or [])}
+        return "magic" in {str(x).lower() for x in list((template_or_instance.metadata or {}).get("tags") or [])}
     return False
 
 
@@ -362,72 +359,19 @@ def item_unsupported_effect_types(template_or_instance: ItemTemplate | ItemInsta
     return sorted({t for t in types if t and t not in SUPPORTED_ITEM_EFFECT_TYPES})
 
 
-def _unidentified_fallback_name(instance: ItemInstance, template: ItemTemplate | None) -> str:
-    category = str((template.category if template is not None else instance.category) or "").strip().lower()
-    if category == "ring":
-        return "Unfamiliar Ring"
-    if category == "potion":
-        return "Cloudy Potion"
-    if category == "scroll":
-        return "Scroll with strange script"
-    if category == "weapon":
-        return "Runed Sword"
-    return f"Unidentified {category.title() or 'Item'}"
-
-
-def item_known_name(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
-    t = template or _coerce_template(instance)
-    if instance.custom_label:
-        return str(instance.custom_label)
-    if t is None:
-        return str(instance.name or "Unknown item")
-    if bool(instance.identified):
-        return str(t.identified_name or t.name)
-    return str(t.unidentified_name or _unidentified_fallback_name(instance, t))
-
-
-def item_short_description(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
-    label = item_known_name(instance, template)
-    qty = max(1, int(instance.quantity or 1))
-    return f"{label} x{qty}" if qty > 1 else label
-
-
-def item_inspect_text(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
-    t = template or _coerce_template(instance)
-    if t is None:
-        return item_short_description(instance, template)
-    if bool(instance.identified):
-        return item_short_description(instance, t)
-    if not item_is_magic(t):
-        return item_short_description(instance, t)
-    wear = str(t.wear_category or "").strip()
-    if wear:
-        return f"{item_short_description(instance, t)} ({wear})"
-    return item_short_description(instance, t)
-
-
 def item_display_name(
     instance: ItemInstance,
     template: ItemTemplate | None = None,
     *,
     identified: bool | None = None,
 ) -> str:
-    if identified is None:
-        return item_known_name(instance, template)
-    shadow = ItemInstance(
-        instance_id=instance.instance_id,
-        template_id=instance.template_id,
-        name=instance.name,
-        category=instance.category,
-        quantity=instance.quantity,
-        identified=bool(identified),
-        cursed_known=bool(instance.cursed_known),
-        custom_label=instance.custom_label,
-        equipped=instance.equipped,
-        magic_bonus=instance.magic_bonus,
-        metadata=dict(instance.metadata or {}),
-    )
-    return item_known_name(shadow, template)
+    t = template or _coerce_template(instance)
+    is_identified = bool(instance.identified if identified is None else identified)
+    if t is None:
+        return str(instance.name or "Unknown item")
+    if is_identified:
+        return str(t.identified_name or t.name)
+    return str(t.unidentified_name or t.wear_category or "Unidentified magic item")
 
 
 def build_item_instance(
