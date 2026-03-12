@@ -263,6 +263,34 @@ def test_wilderness_abandoned_camp_rewards_ingest_without_legacy_party_items_mir
     assert list(g.party_items or []) == []
 
 
+def test_encounter_recap_snapshot_prefers_loot_pool_over_legacy_party_items():
+    g = Game(HeadlessUI(), dice_seed=30148, wilderness_seed=30149)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Pool Trophy", "kind": "treasure", "gp_value": 25}],
+    )
+    # Stale legacy mirror should not be the recap reader source when loot_pool exists.
+    g.party_items = [{"name": "Legacy Mirror Item", "kind": "treasure", "gp_value": 1}]
+
+    g._encounter_begin_capture(context="test")
+
+    names = [str((it or {}).get("name") or "") for it in list(getattr(g, "_encounter_start_items", []) or [])]
+    assert "Pool Trophy" in names
+    assert "Legacy Mirror Item" not in names
+
+
+def test_encounter_recap_snapshot_falls_back_to_legacy_party_items_when_pool_unavailable():
+    g = Game(HeadlessUI(), dice_seed=30149, wilderness_seed=30150)
+    g.loot_pool = None
+    g.party_items = [{"name": "Legacy Fallback Item", "kind": "treasure", "gp_value": 5}]
+
+    g._encounter_begin_capture(context="test")
+
+    names = [str((it or {}).get("name") or "") for it in list(getattr(g, "_encounter_start_items", []) or [])]
+    assert names == ["Legacy Fallback Item"]
+
+
 def test_sell_loot_still_works_for_loot_pool_reward_intake():
     g = Game(HeadlessUI(), dice_seed=30150, wilderness_seed=30151)
     g._ingest_reward_items_to_loot_pool(

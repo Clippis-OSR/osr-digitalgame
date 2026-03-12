@@ -503,11 +503,7 @@ class Game:
             self._encounter_start_gold = int(getattr(self, "gold", 0) or 0)
         except Exception:
             self._encounter_start_gold = 0
-        try:
-            items = list(getattr(self, "party_items", []) or [])
-            self._encounter_start_items = items
-        except Exception:
-            self._encounter_start_items = []
+        self._encounter_start_items = self._reward_items_snapshot_rows()
         # Ownership-first snapshot: encounter item deltas should prefer loot_pool
         # entry identity over legacy shared `party_items` append/diff assumptions.
         try:
@@ -565,6 +561,24 @@ class Game:
         except Exception:
             pass
 
+    def _reward_items_snapshot_rows(self) -> list[dict[str, Any]]:
+        """Ownership-first snapshot rows for recap/listing readers.
+
+        Prefer loot_pool-derived rows and only fall back to legacy `party_items`
+        when loot_pool state is unavailable.
+        """
+        try:
+            lp = getattr(self, "loot_pool", None)
+            if lp is not None and hasattr(lp, "entries"):
+                return list(loot_pool_entries_as_legacy_dicts(lp) or [])
+        except Exception:
+            pass
+        # Compatibility fallback for mixed-mode saves/non-migrated paths.
+        try:
+            return list(getattr(self, "party_items", []) or [])
+        except Exception:
+            return []
+
     def _encounter_end_capture(self) -> None:
         if not bool(getattr(self, "_encounter_capture_active", False)):
             return
@@ -577,10 +591,7 @@ class Game:
         start_xp_sum = int(getattr(self, "_encounter_start_xp_sum", 0) or 0)
 
         end_gold = int(getattr(self, "gold", 0) or 0)
-        try:
-            end_items = list(getattr(self, "party_items", []) or [])
-        except Exception:
-            end_items = []
+        end_items = self._reward_items_snapshot_rows()
         # end xp sum
         end_xp_sum = start_xp_sum
         try:
