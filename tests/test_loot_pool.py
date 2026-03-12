@@ -230,6 +230,8 @@ def test_wilderness_ruins_rewards_ingest_loot_pool_without_legacy_party_items_mi
     assert str(g.loot_pool.entries[0].name) == "Ruins Amber"
     # Migrated ruins source skips immediate legacy mirror writes.
     assert list(g.party_items or []) == []
+    assert any("You find 70 gp in old coin." in ln for ln in g.ui.lines)
+    assert any("Items secured in expedition loot: 1." in ln for ln in g.ui.lines)
 
 
 def test_wilderness_abandoned_camp_rewards_ingest_without_legacy_party_items_mirror(monkeypatch):

@@ -7710,6 +7710,7 @@ class Game:
                 # Migrated ruins path: items enter ownership-aware loot_pool via
                 # dedicated wilderness bridge; no direct legacy mirror write here.
                 added_items = self._ingest_wilderness_reward_items(found_items, source="wilderness_ruins")
+                self.ui.log(f"Items secured in expedition loot: {len(added_items)}.")
                 for it in added_items:
                     nm = str(it.get("name") or "item")
                     if str(it.get("kind") or "").lower() in {"potion", "scroll", "ring", "wand", "relic"}:
@@ -7769,6 +7770,7 @@ class Game:
                     source="wilderness_shrine",
                 )
                 self.ui.log(f"You recover a relic: {relic_name}.")
+                self.ui.log("The relic is secured in expedition loot.")
                 poi["relic_taken"] = True
                 self.adjust_rep(str(poi.get("faction_id") or ""), +10)
                 poi["resolved"] = True
@@ -7815,6 +7817,7 @@ class Game:
                 # Migrated lair path: ownership-first loot intake via wilderness
                 # compatibility wrapper; skip immediate legacy mirror writes.
                 added_items = self._ingest_wilderness_reward_items(found_items, source="wilderness_lair")
+                self.ui.log(f"Items secured in expedition loot: {len(added_items)}.")
                 for it in added_items:
                     nm = str(it.get("name") or "item")
                     if str(it.get("kind") or "").lower() in {"potion", "scroll", "ring", "wand", "relic"}:
@@ -7848,8 +7851,10 @@ class Game:
                 grant_coin_reward(self, gp, source="wilderness_abandoned_camp", destination=CoinDestination.TREASURY)
                 self.ui.log(f"You scavenge {gp} gp worth of coin and supplies.")
                 added_items = self._ingest_wilderness_reward_items(items, source="wilderness_abandoned_camp")
-                for it in added_items:
-                    self.ui.log(f"You find: {it.get('name', 'item')}.")
+                if added_items:
+                    self.ui.log(f"Items secured in expedition loot: {len(added_items)}.")
+                    for it in added_items:
+                        self.ui.log(f"You find: {it.get('name', 'item')}.")
                 if self.dice.in_6(3):
                     self.ui.log("Among the scraps you piece together a useful rumor.")
                     try:
