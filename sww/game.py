@@ -5618,6 +5618,22 @@ class Game:
             return
         self._sync_legacy_party_items_from_loot_pool()
 
+    def _sync_legacy_party_items_if_needed(self, *, reason: str = "") -> bool:
+        """Conditional legacy mirror sync for transitional compatibility.
+
+        Narrowing note: only eagerly sync when legacy mirror state is already in
+        play (non-empty). Ownership-first readers no longer need eager writeback
+        on every loot-pool mutation.
+        """
+        try:
+            has_legacy_rows = bool(list(getattr(self, "party_items", []) or []))
+        except Exception:
+            has_legacy_rows = False
+        if not has_legacy_rows:
+            return False
+        self._sync_legacy_party_items_from_loot_pool()
+        return True
+
     def _coin_destination_label(self, destination: str) -> str:
         d = str(destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT)
         if d in {CoinDestination.TREASURY, CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT}:
@@ -5813,7 +5829,7 @@ class Game:
             if not moved.ok:
                 self.ui.log("Could not assign item to inventory.")
                 return
-            self._sync_legacy_party_items_from_loot_pool()
+            self._sync_legacy_party_items_if_needed(reason="assign_loot_to_actor")
             self.ui.log(f"Assigned {str(getattr(picked, 'name', 'loot') or 'loot')} to {actor.name}.")
             return
 
@@ -5822,7 +5838,7 @@ class Game:
             if not moved.ok:
                 self.ui.log("Could not move item to stash.")
                 return
-            self._sync_legacy_party_items_from_loot_pool()
+            self._sync_legacy_party_items_if_needed(reason="assign_loot_to_stash")
             self.ui.log(f"Moved {str(getattr(picked, 'name', 'loot') or 'loot')} to stash.")
             return
 
@@ -5831,7 +5847,7 @@ class Game:
         if not removed.ok:
             self.ui.log("Could not leave item behind.")
             return
-        self._sync_legacy_party_items_from_loot_pool()
+        self._sync_legacy_party_items_if_needed(reason="leave_loot_behind")
         self.ui.log(f"Left {str(getattr(picked, 'name', 'loot') or 'loot')} behind.")
 
     def _buy_item_for_actor(self, actor: Actor, *, name: str, kind: str, auto_equip: bool) -> bool:

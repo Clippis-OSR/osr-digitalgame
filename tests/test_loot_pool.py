@@ -454,6 +454,56 @@ def test_room_loot_end_to_end_assignment_menu_to_actor_inventory():
     assert any(str(getattr(it, "name", "")) == "Room Knife" for it in (actor.inventory.items or []))
 
 
+def test_assign_party_loot_skips_eager_legacy_sync_when_mirror_unused(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30241, wilderness_seed=30242)
+    actor = Actor(name="Rin", hp=5, hp_max=5, ac_desc=8, hd=1, save=15, is_pc=True)
+    g.party.members = [actor]
+
+    g._grant_room_loot(gp=0, items=[{"name": "Room Knife", "kind": "weapon", "gp_value": 2}], source="room_treasure")
+    assert len(g.loot_pool.entries) == 1
+    assert list(g.party_items or []) == []
+
+    sync_calls = []
+
+    def _spy_sync(*args, **kwargs):
+        sync_calls.append((args, kwargs))
+
+    monkeypatch.setattr(g, "_sync_legacy_party_items_from_loot_pool", _spy_sync)
+
+    g.assign_party_loot_to_character()
+
+    # Ownership flow still works; no eager legacy writeback when mirror is unused.
+    assert len(g.loot_pool.entries) == 0
+    assert any(str(getattr(it, "name", "")) == "Room Knife" for it in (actor.inventory.items or []))
+    assert sync_calls == []
+
+
+def test_assign_party_loot_keeps_legacy_sync_when_mirror_already_present(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30243, wilderness_seed=30244)
+    actor = Actor(name="Rin", hp=5, hp_max=5, ac_desc=8, hd=1, save=15, is_pc=True)
+    g.party.members = [actor]
+
+    g._grant_room_loot(gp=0, items=[{"name": "Room Knife", "kind": "weapon", "gp_value": 2}], source="boss_spoils")
+    assert len(g.loot_pool.entries) == 1
+    assert len(g.party_items) == 1
+
+    sync_calls = []
+    real_sync = g._sync_legacy_party_items_from_loot_pool
+
+    def _spy_sync(*args, **kwargs):
+        sync_calls.append((args, kwargs))
+        return real_sync(*args, **kwargs)
+
+    monkeypatch.setattr(g, "_sync_legacy_party_items_from_loot_pool", _spy_sync)
+
+    g.assign_party_loot_to_character()
+
+    assert len(g.loot_pool.entries) == 0
+    assert any(str(getattr(it, "name", "")) == "Room Knife" for it in (actor.inventory.items or []))
+    assert len(sync_calls) == 1
+    assert list(g.party_items or []) == []
+
+
 def test_combat_loot_delta_prefers_loot_pool_entries_over_legacy_party_items():
     g = Game(HeadlessUI(), dice_seed=30250, wilderness_seed=30251)
     _gp, added = add_generated_treasure_to_pool(g.loot_pool, items=[{"name": "Old Gem", "kind": "treasure", "gp_value": 10}])
