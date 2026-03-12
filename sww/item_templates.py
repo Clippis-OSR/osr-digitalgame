@@ -381,6 +381,8 @@ def build_item_instance(
     identified: bool = True,
     equipped: bool = False,
     magic_bonus: int = 0,
+    cursed_known: bool = False,
+    custom_label: str | None = None,
     instance_id: str | None = None,
     metadata: dict[str, Any] | None = None,
 ) -> ItemInstance:
@@ -409,6 +411,8 @@ def build_item_instance(
         category=t.category,
         quantity=q,
         identified=bool(identified),
+        cursed_known=bool(cursed_known),
+        custom_label=(None if custom_label is None else str(custom_label)),
         equipped=bool(equipped),
         magic_bonus=int(magic_bonus or 0),
         metadata=md,
