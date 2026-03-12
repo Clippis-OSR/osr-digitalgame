@@ -33,6 +33,7 @@ from .loot_pool import (
     loot_pool_entries_as_legacy_dicts,
 )
 from .coin_rewards import grant_coin_reward
+from .reward_bundle import apply_reward_bundle, empty_reward_bundle, reward_bundle_add_coins, reward_bundle_add_item
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
@@ -10599,22 +10600,27 @@ class Game:
 
     def _grant_room_loot(self, gp: int = 0, items: list[Any] | None = None, source: str = 'dungeon_feature') -> None:
         gp_i = int(gp or 0)
-        items_l = list(items or [])
-        # Transitional policy: room-scene coin rewards still settle into shared treasury
-        # for save and economy compatibility, while item rewards flow through loot-pool
-        # ownership paths. This keeps current gameplay stable until full coin micromanagement
-        # is introduced across all reward surfaces.
-        if gp_i > 0:
-            grant_coin_reward(self, gp_i, source=source, policy="treasury")
-        _gp_pool, added = add_generated_treasure_to_pool(self.loot_pool, gp=0, items=items_l, identify_magic=False)
+        bundle = empty_reward_bundle(source=str(source))
+        reward_bundle_add_coins(bundle, gp=gp_i)
+        for it in (items or []):
+            reward_bundle_add_item(bundle, it)
+        # Transitional policy: bundle coins still settle into shared treasury for
+        # compatibility, while bundle items go through the loot-pool ownership path.
+        applied = apply_reward_bundle(
+            self,
+            bundle=bundle,
+            loot_pool=self.loot_pool,
+            coin_policy="treasury",
+            identify_magic=False,
+        )
         self._sync_legacy_party_items_from_loot_pool()
-        items_l = loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=added)) if added else []
+        items_l = loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=list(applied.items_added or []))) if applied.items_added else []
         try:
-            self._encounter_note_loot(gp=gp_i, items=items_l, source=str(source))
+            self._encounter_note_loot(gp=int(applied.coins_gp_awarded), items=items_l, source=str(source))
         except Exception:
             pass
-        if gp_i or items_l:
-            self.ui.log(f'You recover {gp_i} gp and {len(items_l)} item(s).')
+        if int(applied.coins_gp_awarded) or items_l:
+            self.ui.log(f"You recover {int(applied.coins_gp_awarded)} gp and {len(items_l)} item(s).")
 
     def _reveal_room_secret_or_map(self, room: dict[str, Any], reveal_map: bool = False) -> None:
         ctx = resolve_room_interaction_context(self, room)

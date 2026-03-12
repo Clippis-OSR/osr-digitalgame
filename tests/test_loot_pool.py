@@ -78,7 +78,7 @@ def test_room_treasure_path_adds_items_to_loot_pool():
 
 
 def test_room_treasure_uses_coin_reward_service_once(monkeypatch):
-    import sww.game as game_mod
+    import sww.reward_bundle as reward_bundle_mod
 
     g = Game(HeadlessUI(), dice_seed=30110, wilderness_seed=30111)
     room = {
@@ -90,13 +90,13 @@ def test_room_treasure_uses_coin_reward_service_once(monkeypatch):
     }
 
     calls = []
-    real = game_mod.grant_coin_reward
+    real = reward_bundle_mod.grant_coin_reward
 
     def _spy(game, amount_gp, **kwargs):
         calls.append((int(amount_gp), dict(kwargs)))
         return real(game, amount_gp, **kwargs)
 
-    monkeypatch.setattr(game_mod, "grant_coin_reward", _spy)
+    monkeypatch.setattr(reward_bundle_mod, "grant_coin_reward", _spy)
 
     g._handle_room_treasure(room)
 
@@ -109,7 +109,7 @@ def test_room_treasure_uses_coin_reward_service_once(monkeypatch):
 
 
 def test_boss_reward_uses_coin_reward_service_without_double_credit(monkeypatch):
-    import sww.game as game_mod
+    import sww.reward_bundle as reward_bundle_mod
 
     g = Game(HeadlessUI(), dice_seed=30120, wilderness_seed=30121)
     room = {
@@ -123,13 +123,13 @@ def test_boss_reward_uses_coin_reward_service_without_double_credit(monkeypatch)
     }
 
     calls = []
-    real = game_mod.grant_coin_reward
+    real = reward_bundle_mod.grant_coin_reward
 
     def _spy(game, amount_gp, **kwargs):
         calls.append((int(amount_gp), dict(kwargs)))
         return real(game, amount_gp, **kwargs)
 
-    monkeypatch.setattr(game_mod, "grant_coin_reward", _spy)
+    monkeypatch.setattr(reward_bundle_mod, "grant_coin_reward", _spy)
 
     g.current_room_id = 1
     g._ensure_room = lambda rid: room
@@ -150,7 +150,7 @@ def test_boss_reward_uses_coin_reward_service_without_double_credit(monkeypatch)
 
 
 def test_room_treasure_taken_guard_prevents_double_coin_credit(monkeypatch):
-    import sww.game as game_mod
+    import sww.reward_bundle as reward_bundle_mod
 
     g = Game(HeadlessUI(), dice_seed=30130, wilderness_seed=30131)
     room = {
@@ -162,13 +162,13 @@ def test_room_treasure_taken_guard_prevents_double_coin_credit(monkeypatch):
     }
 
     calls = []
-    real = game_mod.grant_coin_reward
+    real = reward_bundle_mod.grant_coin_reward
 
     def _spy(game, amount_gp, **kwargs):
         calls.append((int(amount_gp), dict(kwargs)))
         return real(game, amount_gp, **kwargs)
 
-    monkeypatch.setattr(game_mod, "grant_coin_reward", _spy)
+    monkeypatch.setattr(reward_bundle_mod, "grant_coin_reward", _spy)
 
     g._handle_room_treasure(room)
     g._handle_room_treasure(room)
