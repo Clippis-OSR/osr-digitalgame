@@ -33,6 +33,7 @@ from .loot_pool import (
 from .coin_rewards import CoinDestination, grant_coin_reward
 from .ownership_service import (
     move_item_loot_pool_to_actor,
+    move_item_loot_pool_to_stash,
     remove_owned_item,
 )
 from .reward_bundle import apply_reward_bundle, empty_reward_bundle, reward_bundle_add_coins, reward_bundle_add_item
@@ -5744,20 +5745,48 @@ class Game:
         if li == len(loot_labels):
             return
 
-        who_labels = [a.name for a in living]
-        wi = self.ui.choose("Assign to who?", who_labels + ["Back"])
-        if wi == len(who_labels):
-            return
-
-        actor = living[wi]
         picked = entries[li]
-        moved = move_item_loot_pool_to_actor(self.loot_pool, actor, picked.entry_id)
-        if not moved.ok:
-            self.ui.log("Could not assign item to inventory.")
+        dest_opts = ["Assign to party member"]
+        can_stash = str(getattr(getattr(self, "travel_state", None), "location", "town") or "town").strip().lower() == "town"
+        if can_stash:
+            dest_opts.append("Send to stash")
+        dest_opts.append("Leave behind")
+        dest_opts.append("Back")
+
+        di = self.ui.choose("Loot destination?", dest_opts)
+        if di == len(dest_opts) - 1:
             return
 
+        if dest_opts[di] == "Assign to party member":
+            who_labels = [a.name for a in living]
+            wi = self.ui.choose("Assign to who?", who_labels + ["Back"])
+            if wi == len(who_labels):
+                return
+            actor = living[wi]
+            moved = move_item_loot_pool_to_actor(self.loot_pool, actor, picked.entry_id)
+            if not moved.ok:
+                self.ui.log("Could not assign item to inventory.")
+                return
+            self._sync_legacy_party_items_from_loot_pool()
+            self.ui.log(f"Assigned {str(getattr(picked, 'name', 'loot') or 'loot')} to {actor.name}.")
+            return
+
+        if dest_opts[di] == "Send to stash":
+            moved = move_item_loot_pool_to_stash(self.loot_pool, self, picked.entry_id)
+            if not moved.ok:
+                self.ui.log("Could not move item to stash.")
+                return
+            self._sync_legacy_party_items_from_loot_pool()
+            self.ui.log(f"Moved {str(getattr(picked, 'name', 'loot') or 'loot')} to stash.")
+            return
+
+        # Leave behind: explicit discard from pending shared loot pool.
+        removed = remove_owned_item(self, source_kind="legacy", reference_id=str(getattr(picked, "entry_id", "") or ""), quantity=max(1, int(getattr(picked, "quantity", 1) or 1)))
+        if not removed.ok:
+            self.ui.log("Could not leave item behind.")
+            return
         self._sync_legacy_party_items_from_loot_pool()
-        self.ui.log(f"Assigned {str(getattr(picked, 'name', 'loot') or 'loot')} to {actor.name}.")
+        self.ui.log(f"Left {str(getattr(picked, 'name', 'loot') or 'loot')} behind.")
 
     def _buy_item_for_actor(self, actor: Actor, *, name: str, kind: str, auto_equip: bool) -> bool:
         """Create bought item instance in actor inventory and optionally auto-equip legacy fields."""

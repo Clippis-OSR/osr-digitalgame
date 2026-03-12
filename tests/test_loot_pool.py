@@ -307,3 +307,17 @@ def test_unidentified_loot_assignment_to_actor_preserves_identified_state():
     assert ok is True
     assert len(a.inventory.items) == 1
     assert a.inventory.items[0].identified is False
+
+
+def test_room_loot_end_to_end_assignment_menu_to_actor_inventory():
+    g = Game(HeadlessUI(), dice_seed=30240, wilderness_seed=30241)
+    actor = Actor(name="Rin", hp=5, hp_max=5, ac_desc=8, hd=1, save=15, is_pc=True)
+    g.party.members = [actor]
+
+    g._grant_room_loot(gp=0, items=[{"name": "Room Knife", "kind": "weapon", "gp_value": 2}], source="room_treasure")
+    assert len(g.loot_pool.entries) == 1
+
+    g.assign_party_loot_to_character()
+
+    assert len(g.loot_pool.entries) == 0
+    assert any(str(getattr(it, "name", "")) == "Room Knife" for it in (actor.inventory.items or []))
