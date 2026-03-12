@@ -32,6 +32,7 @@ from .loot_pool import (
     leave_loot_behind,
     loot_pool_entries_as_legacy_dicts,
 )
+from .coin_rewards import grant_coin_reward
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
@@ -4429,7 +4430,8 @@ class Game:
 
 
             if c.get("status") == "completed":
-                self.gold += int(c.get("reward_gp", 0))
+                reward_gp = int(c.get("reward_gp", 0) or 0)
+                grant_coin_reward(self, reward_gp, source="contract_completion", policy="treasury")
                 self.adjust_rep(c.get("faction_id"), int(c.get("rep_success", 5)))
                 self.ui.log(f"Contract completed: {c.get('title')} @ {self._contract_destination_label(c)} (+{c.get('reward_gp')} gp)")
                 self._append_player_event(
@@ -7558,7 +7560,7 @@ class Game:
                     self.ui.log("You hear movement... but nothing comes.")
             # Treasure: modest but meaningful.
             gp = self.dice.d(6) * 10 + self.dice.d(6) * 10
-            self.gold += gp
+            grant_coin_reward(self, gp, source="wilderness_ruins", policy="treasury")
             self.ui.log(f"You find {gp} gp in old coin.")
             if self.dice.d(6) >= 5:
                 it = self.treasure.roll_minor_gem_or_jewelry()
@@ -7649,7 +7651,7 @@ class Game:
             self.adjust_rep(self._town_guild_id(), +5)
 
             bonus_gp = self.dice.d(6) * 50
-            self.gold += bonus_gp
+            grant_coin_reward(self, bonus_gp, source="wilderness_lair", policy="treasury")
             self.ui.log(f"In the lair you find {bonus_gp} gp and valuables.")
             if self.dice.d(6) >= 4:
                 it = self.treasure.roll_medium_gem_or_jewelry()
@@ -7684,7 +7686,7 @@ class Game:
                         self.combat(enc.foes)
                         if not self.party.living():
                             return
-                self.gold += gp
+                grant_coin_reward(self, gp, source="wilderness_abandoned_camp", policy="treasury")
                 self.ui.log(f"You scavenge {gp} gp worth of coin and supplies.")
                 for it in items:
                     self.party_items.append(it)
@@ -10598,10 +10600,12 @@ class Game:
     def _grant_room_loot(self, gp: int = 0, items: list[Any] | None = None, source: str = 'dungeon_feature') -> None:
         gp_i = int(gp or 0)
         items_l = list(items or [])
-        # Current compatibility choice: coinage still goes straight to treasury,
-        # while item loot enters the temporary loot pool for assignment/stash/leave decisions.
+        # Transitional policy: room-scene coin rewards still settle into shared treasury
+        # for save and economy compatibility, while item rewards flow through loot-pool
+        # ownership paths. This keeps current gameplay stable until full coin micromanagement
+        # is introduced across all reward surfaces.
         if gp_i > 0:
-            self.gold += gp_i
+            grant_coin_reward(self, gp_i, source=source, policy="treasury")
         _gp_pool, added = add_generated_treasure_to_pool(self.loot_pool, gp=0, items=items_l, identify_magic=False)
         self._sync_legacy_party_items_from_loot_pool()
         items_l = loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=added)) if added else []
