@@ -26,7 +26,7 @@ from .events import (
 
 # Increment whenever the on-disk schema changes.
 # We write both "save_version" and the legacy "version" key for compatibility.
-SAVE_VERSION = 12
+SAVE_VERSION = 13
 
 class SaveSchemaError(ValueError):
     """Raised when a save file is missing required keys or has invalid types."""
@@ -304,38 +304,54 @@ def _dict_to_stats(d: Optional[dict]) -> Optional[Stats]:
 def _item_instance_to_dict(item: Any) -> dict:
     if isinstance(item, ItemInstance):
         return {
-            "item_id": str(item.item_id or ""),
             "instance_id": str(item.instance_id or ""),
+            "template_id": str(item.template_id or ""),
             "name": str(item.name or ""),
-            "quantity": int(item.quantity or 0),
-            "weight_lb": float(item.weight_lb or 0.0),
-            "kind": str(item.kind or "misc"),
-            "data": dict(item.data or {}),
+            "category": str(item.category or "misc"),
+            "quantity": int(item.quantity or 1),
+            "identified": bool(item.identified),
+            "equipped": bool(item.equipped),
+            "magic_bonus": int(item.magic_bonus or 0),
+            "metadata": dict(item.metadata or {}),
         }
     if isinstance(item, dict):
         return {
-            "item_id": str(item.get("item_id") or ""),
             "instance_id": str(item.get("instance_id") or ""),
+            "template_id": str(item.get("template_id") or item.get("item_id") or ""),
             "name": str(item.get("name") or ""),
+            "category": str(item.get("category") or item.get("kind") or "misc"),
             "quantity": int(item.get("quantity", 1) or 1),
-            "weight_lb": float(item.get("weight_lb", 0.0) or 0.0),
-            "kind": str(item.get("kind") or "misc"),
-            "data": dict(item.get("data") or {}),
+            "identified": bool(item.get("identified", True)),
+            "equipped": bool(item.get("equipped", False)),
+            "magic_bonus": int(item.get("magic_bonus", 0) or 0),
+            "metadata": dict(item.get("metadata") or item.get("data") or {}),
         }
-    return {"item_id": "", "instance_id": "", "name": "", "quantity": 0, "weight_lb": 0.0, "kind": "misc", "data": {}}
+    return {
+        "instance_id": "",
+        "template_id": "",
+        "name": "",
+        "category": "misc",
+        "quantity": 1,
+        "identified": True,
+        "equipped": False,
+        "magic_bonus": 0,
+        "metadata": {},
+    }
 
 
 def _dict_to_item_instance(d: Any) -> ItemInstance:
     if not isinstance(d, dict):
-        return ItemInstance(item_id="", instance_id="", name="", quantity=0, weight_lb=0.0)
+        return ItemInstance(instance_id="", template_id="", name="", category="misc")
     return ItemInstance(
-        item_id=str(d.get("item_id") or ""),
         instance_id=str(d.get("instance_id") or ""),
+        template_id=str(d.get("template_id") or d.get("item_id") or ""),
         name=str(d.get("name") or ""),
+        category=str(d.get("category") or d.get("kind") or "misc"),
         quantity=int(d.get("quantity", 1) or 1),
-        weight_lb=float(d.get("weight_lb", 0.0) or 0.0),
-        kind=str(d.get("kind") or "misc"),
-        data=dict(d.get("data") or {}),
+        identified=bool(d.get("identified", True)),
+        equipped=bool(d.get("equipped", False)),
+        magic_bonus=int(d.get("magic_bonus", 0) or 0),
+        metadata=dict(d.get("metadata") or d.get("data") or {}),
     )
 
 
@@ -345,15 +361,23 @@ def _inventory_to_dict(inv: Any) -> dict:
         return {
             "items": items,
             "coins_gp": int(inv.coins_gp or 0),
-            "capacity_lb": float(inv.capacity_lb or 0.0),
+            "coins_sp": int(inv.coins_sp or 0),
+            "coins_cp": int(inv.coins_cp or 0),
+            "torches": int(inv.torches or 0),
+            "rations": int(inv.rations or 0),
+            "ammo": dict(inv.ammo or {}),
         }
     if isinstance(inv, dict):
         return {
             "items": [_item_instance_to_dict(it) for it in (inv.get("items") or [])],
             "coins_gp": int(inv.get("coins_gp", 0) or 0),
-            "capacity_lb": float(inv.get("capacity_lb", 0.0) or 0.0),
+            "coins_sp": int(inv.get("coins_sp", 0) or 0),
+            "coins_cp": int(inv.get("coins_cp", 0) or 0),
+            "torches": int(inv.get("torches", 0) or 0),
+            "rations": int(inv.get("rations", 0) or 0),
+            "ammo": dict(inv.get("ammo") or {}),
         }
-    return {"items": [], "coins_gp": 0, "capacity_lb": 0.0}
+    return {"items": [], "coins_gp": 0, "coins_sp": 0, "coins_cp": 0, "torches": 0, "rations": 0, "ammo": {}}
 
 
 def _dict_to_inventory(d: Any) -> CharacterInventory:
@@ -362,7 +386,11 @@ def _dict_to_inventory(d: Any) -> CharacterInventory:
     return CharacterInventory(
         items=[_dict_to_item_instance(it) for it in (d.get("items") or [])],
         coins_gp=int(d.get("coins_gp", 0) or 0),
-        capacity_lb=float(d.get("capacity_lb", 0.0) or 0.0),
+        coins_sp=int(d.get("coins_sp", 0) or 0),
+        coins_cp=int(d.get("coins_cp", 0) or 0),
+        torches=int(d.get("torches", 0) or 0),
+        rations=int(d.get("rations", 0) or 0),
+        ammo=dict(d.get("ammo") or {}),
     )
 
 
@@ -374,7 +402,7 @@ def _equipment_to_dict(eq: Any) -> dict:
             "main_hand": eq.main_hand,
             "off_hand": eq.off_hand,
             "missile_weapon": eq.missile_weapon,
-            "ammo": eq.ammo,
+            "ammo_kind": eq.ammo_kind,
             "worn_misc": list(eq.worn_misc or []),
         }
     if isinstance(eq, dict):
@@ -384,12 +412,12 @@ def _equipment_to_dict(eq: Any) -> dict:
             "main_hand": eq.get("main_hand"),
             "off_hand": eq.get("off_hand"),
             "missile_weapon": eq.get("missile_weapon"),
-            "ammo": eq.get("ammo"),
+            "ammo_kind": eq.get("ammo_kind") or eq.get("ammo"),
             "worn_misc": list(eq.get("worn_misc") or []),
         }
     return {
         "armor": None, "shield": None, "main_hand": None, "off_hand": None,
-        "missile_weapon": None, "ammo": None, "worn_misc": []
+        "missile_weapon": None, "ammo_kind": None, "worn_misc": []
     }
 
 
@@ -402,7 +430,7 @@ def _dict_to_equipment(d: Any) -> CharacterEquipment:
         main_hand=d.get("main_hand"),
         off_hand=d.get("off_hand"),
         missile_weapon=d.get("missile_weapon"),
-        ammo=d.get("ammo"),
+        ammo_kind=d.get("ammo_kind") or d.get("ammo"),
         worn_misc=list(d.get("worn_misc") or []),
     )
 
@@ -414,6 +442,11 @@ def actor_to_dict(a: Any) -> dict:
 
     We store core Actor fields plus any extra attributes present (e.g., PC cls/level/xp/stats).
     """
+    if hasattr(a, "ensure_inventory_initialized"):
+        a.ensure_inventory_initialized()
+    if hasattr(a, "sync_legacy_equipment_to_new"):
+        a.sync_legacy_equipment_to_new()
+
     base = {
         "monster_id": getattr(a, "monster_id", None),
         "name": getattr(a, "name", ""),
@@ -505,6 +538,15 @@ def dict_to_actor(d: dict) -> Actor:
         inventory=_dict_to_inventory(d.get("inventory")),
         equipment=_dict_to_equipment(d.get("equipment")),
     )
+
+    if hasattr(a, "ensure_inventory_initialized"):
+        a.ensure_inventory_initialized()
+    if hasattr(a, "ensure_equipment_initialized"):
+        a.ensure_equipment_initialized()
+    if hasattr(a, "sync_legacy_equipment_to_new"):
+        a.sync_legacy_equipment_to_new()
+    if hasattr(a, "sync_new_equipment_to_legacy"):
+        a.sync_new_equipment_to_legacy()
 
     # Attach PC extras if needed
     if is_pc:
@@ -1027,6 +1069,77 @@ def _migrate_11_to_12(data: Dict[str, Any]) -> Dict[str, Any]:
     data["version"] = 12
     return data
 
+
+
+def _migrate_12_to_13(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Normalize new inventory/equipment payload keys to the current schema."""
+    camp = data.get("campaign") or {}
+    party = (camp.get("party") or {}).get("members") or []
+
+    def _normalize_actor(m: dict) -> None:
+        if not isinstance(m, dict):
+            return
+        inv = m.get("inventory") if isinstance(m.get("inventory"), dict) else {}
+        inv.setdefault("items", [])
+        inv["coins_gp"] = int(inv.get("coins_gp", 0) or 0)
+        inv["coins_sp"] = int(inv.get("coins_sp", 0) or 0)
+        inv["coins_cp"] = int(inv.get("coins_cp", 0) or 0)
+        inv["torches"] = int(inv.get("torches", 0) or 0)
+        inv["rations"] = int(inv.get("rations", 0) or 0)
+        inv["ammo"] = dict(inv.get("ammo") or {})
+        norm_items = []
+        for it in (inv.get("items") or []):
+            if not isinstance(it, dict):
+                continue
+            norm_items.append({
+                "instance_id": str(it.get("instance_id") or ""),
+                "template_id": str(it.get("template_id") or it.get("item_id") or ""),
+                "name": str(it.get("name") or ""),
+                "category": str(it.get("category") or it.get("kind") or "misc"),
+                "quantity": int(it.get("quantity", 1) or 1),
+                "identified": bool(it.get("identified", True)),
+                "equipped": bool(it.get("equipped", False)),
+                "magic_bonus": int(it.get("magic_bonus", 0) or 0),
+                "metadata": dict(it.get("metadata") or it.get("data") or {}),
+            })
+        inv["items"] = norm_items
+        m["inventory"] = inv
+
+        eq = m.get("equipment") if isinstance(m.get("equipment"), dict) else {}
+        if "ammo_kind" not in eq and "ammo" in eq:
+            eq["ammo_kind"] = eq.get("ammo")
+        eq.setdefault("armor", m.get("armor"))
+        eq.setdefault("shield", m.get("shield_name") if m.get("shield") else None)
+        eq.setdefault("main_hand", m.get("weapon"))
+        eq.setdefault("off_hand", None)
+        eq.setdefault("missile_weapon", None)
+        eq.setdefault("ammo_kind", None)
+        eq["worn_misc"] = list(eq.get("worn_misc") or [])
+        m["equipment"] = eq
+
+    if isinstance(party, list):
+        for m in party:
+            _normalize_actor(m)
+
+    ret = data.get("retainers") or {}
+    if isinstance(ret, dict):
+        for key in ("retainer_board", "retainer_roster", "active_retainers", "hired_retainers"):
+            for m in (ret.get(key) or []):
+                _normalize_actor(m)
+
+    dung = data.get("dungeon") or {}
+    rooms = dung.get("dungeon_rooms") if isinstance(dung, dict) else None
+    if isinstance(rooms, dict):
+        for room in rooms.values():
+            if not isinstance(room, dict):
+                continue
+            for m in (room.get("foes") or []):
+                _normalize_actor(m)
+
+    data["save_version"] = 13
+    data["version"] = 13
+    return data
+
 MIGRATIONS = {
     1: _migrate_1_to_2,
     2: _migrate_2_to_3,
@@ -1039,6 +1152,7 @@ MIGRATIONS = {
     9: _migrate_9_to_10,
     10: _migrate_10_to_11,
     11: _migrate_11_to_12,
+    12: _migrate_12_to_13,
 }
 
 

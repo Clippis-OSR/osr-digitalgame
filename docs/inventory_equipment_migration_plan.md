@@ -1,82 +1,40 @@
 # Per-Character Inventory & Equipment Migration Plan
 
-## Target architecture
+## Target architecture (transitional)
 
-This refactor moves from party-only slot encumbrance toward per-character carried weight while preserving existing combat/shop/save behavior during transition.
+This project is moving from party-only inventory assumptions to per-character ownership with explicit equipment state.
 
-### New core model primitives
+### Core dataclasses
 
 - `ItemInstance`
-  - Stable, JSON-friendly owned item record.
-  - Uses `item_id` + `instance_id` to avoid brittle display-name coupling.
-  - Supports quantity + authored/derived weight and freeform metadata.
+  - `instance_id`, `template_id`, `name`, `category`
+  - `quantity`, `identified`, `equipped`, `magic_bonus`, `metadata`
 - `CharacterInventory`
-  - Lives on each `Actor`.
-  - Holds carried `items`, carried `coins_gp`, and a `capacity_lb` target.
-  - Includes temporary helper methods for derived total weight/state.
+  - `items`
+  - coin fields: `coins_gp`, `coins_sp`, `coins_cp`
+  - expedition supplies: `torches`, `rations`, `ammo`
 - `CharacterEquipment`
-  - OSR-practical equipment abstraction:
-    - `armor`
-    - `shield`
-    - `main_hand`
-    - `off_hand`
-    - `missile_weapon`
-    - `ammo`
-    - `worn_misc`
-  - Intentionally avoids a large MMO-like slot matrix.
+  - `armor`, `shield`, `main_hand`, `off_hand`, `missile_weapon`, `ammo_kind`, `worn_misc`
 
-### Actor compatibility
+## Equipment reference policy (for now)
 
-`Actor` now has:
-- `inventory: CharacterInventory`
-- `equipment: CharacterEquipment`
+To minimize disruption, equipment fields currently store **stable names** (e.g., `"Sword"`, `"Leather"`) because existing combat/shop flows mostly resolve by name.
 
-Legacy fields are intentionally retained during migration:
-- `weapon`
-- `armor`
-- `shield`
-- `shield_name`
+Future passes may switch these fields to item-instance ids once runtime systems are migrated.
 
-This ensures existing game logic keeps running while downstream systems are ported.
+## Migration strategy
 
-## Save/load migration strategy
+- Keep legacy actor fields (`weapon`, `armor`, `shield`, `shield_name`) until all call sites are ported.
+- Use explicit bridge helpers on `Actor`:
+  - `ensure_inventory_initialized()`
+  - `ensure_equipment_initialized()`
+  - `sync_legacy_equipment_to_new()`
+  - `sync_new_equipment_to_legacy()`
+- Save schema upgraded to v13, including key normalization migration from older scaffolding payloads.
 
-- Save schema bumped to v12.
-- Added actor serialization for `inventory` and `equipment` in all actor containers:
-  - party members
-  - retainers
-  - dungeon room foes
-- Added migration `11 -> 12` that seeds defaults for legacy saves.
-- Migration seeds `equipment` from legacy fields where possible (`weapon`, `armor`, `shield_name`).
+## Systems still pending
 
-## Incremental rollout steps (next passes)
-
-1. **Equipment resolution layer**
-   - Introduce helper accessors that prefer `Actor.equipment` and gracefully fall back to legacy fields.
-   - Update combat weapon-kind/damage/range lookup through that layer.
-
-2. **Per-character encumbrance engine**
-   - Add weight-based encumbrance calculations per actor (STR + race/class policy as needed).
-   - Keep old party slot model available behind compatibility wrappers until all callers switch.
-
-3. **Town/shop + loot assignment updates**
-   - Route purchases and found items into target actor inventory/equipment.
-   - Preserve simple UX with explicit actor-target choice where needed.
-
-4. **Movement/exploration integration**
-   - Replace party slot state with derived movement impacts from current party members' per-character loads.
-
-5. **Legacy field retirement**
-   - After all callsites are switched and fixtures updated, remove `weapon/armor/shield/shield_name`.
-
-## Systems that still require updates
-
-- Combat helpers currently reading `actor.weapon`.
-- Shop/equipment purchase flows currently directly mutating legacy fields.
-- Encumbrance calculations in `sww/encumbrance.py` (party slot model).
-- Any UI/status displays that assume one flat weapon/armor/shield tuple.
-
-## Notes
-
-- This pass is scaffolding-only: no gameplay behavior changes are intended yet.
-- TODO markers were added in model code to track legacy-field retirement.
+- Combat helpers reading `actor.weapon` directly.
+- Shop/town purchase flows mutating legacy fields.
+- Encumbrance model replacement (party slot-based -> per-character weight-based).
+- UI surfaces that assume the old weapon/armor/shield tuple.
