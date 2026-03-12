@@ -60,3 +60,36 @@ def test_invalid_equip_fails_cleanly_when_item_missing():
     res = equip_item_on_actor(a, "missing")
     assert not res.ok
     assert "must be in inventory" in str(res.error or "")
+
+
+def test_cursed_sticky_item_blocks_normal_unequip_and_reveals_curse():
+    a = _actor("A")
+    it = ItemInstance(
+        instance_id="c1",
+        template_id="weapon.cursed_blade",
+        name="Runed Sword",
+        category="weapon",
+        identified=False,
+        cursed_known=False,
+        metadata={"cursed": True, "effects": [{"type": "sticky_equip", "value": True}]},
+    )
+    add_item_to_actor(a, it)
+
+    eq = equip_item_on_actor(a, "c1")
+    assert eq.ok
+
+    uq = unequip_item_on_actor(a, "main_hand")
+    assert not uq.ok
+    assert "cannot be unequipped" in str(uq.error or "")
+    assert find_item_on_actor(a, "c1").cursed_known is True
+
+
+def test_non_cursed_item_still_unequips_normally():
+    a = _actor("A")
+    it = ItemInstance(instance_id="n1", template_id="weapon.sword", name="Sword", category="weapon")
+    add_item_to_actor(a, it)
+    assert equip_item_on_actor(a, "n1").ok
+
+    uq = unequip_item_on_actor(a, "main_hand")
+    assert uq.ok
+    assert a.equipment.main_hand is None

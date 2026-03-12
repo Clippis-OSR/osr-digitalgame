@@ -79,3 +79,19 @@ Behavior choices in this phase:
 - Potions and scrolls use the same town service flow (with lower fee band).
 
 Future extension hooks: sages, wizard guild discounts, and class-specific identification perks.
+
+
+## Cursed sticky-equip behavior (current)
+
+Current narrow rule for cursed equipment:
+- If an item is cursed and has `{"type": "sticky_equip", "value": true}` then normal unequip/remove fails.
+- Curse discovery occurs when the player attempts to unequip/remove and the block triggers (`cursed_known = true`).
+- Town identification does **not** reveal curses by default in this phase.
+
+This preserves the old-school loop: unknown item -> equip -> trapped by curse -> seek remedy.
+
+Future curse families (TODO):
+- stat penalties
+- appearance deception
+- compulsion effects
+- drain effects

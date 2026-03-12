@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .item_templates import get_item_template, item_known_name
+from .item_templates import get_item_template, item_effects, item_is_cursed, item_known_name
 from .models import Actor, ItemInstance
 
 
@@ -29,6 +29,25 @@ class InventoryServiceResult:
 def _ensure_actor_ready(actor: Actor) -> None:
     actor.ensure_inventory_initialized()
     actor.ensure_equipment_initialized()
+
+
+def _item_has_sticky_curse(item: ItemInstance) -> bool:
+    """Return True when an equipped item should resist normal unequip/remove.
+
+    Narrow scope for now: cursed items with `sticky_equip` effect payload.
+    """
+    try:
+        if not bool(item_is_cursed(item)):
+            return False
+        for eff in list(item_effects(item) or []):
+            if str((eff or {}).get("type") or "").strip().lower() != "sticky_equip":
+                continue
+            if "value" not in eff:
+                return True
+            return bool(eff.get("value"))
+    except Exception:
+        return False
+    return False
 
 
 def _infer_slot_for_item(item: ItemInstance) -> str | None:
@@ -92,6 +111,9 @@ def remove_item_from_actor(actor: Actor, instance_id: str, quantity: int = 1) ->
         return InventoryServiceResult(ok=False, error="item not found")
     if int(item.quantity or 0) < q:
         return InventoryServiceResult(ok=False, error="insufficient quantity")
+    if bool(getattr(item, "equipped", False)) and _item_has_sticky_curse(item):
+        item.cursed_known = True
+        return InventoryServiceResult(ok=False, error="item is cursed and cannot be removed")
 
     item.quantity = int(item.quantity) - q
     if int(item.quantity) == 0:
@@ -160,18 +182,25 @@ def unequip_item_on_actor(actor: Actor, slot_name: str) -> InventoryServiceResul
         if not eq.worn_misc:
             return InventoryServiceResult(ok=False, error="slot is already empty")
         iid = str(eq.worn_misc[-1])
-        eq.worn_misc = list(eq.worn_misc[:-1])
     else:
         iid = str(getattr(eq, slot) or "")
         if not iid:
             return InventoryServiceResult(ok=False, error="slot is already empty")
+
+    item = find_item_on_actor(actor, iid)
+    if item is not None and _item_has_sticky_curse(item):
+        item.cursed_known = True
+        return InventoryServiceResult(ok=False, error="item is cursed and cannot be unequipped")
+
+    if slot == "worn_misc":
+        eq.worn_misc = list(eq.worn_misc[:-1])
+    else:
         setattr(eq, slot, None)
         if slot == "shield" and str(eq.off_hand or "") == iid:
             eq.off_hand = None
         if slot == "off_hand" and str(eq.shield or "") == iid:
             eq.shield = None
 
-    item = find_item_on_actor(actor, iid)
     if item is not None:
         item.equipped = False
 
@@ -208,6 +237,8 @@ def give_item_between_actors(src_actor: Actor, dst_actor: Actor, instance_id: st
         category=src_item.category,
         quantity=q,
         identified=bool(src_item.identified),
+        cursed_known=bool(src_item.cursed_known),
+        custom_label=src_item.custom_label,
         equipped=False,
         magic_bonus=int(src_item.magic_bonus or 0),
         metadata=dict(src_item.metadata or {}),
