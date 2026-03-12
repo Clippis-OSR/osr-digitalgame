@@ -63,3 +63,19 @@ Unidentified fallback names currently include:
 - `Cloudy Potion`
 - `Scroll with strange script`
 - `Runed Sword`
+
+
+## Town identification service assumptions
+
+Current baseline is conservative and deterministic:
+- Magic consumables (potion/scroll/ammo): **15 gp**
+- Other magic items: **25 gp**
+- Mundane unidentified oddities: **8 gp**
+
+Behavior choices in this phase:
+- Identification targets a specific **item instance** in an actor inventory.
+- Curses are **not** revealed by default when identified in town.
+- Charges are **not** fully revealed by default.
+- Potions and scrolls use the same town service flow (with lower fee band).
+
+Future extension hooks: sages, wizard guild discounts, and class-specific identification perks.

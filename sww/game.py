@@ -27,11 +27,12 @@ from .loot_pool import (
     loot_pool_entries_as_legacy_dicts,
     move_loot_to_party_stash,
 )
-from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_known_name
+from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_is_magic, item_known_name
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
+from .town_services import identify_cost_gp, identify_item_in_town
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
@@ -5889,42 +5890,55 @@ class Game:
         self.ui.log(f"Temple recovery completed. (Healed {total_missing} HP total.)")
 
     def _town_identify_items(self) -> None:
-        # Transitional compatibility: unidentified item service still operates on
-        # shared party_items until per-character unidentified workflows land.
-        self._ensure_loot_pool_hydrated_from_legacy()
-        unknown = [it for it in (self.loot_pool.entries or []) if bool(getattr(it, "true_name", None)) and not bool(getattr(it, "identified", False))]
+        # Identification is instance-targeted: each owned copy can be known differently.
+        # TODO(town-services): support sages/guild perks and class-based discounts.
+        unknown: list[tuple[Actor, Any, int]] = []
+        for actor in (self.party.living() or []):
+            actor.ensure_inventory_initialized()
+            for item in (actor.inventory.items or []):
+                if bool(getattr(item, "identified", True)):
+                    continue
+                if not bool(item_is_magic(item)):
+                    continue
+                unknown.append((actor, item, int(identify_cost_gp(item))))
+
         if not unknown:
-            self.ui.log("No unidentified magic items in party loot.")
+            self.ui.log("No unidentified magic items in character inventories.")
             return
-        cost_each = 12
-        c = self.ui.choose("Sage Appraisal", [f"Identify one item ({cost_each} gp)", f"Identify all ({len(unknown) * cost_each} gp)", "Back"])
+
+        total_cost = sum(c for _, _, c in unknown)
+        c = self.ui.choose("Sage Appraisal", [f"Identify one item", f"Identify all ({total_cost} gp)", "Back"])
         if c == 2:
             return
+
         if c == 1:
-            all_cost = int(len(unknown) * cost_each)
-            if self.gold < all_cost:
+            if self.gold < total_cost:
                 self.ui.log("Not enough gold.")
                 return
-            self.gold -= all_cost
-            for it in unknown:
-                it.identified = True
-                it.name = str(getattr(it, "true_name", None) or getattr(it, "name", "Unknown Item") or "Unknown Item")
-            self._sync_legacy_party_items_from_loot_pool()
-            self.ui.log(f"The sage identifies {len(unknown)} item(s).")
+            identified_n = 0
+            for actor, item, _cost in unknown:
+                res = identify_item_in_town(actor, item.instance_id, party_gold=self.gold, reveal_curse=False, reveal_charges=False)
+                if not res.ok:
+                    continue
+                self.gold = int(res.party_gold_after)
+                identified_n += 1
+            self.ui.log(f"The sage identifies {identified_n} item(s).")
             return
-        labels = [f"{idx + 1}. {str(getattr(it, 'name', 'Unknown') or 'Unknown')}" for idx, it in enumerate(unknown)]
+
+        labels = [f"{a.name}: {getattr(it, 'name', 'Unknown')} ({cost} gp)" for a, it, cost in unknown]
         j = self.ui.choose("Identify which item?", labels + ["Back"])
         if j == len(labels):
             return
-        if self.gold < cost_each:
-            self.ui.log("Not enough gold.")
+        actor, item, _cost = unknown[j]
+        res = identify_item_in_town(actor, item.instance_id, party_gold=self.gold, reveal_curse=False, reveal_charges=False)
+        if not res.ok:
+            if str(res.error or "") == "not enough gold":
+                self.ui.log("Not enough gold.")
+            else:
+                self.ui.log("Could not identify that item right now.")
             return
-        self.gold -= cost_each
-        target = unknown[j]
-        target.identified = True
-        target.name = str(getattr(target, "true_name", None) or getattr(target, "name", "Unknown Item") or "Unknown Item")
-        self._sync_legacy_party_items_from_loot_pool()
-        self.ui.log(f"Identified: {getattr(target, 'name', 'Unknown Item')}.")
+        self.gold = int(res.party_gold_after)
+        self.ui.log(f"Identified: {getattr(res.item, 'name', 'Unknown Item')}.")
 
     def _town_lodging_service(self) -> None:
         opts = [
