@@ -3,6 +3,67 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Optional
 
+
+@dataclass
+class ItemInstance:
+    """JSON-friendly, stable inventory item instance.
+
+    item_id: canonical content id or normalized item key.
+    instance_id: stable unique id per owned item stack/instance.
+    """
+
+    item_id: str
+    instance_id: str
+    name: str
+    quantity: int = 1
+    weight_lb: float = 0.0
+    kind: str = "misc"
+    # Optional arbitrary metadata for magic bonuses, charges, notes, etc.
+    data: dict = field(default_factory=dict)
+
+
+@dataclass
+class CharacterEquipment:
+    """Practical OSR equipment layout, intentionally small and non-MMO."""
+
+    armor: str | None = None
+    shield: str | None = None
+    main_hand: str | None = None
+    off_hand: str | None = None
+    missile_weapon: str | None = None
+    ammo: str | None = None
+    worn_misc: list[str] = field(default_factory=list)
+
+
+@dataclass
+class CharacterInventory:
+    """Per-character carried goods and derived load state."""
+
+    items: list[ItemInstance] = field(default_factory=list)
+    coins_gp: int = 0
+    capacity_lb: float = 0.0
+
+    def total_weight_lb(self) -> float:
+        return float(sum(max(0.0, float(i.weight_lb or 0.0)) * max(0, int(i.quantity or 0)) for i in (self.items or [])))
+
+    def encumbrance_state(self) -> str:
+        """Placeholder state bands for migration scaffolding.
+
+        TODO(encumbrance-migration): Replace with authored S&W-compatible movement
+        breakpoints once movement and exploration systems are switched to
+        per-character weight tracking.
+        """
+
+        cap = max(0.0, float(self.capacity_lb or 0.0))
+        used = self.total_weight_lb()
+        if cap <= 0:
+            return "unlimited" if used <= 0 else "overloaded"
+        if used <= cap:
+            return "unencumbered"
+        if used <= cap * 1.5:
+            return "encumbered"
+        return "overloaded"
+
 @dataclass
 class Stats:
     STR: int
@@ -94,6 +155,12 @@ class Actor:
     shield: bool = False
     # Optional shield display name (supports magic shields like "Shield +1").
     shield_name: str | None = None
+
+    # New per-character inventory/equipment scaffolding.
+    # TODO(inventory-migration): once all combat/shop/loot systems use
+    # `equipment`, remove legacy weapon/armor/shield/shield_name fields.
+    inventory: CharacterInventory = field(default_factory=CharacterInventory)
+    equipment: CharacterEquipment = field(default_factory=CharacterEquipment)
 
 
     def alive(self) -> bool:
