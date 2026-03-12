@@ -26,6 +26,78 @@ class InventoryServiceResult:
     quantity_changed: int = 0
 
 
+# Layered worn-magic limits are intentionally separate from core combat slots:
+# OSR combat math needs only armor/shield/weapon/ammo, while classic treasure
+# play often imposes coarse wear restrictions for magic miscellany. Keeping this
+# in `worn_misc` preserves the simple equipment model and JSON save shape.
+WORN_MAGIC_CATEGORY_LIMITS: dict[str, int] = {
+    "ring": 2,
+    "cloak": 1,
+    "boots": 1,
+    "helm": 1,
+    "amulet": 1,
+    "bracers": 1,
+    "belt": 1,
+}
+
+
+def _normalize_wear_category(value: Any) -> str:
+    return str(value or "").strip().lower()
+
+
+def _item_wear_category(item: ItemInstance) -> str:
+    md = dict(getattr(item, "metadata", {}) or {})
+    wc = _normalize_wear_category(md.get("wear_category"))
+    if wc:
+        return wc
+    cat = _normalize_wear_category(getattr(item, "category", ""))
+    if cat in WORN_MAGIC_CATEGORY_LIMITS:
+        return cat
+    return ""
+
+
+def actor_worn_magic_by_category(actor: Actor) -> dict[str, int]:
+    _ensure_actor_ready(actor)
+    counts: dict[str, int] = {}
+    for iid in list(actor.equipment.worn_misc or []):
+        item = find_item_on_actor(actor, str(iid))
+        if item is None:
+            continue
+        wc = _item_wear_category(item)
+        if not wc:
+            continue
+        counts[wc] = int(counts.get(wc, 0)) + 1
+    return counts
+
+
+def can_actor_wear_item(actor: Actor, instance_id: str) -> InventoryServiceResult:
+    _ensure_actor_ready(actor)
+    item = find_item_on_actor(actor, instance_id)
+    if item is None:
+        return InventoryServiceResult(ok=False, error="item must be in inventory before equip")
+
+    slot = _infer_slot_for_item(item)
+    if slot != "worn_misc":
+        return InventoryServiceResult(ok=True, item=item, quantity_changed=0)
+
+    wc = _item_wear_category(item)
+    if not wc:
+        return InventoryServiceResult(ok=True, item=item, quantity_changed=0)
+
+    limit = int(WORN_MAGIC_CATEGORY_LIMITS.get(wc, 0) or 0)
+    if limit <= 0:
+        return InventoryServiceResult(ok=True, item=item, quantity_changed=0)
+
+    iid = str(item.instance_id)
+    if iid in list(actor.equipment.worn_misc or []):
+        return InventoryServiceResult(ok=True, item=item, quantity_changed=0)
+
+    worn = actor_worn_magic_by_category(actor)
+    if int(worn.get(wc, 0) or 0) >= limit:
+        return InventoryServiceResult(ok=False, error=f"cannot wear more {wc} items ({limit} max)", item=item)
+    return InventoryServiceResult(ok=True, item=item, quantity_changed=0)
+
+
 def _ensure_actor_ready(actor: Actor) -> None:
     actor.ensure_inventory_initialized()
     actor.ensure_equipment_initialized()
@@ -154,6 +226,9 @@ def equip_item_on_actor(actor: Actor, instance_id: str) -> InventoryServiceResul
     iid = str(item.instance_id)
 
     if slot == "worn_misc":
+        can = can_actor_wear_item(actor, iid)
+        if not can.ok:
+            return can
         if iid not in eq.worn_misc:
             eq.worn_misc.append(iid)
     elif slot == "shield":
