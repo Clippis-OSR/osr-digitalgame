@@ -74,3 +74,201 @@ def test_room_treasure_path_adds_items_to_loot_pool():
     assert len(g.loot_pool.entries) == 1
     assert len(g.party_items) == 1
     assert room["treasure_taken"] is True
+
+
+
+def test_room_treasure_uses_coin_reward_service_once(monkeypatch):
+    import sww.reward_bundle as reward_bundle_mod
+
+    g = Game(HeadlessUI(), dice_seed=30110, wilderness_seed=30111)
+    room = {
+        "id": 1,
+        "treasure_taken": False,
+        "treasure_gp": 12,
+        "treasure_items": [{"name": "Dagger", "kind": "weapon"}],
+        "_delta": {},
+    }
+
+    calls = []
+    real = reward_bundle_mod.grant_coin_reward
+
+    def _spy(game, amount_gp, **kwargs):
+        calls.append((int(amount_gp), dict(kwargs)))
+        return real(game, amount_gp, **kwargs)
+
+    monkeypatch.setattr(reward_bundle_mod, "grant_coin_reward", _spy)
+
+    g._handle_room_treasure(room)
+
+    assert g.gold == 12
+    assert len(calls) == 1
+    assert calls[0][0] == 12
+    assert calls[0][1].get("source") == "room_treasure"
+    assert len(g.loot_pool.entries) == 1
+    assert len(g.party_items) == 1
+
+
+def test_boss_reward_uses_coin_reward_service_without_double_credit(monkeypatch):
+    import sww.reward_bundle as reward_bundle_mod
+
+    g = Game(HeadlessUI(), dice_seed=30120, wilderness_seed=30121)
+    room = {
+        "id": 1,
+        "type": "boss",
+        "cleared": False,
+        "boss_loot_taken": False,
+        "treasure_gp": 30,
+        "treasure_items": [{"name": "Jeweled Idol", "kind": "treasure", "gp_value": 60}],
+        "_delta": {},
+    }
+
+    calls = []
+    real = reward_bundle_mod.grant_coin_reward
+
+    def _spy(game, amount_gp, **kwargs):
+        calls.append((int(amount_gp), dict(kwargs)))
+        return real(game, amount_gp, **kwargs)
+
+    monkeypatch.setattr(reward_bundle_mod, "grant_coin_reward", _spy)
+
+    g.current_room_id = 1
+    g._ensure_room = lambda rid: room
+    g._apply_turn_cost = lambda: None
+    g._check_wandering_monster = lambda: False
+    g._handle_room_specials = lambda r: None
+    g._handle_room_monster = lambda r: r.update({"cleared": True})
+
+    res = g._cmd_dungeon_advance_turn()
+
+    assert res.ok is True
+    assert g.gold == 30
+    assert len(calls) == 1
+    assert calls[0][0] == 30
+    assert calls[0][1].get("source") == "boss_spoils"
+    assert len(g.loot_pool.entries) == 1
+    assert room.get("boss_loot_taken") is True
+
+
+def test_room_treasure_taken_guard_prevents_double_coin_credit(monkeypatch):
+    import sww.reward_bundle as reward_bundle_mod
+
+    g = Game(HeadlessUI(), dice_seed=30130, wilderness_seed=30131)
+    room = {
+        "id": 2,
+        "treasure_taken": False,
+        "treasure_gp": 14,
+        "treasure_items": [{"name": "Mace", "kind": "weapon"}],
+        "_delta": {},
+    }
+
+    calls = []
+    real = reward_bundle_mod.grant_coin_reward
+
+    def _spy(game, amount_gp, **kwargs):
+        calls.append((int(amount_gp), dict(kwargs)))
+        return real(game, amount_gp, **kwargs)
+
+    monkeypatch.setattr(reward_bundle_mod, "grant_coin_reward", _spy)
+
+    g._handle_room_treasure(room)
+    g._handle_room_treasure(room)
+
+    assert g.gold == 14
+    assert len(calls) == 1
+
+
+def test_reward_intake_abandoned_camp_style_writes_loot_pool_first():
+    g = Game(HeadlessUI(), dice_seed=30140, wilderness_seed=30141)
+
+    added = g._ingest_reward_items_to_loot_pool(
+        [{"name": "Camp Dagger", "kind": "weapon", "gp_value": 2}],
+        source="wilderness_abandoned_camp",
+    )
+
+    assert len(added) == 1
+    assert len(g.loot_pool.entries) == 1
+    # Compatibility mirror still present, but source of truth is loot_pool.
+    assert len(g.party_items) == 1
+
+
+def test_sell_loot_still_works_for_loot_pool_reward_intake():
+    g = Game(HeadlessUI(), dice_seed=30150, wilderness_seed=30151)
+    g._ingest_reward_items_to_loot_pool(
+        [{"name": "Camp Jewel", "kind": "treasure", "gp_value": 50}],
+        source="wilderness_abandoned_camp",
+    )
+
+    g.sell_loot()
+
+    assert g.gold == 25
+    assert len(g.loot_pool.entries) == 0
+
+
+def test_room_reward_summary_shows_coin_destination_and_items_found():
+    g = Game(HeadlessUI(), dice_seed=30160, wilderness_seed=30161)
+
+    g._grant_room_loot(gp=12, items=[{"name": "Room Blade", "kind": "weapon"}], source="room_treasure")
+
+    assert any("Coins gained: 12 gp -> treasury." in ln for ln in g.ui.lines)
+    assert any("Items found: 1." in ln for ln in g.ui.lines)
+
+
+def test_boss_reward_summary_shows_coin_destination_and_items_found():
+    g = Game(HeadlessUI(), dice_seed=30170, wilderness_seed=30171)
+
+    g._grant_room_loot(gp=30, items=[{"name": "Boss Idol", "kind": "treasure", "gp_value": 60}], source="boss_spoils")
+
+    assert any("Coins gained: 30 gp -> treasury." in ln for ln in g.ui.lines)
+    assert any("Items found: 1." in ln for ln in g.ui.lines)
+
+
+def test_sale_summary_shows_actor_owned_source_and_coin_result():
+    g = Game(HeadlessUI(), dice_seed=30180, wilderness_seed=30181)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Actor Sword", "kind": "weapon", "gp_value": 20, "metadata": {"owner_actor": "Lina"}}],
+    )
+
+    g.sell_loot()
+
+    assert any("Sold Actor Sword (actor:Lina) for 10 gp to treasury." in ln for ln in g.ui.lines)
+
+
+def test_sale_summary_shows_stash_source_and_coin_result():
+    g = Game(HeadlessUI(), dice_seed=30190, wilderness_seed=30191)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Stash Gem", "kind": "treasure", "gp_value": 40, "metadata": {"source": "stash"}}],
+    )
+
+    g.sell_loot()
+
+    assert any("Sold Stash Gem (stash) for 20 gp to treasury." in ln for ln in g.ui.lines)
+
+
+def test_sell_loot_uses_centralized_coin_reward_service(monkeypatch):
+    import sww.game as game_mod
+
+    g = Game(HeadlessUI(), dice_seed=30220, wilderness_seed=30221)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Service Gem", "kind": "treasure", "gp_value": 30}],
+    )
+
+    calls = []
+    real = game_mod.grant_coin_reward
+
+    def _spy(game, amount_gp, **kwargs):
+        calls.append((int(amount_gp), dict(kwargs)))
+        return real(game, amount_gp, **kwargs)
+
+    monkeypatch.setattr(game_mod, "grant_coin_reward", _spy)
+
+    g.sell_loot()
+
+    assert len(calls) == 1
+    assert calls[0][0] == 15
+    assert calls[0][1].get("source") == "sell_loot"

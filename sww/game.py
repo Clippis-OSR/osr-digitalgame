@@ -32,6 +32,8 @@ from .loot_pool import (
     leave_loot_behind,
     loot_pool_entries_as_legacy_dicts,
 )
+from .coin_rewards import CoinDestination, grant_coin_reward
+from .reward_bundle import apply_reward_bundle, empty_reward_bundle, reward_bundle_add_coins, reward_bundle_add_item
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
@@ -4429,7 +4431,8 @@ class Game:
 
 
             if c.get("status") == "completed":
-                self.gold += int(c.get("reward_gp", 0))
+                reward_gp = int(c.get("reward_gp", 0) or 0)
+                grant_coin_reward(self, reward_gp, source="contract_completion", destination=CoinDestination.TREASURY)
                 self.adjust_rep(c.get("faction_id"), int(c.get("rep_success", 5)))
                 self.ui.log(f"Contract completed: {c.get('title')} @ {self._contract_destination_label(c)} (+{c.get('reward_gp')} gp)")
                 self._append_player_event(
@@ -5533,16 +5536,37 @@ class Game:
         except Exception:
             pass
 
-    def _ensure_loot_pool_hydrated_from_legacy(self) -> None:
+    def _ensure_loot_pool_hydrated_from_legacy(self) -> bool:
         """Backfill loot pool from legacy `party_items` when needed."""
         entries = list(getattr(getattr(self, "loot_pool", None), "entries", []) or [])
         if entries:
-            return
+            return False
         legacy = list(getattr(self, "party_items", []) or [])
         if not legacy:
-            return
+            return False
         add_generated_treasure_to_pool(self.loot_pool, gp=0, items=legacy, identify_magic=False)
         self._sync_legacy_party_items_from_loot_pool()
+        return True
+
+    def _coin_destination_label(self, destination: str) -> str:
+        d = str(destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT)
+        if d in {CoinDestination.TREASURY, CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT}:
+            return "treasury"
+        if d == CoinDestination.EXPEDITION_POOL:
+            return "expedition pool"
+        return d
+
+    def _loot_sale_source_label(self, entry: Any, *, from_legacy_compat: bool) -> str:
+        md = dict(getattr(entry, "metadata", {}) or {})
+        owner = str(md.get("owner_actor") or "").strip()
+        if owner:
+            return f"actor:{owner}"
+        source = str(md.get("source") or "").strip().lower()
+        if source in {"stash", "party_stash"}:
+            return "stash"
+        if from_legacy_compat:
+            return "legacy compatibility pool"
+        return "expedition loot pool"
 
     def _template_id_for_equipment_name(self, name: str, *, preferred_categories: list[str]) -> str | None:
         """Best-effort mapping from shop/loot display names to template ids."""
@@ -7558,7 +7582,7 @@ class Game:
                     self.ui.log("You hear movement... but nothing comes.")
             # Treasure: modest but meaningful.
             gp = self.dice.d(6) * 10 + self.dice.d(6) * 10
-            self.gold += gp
+            grant_coin_reward(self, gp, source="wilderness_ruins", destination=CoinDestination.TREASURY)
             self.ui.log(f"You find {gp} gp in old coin.")
             if self.dice.d(6) >= 5:
                 it = self.treasure.roll_minor_gem_or_jewelry()
@@ -7649,7 +7673,7 @@ class Game:
             self.adjust_rep(self._town_guild_id(), +5)
 
             bonus_gp = self.dice.d(6) * 50
-            self.gold += bonus_gp
+            grant_coin_reward(self, bonus_gp, source="wilderness_lair", destination=CoinDestination.TREASURY)
             self.ui.log(f"In the lair you find {bonus_gp} gp and valuables.")
             if self.dice.d(6) >= 4:
                 it = self.treasure.roll_medium_gem_or_jewelry()
@@ -7684,11 +7708,11 @@ class Game:
                         self.combat(enc.foes)
                         if not self.party.living():
                             return
-                self.gold += gp
+                grant_coin_reward(self, gp, source="wilderness_abandoned_camp", destination=CoinDestination.TREASURY)
                 self.ui.log(f"You scavenge {gp} gp worth of coin and supplies.")
-                for it in items:
-                    self.party_items.append(it)
-                    self.ui.log(f"You find: {it['name']}.")
+                added_items = self._ingest_reward_items_to_loot_pool(items, source="wilderness_abandoned_camp")
+                for it in added_items:
+                    self.ui.log(f"You find: {it.get('name', 'item')}.")
                 if self.dice.in_6(3):
                     self.ui.log("Among the scraps you piece together a useful rumor.")
                     try:
@@ -9452,7 +9476,9 @@ class Game:
     def sell_loot(self):
         # Transitional compatibility: selling still consumes shared party loot pool.
         # TODO(inventory-migration): support selling directly from actor inventories.
-        self._ensure_loot_pool_hydrated_from_legacy()
+        # Compatibility note: sale proceeds still settle into shared treasury until
+        # actor/stash-specific coin ownership is fully migrated.
+        from_legacy_compat = bool(self._ensure_loot_pool_hydrated_from_legacy())
         entries = list(getattr(self.loot_pool, "entries", []) or [])
         if not entries:
             self.ui.log("You have no loot to sell.")
@@ -9468,20 +9494,28 @@ class Game:
             qty = int(getattr(e, "quantity", 1) or 1)
             qtxt = f" x{qty}" if qty > 1 else ""
             labels.append(f"{e.name} ({e.kind}, {u}){qtxt} sell {price} gp")
-            sellables.append((e.entry_id, price, e.name))
+            sellables.append((e.entry_id, price, e.name, self._loot_sale_source_label(e, from_legacy_compat=from_legacy_compat)))
         if not sellables:
             self.ui.log("No sellable items with gp value in inventory.")
             return
         c = self.ui.choose("Sell which?", labels + ["Back"])
         if c == len(labels):
             return
-        entry_id, price, sold_name = sellables[c]
+        entry_id, price, sold_name, sold_from = sellables[c]
         if not leave_loot_behind(self.loot_pool, entry_id):
             self.ui.log("Could not complete sale.")
             return
         self._sync_legacy_party_items_from_loot_pool()
-        self.gold += price
-        self.ui.log(f"Sold {sold_name} for {price} gp.")
+        coin_res = grant_coin_reward(
+            self,
+            price,
+            source="sell_loot",
+            destination=CoinDestination.TREASURY,
+        )
+        self.ui.log(
+            f"Sold {sold_name} ({sold_from}) for {price} gp to "
+            f"{self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}."
+        )
 
     # -------------
     # Expedition assembly
@@ -10595,22 +10629,44 @@ class Game:
         else:
             self.ui.log("The room is calm enough for a quick breath before pressing on.")
 
+
+    def _ingest_reward_items_to_loot_pool(self, items: list[Any] | None = None, *, source: str = "reward") -> list[dict[str, Any]]:
+        """Route reward items into loot_pool, with explicit legacy mirror sync.
+
+        Compatibility note: `party_items` is still mirrored from loot_pool for
+        older menus, but reward intake should write loot_pool first.
+        """
+        _gp_pool, added = add_generated_treasure_to_pool(self.loot_pool, gp=0, items=list(items or []), identify_magic=False)
+        self._sync_legacy_party_items_from_loot_pool()
+        return loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=list(added or [])))
+
     def _grant_room_loot(self, gp: int = 0, items: list[Any] | None = None, source: str = 'dungeon_feature') -> None:
         gp_i = int(gp or 0)
-        items_l = list(items or [])
-        # Current compatibility choice: coinage still goes straight to treasury,
-        # while item loot enters the temporary loot pool for assignment/stash/leave decisions.
-        if gp_i > 0:
-            self.gold += gp_i
-        _gp_pool, added = add_generated_treasure_to_pool(self.loot_pool, gp=0, items=items_l, identify_magic=False)
+        bundle = empty_reward_bundle(source=str(source))
+        reward_bundle_add_coins(bundle, gp=gp_i)
+        for it in (items or []):
+            reward_bundle_add_item(bundle, it)
+        # Transitional policy: bundle coins still settle into shared treasury for
+        # compatibility, while bundle items go through the loot-pool ownership path.
+        applied = apply_reward_bundle(
+            self,
+            bundle=bundle,
+            loot_pool=self.loot_pool,
+            coin_destination=CoinDestination.TREASURY,
+            identify_magic=False,
+        )
         self._sync_legacy_party_items_from_loot_pool()
-        items_l = loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=added)) if added else []
+        items_l = loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=list(applied.items_added or []))) if applied.items_added else []
         try:
-            self._encounter_note_loot(gp=gp_i, items=items_l, source=str(source))
+            self._encounter_note_loot(gp=int(applied.coins_gp_awarded), items=items_l, source=str(source))
         except Exception:
             pass
-        if gp_i or items_l:
-            self.ui.log(f'You recover {gp_i} gp and {len(items_l)} item(s).')
+        if int(applied.coins_gp_awarded) or items_l:
+            if int(applied.coins_gp_awarded):
+                dest_label = self._coin_destination_label(str(getattr(applied, "coin_destination", "") or ""))
+                self.ui.log(f"Coins gained: {int(applied.coins_gp_awarded)} gp -> {dest_label}.")
+            if items_l:
+                self.ui.log(f"Items found: {len(items_l)}.")
 
     def _reveal_room_secret_or_map(self, room: dict[str, Any], reveal_map: bool = False) -> None:
         ctx = resolve_room_interaction_context(self, room)
