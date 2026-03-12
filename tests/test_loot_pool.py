@@ -193,6 +193,45 @@ def test_reward_intake_abandoned_camp_style_writes_loot_pool_first():
     assert len(g.party_items) == 1
 
 
+def test_wilderness_ruins_rewards_ingest_loot_pool_without_legacy_party_items_mirror(monkeypatch):
+    from types import SimpleNamespace
+
+    g = Game(HeadlessUI(), dice_seed=30145, wilderness_seed=30146)
+    g.party_hex = (0, 0)
+    g.world_hexes["0,0"] = {
+        "q": 0,
+        "r": 0,
+        "terrain": "clear",
+        "poi": {"id": "poi:test:ruins:0,0", "type": "ruins", "name": "Test Ruins", "resolved": False},
+    }
+
+    class _DiceStub:
+        def __init__(self):
+            # ruins flow: d2 (encounter gate) then d6,d6 (gp), d6 (gem chance), d6 (magic chance)
+            self._rolls = [2, 3, 4, 6, 1]
+
+        def d(self, sides):
+            assert self._rolls
+            return int(self._rolls.pop(0))
+
+        def in_6(self, n):
+            return False
+
+    g.dice = _DiceStub()
+    monkeypatch.setattr(
+        g.treasure,
+        "roll_minor_gem_or_jewelry",
+        lambda: SimpleNamespace(name="Ruins Amber", kind="gem", gp_value=40),
+    )
+
+    g._handle_current_hex_poi()
+
+    assert len(g.loot_pool.entries) == 1
+    assert str(g.loot_pool.entries[0].name) == "Ruins Amber"
+    # Migrated ruins source skips immediate legacy mirror writes.
+    assert list(g.party_items or []) == []
+
+
 def test_sell_loot_still_works_for_loot_pool_reward_intake():
     g = Game(HeadlessUI(), dice_seed=30150, wilderness_seed=30151)
     g._ingest_reward_items_to_loot_pool(

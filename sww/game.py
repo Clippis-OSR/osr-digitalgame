@@ -7690,9 +7690,9 @@ class Game:
                 for it2 in items:
                     found_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
             if found_items:
-                # Transitional bridge: generated wilderness loot now enters the
-                # pending loot pool first; `party_items` is only synced mirror state.
-                added_items = self._ingest_reward_items_to_loot_pool(found_items, source="wilderness_ruins")
+                # Migrated ruins path: items enter ownership-aware loot_pool via
+                # dedicated wilderness bridge; no direct legacy mirror write here.
+                added_items = self._ingest_wilderness_reward_items(found_items, source="wilderness_ruins")
                 for it in added_items:
                     nm = str(it.get("name") or "item")
                     if str(it.get("kind") or "").lower() in {"potion", "scroll", "ring", "wand", "relic"}:
@@ -10879,18 +10879,36 @@ class Game:
             self.ui.log("The room is calm enough for a quick breath before pressing on.")
 
 
-    def _ingest_reward_items_to_loot_pool(self, items: list[Any] | None = None, *, source: str = "reward") -> list[dict[str, Any]]:
+    def _ingest_reward_items_to_loot_pool(
+        self,
+        items: list[Any] | None = None,
+        *,
+        source: str = "reward",
+        sync_legacy_mirror: bool = True,
+    ) -> list[dict[str, Any]]:
         """Route reward items into loot_pool, with explicit legacy mirror sync.
 
         Compatibility note: `party_items` is still mirrored from loot_pool for
         older menus, but reward intake should write loot_pool first.
         """
         _gp_pool, added = add_generated_treasure_to_pool(self.loot_pool, gp=0, items=list(items or []), identify_magic=False)
-        # TODO(ownership-migration): make legacy mirror sync source-aware so
-        # wilderness reward sources can stop touching `party_items` once readers
-        # are fully migrated.
-        self._sync_legacy_party_items_from_loot_pool()
+        if bool(sync_legacy_mirror):
+            self._sync_legacy_party_items_from_loot_pool()
         return loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=list(added or [])))
+
+    def _ingest_wilderness_reward_items(self, items: list[Any] | None = None, *, source: str) -> list[dict[str, Any]]:
+        """Compatibility wrapper for wilderness reward item ingestion.
+
+        Migrated sources ingest to ownership-aware loot_pool without writing the
+        legacy `party_items` mirror at award time.
+        """
+        src = str(source or "").strip().lower()
+        migrated_sources_skip_legacy = {"wilderness_ruins"}
+        return self._ingest_reward_items_to_loot_pool(
+            items,
+            source=str(source),
+            sync_legacy_mirror=(src not in migrated_sources_skip_legacy),
+        )
 
     def _grant_room_loot(self, gp: int = 0, items: list[Any] | None = None, source: str = 'dungeon_feature') -> None:
         gp_i = int(gp or 0)
