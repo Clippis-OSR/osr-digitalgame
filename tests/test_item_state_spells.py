@@ -2,6 +2,7 @@ from sww.game import PC, Stats
 from sww.inventory_service import add_item_to_actor, equip_item_on_actor, unequip_item_on_actor
 from sww.item_state_spells import apply_identify_to_item, apply_remove_curse_to_item
 from sww.item_templates import build_item_instance
+from sww.loot_pool import create_loot_pool, add_generated_treasure_to_pool, loot_pool_entries_as_legacy_dicts
 from sww.spellcasting import apply_spell_out_of_combat
 from sww.ui_headless import HeadlessUI
 
@@ -21,8 +22,12 @@ class _DummyGame:
         self.ui = ui
         self.party = _DummyParty(members)
         self.party_items = []
+        self.loot_pool = create_loot_pool()
         self.dungeon_rooms = {}
         self.current_room_id = None
+
+    def _sync_legacy_party_items_from_loot_pool(self):
+        self.party_items = loot_pool_entries_as_legacy_dicts(self.loot_pool)
 
 class _SeqUI(HeadlessUI):
     def __init__(self, seq):
@@ -111,3 +116,21 @@ def test_identify_helper_targets_specific_instance():
     assert res.ok
     assert a.identified is True
     assert b.identified is False
+
+
+def test_detect_magic_marks_loot_pool_entries_without_direct_party_items_write():
+    ui = _SeqUI([])
+    caster = _pc("Caster")
+    g = _DummyGame(ui, [caster])
+    _gp, added = add_generated_treasure_to_pool(
+        g.loot_pool,
+        items=[{"name": "Mysterious Ring", "kind": "ring", "gp_value": 50, "identified": False}],
+        identify_magic=False,
+    )
+    assert len(added) == 1
+    assert g.party_items == []
+
+    apply_spell_out_of_combat(game=g, caster=caster, spell_name="Detect Magic", context="dungeon")
+
+    assert g.loot_pool.entries[0].metadata.get("aura") is True
+    assert len(g.party_items) == 1
