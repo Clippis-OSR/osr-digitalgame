@@ -72,7 +72,8 @@ def test_room_treasure_path_adds_items_to_loot_pool():
 
     assert g.gold == 12
     assert len(g.loot_pool.entries) == 1
-    assert len(g.party_items) == 1
+    # Migrated room-treasure path should not inject directly into legacy shared loot.
+    assert len(g.party_items) == 0
     assert room["treasure_taken"] is True
 
 
@@ -105,7 +106,8 @@ def test_room_treasure_uses_coin_reward_service_once(monkeypatch):
     assert calls[0][0] == 12
     assert calls[0][1].get("source") == "room_treasure"
     assert len(g.loot_pool.entries) == 1
-    assert len(g.party_items) == 1
+    # Room treasure now stays in pending loot until explicit assignment.
+    assert len(g.party_items) == 0
 
 
 def test_boss_reward_uses_coin_reward_service_without_double_credit(monkeypatch):
@@ -272,3 +274,20 @@ def test_sell_loot_uses_centralized_coin_reward_service(monkeypatch):
     assert len(calls) == 1
     assert calls[0][0] == 15
     assert calls[0][1].get("source") == "sell_loot"
+
+
+def test_room_treasure_pending_item_can_be_assigned_to_specific_actor_inventory():
+    g = Game(HeadlessUI(), dice_seed=30230, wilderness_seed=30231)
+    actor = Actor(name="Nora", hp=5, hp_max=5, ac_desc=8, hd=1, save=15, is_pc=True)
+
+    g._grant_room_loot(gp=0, items=[{"name": "Room Spear", "kind": "weapon", "gp_value": 3}], source="room_treasure")
+
+    assert len(g.loot_pool.entries) == 1
+    # Regression check: migrated room-treasure intake does not auto-populate shared legacy loot.
+    assert len(g.party_items) == 0
+
+    entry = g.loot_pool.entries[0]
+    assert assign_loot_to_actor(g.loot_pool, actor, entry.entry_id) is True
+    assert len(actor.inventory.items) == 1
+    assert str(actor.inventory.items[0].name) == "Room Spear"
+    assert len(g.loot_pool.entries) == 0

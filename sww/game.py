@@ -5548,6 +5548,27 @@ class Game:
         self._sync_legacy_party_items_from_loot_pool()
         return True
 
+
+    def _reward_source_uses_legacy_party_items_mirror(self, source: str) -> bool:
+        """Compatibility routing for legacy `party_items` mirror updates.
+
+        Room treasure intake is explicitly migrated to loot_pool ownership and
+        should not inject into anonymous shared `party_items` on award.
+        """
+        src = str(source or "").strip().lower()
+        if src == "room_treasure":
+            return False
+        # TODO(ownership-migration): migrate `boss_spoils` to skip legacy mirror.
+        # TODO(ownership-migration): migrate post-combat loot recap away from
+        # `party_items` deltas and onto loot_pool ownership events.
+        return True
+
+    def _sync_legacy_party_items_for_reward_source(self, source: str) -> None:
+        """Compatibility wrapper to isolate remaining shared-loot bridge usage."""
+        if not self._reward_source_uses_legacy_party_items_mirror(source):
+            return
+        self._sync_legacy_party_items_from_loot_pool()
+
     def _coin_destination_label(self, destination: str) -> str:
         d = str(destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT)
         if d in {CoinDestination.TREASURY, CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT}:
@@ -10677,7 +10698,7 @@ class Game:
             coin_destination=CoinDestination.TREASURY,
             identify_magic=False,
         )
-        self._sync_legacy_party_items_from_loot_pool()
+        self._sync_legacy_party_items_for_reward_source(str(source))
         items_l = loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=list(applied.items_added or []))) if applied.items_added else []
         try:
             self._encounter_note_loot(gp=int(applied.coins_gp_awarded), items=items_l, source=str(source))
