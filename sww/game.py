@@ -2771,10 +2771,10 @@ class Game:
                                 items = list(room.get("treasure_items") or [])
                             else:
                                 gp, items = self.treasure.dungeon_treasure(self.dungeon_depth + 2)
-                            self.gold += gp
-                            # Transitional compatibility: room treasure enters shared pool first.
-                            # TODO(inventory-migration): convert to immediate per-character assignment.
-                            self.party_items.extend(items)
+                            # Transitional compatibility: route through centralized loot helper
+                            # so generated item rows always enter the loot pool with runtime
+                            # identification/metadata handling in one place.
+                            self._grant_room_loot(gp=int(gp), items=list(items), source="boss_spoils")
 
                             room["boss_loot_taken"] = True
                             if isinstance(room.get("_delta"), dict):
@@ -2783,7 +2783,6 @@ class Game:
                                 self._encounter_note_loot(gp=int(gp), items=list(items), source="boss_spoils")
                             except Exception:
                                 pass
-                            self.ui.log(f"Boss spoils: {gp} gp and {len(items)} item(s).")
                 try:
                     self._encounter_end_capture()
                 except Exception:
@@ -2812,11 +2811,9 @@ class Game:
                                         room["cleared"] = True
                                     else:
                                         gp, items = self.treasure.dungeon_treasure(self.dungeon_depth + 3)
-                                        self.gold += gp + 200
-                                        self.party_items.extend(items)
+                                        self._grant_room_loot(gp=int(gp) + 200, items=list(items), source="treasury")
                                         room["treasure_taken"] = True
                                         room["cleared"] = True
-                                        self.ui.log(f"You empty the coffer: {gp + 200} gp and {len(items)} item(s).")
                                     try:
                                         self._encounter_end_capture()
                                     except Exception:
@@ -6015,7 +6012,7 @@ class Game:
             self.ui.log(f"The sage identifies {identified_n} item(s).")
             return
 
-        labels = [f"{a.name}: {getattr(it, 'name', 'Unknown')} ({cost} gp)" for a, it, cost in unknown]
+        labels = [f"{a.name}: {self._ui_item_line(a, it, include_weight=False)} ({cost} gp)" for a, it, cost in unknown]
         j = self.ui.choose("Identify which item?", labels + ["Back"])
         if j == len(labels):
             return
@@ -10856,15 +10853,10 @@ class Game:
             items = list(room.get("treasure_items") or [])
         else:
             gp, items = self.treasure.dungeon_treasure(self.dungeon_depth)
-        # Compatibility choice: room coins are still credited immediately to treasury.
-        self.gold += gp
-        add_generated_treasure_to_pool(self.loot_pool, gp=0, items=items, identify_magic=False)
-        self._sync_legacy_party_items_from_loot_pool()
-        # Encounter recap capture (room rewards)
-        try:
-            self._encounter_note_loot(gp=int(gp), items=list(items), source="room_treasure")
-        except Exception:
-            pass
+        # Compatibility choice: room coinage still credits treasury immediately,
+        # but we route all item awards through the shared helper to keep transitional
+        # loot-pool behavior consistent across room/boss/treasury paths.
+        self._grant_room_loot(gp=int(gp), items=list(items), source="room_treasure")
         room["treasure_taken"] = True
         room["cleared"] = True
         if isinstance(room.get("_delta"), dict):
@@ -10874,7 +10866,6 @@ class Game:
             self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
         except Exception:
             pass
-        self.ui.log(f"You recover {gp} gp and {len(items)} item(s).")
 
     
     def _handle_room_trap(self, room: dict[str, Any]):
