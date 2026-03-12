@@ -193,6 +193,165 @@ def test_reward_intake_abandoned_camp_style_writes_loot_pool_first():
     assert len(g.party_items) == 1
 
 
+def test_wilderness_ruins_rewards_ingest_loot_pool_without_legacy_party_items_mirror(monkeypatch):
+    from types import SimpleNamespace
+
+    g = Game(HeadlessUI(), dice_seed=30145, wilderness_seed=30146)
+    g.party_hex = (0, 0)
+    g.world_hexes["0,0"] = {
+        "q": 0,
+        "r": 0,
+        "terrain": "clear",
+        "poi": {"id": "poi:test:ruins:0,0", "type": "ruins", "name": "Test Ruins", "resolved": False},
+    }
+
+    class _DiceStub:
+        def __init__(self):
+            # ruins flow: d2 (encounter gate) then d6,d6 (gp), d6 (gem chance), d6 (magic chance)
+            self._rolls = [2, 3, 4, 6, 1]
+
+        def d(self, sides):
+            assert self._rolls
+            return int(self._rolls.pop(0))
+
+        def in_6(self, n):
+            return False
+
+    g.dice = _DiceStub()
+    monkeypatch.setattr(
+        g.treasure,
+        "roll_minor_gem_or_jewelry",
+        lambda: SimpleNamespace(name="Ruins Amber", kind="gem", gp_value=40),
+    )
+
+    g._handle_current_hex_poi()
+
+    assert len(g.loot_pool.entries) == 1
+    assert str(g.loot_pool.entries[0].name) == "Ruins Amber"
+    # Migrated ruins source skips immediate legacy mirror writes.
+    assert list(g.party_items or []) == []
+    assert any("You find 70 gp in old coin." in ln for ln in g.ui.lines)
+    assert any("Items secured in expedition loot: 1." in ln for ln in g.ui.lines)
+
+
+def test_wilderness_abandoned_camp_rewards_ingest_without_legacy_party_items_mirror(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30147, wilderness_seed=30148)
+    g.party_hex = (0, 0)
+    g.world_hexes["0,0"] = {
+        "q": 0,
+        "r": 0,
+        "terrain": "clear",
+        "poi": {"id": "poi:test:camp:0,0", "type": "abandoned_camp", "name": "Test Camp", "resolved": False},
+    }
+
+    class _DiceStub:
+        def d(self, sides):
+            return 1
+
+        def in_6(self, n):
+            return False
+
+    g.dice = _DiceStub()
+    monkeypatch.setattr(g, "_roll_wilderness_minor_loot", lambda: (15, [{"name": "Camp Idol", "kind": "treasure", "gp_value": 30}]))
+
+    g._handle_current_hex_poi()
+    # Resolved camp should not grant duplicate rewards on repeat interaction.
+    g._handle_current_hex_poi()
+
+    assert g.gold == 15
+    assert len(g.loot_pool.entries) == 1
+    assert str(g.loot_pool.entries[0].name) == "Camp Idol"
+    # Migrated abandoned-camp source skips immediate legacy mirror writes.
+    assert list(g.party_items or []) == []
+
+
+def test_wilderness_shrine_relic_uses_ingestion_flow_and_clear_text(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30155, wilderness_seed=30156)
+    g.party_hex = (0, 0)
+    g.world_hexes["0,0"] = {
+        "q": 0,
+        "r": 0,
+        "terrain": "clear",
+        "poi": {"id": "poi:test:shrine:0,0", "type": "shrine", "name": "Test Shrine", "resolved": False},
+    }
+
+    def _choose(prompt, options):
+        if str(prompt) == "Shrine":
+            return 1  # Recover relic (dangerous)
+        return 0
+
+    monkeypatch.setattr(g.ui, "choose", _choose)
+    monkeypatch.setattr(g.dice, "in_6", lambda n: False)
+
+    g._handle_current_hex_poi()
+
+    assert len(g.loot_pool.entries) == 1
+    assert str(g.loot_pool.entries[0].name) == "Relic of Test Shrine"
+    assert list(g.party_items or []) == []
+    assert any("The relic is secured in expedition loot." in ln for ln in g.ui.lines)
+
+
+def test_encounter_recap_snapshot_prefers_loot_pool_over_legacy_party_items():
+    g = Game(HeadlessUI(), dice_seed=30148, wilderness_seed=30149)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Pool Trophy", "kind": "treasure", "gp_value": 25}],
+    )
+    # Stale legacy mirror should not be the recap reader source when loot_pool exists.
+    g.party_items = [{"name": "Legacy Mirror Item", "kind": "treasure", "gp_value": 1}]
+
+    g._encounter_begin_capture(context="test")
+
+    names = [str((it or {}).get("name") or "") for it in list(getattr(g, "_encounter_start_items", []) or [])]
+    assert "Pool Trophy" in names
+    assert "Legacy Mirror Item" not in names
+
+
+def test_preferred_loot_items_prefers_loot_pool_rows_first():
+    g = Game(HeadlessUI(), dice_seed=301481, wilderness_seed=301482)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Pool First", "kind": "treasure", "gp_value": 10}],
+    )
+    g.party_items = [{"name": "Legacy Should Not Win", "kind": "treasure", "gp_value": 1}]
+
+    rows = g.preferred_loot_items(intent="reward_summary")
+
+    names = [str((it or {}).get("name") or "") for it in rows]
+    assert "Pool First" in names
+    assert "Legacy Should Not Win" not in names
+
+
+def test_encounter_recap_snapshot_falls_back_to_legacy_party_items_when_pool_unavailable():
+    g = Game(HeadlessUI(), dice_seed=30149, wilderness_seed=30150)
+    g.loot_pool = None
+    g.party_items = [{"name": "Legacy Fallback Item", "kind": "treasure", "gp_value": 5}]
+
+    g._encounter_begin_capture(context="test")
+
+    names = [str((it or {}).get("name") or "") for it in list(getattr(g, "_encounter_start_items", []) or [])]
+    assert names == ["Legacy Fallback Item"]
+
+
+def test_encounter_begin_capture_uses_preferred_reward_summary_source_helper(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=301483, wilderness_seed=301484)
+    calls = []
+
+    def _stub():
+        calls.append("used")
+        return [{"name": "Helper Snapshot", "kind": "treasure"}]
+
+    monkeypatch.setattr(g, "preferred_reward_summary_source", _stub)
+
+    g._encounter_begin_capture(context="helper-test")
+
+    assert calls == ["used"]
+    names = [str((it or {}).get("name") or "") for it in list(getattr(g, "_encounter_start_items", []) or [])]
+    assert names == ["Helper Snapshot"]
+
+
 def test_sell_loot_still_works_for_loot_pool_reward_intake():
     g = Game(HeadlessUI(), dice_seed=30150, wilderness_seed=30151)
     g._ingest_reward_items_to_loot_pool(
@@ -248,6 +407,31 @@ def test_sale_summary_shows_stash_source_and_coin_result():
     g.sell_loot()
 
     assert any("Sold Stash Gem (stash) for 20 gp to treasury." in ln for ln in g.ui.lines)
+
+
+def test_sell_legacy_party_item_skips_eager_legacy_sync_when_mirror_unused(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30200, wilderness_seed=30201)
+    _gp, added = add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Legacy Sell Gem", "kind": "treasure", "gp_value": 40}],
+    )
+    eid = str(added[0].entry_id)
+    assert list(g.party_items or []) == []
+
+    sync_calls = []
+
+    def _spy_sync(*args, **kwargs):
+        sync_calls.append((args, kwargs))
+
+    monkeypatch.setattr(g, "_sync_legacy_party_items_from_loot_pool", _spy_sync)
+
+    ok = g.sell_legacy_party_item(eid)
+
+    assert ok is True
+    assert g.gold == 20
+    assert len(g.loot_pool.entries) == 0
+    assert sync_calls == []
 
 
 def test_sell_loot_uses_centralized_coin_reward_service(monkeypatch):
@@ -321,6 +505,56 @@ def test_room_loot_end_to_end_assignment_menu_to_actor_inventory():
 
     assert len(g.loot_pool.entries) == 0
     assert any(str(getattr(it, "name", "")) == "Room Knife" for it in (actor.inventory.items or []))
+
+
+def test_assign_party_loot_skips_eager_legacy_sync_when_mirror_unused(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30241, wilderness_seed=30242)
+    actor = Actor(name="Rin", hp=5, hp_max=5, ac_desc=8, hd=1, save=15, is_pc=True)
+    g.party.members = [actor]
+
+    g._grant_room_loot(gp=0, items=[{"name": "Room Knife", "kind": "weapon", "gp_value": 2}], source="room_treasure")
+    assert len(g.loot_pool.entries) == 1
+    assert list(g.party_items or []) == []
+
+    sync_calls = []
+
+    def _spy_sync(*args, **kwargs):
+        sync_calls.append((args, kwargs))
+
+    monkeypatch.setattr(g, "_sync_legacy_party_items_from_loot_pool", _spy_sync)
+
+    g.assign_party_loot_to_character()
+
+    # Ownership flow still works; no eager legacy writeback when mirror is unused.
+    assert len(g.loot_pool.entries) == 0
+    assert any(str(getattr(it, "name", "")) == "Room Knife" for it in (actor.inventory.items or []))
+    assert sync_calls == []
+
+
+def test_assign_party_loot_keeps_legacy_sync_when_mirror_already_present(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30243, wilderness_seed=30244)
+    actor = Actor(name="Rin", hp=5, hp_max=5, ac_desc=8, hd=1, save=15, is_pc=True)
+    g.party.members = [actor]
+
+    g._grant_room_loot(gp=0, items=[{"name": "Room Knife", "kind": "weapon", "gp_value": 2}], source="boss_spoils")
+    assert len(g.loot_pool.entries) == 1
+    assert len(g.party_items) == 1
+
+    sync_calls = []
+    real_sync = g._sync_legacy_party_items_from_loot_pool
+
+    def _spy_sync(*args, **kwargs):
+        sync_calls.append((args, kwargs))
+        return real_sync(*args, **kwargs)
+
+    monkeypatch.setattr(g, "_sync_legacy_party_items_from_loot_pool", _spy_sync)
+
+    g.assign_party_loot_to_character()
+
+    assert len(g.loot_pool.entries) == 0
+    assert any(str(getattr(it, "name", "")) == "Room Knife" for it in (actor.inventory.items or []))
+    assert len(sync_calls) == 1
+    assert list(g.party_items or []) == []
 
 
 def test_combat_loot_delta_prefers_loot_pool_entries_over_legacy_party_items():
