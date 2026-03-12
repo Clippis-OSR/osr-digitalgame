@@ -16,6 +16,7 @@ from .content import Content
 from .treasure import TreasureGenerator
 from .data import load_json
 from .encounters import EncounterGenerator
+from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
 from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
 from .item_templates import build_item_instance, find_template_id_by_name
@@ -2759,8 +2760,10 @@ class Game:
                             else:
                                 gp, items = self.treasure.dungeon_treasure(self.dungeon_depth + 2)
                             self.gold += gp
+                            # Transitional compatibility: room treasure enters shared pool first.
+                            # TODO(inventory-migration): convert to immediate per-character assignment.
                             self.party_items.extend(items)
-                            
+
                             room["boss_loot_taken"] = True
                             if isinstance(room.get("_delta"), dict):
                                 room["_delta"]["boss_loot_taken"] = True
@@ -5016,6 +5019,9 @@ class Game:
                 if sh == 1:
                     pc.shield = True
 
+            # Migration bridge: keep new equipment in sync with legacy picks.
+            pc.sync_legacy_equipment_to_new()
+
             # Compute AC from chosen kit and DEX.
             try:
                 from .equipment import compute_ac_desc
@@ -5332,6 +5338,8 @@ class Game:
                                 pc.weapon = weapon_name
                                 pc.armor = None if armor_name == "None" else armor_name
                                 pc.shield = has_shield
+                                # Migration bridge: keep new equipment in sync with legacy picks.
+                                pc.sync_legacy_equipment_to_new()
                                 try:
                                     from .equipment import compute_ac_desc
                                     pc.ac_desc = compute_ac_desc(
@@ -5624,6 +5632,37 @@ class Game:
         except Exception:
             return False
 
+    def party_encumbrance(self):
+        """Transitional party encumbrance accessor used by dungeon/wilderness systems.
+
+        Compatibility note: this still accepts/weights legacy shared party pools
+        (`party_items`, global ammo attrs, town supplies) while per-character
+        ownership migration is ongoing.
+        """
+        try:
+            ammo = {
+                "arrows": int(getattr(self, "arrows", 0) or 0),
+                "bolts": int(getattr(self, "bolts", 0) or 0),
+                "stones": int(getattr(self, "stones", 0) or 0),
+                "hand_axes": int(getattr(self, "hand_axes", 0) or 0),
+                "throwing_daggers": int(getattr(self, "throwing_daggers", 0) or 0),
+                "darts": int(getattr(self, "darts", 0) or 0),
+                "javelins": int(getattr(self, "javelins", 0) or 0),
+                "throwing_spears": int(getattr(self, "throwing_spears", 0) or 0),
+            }
+        except Exception:
+            ammo = {}
+        return compute_party_encumbrance(
+            members=list(getattr(getattr(self, "party", None), "members", []) or []),
+            gp=int(getattr(self, "gold", 0) or 0),
+            rations=int(getattr(self, "rations", 0) or 0),
+            torches=int(getattr(self, "torches", 0) or 0),
+            ammo=ammo,
+            party_items=list(getattr(self, "party_items", []) or []),
+            equipdb=getattr(self, "equipdb", None),
+            strip_plus_suffix=getattr(self, "_strip_plus_suffix", None),
+        )
+
     def town_arms_store(self):
         """Arms & armour store.
 
@@ -5648,8 +5687,8 @@ class Game:
 
             labels = []
             for a in living:
-                w = getattr(a, "weapon", None) or "None"
-                ar = getattr(a, "armor", None) or "None"
+                w = self.effective_melee_weapon(a) or self.effective_missile_weapon(a) or "None"
+                ar = self.effective_armor(a) or "None"
                 labels.append(f"{a.name}  (Weapon: {w} | Armor: {ar})")
             who = self.ui.choose("Who will use it?", labels + ["Back"])
             if who == len(living):
@@ -5826,6 +5865,8 @@ class Game:
         self.ui.log(f"Temple recovery completed. (Healed {total_missing} HP total.)")
 
     def _town_identify_items(self) -> None:
+        # Transitional compatibility: unidentified item service still operates on
+        # shared party_items until per-character unidentified workflows land.
         unknown = [it for it in (self.party_items or []) if isinstance(it, dict) and bool(it.get("true_name")) and not bool(it.get("identified", False))]
         if not unknown:
             self.ui.log("No unidentified magic items in party loot.")
@@ -9266,6 +9307,8 @@ class Game:
         self.ui.log(f"Prepared {len(caster.spells_prepared)} spell(s) for {caster.name}.")
 
     def sell_loot(self):
+        # Transitional compatibility: selling still consumes shared party loot pool.
+        # TODO(inventory-migration): support selling directly from actor inventories.
         if not self.party_items:
             self.ui.log("You have no loot to sell.")
             return
@@ -10413,6 +10456,8 @@ class Game:
                     out.append(it)
                 else:
                     out.append({'name': str(it), 'kind': 'gear', 'gp_value': None})
+            # Transitional compatibility: room loot still enters shared pool first.
+            # TODO(inventory-migration): route directly to per-character assignment UI.
             self.party_items.extend(out)
             items_l = out
         try:
