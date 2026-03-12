@@ -81,15 +81,21 @@ def _normalize_item_entry(row: Any, *, identify_magic: bool) -> LootEntry:
     inst: ItemInstance | None = None
     if tid:
         try:
+            md = {
+                "source_kind": kind,
+                "gp_value": row.get("gp_value"),
+                "true_name": true_name,
+            }
+            md.update(dict(row.get("metadata") or {}))
+            if row.get("charges") is not None:
+                md["charges"] = int(row.get("charges") or 0)
+            if row.get("cursed") is not None:
+                md["cursed"] = bool(row.get("cursed"))
             inst = build_item_instance(
                 tid,
                 quantity=max(1, int(row.get("quantity", 1) or 1)),
                 identified=identified,
-                metadata={
-                    "source_kind": kind,
-                    "gp_value": row.get("gp_value"),
-                    "true_name": true_name,
-                },
+                metadata=md,
             )
             # Preserve user-facing names for generic fallbacks.
             if resolved_name and inst.name != resolved_name and tid in {"treasure.generic", "gear.backpack_30-pound_capacity"}:
@@ -200,6 +206,8 @@ def loot_pool_entries_as_legacy_dicts(pool: LootPool) -> list[dict[str, Any]]:
                 "true_name": e.true_name,
                 "template_id": e.template_id,
                 "metadata": dict(e.metadata or {}),
+                "charges": ((e.item_instance.metadata or {}).get("charges") if getattr(e, "item_instance", None) is not None else None),
+                "cursed": ((e.item_instance.metadata or {}).get("cursed") if getattr(e, "item_instance", None) is not None else None),
             }
         )
     return out

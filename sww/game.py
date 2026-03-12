@@ -25,7 +25,13 @@ from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .town_services import identify_cost_gp, identify_item_in_town
-from .loot_pool import create_loot_pool
+from .loot_pool import (
+    add_generated_treasure_to_pool,
+    assign_loot_to_actor,
+    create_loot_pool,
+    leave_loot_behind,
+    loot_pool_entries_as_legacy_dicts,
+)
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
