@@ -488,6 +488,53 @@ def actor_to_dict(a: Any) -> dict:
     return base
 
 
+
+def migrate_legacy_actor_payload(payload: Any) -> dict:
+    """Normalize legacy/new actor payloads into the transitional actor schema.
+
+    Backward compatibility behavior:
+    - Old saves missing `inventory`/`equipment` are initialized to empty defaults.
+    - Legacy equipment fields are mirrored into `equipment` when possible.
+
+    Temporary migration note:
+    - Once all systems use `Actor.inventory` and `Actor.equipment`, this helper
+      (and legacy field mirroring) should be removed.
+    """
+    p = dict(payload or {}) if isinstance(payload, dict) else {}
+
+    inv = p.get("inventory") if isinstance(p.get("inventory"), dict) else {}
+    inv = {
+        "items": list(inv.get("items") or []),
+        "coins_gp": int(inv.get("coins_gp", 0) or 0),
+        "coins_sp": int(inv.get("coins_sp", 0) or 0),
+        "coins_cp": int(inv.get("coins_cp", 0) or 0),
+        "torches": int(inv.get("torches", 0) or 0),
+        "rations": int(inv.get("rations", 0) or 0),
+        "ammo": dict(inv.get("ammo") or {}),
+    }
+
+    eq = p.get("equipment") if isinstance(p.get("equipment"), dict) else {}
+    if "ammo_kind" not in eq and "ammo" in eq:
+        eq["ammo_kind"] = eq.get("ammo")
+    eq = {
+        "armor": eq.get("armor") if eq.get("armor") is not None else p.get("armor"),
+        "shield": eq.get("shield") if eq.get("shield") is not None else (p.get("shield_name") if p.get("shield") else None),
+        "main_hand": eq.get("main_hand") if eq.get("main_hand") is not None else p.get("weapon"),
+        "off_hand": eq.get("off_hand"),
+        "missile_weapon": eq.get("missile_weapon"),
+        "ammo_kind": eq.get("ammo_kind"),
+        "worn_misc": list(eq.get("worn_misc") or []),
+    }
+
+    p["inventory"] = inv
+    p["equipment"] = eq
+    return p
+
+
+def actor_from_dict(d: dict) -> Actor:
+    """Rehydrate an Actor/PC from payload (compat alias around dict_to_actor)."""
+    return dict_to_actor(d)
+
 def dict_to_actor(d: dict) -> Actor:
     """Rehydrate an Actor/PC.
 
@@ -497,7 +544,8 @@ def dict_to_actor(d: dict) -> Actor:
     If the project defines a PC class (e.g., sww.game.PC), we will instantiate it for PCs.
     Otherwise we fall back to Actor and attach extra attributes.
     """
-    is_pc = bool(d.get("is_pc"))
+    payload = migrate_legacy_actor_payload(d)
+    is_pc = bool(payload.get("is_pc"))
 
     PC_cls = None
     if is_pc:
@@ -510,33 +558,33 @@ def dict_to_actor(d: dict) -> Actor:
     cls_ = PC_cls if (is_pc and PC_cls is not None) else Actor
 
     a = cls_(  # type: ignore[call-arg]
-        name=d.get("name", ""),
-        hp=int(d.get("hp", 0)),
-        hp_max=int(d.get("hp_max", 0)),
-        ac_desc=int(d.get("ac_desc", 9)),
-        hd=int(d.get("hd", 1)),
-        save=int(d.get("save", 16)),
-        morale=d.get("morale", None),
-        alignment=d.get("alignment", "Neutrality"),
+        name=payload.get("name", ""),
+        hp=int(payload.get("hp", 0)),
+        hp_max=int(payload.get("hp_max", 0)),
+        ac_desc=int(payload.get("ac_desc", 9)),
+        hd=int(payload.get("hd", 1)),
+        save=int(payload.get("save", 16)),
+        morale=payload.get("morale", None),
+        alignment=payload.get("alignment", "Neutrality"),
         is_pc=is_pc,
-        effects=list(d.get("effects", []) or []),
-        special_text=d.get("special_text", ""),
-        tags=list(d.get("tags", []) or []),
-        spells_known=list(d.get("spells_known", []) or []),
-        spells_prepared=list(d.get("spells_prepared", []) or []),
-        status=dict(d.get("status", {}) or {}),
-        effect_instances=dict(d.get("effect_instances", {}) or {}),
-        is_retainer=bool(d.get("is_retainer", False)),
-        loyalty=int(d.get("loyalty", 7)),
-        wage_gp=int(d.get("wage_gp", 0)),
-        treasure_share=int(d.get("treasure_share", 1)),
-        on_expedition=bool(d.get("on_expedition", False)),
-        weapon=d.get("weapon", None),
-        armor=d.get("armor", None),
-        shield=bool(d.get("shield", False)),
-        shield_name=d.get("shield_name", None),
-        inventory=_dict_to_inventory(d.get("inventory")),
-        equipment=_dict_to_equipment(d.get("equipment")),
+        effects=list(payload.get("effects", []) or []),
+        special_text=payload.get("special_text", ""),
+        tags=list(payload.get("tags", []) or []),
+        spells_known=list(payload.get("spells_known", []) or []),
+        spells_prepared=list(payload.get("spells_prepared", []) or []),
+        status=dict(payload.get("status", {}) or {}),
+        effect_instances=dict(payload.get("effect_instances", {}) or {}),
+        is_retainer=bool(payload.get("is_retainer", False)),
+        loyalty=int(payload.get("loyalty", 7)),
+        wage_gp=int(payload.get("wage_gp", 0)),
+        treasure_share=int(payload.get("treasure_share", 1)),
+        on_expedition=bool(payload.get("on_expedition", False)),
+        weapon=payload.get("weapon", None),
+        armor=payload.get("armor", None),
+        shield=bool(payload.get("shield", False)),
+        shield_name=payload.get("shield_name", None),
+        inventory=_dict_to_inventory(payload.get("inventory")),
+        equipment=_dict_to_equipment(payload.get("equipment")),
     )
 
     if hasattr(a, "ensure_inventory_initialized"):
@@ -550,15 +598,15 @@ def dict_to_actor(d: dict) -> Actor:
 
     # Attach PC extras if needed
     if is_pc:
-        setattr(a, "cls", d.get("cls", "Fighter"))
-        setattr(a, "level", int(d.get("level", 1)))
-        setattr(a, "xp", int(d.get("xp", 0)))
-        setattr(a, "stats", _dict_to_stats(d.get("stats")))
+        setattr(a, "cls", payload.get("cls", "Fighter"))
+        setattr(a, "level", int(payload.get("level", 1)))
+        setattr(a, "xp", int(payload.get("xp", 0)))
+        setattr(a, "stats", _dict_to_stats(payload.get("stats")))
 
     # P3.1.15: preserve stable monster identifier for non-PC actors
-    if d.get("monster_id") is not None:
+    if payload.get("monster_id") is not None:
         try:
-            setattr(a, "monster_id", d.get("monster_id"))
+            setattr(a, "monster_id", payload.get("monster_id"))
         except Exception:
             pass
 
@@ -571,7 +619,7 @@ def party_to_dict(p: Party) -> dict:
 
 def dict_to_party(d: dict) -> Party:
     p = Party()
-    p.members = [dict_to_actor(x) for x in (d.get("members") or [])]
+    p.members = [actor_from_dict(x) for x in (d.get("members") or [])]
     return p
 
 
@@ -1019,16 +1067,16 @@ def _migrate_11_to_12(data: Dict[str, Any]) -> Dict[str, Any]:
     def _seed_actor(m: dict) -> None:
         if not isinstance(m, dict):
             return
-        m.setdefault("inventory", {"items": [], "coins_gp": 0, "capacity_lb": 0.0})
+        m.setdefault("inventory", {"items": [], "coins_gp": 0, "coins_sp": 0, "coins_cp": 0, "torches": 0, "rations": 0, "ammo": {}})
         if not isinstance(m.get("inventory"), dict):
-            m["inventory"] = {"items": [], "coins_gp": 0, "capacity_lb": 0.0}
+            m["inventory"] = {"items": [], "coins_gp": 0, "coins_sp": 0, "coins_cp": 0, "torches": 0, "rations": 0, "ammo": {}}
         m.setdefault("equipment", {
             "armor": m.get("armor"),
             "shield": m.get("shield_name") if m.get("shield") else None,
             "main_hand": m.get("weapon"),
             "off_hand": None,
             "missile_weapon": None,
-            "ammo": None,
+            "ammo_kind": None,
             "worn_misc": [],
         })
         if not isinstance(m.get("equipment"), dict):
@@ -1038,7 +1086,7 @@ def _migrate_11_to_12(data: Dict[str, Any]) -> Dict[str, Any]:
                 "main_hand": m.get("weapon"),
                 "off_hand": None,
                 "missile_weapon": None,
-                "ammo": None,
+                "ammo_kind": None,
                 "worn_misc": [],
             }
 

@@ -1,5 +1,5 @@
 from sww.models import Actor, CharacterEquipment, CharacterInventory, ItemInstance
-from sww.save_load import actor_to_dict, dict_to_actor, migrate_save_data
+from sww.save_load import actor_from_dict, actor_to_dict, dict_to_actor, migrate_save_data
 
 
 def test_actor_roundtrip_persists_new_inventory_and_equipment_fields():
@@ -91,3 +91,29 @@ def test_migrate_12_to_13_normalizes_inventory_item_keys_and_ammo_kind():
     assert member["inventory"]["items"][0]["template_id"] == "weapon.sword"
     assert member["inventory"]["items"][0]["category"] == "weapon"
     assert member["equipment"]["ammo_kind"] == "arrows"
+
+
+def test_old_style_actor_payload_loads_with_initialized_inventory_and_equipment():
+    legacy_payload = {
+        "name": "Borin",
+        "hp": 6,
+        "hp_max": 6,
+        "ac_desc": 7,
+        "hd": 1,
+        "save": 15,
+        "weapon": "Sword",
+        "armor": "Leather",
+        "shield": True,
+        "shield_name": "Shield",
+    }
+
+    out = actor_from_dict(legacy_payload)
+
+    assert out.inventory.items == []
+    assert out.inventory.coins_gp == 0
+    assert out.equipment.main_hand == "Sword"
+    assert out.equipment.armor == "Leather"
+    assert out.equipment.shield == "Shield"
+    assert out.weapon == "Sword"
+    assert out.armor == "Leather"
+    assert out.shield is True
