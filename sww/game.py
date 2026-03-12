@@ -27,9 +27,9 @@ from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .town_services import identify_cost_gp, identify_item_in_town
 from .loot_pool import (
     add_generated_treasure_to_pool,
-    assign_loot_to_actor,
+    assign_loot_item_to_actor,
     create_loot_pool,
-    leave_loot_behind,
+    discard_loot_item,
     loot_pool_entries_as_legacy_dicts,
 )
 from .coin_rewards import CoinDestination, grant_coin_reward
@@ -5728,7 +5728,7 @@ class Game:
 
         actor = living[wi]
         picked = entries[li]
-        ok = assign_loot_to_actor(self.loot_pool, actor, picked.entry_id)
+        ok = assign_loot_item_to_actor(self.loot_pool, actor, picked.entry_id)
         if not ok:
             self.ui.log("Could not assign item to inventory.")
             return
@@ -7584,15 +7584,24 @@ class Game:
             gp = self.dice.d(6) * 10 + self.dice.d(6) * 10
             grant_coin_reward(self, gp, source="wilderness_ruins", destination=CoinDestination.TREASURY)
             self.ui.log(f"You find {gp} gp in old coin.")
+            found_items: list[dict[str, Any]] = []
             if self.dice.d(6) >= 5:
                 it = self.treasure.roll_minor_gem_or_jewelry()
-                self.party_items.append({"name": it.name, "kind": it.kind, "gp_value": it.gp_value})
-                self.ui.log(f"You also find: {it.name}.")
+                found_items.append({"name": it.name, "kind": it.kind, "gp_value": it.gp_value})
             if self.dice.d(6) == 6:
                 items = self.treasure.roll_minor_magic_item()
                 for it2 in items:
-                    self.party_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
-                    self.ui.log(f"Magic! {it2.name}.")
+                    found_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
+            if found_items:
+                # Transitional bridge: generated wilderness loot now enters the
+                # pending loot pool first; `party_items` is only synced mirror state.
+                added_items = self._ingest_reward_items_to_loot_pool(found_items, source="wilderness_ruins")
+                for it in added_items:
+                    nm = str(it.get("name") or "item")
+                    if str(it.get("kind") or "").lower() in {"potion", "scroll", "ring", "wand", "relic"}:
+                        self.ui.log(f"Magic! {nm}.")
+                    else:
+                        self.ui.log(f"You also find: {nm}.")
             poi["resolved"] = True
 
         # --- SHRINE ---
@@ -7639,7 +7648,12 @@ class Game:
                         if not self.party.living():
                             return
                 relic_name = f"Relic of {name}"
-                self.party_items.append({"name": relic_name, "kind": "relic", "gp_value": 150})
+                # Transitional bridge: relic creation routes through loot pool ownership
+                # stage before any explicit actor/stash assignment.
+                self._ingest_reward_items_to_loot_pool(
+                    [{"name": relic_name, "kind": "relic", "gp_value": 150}],
+                    source="wilderness_shrine",
+                )
                 self.ui.log(f"You recover a relic: {relic_name}.")
                 poi["relic_taken"] = True
                 self.adjust_rep(str(poi.get("faction_id") or ""), +10)
@@ -7675,15 +7689,23 @@ class Game:
             bonus_gp = self.dice.d(6) * 50
             grant_coin_reward(self, bonus_gp, source="wilderness_lair", destination=CoinDestination.TREASURY)
             self.ui.log(f"In the lair you find {bonus_gp} gp and valuables.")
+            found_items: list[dict[str, Any]] = []
             if self.dice.d(6) >= 4:
                 it = self.treasure.roll_medium_gem_or_jewelry()
-                self.party_items.append({"name": it.name, "kind": it.kind, "gp_value": it.gp_value})
-                self.ui.log(f"You recover: {it.name}.")
+                found_items.append({"name": it.name, "kind": it.kind, "gp_value": it.gp_value})
             if self.dice.d(6) >= 5:
                 items = self.treasure.roll_medium_magic_item()
                 for it2 in items:
-                    self.party_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
-                    self.ui.log(f"Magic! {it2.name}.")
+                    found_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
+            if found_items:
+                # Transitional bridge: generated lair loot enters pending loot pool.
+                added_items = self._ingest_reward_items_to_loot_pool(found_items, source="wilderness_lair")
+                for it in added_items:
+                    nm = str(it.get("name") or "item")
+                    if str(it.get("kind") or "").lower() in {"potion", "scroll", "ring", "wand", "relic"}:
+                        self.ui.log(f"Magic! {nm}.")
+                    else:
+                        self.ui.log(f"You recover: {nm}.")
             poi["resolved"] = True
 
         # --- ABANDONED CAMP ---
@@ -9502,7 +9524,7 @@ class Game:
         if c == len(labels):
             return
         entry_id, price, sold_name, sold_from = sellables[c]
-        if not leave_loot_behind(self.loot_pool, entry_id):
+        if not discard_loot_item(self.loot_pool, entry_id):
             self.ui.log("Could not complete sale.")
             return
         self._sync_legacy_party_items_from_loot_pool()

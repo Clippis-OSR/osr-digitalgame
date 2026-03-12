@@ -1,7 +1,18 @@
 """Temporary loot-pool runtime layer.
 
-This layer separates generated treasure from actor-owned inventory while the UI
-still uses simple party-loot menus.
+Ownership lifecycle (transitional):
+1. Generated treasure enters :class:`LootPool` as pending, unowned loot.
+2. Each entry is explicitly assigned to one owner destination:
+   - a specific actor inventory,
+   - party/town stash,
+   - or discarded/left behind.
+3. Legacy ``party_items`` can mirror the pool for compatibility, but should not
+   be treated as the source of truth for new reward generation.
+
+Coin handling note:
+- ``LootPool.coins_gp`` tracks unassigned expedition coins.
+- Most current game flows still settle coins immediately through the central
+  coin reward policy helper for compatibility (see ``coin_rewards.py``).
 """
 
 from __future__ import annotations
@@ -40,6 +51,13 @@ class LootPool:
 
 def create_loot_pool(*, coins_gp: int = 0, entries: list[LootEntry] | None = None, stash: list[LootEntry] | None = None) -> LootPool:
     return LootPool(coins_gp=max(0, int(coins_gp or 0)), entries=list(entries or []), stash=list(stash or []))
+
+
+def add_item_to_loot_pool(pool: LootPool, item: Any, *, identify_magic: bool = False) -> LootEntry:
+    """Add one generated item row to pending loot ownership stage."""
+    entry = _normalize_item_entry(item, identify_magic=identify_magic)
+    pool.entries.append(entry)
+    return entry
 
 
 def _next_entry_id() -> str:
@@ -142,8 +160,7 @@ def add_generated_treasure_to_pool(
     pool.coins_gp += gp_i
     added: list[LootEntry] = []
     for row in list(items or []):
-        e = _normalize_item_entry(row, identify_magic=identify_magic)
-        pool.entries.append(e)
+        e = add_item_to_loot_pool(pool, row, identify_magic=identify_magic)
         added.append(e)
     return gp_i, added
 
@@ -175,6 +192,11 @@ def assign_loot_to_actor(pool: LootPool, actor: Actor, entry_id: str) -> bool:
     return True
 
 
+def assign_loot_item_to_actor(pool: LootPool, actor: Actor, entry_id: str) -> bool:
+    """Assign one pending loot entry to a specific actor's inventory."""
+    return assign_loot_to_actor(pool, actor, entry_id)
+
+
 def move_loot_to_party_stash(pool: LootPool, entry_id: str) -> bool:
     eid = str(entry_id or "")
     pick = next((e for e in pool.entries if str(e.entry_id) == eid), None)
@@ -185,11 +207,21 @@ def move_loot_to_party_stash(pool: LootPool, entry_id: str) -> bool:
     return True
 
 
+def assign_loot_item_to_stash(pool: LootPool, entry_id: str) -> bool:
+    """Assign one pending loot entry to party/town stash ownership."""
+    return move_loot_to_party_stash(pool, entry_id)
+
+
 def leave_loot_behind(pool: LootPool, entry_id: str) -> bool:
     eid = str(entry_id or "")
     before = len(pool.entries)
     pool.entries = [e for e in pool.entries if str(e.entry_id) != eid]
     return len(pool.entries) != before
+
+
+def discard_loot_item(pool: LootPool, entry_id: str) -> bool:
+    """Discard a pending loot entry (left behind / sold / destroyed)."""
+    return leave_loot_behind(pool, entry_id)
 
 
 def loot_pool_entries_as_legacy_dicts(pool: LootPool) -> list[dict[str, Any]]:

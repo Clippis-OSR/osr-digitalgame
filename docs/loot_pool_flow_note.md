@@ -3,7 +3,7 @@
 Treasure generation is now split from ownership:
 
 1. Encounter/room generation creates loot entries in a `LootPool`.
-2. Coins from current room-treasure paths are still credited directly to treasury for compatibility.
+2. Coins are handled explicitly by coin-destination policy (treasury by default in most current flows).
 3. Item entries remain pooled until one of:
    - assigned to an actor inventory,
    - moved to party stash,
@@ -19,9 +19,12 @@ This keeps old-school logistics pressure (items are not instantly ownerless abst
 Migrated to loot-pool helper path:
 - `_handle_room_treasure`
 - `_grant_room_loot`
+- wilderness POI item rewards (`ruins`, `shrine`, `lair`, `abandoned_camp`) now ingest through `_ingest_reward_items_to_loot_pool(...)`
 
-Still using direct/legacy `party_items` write patterns (to migrate later):
-- some wilderness/event reward append paths in `Game` that still call `self.party_items.append(...)` directly.
+Legacy compatibility bridges still active:
+- `Game._sync_legacy_party_items_from_loot_pool()` mirrors pending loot into `party_items` for older menus.
+- `Game._ensure_loot_pool_hydrated_from_legacy()` backfills pool entries from old saves/paths that only had `party_items`.
+- `sell_loot()` still sells from pending/shared pool entries (not directly from actor inventories yet).
 
 ## TODOs
 
