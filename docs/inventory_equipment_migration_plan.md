@@ -38,3 +38,20 @@ Future passes may switch these fields to item-instance ids once runtime systems 
 - Shop/town purchase flows mutating legacy fields.
 - Encumbrance model replacement (party slot-based -> per-character weight-based).
 - UI surfaces that assume the old weapon/armor/shield tuple.
+
+
+## Item template runtime layer (current coverage)
+
+A thin data-driven template catalog now bridges extracted data into unified runtime templates.
+
+- Fully data-derived now:
+  - `weapon` from `weapons_melee.json` + `weapons_missile.json`
+  - `armor` / `shield` from `armor_table_24.json`
+  - `ammo` entries from missile weapon data when represented as ammo rows
+- Explicit bespoke templates now:
+  - `potion`, `scroll`, `ring`, `wand` from `items_magic_v1.json`
+- Placeholder/lightweight for later expansion:
+  - `gear` from `equipment_general.json` (currently value-focused, sparse weight data)
+  - `treasure` generic template for runtime convenience
+
+This keeps the bridge practical without forcing immediate full content-system replacement.
