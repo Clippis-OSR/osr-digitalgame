@@ -24,6 +24,7 @@ from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
+from .town_services import identify_cost_gp, identify_item_in_town
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
@@ -182,6 +183,7 @@ class Game:
         self.expeditions = 0
         self.terrain = "clear"
         self.party_items: list[dict[str, Any]] = []
+        self.loot_pool = create_loot_pool()
         self.torches = 3
         self.oil_flasks = 0
         self.holy_water = 0
@@ -5042,6 +5044,7 @@ class Game:
         self.torches = 3
         self.rations = 3
         self.party_items = []
+        self.loot_pool = create_loot_pool()
         self.campaign_day = 1
 
         self.ui.title("Party Created")
@@ -5400,6 +5403,7 @@ class Game:
         self.torches = 3
         self.rations = 3
         self.party_items = []
+        self.loot_pool = create_loot_pool()
         self.campaign_day = 1
 
         self.ui.title("Party Created")
@@ -5515,6 +5519,24 @@ class Game:
     # -------------
 
 
+    def _sync_legacy_party_items_from_loot_pool(self) -> None:
+        """Compatibility bridge while town/inventory UI still reads `party_items`."""
+        try:
+            self.party_items = loot_pool_entries_as_legacy_dicts(self.loot_pool)
+        except Exception:
+            pass
+
+    def _ensure_loot_pool_hydrated_from_legacy(self) -> None:
+        """Backfill loot pool from legacy `party_items` when needed."""
+        entries = list(getattr(getattr(self, "loot_pool", None), "entries", []) or [])
+        if entries:
+            return
+        legacy = list(getattr(self, "party_items", []) or [])
+        if not legacy:
+            return
+        add_generated_treasure_to_pool(self.loot_pool, gp=0, items=legacy, identify_magic=False)
+        self._sync_legacy_party_items_from_loot_pool()
+
     def _template_id_for_equipment_name(self, name: str, *, preferred_categories: list[str]) -> str | None:
         """Best-effort mapping from shop/loot display names to template ids."""
         try:
@@ -5564,8 +5586,10 @@ class Game:
             return False
 
     def assign_party_loot_to_character(self) -> None:
-        """Assign one party-loot entry to a selected living character inventory."""
-        if not self.party_items:
+        """Assign one loot-pool entry to a selected living character inventory."""
+        self._ensure_loot_pool_hydrated_from_legacy()
+        entries = list(getattr(self.loot_pool, "entries", []) or [])
+        if not entries:
             self.ui.log("No party loot to assign.")
             return
         living = self.party.living()
@@ -5573,14 +5597,7 @@ class Game:
             self.ui.log("No living party members available.")
             return
 
-        loot_labels = []
-        for it in self.party_items:
-            if isinstance(it, dict):
-                nm = str(it.get("name") or "Unknown")
-                kd = str(it.get("kind") or "item")
-                loot_labels.append(f"{nm} ({kd})")
-            else:
-                loot_labels.append(str(it))
+        loot_labels = [f"{str(e.name or 'Unknown')} ({str(e.kind or 'item')})" for e in entries]
         li = self.ui.choose("Assign which loot item?", loot_labels + ["Back"])
         if li == len(loot_labels):
             return
@@ -5591,13 +5608,13 @@ class Game:
             return
 
         actor = living[wi]
-        picked = self.party_items[li]
-        ok = self._add_loot_item_to_actor_inventory(actor, picked)
+        picked = entries[li]
+        ok = assign_loot_to_actor(self.loot_pool, actor, picked.entry_id)
         if not ok:
             self.ui.log("Could not assign item to inventory.")
             return
 
-        self.party_items.pop(li)
+        self._sync_legacy_party_items_from_loot_pool()
         self.ui.log(f"Assigned loot to {actor.name}.")
 
     def _buy_item_for_actor(self, actor: Actor, *, name: str, kind: str, auto_equip: bool) -> bool:
@@ -5865,39 +5882,55 @@ class Game:
         self.ui.log(f"Temple recovery completed. (Healed {total_missing} HP total.)")
 
     def _town_identify_items(self) -> None:
-        # Transitional compatibility: unidentified item service still operates on
-        # shared party_items until per-character unidentified workflows land.
-        unknown = [it for it in (self.party_items or []) if isinstance(it, dict) and bool(it.get("true_name")) and not bool(it.get("identified", False))]
+        # Identification is instance-targeted: each owned copy can be known differently.
+        # TODO(town-services): support sages/guild perks and class-based discounts.
+        unknown: list[tuple[Actor, Any, int]] = []
+        for actor in (self.party.living() or []):
+            actor.ensure_inventory_initialized()
+            for item in (actor.inventory.items or []):
+                if bool(getattr(item, "identified", True)):
+                    continue
+                if not bool(item_is_magic(item)):
+                    continue
+                unknown.append((actor, item, int(identify_cost_gp(item))))
+
         if not unknown:
-            self.ui.log("No unidentified magic items in party loot.")
+            self.ui.log("No unidentified magic items in character inventories.")
             return
-        cost_each = 12
-        c = self.ui.choose("Sage Appraisal", [f"Identify one item ({cost_each} gp)", f"Identify all ({len(unknown) * cost_each} gp)", "Back"])
+
+        total_cost = sum(c for _, _, c in unknown)
+        c = self.ui.choose("Sage Appraisal", [f"Identify one item", f"Identify all ({total_cost} gp)", "Back"])
         if c == 2:
             return
+
         if c == 1:
-            all_cost = int(len(unknown) * cost_each)
-            if self.gold < all_cost:
+            if self.gold < total_cost:
                 self.ui.log("Not enough gold.")
                 return
-            self.gold -= all_cost
-            for it in unknown:
-                it["identified"] = True
-                it["name"] = str(it.get("true_name") or it.get("name") or "Unknown Item")
-            self.ui.log(f"The sage identifies {len(unknown)} item(s).")
+            identified_n = 0
+            for actor, item, _cost in unknown:
+                res = identify_item_in_town(actor, item.instance_id, party_gold=self.gold, reveal_curse=False, reveal_charges=False)
+                if not res.ok:
+                    continue
+                self.gold = int(res.party_gold_after)
+                identified_n += 1
+            self.ui.log(f"The sage identifies {identified_n} item(s).")
             return
-        labels = [f"{idx + 1}. {str(it.get('name') or 'Unknown')}" for idx, it in enumerate(unknown)]
+
+        labels = [f"{a.name}: {getattr(it, 'name', 'Unknown')} ({cost} gp)" for a, it, cost in unknown]
         j = self.ui.choose("Identify which item?", labels + ["Back"])
         if j == len(labels):
             return
-        if self.gold < cost_each:
-            self.ui.log("Not enough gold.")
+        actor, item, _cost = unknown[j]
+        res = identify_item_in_town(actor, item.instance_id, party_gold=self.gold, reveal_curse=False, reveal_charges=False)
+        if not res.ok:
+            if str(res.error or "") == "not enough gold":
+                self.ui.log("Not enough gold.")
+            else:
+                self.ui.log("Could not identify that item right now.")
             return
-        self.gold -= cost_each
-        target = unknown[j]
-        target["identified"] = True
-        target["name"] = str(target.get("true_name") or target.get("name") or "Unknown Item")
-        self.ui.log(f"Identified: {target.get('name')}.")
+        self.gold = int(res.party_gold_after)
+        self.ui.log(f"Identified: {getattr(res.item, 'name', 'Unknown Item')}.")
 
     def _town_lodging_service(self) -> None:
         opts = [
@@ -9309,28 +9342,33 @@ class Game:
     def sell_loot(self):
         # Transitional compatibility: selling still consumes shared party loot pool.
         # TODO(inventory-migration): support selling directly from actor inventories.
-        if not self.party_items:
+        self._ensure_loot_pool_hydrated_from_legacy()
+        entries = list(getattr(self.loot_pool, "entries", []) or [])
+        if not entries:
             self.ui.log("You have no loot to sell.")
             return
         labels = []
         sellables = []
-        for idx, it in enumerate(self.party_items):
-            val = int(it.get("gp_value") or 0)
+        for e in entries:
+            val = int(getattr(e, "gp_value", 0) or 0)
             if val <= 0:
                 continue
             price = max(1, int(val * 0.5))
-            labels.append(f"{it['name']} ({it.get('kind','item')}) sell {price} gp")
-            sellables.append((idx, price))
+            labels.append(f"{e.name} ({e.kind}) sell {price} gp")
+            sellables.append((e.entry_id, price, e.name))
         if not sellables:
             self.ui.log("No sellable items with gp value in inventory.")
             return
         c = self.ui.choose("Sell which?", labels + ["Back"])
         if c == len(labels):
             return
-        item_idx, price = sellables[c]
-        sold = self.party_items.pop(item_idx)
+        entry_id, price, sold_name = sellables[c]
+        if not leave_loot_behind(self.loot_pool, entry_id):
+            self.ui.log("Could not complete sale.")
+            return
+        self._sync_legacy_party_items_from_loot_pool()
         self.gold += price
-        self.ui.log(f"Sold {sold['name']} for {price} gp.")
+        self.ui.log(f"Sold {sold_name} for {price} gp.")
 
     # -------------
     # Expedition assembly
@@ -10447,19 +10485,13 @@ class Game:
     def _grant_room_loot(self, gp: int = 0, items: list[Any] | None = None, source: str = 'dungeon_feature') -> None:
         gp_i = int(gp or 0)
         items_l = list(items or [])
+        # Current compatibility choice: coinage still goes straight to treasury,
+        # while item loot enters the temporary loot pool for assignment/stash/leave decisions.
         if gp_i > 0:
             self.gold += gp_i
-        if items_l:
-            out: list[Any] = []
-            for it in items_l:
-                if isinstance(it, dict):
-                    out.append(it)
-                else:
-                    out.append({'name': str(it), 'kind': 'gear', 'gp_value': None})
-            # Transitional compatibility: room loot still enters shared pool first.
-            # TODO(inventory-migration): route directly to per-character assignment UI.
-            self.party_items.extend(out)
-            items_l = out
+        _gp_pool, added = add_generated_treasure_to_pool(self.loot_pool, gp=0, items=items_l, identify_magic=False)
+        self._sync_legacy_party_items_from_loot_pool()
+        items_l = loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=added)) if added else []
         try:
             self._encounter_note_loot(gp=gp_i, items=items_l, source=str(source))
         except Exception:
@@ -10708,8 +10740,10 @@ class Game:
             items = list(room.get("treasure_items") or [])
         else:
             gp, items = self.treasure.dungeon_treasure(self.dungeon_depth)
+        # Compatibility choice: room coins are still credited immediately to treasury.
         self.gold += gp
-        self.party_items.extend(items)
+        add_generated_treasure_to_pool(self.loot_pool, gp=0, items=items, identify_magic=False)
+        self._sync_legacy_party_items_from_loot_pool()
         # Encounter recap capture (room rewards)
         try:
             self._encounter_note_loot(gp=int(gp), items=list(items), source="room_treasure")

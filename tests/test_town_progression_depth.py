@@ -1,4 +1,5 @@
 from sww.game import Game, PC, Stats
+from sww.item_templates import build_item_instance
 from sww.ui_headless import HeadlessUI
 
 
@@ -36,19 +37,20 @@ def test_town_services_resupply_and_identify_sink_gold_and_improve_readiness():
     ui = _SeqUI([2, 4, 1, 1, 4])
     g = Game(ui, dice_seed=20000, wilderness_seed=20001)
     g.gold = 100
-    g.party.members = [_pc()]
-    g.party_items = [{"name": "Mysterious Potion", "true_name": "Potion of Healing", "identified": False, "kind": "potion"}]
+    pc = _pc()
+    pc.inventory.items.append(build_item_instance("potion.potion_healing", identified=False))
+    g.party.members = [pc]
 
     g._town_services_menu()
     g._town_services_menu()
 
-    assert g.gold == 72
+    assert g.gold == 69
     assert g.rations == 6
     assert g.torches == 7
     assert g.arrows == 20
     assert g.bolts == 20
-    assert g.party_items[0]["identified"] is True
-    assert g.party_items[0]["name"] == "Potion of Healing"
+    assert pc.inventory.items[0].identified is True
+    assert pc.inventory.items[0].name == "Potion of Healing"
 
 
 def test_expedition_prep_snapshot_includes_warnings_and_ammo_targets():

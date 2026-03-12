@@ -4,6 +4,8 @@ from typing import Any, Iterable
 
 from .rules import saving_throw, saving_throw_detail
 from .status_lifecycle import apply_status
+from .item_state_spells import apply_identify_to_item, apply_remove_curse_to_item
+from .item_templates import item_is_cursed
 
 
 
@@ -768,8 +770,8 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
     s = str(spell_name).strip().lower()
 
     def choose_ally(prompt: str) -> Any | None:
-        allies = [a for a in game.party.living()]
-        if not allies:
+        allies_live = [a for a in game.party.living()]
+        if not allies_live:
             return None
         labels = [f"{a.name} (HP {a.hp}/{a.hp_max})" for a in allies_live]
         t = game.ui.choose(prompt, labels)
@@ -786,6 +788,36 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
             game.ui.log("A steady magical light fills the area.")
         else:
             game.ui.log("A magical light appears.")
+        return
+
+    if s == "identify":
+        # Temporary simplification: Identify reveals item name and basic state,
+        # but does not reveal curse status by default.
+        candidates: list[tuple[Any, Any]] = []
+        for actor in (game.party.members or []):
+            if not hasattr(actor, "inventory"):
+                continue
+            actor.ensure_inventory_initialized()
+            for item in (actor.inventory.items or []):
+                if bool(getattr(item, "identified", True)):
+                    continue
+                candidates.append((actor, item))
+
+        if not candidates:
+            game.ui.log("No unidentified items to identify.")
+            return
+
+        labels = [f"{getattr(a, 'name', '?')}: {getattr(i, 'name', 'Unknown item')}" for a, i in candidates]
+        j = game.ui.choose("Identify which item?", labels + ["Back"])
+        if j == len(labels):
+            return
+
+        actor, item = candidates[j]
+        res = apply_identify_to_item(game.party, item.instance_id, reveal_curse=False, reveal_effects=False)
+        if not res.ok:
+            game.ui.log("Identify fails to reveal that item.")
+            return
+        game.ui.log(f"{getattr(actor, 'name', 'Someone')}'s item is identified: {getattr(item, 'name', 'item')}.")
         return
 
     if s == "detect magic":
@@ -812,18 +844,36 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
 
 
     if s == "remove curse":
+        # Temporary simplification: Remove Curse suppresses sticky-equip curse locks
+        # on one item, allowing normal unequip. It does not rewrite template curse data.
+        candidates: list[tuple[Any, Any]] = []
+        for actor in (game.party.members or []):
+            if not hasattr(actor, "inventory"):
+                continue
+            actor.ensure_inventory_initialized()
+            for item in (actor.inventory.items or []):
+                md = dict(getattr(item, "metadata", {}) or {})
+                if bool(md.get("cursed", False)) or bool(item_is_cursed(item)):
+                    candidates.append((actor, item))
+
+        if candidates:
+            labels = [f"{getattr(a, 'name', '?')}: {getattr(i, 'name', 'Unknown item')}" for a, i in candidates]
+            j = game.ui.choose("Remove Curse from which item?", labels + ["Back"])
+            if j == len(labels):
+                return
+            actor, item = candidates[j]
+            res = apply_remove_curse_to_item(game.party, item.instance_id, suppress_sticky=True)
+            if not res.ok:
+                game.ui.log("The curse does not yield.")
+                return
+            game.ui.log(f"A cleansing force loosens the curse on {getattr(actor, 'name', 'the wielder')}'s {getattr(item, 'name', 'item')}.")
+            return
+
         target = choose_ally("Remove Curse from who?")
         if not target:
             game.ui.log("No target.")
             return
-        try:
-            clear_status(target, "cursed_bound_slots")
-            clear_status(target, "curse_ac_penalty")
-            if hasattr(game, "_recompute_equipped_stats"):
-                game._recompute_equipped_stats(target)
-        except Exception:
-            pass
-        game.ui.log(f"A cleansing force breaks the curse on {target.name}.")
+        game.ui.log(f"A cleansing force washes over {target.name}, but no item curse is present.")
         return
 
     if s in {"raise dead", "resurrection"}:
