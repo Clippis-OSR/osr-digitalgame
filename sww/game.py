@@ -27,12 +27,14 @@ from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .town_services import identify_cost_gp, identify_item_in_town
 from .loot_pool import (
     add_generated_treasure_to_pool,
-    assign_loot_item_to_actor,
     create_loot_pool,
-    discard_loot_item,
     loot_pool_entries_as_legacy_dicts,
 )
 from .coin_rewards import CoinDestination, grant_coin_reward
+from .ownership_service import (
+    move_item_loot_pool_to_actor,
+    remove_owned_item,
+)
 from .reward_bundle import apply_reward_bundle, empty_reward_bundle, reward_bundle_add_coins, reward_bundle_add_item
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
@@ -5749,8 +5751,8 @@ class Game:
 
         actor = living[wi]
         picked = entries[li]
-        ok = assign_loot_item_to_actor(self.loot_pool, actor, picked.entry_id)
-        if not ok:
+        moved = move_item_loot_pool_to_actor(self.loot_pool, actor, picked.entry_id)
+        if not moved.ok:
             self.ui.log("Could not assign item to inventory.")
             return
 
@@ -9607,7 +9609,7 @@ class Game:
         if price <= 0:
             return False
         sold_name = owned_item_brief_label(item)
-        removed = remove_item_from_actor(actor, instance_id, qty)
+        removed = remove_owned_item(self, source_kind="actor", reference_id=instance_id, actor=actor, quantity=qty)
         if not bool(getattr(removed, "ok", False)):
             return False
         coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
@@ -9627,7 +9629,9 @@ class Game:
         if price <= 0:
             return False
         sold_name = owned_item_brief_label(item)
-        stash.items = [it for it in list(stash.items or []) if str(getattr(it, "instance_id", "") or "") != iid]
+        removed = remove_owned_item(self, source_kind="stash", reference_id=iid, quantity=qty)
+        if not bool(getattr(removed, "ok", False)):
+            return False
         coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
         self.ui.log(f"Sold {sold_name} (stash) for {price} gp to {self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
         return True
@@ -9645,7 +9649,8 @@ class Game:
             return False
         sold_name = str(getattr(pick, "name", "loot") or "loot")
         sold_from = self._loot_sale_source_label(pick, from_legacy_compat=True)
-        if not discard_loot_item(self.loot_pool, str(entry_id or "")):
+        removed = remove_owned_item(self, source_kind="legacy", reference_id=str(entry_id or ""), quantity=qty)
+        if not bool(getattr(removed, "ok", False)):
             return False
         self._sync_legacy_party_items_from_loot_pool()
         coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
