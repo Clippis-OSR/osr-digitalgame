@@ -232,6 +232,37 @@ def test_wilderness_ruins_rewards_ingest_loot_pool_without_legacy_party_items_mi
     assert list(g.party_items or []) == []
 
 
+def test_wilderness_abandoned_camp_rewards_ingest_without_legacy_party_items_mirror(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30147, wilderness_seed=30148)
+    g.party_hex = (0, 0)
+    g.world_hexes["0,0"] = {
+        "q": 0,
+        "r": 0,
+        "terrain": "clear",
+        "poi": {"id": "poi:test:camp:0,0", "type": "abandoned_camp", "name": "Test Camp", "resolved": False},
+    }
+
+    class _DiceStub:
+        def d(self, sides):
+            return 1
+
+        def in_6(self, n):
+            return False
+
+    g.dice = _DiceStub()
+    monkeypatch.setattr(g, "_roll_wilderness_minor_loot", lambda: (15, [{"name": "Camp Idol", "kind": "treasure", "gp_value": 30}]))
+
+    g._handle_current_hex_poi()
+    # Resolved camp should not grant duplicate rewards on repeat interaction.
+    g._handle_current_hex_poi()
+
+    assert g.gold == 15
+    assert len(g.loot_pool.entries) == 1
+    assert str(g.loot_pool.entries[0].name) == "Camp Idol"
+    # Migrated abandoned-camp source skips immediate legacy mirror writes.
+    assert list(g.party_items or []) == []
+
+
 def test_sell_loot_still_works_for_loot_pool_reward_intake():
     g = Game(HeadlessUI(), dice_seed=30150, wilderness_seed=30151)
     g._ingest_reward_items_to_loot_pool(

@@ -7747,7 +7747,7 @@ class Game:
                 relic_name = f"Relic of {name}"
                 # Transitional bridge: relic creation routes through loot pool ownership
                 # stage before any explicit actor/stash assignment.
-                self._ingest_reward_items_to_loot_pool(
+                self._ingest_wilderness_reward_items(
                     [{"name": relic_name, "kind": "relic", "gp_value": 150}],
                     source="wilderness_shrine",
                 )
@@ -7795,8 +7795,9 @@ class Game:
                 for it2 in items:
                     found_items.append({"name": it2.name, "kind": it2.kind, "gp_value": it2.gp_value})
             if found_items:
-                # Transitional bridge: generated lair loot enters pending loot pool.
-                added_items = self._ingest_reward_items_to_loot_pool(found_items, source="wilderness_lair")
+                # Migrated lair path: ownership-first loot intake via wilderness
+                # compatibility wrapper; skip immediate legacy mirror writes.
+                added_items = self._ingest_wilderness_reward_items(found_items, source="wilderness_lair")
                 for it in added_items:
                     nm = str(it.get("name") or "item")
                     if str(it.get("kind") or "").lower() in {"potion", "scroll", "ring", "wand", "relic"}:
@@ -7829,7 +7830,7 @@ class Game:
                             return
                 grant_coin_reward(self, gp, source="wilderness_abandoned_camp", destination=CoinDestination.TREASURY)
                 self.ui.log(f"You scavenge {gp} gp worth of coin and supplies.")
-                added_items = self._ingest_reward_items_to_loot_pool(items, source="wilderness_abandoned_camp")
+                added_items = self._ingest_wilderness_reward_items(items, source="wilderness_abandoned_camp")
                 for it in added_items:
                     self.ui.log(f"You find: {it.get('name', 'item')}.")
                 if self.dice.in_6(3):
@@ -10903,7 +10904,14 @@ class Game:
         legacy `party_items` mirror at award time.
         """
         src = str(source or "").strip().lower()
-        migrated_sources_skip_legacy = {"wilderness_ruins"}
+        migrated_sources_skip_legacy = {
+            "wilderness_ruins",
+            "wilderness_shrine",
+            "wilderness_lair",
+            "wilderness_abandoned_camp",
+        }
+        # TODO(ownership-migration): keep default legacy mirror sync enabled for
+        # any wilderness source not explicitly audited/migrated in this wrapper.
         return self._ingest_reward_items_to_loot_pool(
             items,
             source=str(source),
