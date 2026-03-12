@@ -95,3 +95,18 @@ Future curse families (TODO):
 - appearance deception
 - compulsion effects
 - drain effects
+
+
+## Spell integration (Identify / Remove Curse)
+
+Current targeted integration is intentionally narrow:
+- **Identify** updates instance state (`identified=true`) and reveals the identified item name.
+- **Identify** does **not** reveal curse status by default in this phase.
+- **Remove Curse** marks one cursed item as curse-suppressed for sticky-equip behavior, allowing normal unequip.
+- **Remove Curse** does not rewrite template-level cursed flags; it applies instance-level suppression.
+- **Remove Curse** currently works on carried or equipped cursed items in party inventories.
+
+RAW ambiguity left for tuning:
+- whether Identify should reveal curse status/effects fully
+- whether Remove Curse should permanently clear curse or only suppress until re-curse/removal flows
+- whether stronger cursed families should require higher-level remedies

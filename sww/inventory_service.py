@@ -37,7 +37,11 @@ def _item_has_sticky_curse(item: ItemInstance) -> bool:
     Narrow scope for now: cursed items with `sticky_equip` effect payload.
     """
     try:
-        if not bool(item_is_cursed(item)):
+        md = dict(getattr(item, "metadata", {}) or {})
+        if bool(md.get("curse_suppressed", False)):
+            return False
+        cursed = bool(md.get("cursed", False)) or bool(item_is_cursed(item))
+        if not cursed:
             return False
         for eff in list(item_effects(item) or []):
             if str((eff or {}).get("type") or "").strip().lower() != "sticky_equip":
