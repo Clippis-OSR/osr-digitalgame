@@ -17,7 +17,7 @@ from .treasure import TreasureGenerator
 from .data import load_json
 from .encounters import EncounterGenerator
 from .equipment import EquipmentDB
-from .inventory_service import add_item_to_actor
+from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
 from .item_templates import build_item_instance, find_template_id_by_name
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
@@ -11619,13 +11619,167 @@ class Game:
     # Combat (lightweight but OSR-ish)
     # -------------
 
-    def _weapon_kind(self, attacker: Actor) -> str:
-        """Return 'missile' if the actor's equipped weapon is a missile weapon, else 'melee'."""
-        w = getattr(attacker, "weapon", None)
-        if not w:
-            return "melee"
+    def _equipped_ref_to_name(self, actor: Actor, ref: str | None) -> str | None:
+        """Resolve equipment references that may be instance ids or stable names.
+
+        Transitional behavior: prefer inventory instance lookup, then treat the
+        reference as a stable display/equipment name.
+        """
+        if not ref:
+            return None
+        r = str(ref).strip()
+        if not r:
+            return None
         try:
-            if w in getattr(self.equipdb, "missile", {}):
+            it = find_item_on_actor(actor, r)
+            if it is not None:
+                return str(getattr(it, "name", r) or r)
+        except Exception:
+            pass
+        return r
+
+    def effective_melee_weapon(self, actor: Actor) -> str | None:
+        """Resolve effective melee weapon from new equipment first, then legacy."""
+        eq = getattr(actor, "equipment", None)
+        if eq is not None:
+            nm = self._equipped_ref_to_name(actor, getattr(eq, "main_hand", None))
+            if nm:
+                return nm
+        w = str(getattr(actor, "weapon", "") or "").strip()
+        return w or None
+
+    def effective_missile_weapon(self, actor: Actor) -> str | None:
+        """Resolve effective missile weapon from new equipment first, then legacy."""
+        eq = getattr(actor, "equipment", None)
+        if eq is not None:
+            nm = self._equipped_ref_to_name(actor, getattr(eq, "missile_weapon", None))
+            if nm:
+                return nm
+            # If main hand is explicitly missile, allow it.
+            mh = self._equipped_ref_to_name(actor, getattr(eq, "main_hand", None))
+            if mh and mh in getattr(self.equipdb, "missile", {}):
+                return mh
+        w = str(getattr(actor, "weapon", "") or "").strip()
+        if w and w in getattr(self.equipdb, "missile", {}):
+            return w
+        return None
+
+    def effective_armor(self, actor: Actor) -> str | None:
+        """Resolve effective armor from new equipment first, then legacy fields."""
+        eq = getattr(actor, "equipment", None)
+        if eq is not None:
+            nm = self._equipped_ref_to_name(actor, getattr(eq, "armor", None))
+            if nm:
+                return nm
+        ar = str(getattr(actor, "armor", "") or "").strip()
+        return ar or None
+
+    def effective_shield(self, actor: Actor) -> str | None:
+        """Resolve effective shield from new equipment first, then legacy fields."""
+        eq = getattr(actor, "equipment", None)
+        if eq is not None:
+            nm = self._equipped_ref_to_name(actor, getattr(eq, "shield", None))
+            if nm:
+                return nm
+        if bool(getattr(actor, "shield", False)):
+            return str(getattr(actor, "shield_name", None) or "Shield")
+        return None
+
+    def _effective_ac_desc(self, defender: Actor) -> int:
+        """Compute effective descending AC from equipped armor/shield with fallback."""
+        try:
+            from .equipment import compute_ac_desc
+            armor_name = self.effective_armor(defender)
+            has_shield = bool(self.effective_shield(defender))
+            dex_score = int(getattr(getattr(defender, "stats", None), "DEX", 10)) if getattr(defender, "stats", None) is not None else None
+            return int(compute_ac_desc(base_ac_desc=9, armor_name=armor_name, shield=has_shield, dex_score=dex_score))
+        except Exception:
+            return int(getattr(defender, "ac_desc", 9) or 9)
+
+    def _effective_ammo_ref_for_actor(self, actor: Actor, missile_weapon_name: str | None) -> str | None:
+        eq = getattr(actor, "equipment", None)
+        if eq is not None and getattr(eq, "ammo_kind", None):
+            return str(getattr(eq, "ammo_kind"))
+        return self._ammo_kind_for_weapon(missile_weapon_name)
+
+    def _actor_has_ammo_for_ref(self, actor: Actor, ammo_ref: str | None) -> bool:
+        if not ammo_ref:
+            return True
+        ref = str(ammo_ref).strip()
+        if not ref:
+            return True
+        # Instance-id ammo
+        try:
+            it = find_item_on_actor(actor, ref)
+            if it is not None:
+                return int(getattr(it, "quantity", 0) or 0) > 0
+        except Exception:
+            pass
+        # Actor ammo pools in new inventory
+        try:
+            inv = getattr(actor, "inventory", None)
+            if inv is not None:
+                n = int((getattr(inv, "ammo", {}) or {}).get(ref.lower(), 0) or 0)
+                if n > 0:
+                    return True
+        except Exception:
+            pass
+        # Legacy global ammo pools on game
+        try:
+            return int(getattr(self, ref, 0) or 0) > 0
+        except Exception:
+            return False
+
+    def _consume_actor_ammo(self, actor: Actor, ammo_ref: str | None) -> bool:
+        if not ammo_ref:
+            return True
+        ref = str(ammo_ref).strip()
+        if not ref:
+            return True
+        try:
+            it = find_item_on_actor(actor, ref)
+            if it is not None:
+                rr = remove_item_from_actor(actor, ref, 1)
+                return bool(rr.ok)
+        except Exception:
+            pass
+        try:
+            inv = getattr(actor, "inventory", None)
+            if inv is not None:
+                pools = dict(getattr(inv, "ammo", {}) or {})
+                key = ref.lower()
+                cur = int(pools.get(key, 0) or 0)
+                if cur > 0:
+                    pools[key] = cur - 1
+                    inv.ammo = pools
+                    return True
+        except Exception:
+            pass
+        try:
+            cur = int(getattr(self, ref, 0) or 0)
+            if cur > 0:
+                setattr(self, ref, cur - 1)
+                return True
+        except Exception:
+            pass
+        return False
+
+    def _ammo_label_for_ref(self, actor: Actor, ammo_ref: str | None) -> str:
+        if not ammo_ref:
+            return "ammo"
+        ref = str(ammo_ref).strip()
+        try:
+            it = find_item_on_actor(actor, ref)
+            if it is not None:
+                return str(getattr(it, "name", "ammo") or "ammo")
+        except Exception:
+            pass
+        return self._ammo_label(ref) if ref in {"arrows", "bolts", "stones", "hand_axes", "throwing_daggers", "darts", "javelins", "throwing_spears"} else ref
+
+    def _weapon_kind(self, attacker: Actor) -> str:
+        """Return effective weapon kind using new equipment first, legacy fallback."""
+        try:
+            if self.effective_missile_weapon(attacker):
                 return "missile"
         except Exception:
             pass
@@ -11638,7 +11792,7 @@ class Game:
         The current equipment DB in this project does not encode magic bonuses yet,
         so this returns 0 by default and is extended in later commits.
         """
-        w = str(getattr(attacker, "weapon", "") or "")
+        w = str(self.effective_melee_weapon(attacker) or self.effective_missile_weapon(attacker) or "")
         if not w:
             return 0
 
@@ -11671,7 +11825,7 @@ class Game:
         This is intentionally lightweight. We do not yet maintain a full item
         material model in EquipmentDB, so we parse common OSR patterns.
         """
-        w = str(getattr(attacker, "weapon", "") or "").lower()
+        w = str(self.effective_melee_weapon(attacker) or self.effective_missile_weapon(attacker) or "").lower()
         tags: set[str] = set()
         if "silver" in w or "silvered" in w:
             tags.add("silver")
@@ -11796,7 +11950,7 @@ class Game:
         - "1/2" means one shot every other round (requires a reload round).
         - Anything else defaults to 1.
         """
-        raw = getattr(attacker, "weapon", None) or ""
+        raw = self.effective_missile_weapon(attacker) or ""
         wn = self._find_weapon_name(raw)
         if not wn:
             return (1, False)
@@ -11857,7 +12011,7 @@ class Game:
         return None
 
     def _weapon_damage_expr(self, attacker: Actor, kind: str) -> str:
-        raw = getattr(attacker, "weapon", None) or ""
+        raw = (self.effective_missile_weapon(attacker) if str(kind).lower() == "missile" else self.effective_melee_weapon(attacker)) or ""
         wn = self._find_weapon_name(raw)
         if not wn:
             return "1d6"
@@ -11925,7 +12079,7 @@ class Game:
 
         # Two-handed weapons: +1 damage (from S&W weapon notes / common rule)
         try:
-            wname = (getattr(attacker, "weapon", "") or "").lower()
+            wname = str((self.effective_missile_weapon(attacker) if str(kind).lower()=="missile" else self.effective_melee_weapon(attacker)) or "").lower()
             if "two-handed" in wname or "(two-handed)" in wname:
                 base += 1
         except Exception:
@@ -12854,18 +13008,19 @@ class Game:
 
                             # Execute the planned missile shots. Target is fixed by the plan,
                             # but if it drops we pick a new living target (deterministically via RNGService).
-                            ammo_kind = self._ammo_kind_for_weapon(getattr(actor, 'weapon', None) or '')
-                            if ammo_kind and int(getattr(self, ammo_kind, 0)) <= 0:
+                            wname = self.effective_missile_weapon(actor) or ''
+                            ammo_kind = self._effective_ammo_ref_for_actor(actor, wname)
+                            if ammo_kind and (not self._actor_has_ammo_for_ref(actor, ammo_kind)):
                                 try:
-                                    self.battle_evt("ACTION_BLOCKED", actor=self._battle_label_for(actor), reason="out_of_ammo", detail=str(self._ammo_label(ammo_kind)))
+                                    self.battle_evt("ACTION_BLOCKED", actor=self._battle_label_for(actor), reason="out_of_ammo", detail=str(self._ammo_label_for_ref(actor, ammo_kind)))
                                 except Exception:
                                     pass
                                 if not bool(getattr(self, "_battle_buffer_active", False)):
-                                    self.ui.log(f"{actor.name} is out of {self._ammo_label(ammo_kind)}!")
+                                    self.ui.log(f"{actor.name} is out of {self._ammo_label_for_ref(actor, ammo_kind)}!")
                                 continue
 
                             # P1.4: automatic range banding from current distance and weapon max range.
-                            wname = getattr(actor, 'weapon', None) or ''
+                            wname = self.effective_missile_weapon(actor) or ''
                             rng_mod, in_range = self._range_mod_for_weapon_at_distance(wname, combat_distance_ft)
                             if not in_range:
                                 try:
@@ -12877,17 +13032,15 @@ class Game:
                                 continue
                             for shot_ix in range(int(shots)):
                                 if ammo_kind:
-                                    cur = int(getattr(self, ammo_kind, 0))
-                                    if cur <= 0:
-                                        self.ui.log(f"{actor.name} is out of {self._ammo_label(ammo_kind)}!")
+                                    if not self._consume_actor_ammo(actor, ammo_kind):
+                                        self.ui.log(f"{actor.name} is out of {self._ammo_label_for_ref(actor, ammo_kind)}!")
                                         break
-                                    setattr(self, ammo_kind, cur - 1)
                                     try:
-                                        self.battle_evt("AMMO_SPENT", actor=self._battle_label_for(actor), ammo=str(self._ammo_label(ammo_kind)), remaining=int(cur - 1))
+                                        self.battle_evt("AMMO_SPENT", actor=self._battle_label_for(actor), ammo=str(self._ammo_label_for_ref(actor, ammo_kind)))
                                     except Exception:
                                         pass
-                                    if self._is_recoverable_throwable(ammo_kind):
-                                        spent_throwables[ammo_kind] = int(spent_throwables.get(ammo_kind, 0)) + 1
+                                    if self._is_recoverable_throwable(str(ammo_kind)):
+                                        spent_throwables[str(ammo_kind)] = int(spent_throwables.get(str(ammo_kind), 0)) + 1
                                 living_targets = _enemies_of(side)
                                 if not living_targets:
                                     break
@@ -13522,7 +13675,7 @@ class Game:
             pass
         dst = getattr(defender, "status", {}) or {}
         # AC buffs/debuffs (descending AC: lower is better)
-        eff_ac = int(getattr(defender, "ac_desc", 9) or 9)
+        eff_ac = int(self._effective_ac_desc(defender) or 9)
         shield = dst.get("shield")
         if isinstance(shield, dict):
             eff_ac = eff_ac - int(shield.get("ac_bonus", 0) or 0)
@@ -14466,7 +14619,7 @@ class Game:
         We still disallow obvious missile weapons to avoid silly cases where a
         character "cuts out" with a bow.
         """
-        w = str(getattr(attacker, "weapon", "") or "").lower().strip()
+        w = str(self.effective_melee_weapon(attacker) or self.effective_missile_weapon(attacker) or "").lower().strip()
         if not w:
             return False
         ranged_markers = ["bow", "crossbow", "sling", "dart", "javelin", "throwing", "arrow", "bolt"]
