@@ -280,6 +280,22 @@ def test_encounter_recap_snapshot_prefers_loot_pool_over_legacy_party_items():
     assert "Legacy Mirror Item" not in names
 
 
+def test_preferred_loot_items_prefers_loot_pool_rows_first():
+    g = Game(HeadlessUI(), dice_seed=301481, wilderness_seed=301482)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Pool First", "kind": "treasure", "gp_value": 10}],
+    )
+    g.party_items = [{"name": "Legacy Should Not Win", "kind": "treasure", "gp_value": 1}]
+
+    rows = g.preferred_loot_items(intent="reward_summary")
+
+    names = [str((it or {}).get("name") or "") for it in rows]
+    assert "Pool First" in names
+    assert "Legacy Should Not Win" not in names
+
+
 def test_encounter_recap_snapshot_falls_back_to_legacy_party_items_when_pool_unavailable():
     g = Game(HeadlessUI(), dice_seed=30149, wilderness_seed=30150)
     g.loot_pool = None
@@ -289,6 +305,23 @@ def test_encounter_recap_snapshot_falls_back_to_legacy_party_items_when_pool_una
 
     names = [str((it or {}).get("name") or "") for it in list(getattr(g, "_encounter_start_items", []) or [])]
     assert names == ["Legacy Fallback Item"]
+
+
+def test_encounter_begin_capture_uses_preferred_reward_summary_source_helper(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=301483, wilderness_seed=301484)
+    calls = []
+
+    def _stub():
+        calls.append("used")
+        return [{"name": "Helper Snapshot", "kind": "treasure"}]
+
+    monkeypatch.setattr(g, "preferred_reward_summary_source", _stub)
+
+    g._encounter_begin_capture(context="helper-test")
+
+    assert calls == ["used"]
+    names = [str((it or {}).get("name") or "") for it in list(getattr(g, "_encounter_start_items", []) or [])]
+    assert names == ["Helper Snapshot"]
 
 
 def test_sell_loot_still_works_for_loot_pool_reward_intake():

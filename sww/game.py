@@ -567,17 +567,7 @@ class Game:
         Prefer loot_pool-derived rows and only fall back to legacy `party_items`
         when loot_pool state is unavailable.
         """
-        try:
-            lp = getattr(self, "loot_pool", None)
-            if lp is not None and hasattr(lp, "entries"):
-                return list(loot_pool_entries_as_legacy_dicts(lp) or [])
-        except Exception:
-            pass
-        # Compatibility fallback for mixed-mode saves/non-migrated paths.
-        try:
-            return list(getattr(self, "party_items", []) or [])
-        except Exception:
-            return []
+        return self.preferred_reward_summary_source()
 
     def _encounter_end_capture(self) -> None:
         if not bool(getattr(self, "_encounter_capture_active", False)):
@@ -9614,54 +9604,85 @@ class Game:
             return 0
         return max(1, int(gross * 0.5))
 
-    def list_sellable_items(self, *, include_legacy_compat: bool = False) -> list[dict[str, Any]]:
-        """List sellable rows with explicit ownership source metadata."""
+    def loot_source_fallback_order(self, *, intent: str = "loot_listing") -> list[str]:
+        """Ordered source preference for transitional loot readers."""
+        mode = str(intent or "").strip().lower()
+        if mode == "reward_summary":
+            return ["loot_pool", "legacy_party_items"]
+        if mode == "sellable":
+            return ["actor_inventory", "party_stash", "loot_pool", "legacy_party_items"]
+        return ["loot_pool", "party_stash", "actor_inventory", "legacy_party_items"]
+
+    def preferred_loot_items(self, *, intent: str = "loot_listing") -> list[dict[str, Any]]:
+        """Read helper for loot/treasure listing rows with explicit fallback order."""
+        for src in self.loot_source_fallback_order(intent=intent):
+            if src == "loot_pool":
+                try:
+                    lp = getattr(self, "loot_pool", None)
+                    if lp is not None and hasattr(lp, "entries"):
+                        return list(loot_pool_entries_as_legacy_dicts(lp) or [])
+                except Exception:
+                    pass
+            if src == "legacy_party_items":
+                # Compatibility fallback only.
+                try:
+                    return list(getattr(self, "party_items", []) or [])
+                except Exception:
+                    return []
+        return []
+
+    def preferred_reward_summary_source(self) -> list[dict[str, Any]]:
+        """Preferred source rows for recap/reward summary readers."""
+        return self.preferred_loot_items(intent="reward_summary")
+
+    def preferred_sellable_items(self, *, include_legacy_compat: bool = False) -> list[dict[str, Any]]:
+        """Ownership-first read helper for sellable-item rows."""
         rows: list[dict[str, Any]] = []
-
-        # Preferred ownership-aware sources: actor inventories then party stash.
-        for actor in list(getattr(getattr(self, "party", None), "members", []) or []):
-            if actor is None:
-                continue
-            try:
-                actor.ensure_inventory_initialized()
-            except Exception:
-                continue
-            for item in list(getattr(getattr(actor, "inventory", None), "items", []) or []):
-                qty = max(1, int(getattr(item, "quantity", 1) or 1))
-                unit = self._sale_unit_value_gp(item)
-                price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
-                if price <= 0:
-                    continue
-                nm = owned_item_brief_label(item)
-                rows.append({
-                    "source_kind": "actor",
-                    "owner": str(getattr(actor, "name", "actor") or "actor"),
-                    "instance_id": str(getattr(item, "instance_id", "") or ""),
-                    "name": nm,
-                    "quantity": qty,
-                    "identified": bool(getattr(item, "identified", True)),
-                    "price_gp": int(price),
-                    "label": f"{nm} (actor:{getattr(actor, 'name', 'actor')}) sell {price} gp",
-                })
-
-        stash_items = list(getattr(getattr(self, "party_stash", None), "items", []) or [])
-        for item in stash_items:
-            qty = max(1, int(getattr(item, "quantity", 1) or 1))
-            unit = self._sale_unit_value_gp(item)
-            price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
-            if price <= 0:
-                continue
-            nm = owned_item_brief_label(item)
-            rows.append({
-                "source_kind": "stash",
-                "owner": "stash",
-                "instance_id": str(getattr(item, "instance_id", "") or ""),
-                "name": nm,
-                "quantity": qty,
-                "identified": bool(getattr(item, "identified", True)),
-                "price_gp": int(price),
-                "label": f"{nm} (stash) sell {price} gp",
-            })
+        for src in self.loot_source_fallback_order(intent="sellable"):
+            if src == "actor_inventory":
+                for actor in list(getattr(getattr(self, "party", None), "members", []) or []):
+                    if actor is None:
+                        continue
+                    try:
+                        actor.ensure_inventory_initialized()
+                    except Exception:
+                        continue
+                    for item in list(getattr(getattr(actor, "inventory", None), "items", []) or []):
+                        qty = max(1, int(getattr(item, "quantity", 1) or 1))
+                        unit = self._sale_unit_value_gp(item)
+                        price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
+                        if price <= 0:
+                            continue
+                        nm = owned_item_brief_label(item)
+                        rows.append({
+                            "source_kind": "actor",
+                            "owner": str(getattr(actor, "name", "actor") or "actor"),
+                            "instance_id": str(getattr(item, "instance_id", "") or ""),
+                            "name": nm,
+                            "quantity": qty,
+                            "identified": bool(getattr(item, "identified", True)),
+                            "price_gp": int(price),
+                            "label": f"{nm} (actor:{getattr(actor, 'name', 'actor')}) sell {price} gp",
+                        })
+            elif src == "party_stash":
+                stash_items = list(getattr(getattr(self, "party_stash", None), "items", []) or [])
+                for item in stash_items:
+                    qty = max(1, int(getattr(item, "quantity", 1) or 1))
+                    unit = self._sale_unit_value_gp(item)
+                    price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
+                    if price <= 0:
+                        continue
+                    nm = owned_item_brief_label(item)
+                    rows.append({
+                        "source_kind": "stash",
+                        "owner": "stash",
+                        "instance_id": str(getattr(item, "instance_id", "") or ""),
+                        "name": nm,
+                        "quantity": qty,
+                        "identified": bool(getattr(item, "identified", True)),
+                        "price_gp": int(price),
+                        "label": f"{nm} (stash) sell {price} gp",
+                    })
 
         if include_legacy_compat:
             # Transitional compatibility fallback only: anonymous pending loot pool entries.
@@ -9685,6 +9706,10 @@ class Game:
                     "label": f"{e.name} ({u}, legacy) {qtxt}sell {price} gp".replace("  ", " "),
                 })
         return rows
+
+    def list_sellable_items(self, *, include_legacy_compat: bool = False) -> list[dict[str, Any]]:
+        """List sellable rows with explicit ownership source metadata."""
+        return self.preferred_sellable_items(include_legacy_compat=include_legacy_compat)
 
     def sell_actor_item(self, actor: Actor, instance_id: str, *, source: str = "sell_loot") -> bool:
         item = find_item_on_actor(actor, instance_id)
