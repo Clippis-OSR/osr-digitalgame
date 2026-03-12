@@ -202,3 +202,47 @@ def test_sell_loot_still_works_for_loot_pool_reward_intake():
 
     assert g.gold == 25
     assert len(g.loot_pool.entries) == 0
+
+
+def test_room_reward_summary_shows_coin_destination_and_items_found():
+    g = Game(HeadlessUI(), dice_seed=30160, wilderness_seed=30161)
+
+    g._grant_room_loot(gp=12, items=[{"name": "Room Blade", "kind": "weapon"}], source="room_treasure")
+
+    assert any("Coins gained: 12 gp -> treasury." in ln for ln in g.ui.lines)
+    assert any("Items found: 1." in ln for ln in g.ui.lines)
+
+
+def test_boss_reward_summary_shows_coin_destination_and_items_found():
+    g = Game(HeadlessUI(), dice_seed=30170, wilderness_seed=30171)
+
+    g._grant_room_loot(gp=30, items=[{"name": "Boss Idol", "kind": "treasure", "gp_value": 60}], source="boss_spoils")
+
+    assert any("Coins gained: 30 gp -> treasury." in ln for ln in g.ui.lines)
+    assert any("Items found: 1." in ln for ln in g.ui.lines)
+
+
+def test_sale_summary_shows_actor_owned_source_and_coin_result():
+    g = Game(HeadlessUI(), dice_seed=30180, wilderness_seed=30181)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Actor Sword", "kind": "weapon", "gp_value": 20, "metadata": {"owner_actor": "Lina"}}],
+    )
+
+    g.sell_loot()
+
+    assert any("Sold Actor Sword (actor:Lina) for 10 gp to treasury." in ln for ln in g.ui.lines)
+
+
+def test_sale_summary_shows_stash_source_and_coin_result():
+    g = Game(HeadlessUI(), dice_seed=30190, wilderness_seed=30191)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Stash Gem", "kind": "treasure", "gp_value": 40, "metadata": {"source": "stash"}}],
+    )
+
+    g.sell_loot()
+
+    assert any("Sold Stash Gem (stash) for 20 gp to treasury." in ln for ln in g.ui.lines)

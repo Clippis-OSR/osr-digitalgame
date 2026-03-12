@@ -37,6 +37,7 @@ class RewardBundle:
 @dataclass(frozen=True)
 class RewardBundleApplyResult:
     coins_gp_awarded: int
+    coin_destination: str
     items_added: list[LootEntry]
 
 
@@ -83,11 +84,18 @@ def apply_reward_bundle(
     Currency is normalized to whole GP for current economy compatibility.
     """
     if reward_bundle_is_empty(bundle):
-        return RewardBundleApplyResult(coins_gp_awarded=0, items_added=[])
+        return RewardBundleApplyResult(coins_gp_awarded=0, coin_destination=CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT, items_added=[])
 
     coins_gp = _bundle_coins_to_gp_floor(bundle)
+    settled_to = str(coin_destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT)
     if coins_gp > 0:
-        grant_coin_reward(game, coins_gp, source=str(bundle.source or "reward_bundle"), destination=str(coin_destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT))
+        coin_res = grant_coin_reward(
+            game,
+            coins_gp,
+            source=str(bundle.source or "reward_bundle"),
+            destination=str(coin_destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT),
+        )
+        settled_to = str(getattr(coin_res, "destination", settled_to) or settled_to)
 
     _gp_ignored, added = add_generated_treasure_to_pool(
         loot_pool,
@@ -95,4 +103,4 @@ def apply_reward_bundle(
         items=list(bundle.items or []),
         identify_magic=bool(identify_magic),
     )
-    return RewardBundleApplyResult(coins_gp_awarded=coins_gp, items_added=list(added or []))
+    return RewardBundleApplyResult(coins_gp_awarded=coins_gp, coin_destination=settled_to, items_added=list(added or []))

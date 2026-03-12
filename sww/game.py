@@ -5536,16 +5536,37 @@ class Game:
         except Exception:
             pass
 
-    def _ensure_loot_pool_hydrated_from_legacy(self) -> None:
+    def _ensure_loot_pool_hydrated_from_legacy(self) -> bool:
         """Backfill loot pool from legacy `party_items` when needed."""
         entries = list(getattr(getattr(self, "loot_pool", None), "entries", []) or [])
         if entries:
-            return
+            return False
         legacy = list(getattr(self, "party_items", []) or [])
         if not legacy:
-            return
+            return False
         add_generated_treasure_to_pool(self.loot_pool, gp=0, items=legacy, identify_magic=False)
         self._sync_legacy_party_items_from_loot_pool()
+        return True
+
+    def _coin_destination_label(self, destination: str) -> str:
+        d = str(destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT)
+        if d in {CoinDestination.TREASURY, CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT}:
+            return "treasury"
+        if d == CoinDestination.EXPEDITION_POOL:
+            return "expedition pool"
+        return d
+
+    def _loot_sale_source_label(self, entry: Any, *, from_legacy_compat: bool) -> str:
+        md = dict(getattr(entry, "metadata", {}) or {})
+        owner = str(md.get("owner_actor") or "").strip()
+        if owner:
+            return f"actor:{owner}"
+        source = str(md.get("source") or "").strip().lower()
+        if source in {"stash", "party_stash"}:
+            return "stash"
+        if from_legacy_compat:
+            return "legacy compatibility pool"
+        return "expedition loot pool"
 
     def _template_id_for_equipment_name(self, name: str, *, preferred_categories: list[str]) -> str | None:
         """Best-effort mapping from shop/loot display names to template ids."""
@@ -9455,7 +9476,7 @@ class Game:
     def sell_loot(self):
         # Transitional compatibility: selling still consumes shared party loot pool.
         # TODO(inventory-migration): support selling directly from actor inventories.
-        self._ensure_loot_pool_hydrated_from_legacy()
+        from_legacy_compat = bool(self._ensure_loot_pool_hydrated_from_legacy())
         entries = list(getattr(self.loot_pool, "entries", []) or [])
         if not entries:
             self.ui.log("You have no loot to sell.")
@@ -9471,20 +9492,20 @@ class Game:
             qty = int(getattr(e, "quantity", 1) or 1)
             qtxt = f" x{qty}" if qty > 1 else ""
             labels.append(f"{e.name} ({e.kind}, {u}){qtxt} sell {price} gp")
-            sellables.append((e.entry_id, price, e.name))
+            sellables.append((e.entry_id, price, e.name, self._loot_sale_source_label(e, from_legacy_compat=from_legacy_compat)))
         if not sellables:
             self.ui.log("No sellable items with gp value in inventory.")
             return
         c = self.ui.choose("Sell which?", labels + ["Back"])
         if c == len(labels):
             return
-        entry_id, price, sold_name = sellables[c]
+        entry_id, price, sold_name, sold_from = sellables[c]
         if not leave_loot_behind(self.loot_pool, entry_id):
             self.ui.log("Could not complete sale.")
             return
         self._sync_legacy_party_items_from_loot_pool()
         self.gold += price
-        self.ui.log(f"Sold {sold_name} for {price} gp.")
+        self.ui.log(f"Sold {sold_name} ({sold_from}) for {price} gp to treasury.")
 
     # -------------
     # Expedition assembly
@@ -10631,7 +10652,11 @@ class Game:
         except Exception:
             pass
         if int(applied.coins_gp_awarded) or items_l:
-            self.ui.log(f"You recover {int(applied.coins_gp_awarded)} gp and {len(items_l)} item(s).")
+            if int(applied.coins_gp_awarded):
+                dest_label = self._coin_destination_label(str(getattr(applied, "coin_destination", "") or ""))
+                self.ui.log(f"Coins gained: {int(applied.coins_gp_awarded)} gp -> {dest_label}.")
+            if items_l:
+                self.ui.log(f"Items found: {len(items_l)}.")
 
     def _reveal_room_secret_or_map(self, room: dict[str, Any], reveal_map: bool = False) -> None:
         ctx = resolve_room_interaction_context(self, room)
