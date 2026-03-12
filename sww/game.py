@@ -508,6 +508,21 @@ class Game:
             self._encounter_start_items = items
         except Exception:
             self._encounter_start_items = []
+        # Ownership-first snapshot: encounter item deltas should prefer loot_pool
+        # entry identity over legacy shared `party_items` append/diff assumptions.
+        try:
+            lp = getattr(self, "loot_pool", None)
+            if lp is None or not hasattr(lp, "entries"):
+                raise ValueError("loot_pool_unavailable")
+            self._encounter_start_loot_entry_ids = {
+                str(getattr(e, "entry_id", "") or "")
+                for e in list(getattr(lp, "entries", []) or [])
+                if str(getattr(e, "entry_id", "") or "").strip()
+            }
+            self._encounter_loot_pool_available = True
+        except Exception:
+            self._encounter_start_loot_entry_ids = set()
+            self._encounter_loot_pool_available = False
         # sum xp across PCs (works even if xp awards happen outside combat)
         try:
             xp_sum = 0
@@ -557,6 +572,8 @@ class Game:
 
         start_gold = int(getattr(self, "_encounter_start_gold", 0) or 0)
         start_items = list(getattr(self, "_encounter_start_items", []) or [])
+        start_loot_entry_ids = set(getattr(self, "_encounter_start_loot_entry_ids", set()) or set())
+        loot_pool_available = bool(getattr(self, "_encounter_loot_pool_available", False))
         start_xp_sum = int(getattr(self, "_encounter_start_xp_sum", 0) or 0)
 
         end_gold = int(getattr(self, "gold", 0) or 0)
@@ -576,17 +593,26 @@ class Game:
             end_xp_sum = start_xp_sum
 
         gp_delta = int(end_gold - start_gold)
-        # new items by identity (best-effort; items may be dicts/strings)
-        new_items = []
-        try:
-            # Use repr string for stable diff without depending on hashability.
-            start_set = set([repr(x) for x in start_items])
-            for it in end_items:
-                r = repr(it)
-                if r not in start_set:
-                    new_items.append(it)
-        except Exception:
-            new_items = []
+        # Ownership-first item delta by stable loot entry identity.
+        # Legacy `party_items` diffing remains an explicit compatibility fallback only
+        # when loot_pool state is unavailable.
+        new_items: list[str] = []
+        if loot_pool_available:
+            try:
+                new_items = self._combat_loot_item_names_delta(start_loot_entry_ids)
+            except Exception:
+                new_items = []
+        else:
+            try:
+                # Compatibility fallback for mixed-mode saves/code paths.
+                # Use repr string for stable diff without depending on hashability.
+                start_set = set([repr(x) for x in start_items])
+                for it in end_items:
+                    r = repr(it)
+                    if r not in start_set:
+                        new_items.append(str(getattr(it, "get", lambda k, d=None: None)("name") or it))
+            except Exception:
+                new_items = []
         xp_delta = int(end_xp_sum - start_xp_sum)
 
         # Print recap only if something happened.
@@ -612,13 +638,13 @@ class Game:
         # Extra rewards beyond what combat summary already reported.
         extra_gp = int(gp_delta) - int(combat_gp)
         extra_xp = int(xp_delta) - int(combat_xp)
-        extra_items = []
+        extra_items: list[str] = []
         try:
             for it in (new_items or []):
                 if str(it) not in combat_item_names:
-                    extra_items.append(it)
+                    extra_items.append(str(it))
         except Exception:
-            extra_items = list(new_items or [])
+            extra_items = [str(x) for x in list(new_items or [])]
 
         if combat_summary_evt is not None or gp_delta or xp_delta or new_items:
             try:
@@ -680,7 +706,7 @@ class Game:
                 room_type=getattr(self, "_encounter_room_type", None),
                 gp_delta=int(gp_delta),
                 xp_delta=int(xp_delta),
-                items_gained=[repr(x) for x in new_items],
+                items_gained=[str(x) for x in (new_items or [])],
                 loot_events=list(getattr(self, "_encounter_loot_events", []) or []),
             )
         except Exception:

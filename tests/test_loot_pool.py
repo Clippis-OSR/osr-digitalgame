@@ -336,3 +336,71 @@ def test_combat_loot_delta_prefers_loot_pool_entries_over_legacy_party_items():
 
     assert "New Gem" in names
     assert "Old Gem" not in names
+
+
+def _last_encounter_recap_event(game: Game):
+    events = [ev for ev in list(getattr(game.events, "events", []) or []) if getattr(ev, "name", "") == "encounter_recap"]
+    assert events
+    return events[-1]
+
+
+def test_encounter_end_capture_prefers_loot_pool_delta_when_party_items_stale():
+    g = Game(HeadlessUI(), dice_seed=30260, wilderness_seed=30261)
+    _gp, added = add_generated_treasure_to_pool(g.loot_pool, items=[{"name": "Old Gem", "kind": "treasure", "gp_value": 10}])
+    assert len(added) == 1
+
+    g._encounter_begin_capture(context="test")
+    add_generated_treasure_to_pool(g.loot_pool, items=[{"name": "New Gem", "kind": "treasure", "gp_value": 20}])
+    # Legacy shared list is intentionally stale/empty; recap should still use loot_pool identity delta.
+    g.party_items = []
+    g._encounter_end_capture()
+
+    recap = _last_encounter_recap_event(g)
+    items = list((recap.data or {}).get("items_gained", []) or [])
+    assert "New Gem" in items
+    assert "Old Gem" not in items
+
+
+def test_encounter_end_capture_handles_duplicate_unidentified_labels_by_entry_identity():
+    g = Game(HeadlessUI(), dice_seed=30270, wilderness_seed=30271)
+
+    g._encounter_begin_capture(context="test")
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        items=[
+            {"name": "Mysterious Potion", "true_name": "Potion of Healing", "kind": "potion"},
+            {"name": "Mysterious Potion", "true_name": "Potion of Heroism", "kind": "potion"},
+        ],
+        identify_magic=False,
+    )
+    g._encounter_end_capture()
+
+    recap = _last_encounter_recap_event(g)
+    items = list((recap.data or {}).get("items_gained", []) or [])
+    assert len(items) == 2
+    assert items.count("Mysterious Potion") == 2
+
+
+def test_encounter_end_capture_legacy_fallback_only_when_loot_pool_unavailable():
+    # Explicit fallback path: no loot_pool state available.
+    g_fallback = Game(HeadlessUI(), dice_seed=30280, wilderness_seed=30281)
+    g_fallback.loot_pool = None
+    g_fallback.party_items = [{"name": "Old Relic", "kind": "treasure"}]
+
+    g_fallback._encounter_begin_capture(context="test")
+    g_fallback.party_items.append({"name": "New Relic", "kind": "treasure"})
+    g_fallback._encounter_end_capture()
+
+    fallback_recap = _last_encounter_recap_event(g_fallback)
+    fallback_items = list((fallback_recap.data or {}).get("items_gained", []) or [])
+    assert "New Relic" in fallback_items
+
+    # When loot_pool is available, do not silently prefer legacy party_items diffs.
+    g_primary = Game(HeadlessUI(), dice_seed=30282, wilderness_seed=30283)
+    g_primary._encounter_begin_capture(context="test")
+    g_primary.party_items.append({"name": "Legacy Ghost", "kind": "treasure"})
+    g_primary._encounter_end_capture()
+
+    primary_recap = _last_encounter_recap_event(g_primary)
+    primary_items = list((primary_recap.data or {}).get("items_gained", []) or [])
+    assert primary_items == []
