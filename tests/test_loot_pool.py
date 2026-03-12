@@ -321,3 +321,18 @@ def test_room_loot_end_to_end_assignment_menu_to_actor_inventory():
 
     assert len(g.loot_pool.entries) == 0
     assert any(str(getattr(it, "name", "")) == "Room Knife" for it in (actor.inventory.items or []))
+
+
+def test_combat_loot_delta_prefers_loot_pool_entries_over_legacy_party_items():
+    g = Game(HeadlessUI(), dice_seed=30250, wilderness_seed=30251)
+    _gp, added = add_generated_treasure_to_pool(g.loot_pool, items=[{"name": "Old Gem", "kind": "treasure", "gp_value": 10}])
+    start_ids = {str(added[0].entry_id)}
+
+    add_generated_treasure_to_pool(g.loot_pool, items=[{"name": "New Gem", "kind": "treasure", "gp_value": 20}])
+    # Legacy mirror may be stale/empty; loot-pool delta should still report new item.
+    g.party_items = []
+
+    names = g._combat_loot_item_names_delta(start_ids)
+
+    assert "New Gem" in names
+    assert "Old Gem" not in names

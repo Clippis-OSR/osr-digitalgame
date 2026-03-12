@@ -520,6 +520,25 @@ class Game:
         # collected deltas
         self._encounter_loot_events: list[dict[str, object]] = []
 
+    def _combat_loot_item_names_delta(self, start_entry_ids: set[str] | None = None) -> list[str]:
+        """Best-effort combat loot item delta from ownership-first loot pool state.
+
+        Transitional fallback: if loot_pool is unavailable, callers may still rely
+        on legacy `party_items` snapshots.
+        """
+        try:
+            now_entries = list(getattr(getattr(self, "loot_pool", None), "entries", []) or [])
+            start_ids = set(str(x) for x in (start_entry_ids or set()) if str(x).strip())
+            out: list[str] = []
+            for e in now_entries:
+                eid = str(getattr(e, "entry_id", "") or "")
+                if eid and eid in start_ids:
+                    continue
+                out.append(str(getattr(e, "name", "loot") or "loot"))
+            return out
+        except Exception:
+            return []
+
     def _encounter_note_loot(self, *, gp: int = 0, items: list | None = None, source: str = "loot") -> None:
         if not bool(getattr(self, "_encounter_capture_active", False)):
             return
@@ -12566,13 +12585,21 @@ class Game:
             except Exception:
                 pass
             combat_start_gold: int = int(getattr(self, 'gold', 0) or 0)
+            combat_start_loot_entry_ids: set[str] = set()
             combat_start_items_count: int = 0
-            combat_start_items_snapshot: list = []
             try:
-                combat_start_items_snapshot = list(getattr(self, 'party_items', []) or [])
-                combat_start_items_count = int(len(combat_start_items_snapshot))
+                combat_start_loot_entry_ids = {
+                    str(getattr(e, 'entry_id', '') or '')
+                    for e in list(getattr(getattr(self, 'loot_pool', None), 'entries', []) or [])
+                    if str(getattr(e, 'entry_id', '') or '').strip()
+                }
             except Exception:
-                combat_start_items_snapshot = []
+                combat_start_loot_entry_ids = set()
+            # Transitional fallback snapshot for any legacy paths still writing
+            # directly to party_items during migration.
+            try:
+                combat_start_items_count = int(len(list(getattr(self, 'party_items', []) or [])))
+            except Exception:
                 combat_start_items_count = 0
             # XP earned during this combat (for summary/journal).
             try:
@@ -14045,11 +14072,18 @@ class Game:
                     except Exception:
                         loot_gp = 0
                     try:
-                        cur_items = list(getattr(self, 'party_items', []) or [])
-                        if int(combat_start_items_count) >= 0 and len(cur_items) >= int(combat_start_items_count):
-                            loot_items = cur_items[int(combat_start_items_count):]
+                        loot_items = self._combat_loot_item_names_delta(combat_start_loot_entry_ids)
                     except Exception:
                         loot_items = []
+                    if not loot_items:
+                        # Transitional fallback: some legacy paths may still append
+                        # directly into party_items until fully migrated.
+                        try:
+                            cur_items = list(getattr(self, 'party_items', []) or [])
+                            if int(combat_start_items_count) >= 0 and len(cur_items) >= int(combat_start_items_count):
+                                loot_items = [str(getattr(x, 'get', lambda k, d=None: None)('name') or x) for x in cur_items[int(combat_start_items_count):]]
+                        except Exception:
+                            loot_items = []
 
                     sevt = self.battle_evt(
                         "COMBAT_SUMMARY",
@@ -14060,7 +14094,7 @@ class Game:
                         foes={"defeated": foes_defeated, "fled": foes_fled, "surrendered": foes_surr},
                         xp_earned=int(xp_earned),
                         loot_gp=int(loot_gp),
-                        loot_items=[str(getattr(x, 'get', lambda k, d=None: None)('name') or x) for x in (loot_items or [])],
+                        loot_items=list(loot_items or []),
                     )
                     # If we're inside a room-level encounter capture window, defer printing
                     # so we can unify combat + post-combat rewards into one Encounter Recap panel.
