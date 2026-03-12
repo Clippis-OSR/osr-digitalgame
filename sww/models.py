@@ -63,6 +63,22 @@ class CharacterEquipment:
     worn_misc: list[str] = field(default_factory=list)
 
 
+
+
+@dataclass
+class PartyStash:
+    """Town-accessible stash for non-carried party property.
+
+    Stash contents are *not* considered carried on expedition and should not
+    contribute to per-character encumbrance. Access is typically limited to town
+    interactions so expedition logistics remain meaningful.
+    """
+
+    items: list[ItemInstance] = field(default_factory=list)
+    coins_gp: int = 0
+    coins_sp: int = 0
+    coins_cp: int = 0
+
 @dataclass
 class Stats:
     STR: int

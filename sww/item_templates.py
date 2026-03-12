@@ -374,6 +374,12 @@ def item_display_name(
     return str(t.unidentified_name or t.wear_category or "Unidentified magic item")
 
 
+
+
+def item_known_name(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
+    """Backward-compatible alias for known/displayed item name."""
+    return item_display_name(instance, template, identified=True)
+
 def build_item_instance(
     template_id: str,
     *,

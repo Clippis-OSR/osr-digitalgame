@@ -87,7 +87,7 @@ def test_migrate_12_to_13_normalizes_inventory_item_keys_and_ammo_kind():
     out = migrate_save_data(save_v12)
     member = out["campaign"]["party"]["members"][0]
 
-    assert out["save_version"] == 14
+    assert out["save_version"] == 15
     assert member["inventory"]["items"][0]["template_id"] == "weapon.sword"
     assert member["inventory"]["items"][0]["category"] == "weapon"
     assert member["equipment"]["ammo_kind"] == "arrows"

@@ -10,7 +10,7 @@ from .rng import LoggedRandom, make_seed
 from .event_types import CommandDispatched, StateDiff, ValidationIssues
 from .debug_diff import snapshot_state, diff_snapshots
 from .battle_events import BattleEvent, evt, format_event
-from .models import Actor, Party, Stats, mod_ability
+from .models import Actor, Party, PartyStash, Stats, mod_ability
 from .rules import attack_roll_needed, morale_check
 from .content import Content
 from .treasure import TreasureGenerator
@@ -19,12 +19,19 @@ from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
 from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
-from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_known_name
+from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_known_name
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .town_services import identify_cost_gp, identify_item_in_town
+from .loot_pool import (
+    add_generated_treasure_to_pool,
+    assign_loot_to_actor,
+    create_loot_pool,
+    leave_loot_behind,
+    loot_pool_entries_as_legacy_dicts,
+)
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
@@ -183,6 +190,9 @@ class Game:
         self.expeditions = 0
         self.terrain = "clear"
         self.party_items: list[dict[str, Any]] = []
+        # Town-only party stash for non-carried gear/treasure; excluded from
+        # expedition encumbrance because items are not physically carried.
+        self.party_stash = PartyStash()
         self.loot_pool = create_loot_pool()
         self.torches = 3
         self.oil_flasks = 0
@@ -2761,10 +2771,10 @@ class Game:
                                 items = list(room.get("treasure_items") or [])
                             else:
                                 gp, items = self.treasure.dungeon_treasure(self.dungeon_depth + 2)
-                            self.gold += gp
-                            # Transitional compatibility: room treasure enters shared pool first.
-                            # TODO(inventory-migration): convert to immediate per-character assignment.
-                            self.party_items.extend(items)
+                            # Transitional compatibility: route through centralized loot helper
+                            # so generated item rows always enter the loot pool with runtime
+                            # identification/metadata handling in one place.
+                            self._grant_room_loot(gp=int(gp), items=list(items), source="boss_spoils")
 
                             room["boss_loot_taken"] = True
                             if isinstance(room.get("_delta"), dict):
@@ -2773,7 +2783,6 @@ class Game:
                                 self._encounter_note_loot(gp=int(gp), items=list(items), source="boss_spoils")
                             except Exception:
                                 pass
-                            self.ui.log(f"Boss spoils: {gp} gp and {len(items)} item(s).")
                 try:
                     self._encounter_end_capture()
                 except Exception:
@@ -2802,11 +2811,9 @@ class Game:
                                         room["cleared"] = True
                                     else:
                                         gp, items = self.treasure.dungeon_treasure(self.dungeon_depth + 3)
-                                        self.gold += gp + 200
-                                        self.party_items.extend(items)
+                                        self._grant_room_loot(gp=int(gp) + 200, items=list(items), source="treasury")
                                         room["treasure_taken"] = True
                                         room["cleared"] = True
-                                        self.ui.log(f"You empty the coffer: {gp + 200} gp and {len(items)} item(s).")
                                     try:
                                         self._encounter_end_capture()
                                     except Exception:
@@ -5585,6 +5592,87 @@ class Game:
         except Exception:
             return False
 
+    def _ui_item_line(self, actor: Actor, item: Any, *, include_weight: bool = True) -> str:
+        """Compact inventory line: name, quantity, equip, and optional weight."""
+        name = str(getattr(item, "name", "Unknown item") or "Unknown item")
+        try:
+            name = item_display_name(item)
+        except Exception:
+            pass
+        qty = int(getattr(item, "quantity", 1) or 1)
+        flags: list[str] = []
+        if qty > 1:
+            flags.append(f"x{qty}")
+        if bool(getattr(item, "equipped", False)):
+            flags.append("equipped")
+        if not bool(getattr(item, "identified", True)):
+            flags.append("unidentified")
+        if include_weight:
+            try:
+                md = dict(getattr(item, "metadata", {}) or {})
+                w = md.get("weight_lb", None)
+                if w is not None:
+                    wf = float(w)
+                    flags.append(f"{wf:g} lb")
+            except Exception:
+                pass
+        suffix = f" [{', '.join(flags)}]" if flags else ""
+        return f"{name}{suffix}"
+
+    def _ui_item_inspection_lines(self, item: Any) -> list[str]:
+        """Concise item inspection text for town/inventory UX."""
+        lines: list[str] = []
+        name = str(getattr(item, "name", "Unknown item") or "Unknown item")
+        cat = str(getattr(item, "category", "item") or "item").strip().lower()
+        identified = bool(getattr(item, "identified", True))
+        lines.append(f"{name} — a {cat}.")
+
+        md = dict(getattr(item, "metadata", {}) or {})
+        if not identified:
+            aura = "faint magical aura" if bool(md.get("magic", False)) else "uncertain craftsmanship"
+            lines.append(f"Unidentified: only a {aura} can be discerned.")
+            lines.append("Known properties: none until identified.")
+            return lines
+
+        known: list[str] = []
+        mb = int(getattr(item, "magic_bonus", 0) or 0)
+        if mb:
+            known.append(f"magic bonus {mb:+d}")
+        try:
+            effs = [str((e or {}).get("type") or "").strip().lower() for e in list(item_effects(item) or [])]
+            effs = [e for e in effs if e]
+            if effs:
+                known.append("effects: " + ", ".join(sorted(set(effs))))
+        except Exception:
+            pass
+        if bool(getattr(item, "cursed_known", False)):
+            known.append("curse status known")
+        if not known:
+            known.append("no special properties known")
+        lines.append("Known properties: " + "; ".join(known) + ".")
+        # TODO(ux): add compare-with-equipped and richer sort/filter affordances.
+        return lines
+
+    def _town_inspect_inventory_item(self) -> None:
+        """Town UX helper: inspect one owned item with concise known/unknown details."""
+        carriers = [a for a in (self.party.living() or []) if list(getattr(getattr(a, "inventory", None), "items", []) or [])]
+        if not carriers:
+            self.ui.log("No character inventory items to inspect.")
+            return
+        who_labels = [a.name for a in carriers]
+        wi = self.ui.choose("Inspect whose item?", who_labels + ["Back"])
+        if wi == len(who_labels):
+            return
+        actor = carriers[wi]
+        actor.ensure_inventory_initialized()
+        items = list(actor.inventory.items or [])
+        labels = [self._ui_item_line(actor, it, include_weight=True) for it in items]
+        ii = self.ui.choose(f"Inspect item — {actor.name}", labels + ["Back"])
+        if ii == len(labels):
+            return
+        for line in self._ui_item_inspection_lines(items[ii]):
+            self.ui.log(line)
+
     def assign_party_loot_to_character(self) -> None:
         """Assign one loot-pool entry to a selected living character inventory."""
         self._ensure_loot_pool_hydrated_from_legacy()
@@ -5597,7 +5685,14 @@ class Game:
             self.ui.log("No living party members available.")
             return
 
-        loot_labels = [f"{str(e.name or 'Unknown')} ({str(e.kind or 'item')})" for e in entries]
+        self.ui.log(f"Loot pool: {int(getattr(self.loot_pool, 'coins_gp', 0) or 0)} gp in coins, {len(entries)} item(s).")
+        who_preview = ", ".join([a.name for a in living[:3]]) + ("..." if len(living) > 3 else "")
+        loot_labels = []
+        for e in entries:
+            u = ("unidentified" if not bool(getattr(e, "identified", True)) else "identified")
+            qty = int(getattr(e, "quantity", 1) or 1)
+            qtxt = f" x{qty}" if qty > 1 else ""
+            loot_labels.append(f"{str(e.name or 'Unknown')} ({str(e.kind or 'item')}, {u}){qtxt} -> {who_preview}")
         li = self.ui.choose("Assign which loot item?", loot_labels + ["Back"])
         if li == len(loot_labels):
             return
@@ -5615,7 +5710,7 @@ class Game:
             return
 
         self._sync_legacy_party_items_from_loot_pool()
-        self.ui.log(f"Assigned loot to {actor.name}.")
+        self.ui.log(f"Assigned {str(getattr(picked, 'name', 'loot') or 'loot')} to {actor.name}.")
 
     def _buy_item_for_actor(self, actor: Actor, *, name: str, kind: str, auto_equip: bool) -> bool:
         """Create bought item instance in actor inventory and optionally auto-equip legacy fields."""
@@ -5905,7 +6000,7 @@ class Game:
 
         if c == 1:
             if self.gold < total_cost:
-                self.ui.log("Not enough gold.")
+                self.ui.log(f"Cannot identify all: need {total_cost} gp, have {self.gold} gp.")
                 return
             identified_n = 0
             for actor, item, _cost in unknown:
@@ -5917,7 +6012,7 @@ class Game:
             self.ui.log(f"The sage identifies {identified_n} item(s).")
             return
 
-        labels = [f"{a.name}: {getattr(it, 'name', 'Unknown')} ({cost} gp)" for a, it, cost in unknown]
+        labels = [f"{a.name}: {self._ui_item_line(a, it, include_weight=False)} ({cost} gp)" for a, it, cost in unknown]
         j = self.ui.choose("Identify which item?", labels + ["Back"])
         if j == len(labels):
             return
@@ -5925,7 +6020,8 @@ class Game:
         res = identify_item_in_town(actor, item.instance_id, party_gold=self.gold, reveal_curse=False, reveal_charges=False)
         if not res.ok:
             if str(res.error or "") == "not enough gold":
-                self.ui.log("Not enough gold.")
+                need = int(identify_cost_gp(item))
+                self.ui.log(f"Cannot identify {getattr(item, 'name', 'item')}: need {need} gp, have {self.gold} gp.")
             else:
                 self.ui.log("Could not identify that item right now.")
             return
@@ -6018,6 +6114,16 @@ class Game:
             self.ui.log(f"Day {self.campaign_day} | Gold: {self.gold} gp | Torches: {self.torches} | Rations: {self.rations}")
             for pc in self.party.pcs():
                 self.ui.log(f"- {pc.name} {pc.cls} Lv{pc.level} XP {pc.xp}/{self.xp_threshold(pc.level+1)} HP {pc.hp}/{pc.hp_max}")
+                try:
+                    pc.ensure_inventory_initialized()
+                    inv_items = list(pc.inventory.items or [])
+                    if inv_items:
+                        for it in inv_items[:3]:
+                            self.ui.log(f"    · {self._ui_item_line(pc, it, include_weight=True)}")
+                        if len(inv_items) > 3:
+                            self.ui.log(f"    · ...and {len(inv_items) - 3} more")
+                except Exception:
+                    pass
             if self.party.retainers():
                 for r in self.party.retainers():
                     self.ui.log(f"  * {r.name} (Retainer) HP {r.hp}/{r.hp_max} Loyalty {r.loyalty}")
@@ -6029,6 +6135,7 @@ class Game:
                 "Prepare Spells",
                 "Sell loot",
                 "Assign loot to character",
+                "Inspect inventory item",
                 "Enter Dungeon",
                 "Visit Arms & Armour Store",
                 "Manage Retainers",
@@ -6122,6 +6229,9 @@ class Game:
 
             elif sel_action == "Assign loot to character":
                 self.assign_party_loot_to_character()
+
+            elif sel_action == "Inspect inventory item":
+                self._town_inspect_inventory_item()
 
             elif sel_action == "Enter Dungeon":
                 self._cmd_enter_dungeon()
@@ -9354,7 +9464,10 @@ class Game:
             if val <= 0:
                 continue
             price = max(1, int(val * 0.5))
-            labels.append(f"{e.name} ({e.kind}) sell {price} gp")
+            u = ("unidentified" if not bool(getattr(e, "identified", True)) else "identified")
+            qty = int(getattr(e, "quantity", 1) or 1)
+            qtxt = f" x{qty}" if qty > 1 else ""
+            labels.append(f"{e.name} ({e.kind}, {u}){qtxt} sell {price} gp")
             sellables.append((e.entry_id, price, e.name))
         if not sellables:
             self.ui.log("No sellable items with gp value in inventory.")
@@ -10740,15 +10853,10 @@ class Game:
             items = list(room.get("treasure_items") or [])
         else:
             gp, items = self.treasure.dungeon_treasure(self.dungeon_depth)
-        # Compatibility choice: room coins are still credited immediately to treasury.
-        self.gold += gp
-        add_generated_treasure_to_pool(self.loot_pool, gp=0, items=items, identify_magic=False)
-        self._sync_legacy_party_items_from_loot_pool()
-        # Encounter recap capture (room rewards)
-        try:
-            self._encounter_note_loot(gp=int(gp), items=list(items), source="room_treasure")
-        except Exception:
-            pass
+        # Compatibility choice: room coinage still credits treasury immediately,
+        # but we route all item awards through the shared helper to keep transitional
+        # loot-pool behavior consistent across room/boss/treasury paths.
+        self._grant_room_loot(gp=int(gp), items=list(items), source="room_treasure")
         room["treasure_taken"] = True
         room["cleared"] = True
         if isinstance(room.get("_delta"), dict):
@@ -10758,7 +10866,6 @@ class Game:
             self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
         except Exception:
             pass
-        self.ui.log(f"You recover {gp} gp and {len(items)} item(s).")
 
     
     def _handle_room_trap(self, room: dict[str, Any]):

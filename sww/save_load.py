@@ -12,6 +12,7 @@ from .models import (
     CharacterInventory,
     ItemInstance,
     Party,
+    PartyStash,
     Stats,
 )
 from .travel_state import TravelState
@@ -27,7 +28,7 @@ from .events import (
 
 # Increment whenever the on-disk schema changes.
 # We write both "save_version" and the legacy "version" key for compatibility.
-SAVE_VERSION = 14
+SAVE_VERSION = 15
 
 class SaveSchemaError(ValueError):
     """Raised when a save file is missing required keys or has invalid types."""
@@ -189,6 +190,7 @@ def validate_and_guard_save_data(data: Any, strict: bool) -> Dict[str, Any]:
     _ensure_int(camp, "day_watch", "campaign.day_watch", default=0, strict=strict)
     _ensure_int(camp, "gold", "campaign.gold", default=0, strict=strict)
     _ensure_dict(camp, "party", "campaign.party", default={"members": []}, strict=strict)
+    _ensure_dict(camp, "party_stash", "campaign.party_stash", default={"items": [], "coins_gp": 0, "coins_sp": 0, "coins_cp": 0}, strict=False)
     party = camp["party"]
     _ensure_list(party, "members", "campaign.party.members", default=[], strict=strict)
 
@@ -448,6 +450,35 @@ def _dict_to_inventory(d: Any) -> CharacterInventory:
         torches=int(d.get("torches", 0) or 0),
         rations=int(d.get("rations", 0) or 0),
         ammo=dict(d.get("ammo") or {}),
+    )
+
+
+def _party_stash_to_dict(stash: Any) -> dict:
+    if isinstance(stash, PartyStash):
+        return {
+            "items": [_item_instance_to_dict(it) for it in (stash.items or [])],
+            "coins_gp": int(stash.coins_gp or 0),
+            "coins_sp": int(stash.coins_sp or 0),
+            "coins_cp": int(stash.coins_cp or 0),
+        }
+    if isinstance(stash, dict):
+        return {
+            "items": [_item_instance_to_dict(it) for it in (stash.get("items") or [])],
+            "coins_gp": int(stash.get("coins_gp", 0) or 0),
+            "coins_sp": int(stash.get("coins_sp", 0) or 0),
+            "coins_cp": int(stash.get("coins_cp", 0) or 0),
+        }
+    return {"items": [], "coins_gp": 0, "coins_sp": 0, "coins_cp": 0}
+
+
+def _dict_to_party_stash(d: Any) -> PartyStash:
+    if not isinstance(d, dict):
+        return PartyStash()
+    return PartyStash(
+        items=[_dict_to_item_instance(it) for it in (d.get("items") or [])],
+        coins_gp=int(d.get("coins_gp", 0) or 0),
+        coins_sp=int(d.get("coins_sp", 0) or 0),
+        coins_cp=int(d.get("coins_cp", 0) or 0),
     )
 
 
@@ -748,6 +779,7 @@ def game_to_dict(game: Any) -> Dict[str, Any]:
             "day_watch": int(getattr(game, "day_watch", 0)),
             "gold": int(getattr(game, "gold", 0)),
             "party": party_to_dict(getattr(game, "party", Party())),
+            "party_stash": _party_stash_to_dict(getattr(game, "party_stash", None)),
             "party_items": list(getattr(game, "party_items", []) or []),
             "loot_pool": {
                 "coins_gp": int(getattr(getattr(game, "loot_pool", None), "coins_gp", 0) or 0),
@@ -1297,6 +1329,25 @@ def _migrate_13_to_14(data: Dict[str, Any]) -> Dict[str, Any]:
     data["version"] = 14
     return data
 
+
+
+def _migrate_14_to_15(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Add party_stash campaign container for town-only storage."""
+    camp = data.get("campaign") or {}
+    if not isinstance(camp, dict):
+        camp = {}
+    stash = camp.get("party_stash") if isinstance(camp.get("party_stash"), dict) else {}
+    stash.setdefault("items", [])
+    stash["coins_gp"] = int(stash.get("coins_gp", 0) or 0)
+    stash["coins_sp"] = int(stash.get("coins_sp", 0) or 0)
+    stash["coins_cp"] = int(stash.get("coins_cp", 0) or 0)
+    camp["party_stash"] = stash
+    data["campaign"] = camp
+    data["save_version"] = 15
+    data["version"] = 15
+    return data
+
+
 MIGRATIONS = {
     1: _migrate_1_to_2,
     2: _migrate_2_to_3,
@@ -1311,6 +1362,7 @@ MIGRATIONS = {
     11: _migrate_11_to_12,
     12: _migrate_12_to_13,
     13: _migrate_13_to_14,
+    14: _migrate_14_to_15,
 }
 
 
@@ -1460,6 +1512,7 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     setattr(game, "day_watch", int(camp.get("day_watch", 0)))
     setattr(game, "gold", int(camp.get("gold", 0)))
     setattr(game, "party", dict_to_party(camp.get("party", {}) or {}))
+    setattr(game, "party_stash", _dict_to_party_stash(camp.get("party_stash", {}) or {}))
 
     # P3.1.14: Normalize stored spell identifiers on load.
     # Older saves may store spell names; newer saves prefer spell_id.

@@ -6,6 +6,7 @@ from sww.inventory_service import (
     find_item_on_actor,
     give_item_between_actors,
     actor_equipped_weapon,
+    actor_worn_magic_by_category,
 )
 from sww.models import Actor, ItemInstance
 
@@ -93,3 +94,44 @@ def test_non_cursed_item_still_unequips_normally():
     uq = unequip_item_on_actor(a, "main_hand")
     assert uq.ok
     assert a.equipment.main_hand is None
+
+
+def test_actor_can_wear_two_rings_but_third_fails_cleanly():
+    a = _actor("A")
+    r1 = ItemInstance(instance_id="r1", template_id="ring.r1", name="Ring of Red", category="ring", metadata={"wear_category": "ring"})
+    r2 = ItemInstance(instance_id="r2", template_id="ring.r2", name="Ring of Blue", category="ring", metadata={"wear_category": "ring"})
+    r3 = ItemInstance(instance_id="r3", template_id="ring.r3", name="Ring of Green", category="ring", metadata={"wear_category": "ring"})
+    add_item_to_actor(a, r1)
+    add_item_to_actor(a, r2)
+    add_item_to_actor(a, r3)
+
+    assert equip_item_on_actor(a, "r1").ok
+    assert equip_item_on_actor(a, "r2").ok
+    third = equip_item_on_actor(a, "r3")
+    assert not third.ok
+    assert "cannot wear more ring items" in str(third.error or "")
+    worn = actor_worn_magic_by_category(a)
+    assert worn.get("ring") == 2
+
+
+def test_only_one_cloak_allowed():
+    a = _actor("A")
+    c1 = ItemInstance(instance_id="c1", template_id="wondrous.c1", name="Cloak of Shadows", category="cloak", metadata={"wear_category": "cloak"})
+    c2 = ItemInstance(instance_id="c2", template_id="wondrous.c2", name="Cloak of Feathers", category="cloak", metadata={"wear_category": "cloak"})
+    add_item_to_actor(a, c1)
+    add_item_to_actor(a, c2)
+
+    assert equip_item_on_actor(a, "c1").ok
+    second = equip_item_on_actor(a, "c2")
+    assert not second.ok
+    assert "cannot wear more cloak items" in str(second.error or "")
+
+
+def test_mundane_equipment_still_behaves_normally():
+    a = _actor("A")
+    w = ItemInstance(instance_id="w1", template_id="weapon.sword", name="Sword", category="weapon")
+    add_item_to_actor(a, w)
+
+    eq = equip_item_on_actor(a, "w1")
+    assert eq.ok
+    assert a.equipment.main_hand == "w1"

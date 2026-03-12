@@ -482,6 +482,9 @@ def _roll_from_named_table(game, table_id: str, kind: str) -> dict[str, Any]:
     hi = max(int(e.get("hi", 0)) for e in entries)
     e = _table_entry_by_die_roll(game, str(table_id), 1, hi) or entries[-1]
     out = {"kind": kind, "name": str(e.get("result") or f"{kind.title()}")}
+    if str(kind).strip().lower() in {"wand", "staff"}:
+        # Practical first pass: charged items use deterministic random charges.
+        out["charges"] = int(game.dice_rng.randint(12, 36))
     # Table 107 is explicitly cursed items.
     if str(table_id) == "107":
         out["cursed"] = True
@@ -624,6 +627,73 @@ def roll_xp_tradeout_hoard(*, game, budget_gp: int, instance_tag: str = "loot") 
         tradeouts_5000=int(t5k),
         major_treasure=bool(major),
     )
+
+
+def magic_item_to_loot_row(item: dict[str, Any], *, identify_magic: bool = False) -> dict[str, Any]:
+    """Convert a rolled runtime magic item dict into a LootPool-compatible row.
+
+    This is a thin bridge from `roll_xp_tradeout_hoard(...).magic_items` into the
+    existing loot pool runtime (`add_generated_treasure_to_pool`).
+    """
+    src = dict(item or {})
+    kind_raw = str(src.get("kind") or "magic").strip().lower()
+    true_name = str(src.get("true_name") or src.get("name") or "Unknown Magic Item")
+    identified = bool(src.get("identified", False)) or bool(identify_magic)
+    shown_name = str(true_name if identified else (src.get("name") or _generic_unidentified_name(kind_raw)))
+
+    # Normalize runtime kinds into loot-pool categories used by item templates.
+    kind = kind_raw
+    if kind in {"scroll_cursed", "scroll_protection"}:
+        kind = "scroll"
+    if kind in {"weapon_missile"}:
+        kind = "weapon"
+    if kind in {"cursed", "item_cursed", "misc"}:
+        kind = "relic"
+
+    md = dict(src.get("metadata") or {})
+    if src.get("charges") is not None:
+        md["charges"] = int(src.get("charges") or 0)
+    if src.get("cursed") is not None:
+        md["cursed"] = bool(src.get("cursed"))
+    if src.get("bonus") is not None:
+        md["magic_bonus"] = int(src.get("bonus") or 0)
+    if src.get("spells") is not None:
+        md["spells"] = list(src.get("spells") or [])
+
+    return {
+        "name": shown_name,
+        "true_name": true_name,
+        "kind": str(kind or "relic"),
+        "quantity": max(1, int(src.get("quantity", 1) or 1)),
+        "identified": bool(identified),
+        "cursed": bool(src.get("cursed", False)),
+        "charges": src.get("charges"),
+        "metadata": md,
+    }
+
+
+def loot_rows_from_loot_roll(*, roll: LootRoll, identify_magic: bool = False) -> tuple[int, list[dict[str, Any]]]:
+    """Translate a `LootRoll` into (coins_gp, loot_rows) for the loot pool.
+
+    Rules remain intentionally transparent:
+    - coin/gem/jewelry gp totals become coins in this first pass
+    - materialized magic items are emitted as explicit loot rows
+    """
+    coins_gp = int(max(0, int(getattr(roll, "gp_total", 0) or 0)))
+    rows: list[dict[str, Any]] = []
+    for it in list(getattr(roll, "magic_items", []) or []):
+        if not isinstance(it, dict):
+            continue
+        rows.append(magic_item_to_loot_row(it, identify_magic=identify_magic))
+    return coins_gp, rows
+
+
+def add_loot_roll_to_pool(*, pool: Any, roll: LootRoll, identify_magic: bool = False) -> tuple[int, list[Any]]:
+    """Convenience bridge from treasure runtime rolls into `LootPool`."""
+    from .loot_pool import add_generated_treasure_to_pool
+
+    gp, rows = loot_rows_from_loot_roll(roll=roll, identify_magic=identify_magic)
+    return add_generated_treasure_to_pool(pool, gp=gp, items=rows, identify_magic=identify_magic)
 
 
 def choose_hoard_table_for_encounter(*, max_cl: int) -> str:
