@@ -9784,7 +9784,9 @@ class Game:
         removed = remove_owned_item(self, source_kind="legacy", reference_id=str(entry_id or ""), quantity=qty)
         if not bool(getattr(removed, "ok", False)):
             return False
-        self._sync_legacy_party_items_from_loot_pool()
+        # Transitional compatibility: keep legacy mirror coherent only when a
+        # legacy mirror is already active for current session/readers.
+        self._sync_legacy_party_items_if_needed(reason="sell_legacy_party_item")
         coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
         self.ui.log(f"Sold {sold_name} ({sold_from}) for {price} gp to {self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
         return True

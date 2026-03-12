@@ -265,6 +265,32 @@ def test_wilderness_abandoned_camp_rewards_ingest_without_legacy_party_items_mir
     assert list(g.party_items or []) == []
 
 
+def test_wilderness_shrine_relic_uses_ingestion_flow_and_clear_text(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30155, wilderness_seed=30156)
+    g.party_hex = (0, 0)
+    g.world_hexes["0,0"] = {
+        "q": 0,
+        "r": 0,
+        "terrain": "clear",
+        "poi": {"id": "poi:test:shrine:0,0", "type": "shrine", "name": "Test Shrine", "resolved": False},
+    }
+
+    def _choose(prompt, options):
+        if str(prompt) == "Shrine":
+            return 1  # Recover relic (dangerous)
+        return 0
+
+    monkeypatch.setattr(g.ui, "choose", _choose)
+    monkeypatch.setattr(g.dice, "in_6", lambda n: False)
+
+    g._handle_current_hex_poi()
+
+    assert len(g.loot_pool.entries) == 1
+    assert str(g.loot_pool.entries[0].name) == "Relic of Test Shrine"
+    assert list(g.party_items or []) == []
+    assert any("The relic is secured in expedition loot." in ln for ln in g.ui.lines)
+
+
 def test_encounter_recap_snapshot_prefers_loot_pool_over_legacy_party_items():
     g = Game(HeadlessUI(), dice_seed=30148, wilderness_seed=30149)
     add_generated_treasure_to_pool(
@@ -381,6 +407,31 @@ def test_sale_summary_shows_stash_source_and_coin_result():
     g.sell_loot()
 
     assert any("Sold Stash Gem (stash) for 20 gp to treasury." in ln for ln in g.ui.lines)
+
+
+def test_sell_legacy_party_item_skips_eager_legacy_sync_when_mirror_unused(monkeypatch):
+    g = Game(HeadlessUI(), dice_seed=30200, wilderness_seed=30201)
+    _gp, added = add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Legacy Sell Gem", "kind": "treasure", "gp_value": 40}],
+    )
+    eid = str(added[0].entry_id)
+    assert list(g.party_items or []) == []
+
+    sync_calls = []
+
+    def _spy_sync(*args, **kwargs):
+        sync_calls.append((args, kwargs))
+
+    monkeypatch.setattr(g, "_sync_legacy_party_items_from_loot_pool", _spy_sync)
+
+    ok = g.sell_legacy_party_item(eid)
+
+    assert ok is True
+    assert g.gold == 20
+    assert len(g.loot_pool.entries) == 0
+    assert sync_calls == []
 
 
 def test_sell_loot_uses_centralized_coin_reward_service(monkeypatch):
