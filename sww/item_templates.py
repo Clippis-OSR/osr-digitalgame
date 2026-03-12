@@ -31,7 +31,34 @@ class ItemTemplate:
     value_gp: float = 0.0
     tags: list[str] = field(default_factory=list)
     equip_slot_hint: str | None = None
+    magic: bool = False
+    cursed: bool = False
+    identified_name: str | None = None
+    unidentified_name: str | None = None
+    wear_category: str | None = None
+    effects: list[dict[str, Any]] = field(default_factory=list)
+    charges: int | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
     rules: dict[str, Any] = field(default_factory=dict)
+
+
+SUPPORTED_ITEM_EFFECT_TYPES: set[str] = {
+    "attack_bonus",
+    "damage_bonus",
+    "ac_bonus",
+    "save_bonus",
+    "movement_bonus",
+    "granted_tag",
+    "sticky_equip",
+    "light_source",
+    "consumable_heal",
+    "spell_cast",
+}
+
+_EFFECT_TYPE_ALIASES: dict[str, str] = {
+    "heal": "consumable_heal",
+    "cast_spell": "spell_cast",
+}
 
 
 _INSTANCE_SEQ = count(1)
@@ -56,6 +83,21 @@ def _slot_hint_for_category(category: str) -> str | None:
     if c == "wand":
         return "main_hand"
     return None
+
+
+def _normalized_effects(rows: list[Any]) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for row in list(rows or []):
+        if not isinstance(row, dict):
+            continue
+        effect_type = str(row.get("type") or row.get("effect_type") or row.get("effect") or "").strip().lower()
+        if not effect_type:
+            continue
+        mapped = _EFFECT_TYPE_ALIASES.get(effect_type, effect_type)
+        payload = dict(row)
+        payload["type"] = mapped
+        out.append(payload)
+    return out
 
 
 class ItemTemplateCatalog:
@@ -178,8 +220,16 @@ def _add_bespoke_templates(catalog: ItemTemplateCatalog) -> None:
                 value_gp=float(row.get("value_gp", 0.0) or 0.0),
                 tags=[str(t) for t in (row.get("tags") or [])],
                 equip_slot_hint=_slot_hint_for_category(kind),
+                magic=True,
+                cursed=bool(row.get("cursed", False)),
+                identified_name=row.get("identified_name"),
+                unidentified_name=row.get("unidentified_name"),
+                wear_category=row.get("wear_category"),
+                effects=_normalized_effects(list(row.get("effects") or [])),
+                charges=(int(row["charges"]) if row.get("charges") is not None else None),
+                metadata=dict(row.get("metadata") or {}),
                 rules={
-                    "effects": list(row.get("effects") or []),
+                    "effects": _normalized_effects(list(row.get("effects") or [])),
                     "payload": dict(row.get("payload") or {}),
                 },
             )
@@ -264,6 +314,122 @@ def template_weight_lb(template: ItemTemplate) -> float:
     return max(0.0, float(template.weight_lb or 0.0))
 
 
+def _coerce_template(template_or_instance: ItemTemplate | ItemInstance | None) -> ItemTemplate | None:
+    if isinstance(template_or_instance, ItemTemplate):
+        return template_or_instance
+    if isinstance(template_or_instance, ItemInstance):
+        try:
+            return get_item_template(template_or_instance.template_id)
+        except KeyError:
+            return None
+    return None
+
+
+def item_is_magic(template_or_instance: ItemTemplate | ItemInstance | None) -> bool:
+    t = _coerce_template(template_or_instance)
+    if t is not None:
+        return bool(t.magic)
+    if isinstance(template_or_instance, ItemInstance):
+        md = dict(template_or_instance.metadata or {})
+        if "magic" in md:
+            return bool(md.get("magic"))
+        return "magic" in {str(x).lower() for x in list(md.get("tags") or [])}
+    return False
+
+
+def item_is_cursed(template_or_instance: ItemTemplate | ItemInstance | None) -> bool:
+    t = _coerce_template(template_or_instance)
+    if t is not None:
+        return bool(t.cursed)
+    if isinstance(template_or_instance, ItemInstance):
+        return bool((template_or_instance.metadata or {}).get("cursed", False))
+    return False
+
+
+def item_effects(template_or_instance: ItemTemplate | ItemInstance | None) -> list[dict[str, Any]]:
+    if isinstance(template_or_instance, ItemInstance):
+        from_metadata = _normalized_effects(list((template_or_instance.metadata or {}).get("effects") or []))
+        if from_metadata:
+            return from_metadata
+    t = _coerce_template(template_or_instance)
+    if t is not None:
+        return [dict(e) for e in list(t.effects or [])]
+    return []
+
+
+def item_unsupported_effect_types(template_or_instance: ItemTemplate | ItemInstance | None) -> list[str]:
+    types = [str(e.get("type") or "") for e in item_effects(template_or_instance)]
+    return sorted({t for t in types if t and t not in SUPPORTED_ITEM_EFFECT_TYPES})
+
+
+def _unidentified_fallback_name(instance: ItemInstance, template: ItemTemplate | None) -> str:
+    category = str((template.category if template is not None else instance.category) or "").strip().lower()
+    if category == "ring":
+        return "Unfamiliar Ring"
+    if category == "potion":
+        return "Cloudy Potion"
+    if category == "scroll":
+        return "Scroll with strange script"
+    if category == "weapon":
+        return "Runed Sword"
+    return f"Unidentified {category.title() or 'Item'}"
+
+
+def item_known_name(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
+    t = template or _coerce_template(instance)
+    if instance.custom_label:
+        return str(instance.custom_label)
+    if t is None:
+        return str(instance.name or "Unknown item")
+    if bool(instance.identified):
+        return str(t.identified_name or t.name)
+    return str(t.unidentified_name or _unidentified_fallback_name(instance, t))
+
+
+def item_short_description(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
+    label = item_known_name(instance, template)
+    qty = max(1, int(instance.quantity or 1))
+    return f"{label} x{qty}" if qty > 1 else label
+
+
+def item_inspect_text(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
+    t = template or _coerce_template(instance)
+    if t is None:
+        return item_short_description(instance, template)
+    if bool(instance.identified):
+        return item_short_description(instance, t)
+    if not item_is_magic(t):
+        return item_short_description(instance, t)
+    wear = str(t.wear_category or "").strip()
+    if wear:
+        return f"{item_short_description(instance, t)} ({wear})"
+    return item_short_description(instance, t)
+
+
+def item_display_name(
+    instance: ItemInstance,
+    template: ItemTemplate | None = None,
+    *,
+    identified: bool | None = None,
+) -> str:
+    if identified is None:
+        return item_known_name(instance, template)
+    shadow = ItemInstance(
+        instance_id=instance.instance_id,
+        template_id=instance.template_id,
+        name=instance.name,
+        category=instance.category,
+        quantity=instance.quantity,
+        identified=bool(identified),
+        cursed_known=bool(instance.cursed_known),
+        custom_label=instance.custom_label,
+        equipped=instance.equipped,
+        magic_bonus=instance.magic_bonus,
+        metadata=dict(instance.metadata or {}),
+    )
+    return item_known_name(shadow, template)
+
+
 def build_item_instance(
     template_id: str,
     *,
@@ -271,6 +437,8 @@ def build_item_instance(
     identified: bool = True,
     equipped: bool = False,
     magic_bonus: int = 0,
+    cursed_known: bool = False,
+    custom_label: str | None = None,
     instance_id: str | None = None,
     metadata: dict[str, Any] | None = None,
 ) -> ItemInstance:
@@ -281,6 +449,15 @@ def build_item_instance(
     md.setdefault("weight_lb", template_weight_lb(t))
     md.setdefault("value_gp", float(t.value_gp or 0.0))
     md.setdefault("equip_slot_hint", t.equip_slot_hint)
+    md.setdefault("magic", bool(t.magic))
+    md.setdefault("cursed", bool(t.cursed))
+    md.setdefault("identified_name", t.identified_name)
+    md.setdefault("unidentified_name", t.unidentified_name)
+    md.setdefault("wear_category", t.wear_category)
+    md.setdefault("effects", [dict(e) for e in list(t.effects or [])])
+    md.setdefault("charges", t.charges)
+    md.setdefault("template_metadata", dict(t.metadata or {}))
+    md.setdefault("unsupported_effect_types", item_unsupported_effect_types(t))
     md.setdefault("rules", dict(t.rules or {}))
 
     return ItemInstance(
@@ -290,6 +467,8 @@ def build_item_instance(
         category=t.category,
         quantity=q,
         identified=bool(identified),
+        cursed_known=bool(cursed_known),
+        custom_label=(None if custom_label is None else str(custom_label)),
         equipped=bool(equipped),
         magic_bonus=int(magic_bonus or 0),
         metadata=md,

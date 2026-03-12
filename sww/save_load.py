@@ -15,6 +15,7 @@ from .models import (
     Stats,
 )
 from .travel_state import TravelState
+from .loot_pool import LootEntry, create_loot_pool
 from .events import (
     normalize_player_event,
     append_player_event,
@@ -26,7 +27,7 @@ from .events import (
 
 # Increment whenever the on-disk schema changes.
 # We write both "save_version" and the legacy "version" key for compatibility.
-SAVE_VERSION = 13
+SAVE_VERSION = 14
 
 class SaveSchemaError(ValueError):
     """Raised when a save file is missing required keys or has invalid types."""
@@ -310,6 +311,8 @@ def _item_instance_to_dict(item: Any) -> dict:
             "category": str(item.category or "misc"),
             "quantity": int(item.quantity or 1),
             "identified": bool(item.identified),
+            "cursed_known": bool(getattr(item, "cursed_known", False)),
+            "custom_label": (None if getattr(item, "custom_label", None) is None else str(getattr(item, "custom_label", ""))),
             "equipped": bool(item.equipped),
             "magic_bonus": int(item.magic_bonus or 0),
             "metadata": dict(item.metadata or {}),
@@ -322,6 +325,8 @@ def _item_instance_to_dict(item: Any) -> dict:
             "category": str(item.get("category") or item.get("kind") or "misc"),
             "quantity": int(item.get("quantity", 1) or 1),
             "identified": bool(item.get("identified", True)),
+            "cursed_known": bool(item.get("cursed_known", False)),
+            "custom_label": (None if item.get("custom_label") is None else str(item.get("custom_label") or "")),
             "equipped": bool(item.get("equipped", False)),
             "magic_bonus": int(item.get("magic_bonus", 0) or 0),
             "metadata": dict(item.get("metadata") or item.get("data") or {}),
@@ -333,6 +338,8 @@ def _item_instance_to_dict(item: Any) -> dict:
         "category": "misc",
         "quantity": 1,
         "identified": True,
+        "cursed_known": False,
+        "custom_label": None,
         "equipped": False,
         "magic_bonus": 0,
         "metadata": {},
@@ -349,9 +356,59 @@ def _dict_to_item_instance(d: Any) -> ItemInstance:
         category=str(d.get("category") or d.get("kind") or "misc"),
         quantity=int(d.get("quantity", 1) or 1),
         identified=bool(d.get("identified", True)),
+        cursed_known=bool(d.get("cursed_known", False)),
+        custom_label=(None if d.get("custom_label") is None else str(d.get("custom_label") or "")),
         equipped=bool(d.get("equipped", False)),
         magic_bonus=int(d.get("magic_bonus", 0) or 0),
         metadata=dict(d.get("metadata") or d.get("data") or {}),
+    )
+
+
+def _loot_entry_to_dict(e: Any) -> dict:
+    if isinstance(e, LootEntry):
+        return {
+            "entry_id": str(e.entry_id or ""),
+            "kind": str(e.kind or "gear"),
+            "name": str(e.name or "Unknown Item"),
+            "quantity": int(e.quantity or 1),
+            "gp_value": e.gp_value,
+            "identified": bool(e.identified),
+            "true_name": e.true_name,
+            "template_id": e.template_id,
+            "item_instance": (_item_instance_to_dict(e.item_instance) if e.item_instance is not None else None),
+            "metadata": dict(e.metadata or {}),
+        }
+    if isinstance(e, dict):
+        return {
+            "entry_id": str(e.get("entry_id") or ""),
+            "kind": str(e.get("kind") or "gear"),
+            "name": str(e.get("name") or "Unknown Item"),
+            "quantity": int(e.get("quantity", 1) or 1),
+            "gp_value": e.get("gp_value"),
+            "identified": bool(e.get("identified", True)),
+            "true_name": e.get("true_name"),
+            "template_id": e.get("template_id"),
+            "item_instance": (_item_instance_to_dict(e.get("item_instance")) if e.get("item_instance") else None),
+            "metadata": dict(e.get("metadata") or {}),
+        }
+    return {}
+
+
+def _dict_to_loot_entry(d: Any) -> LootEntry | None:
+    if not isinstance(d, dict):
+        return None
+    inst = d.get("item_instance")
+    return LootEntry(
+        entry_id=str(d.get("entry_id") or ""),
+        kind=str(d.get("kind") or "gear"),
+        name=str(d.get("name") or "Unknown Item"),
+        quantity=max(1, int(d.get("quantity", 1) or 1)),
+        gp_value=(None if d.get("gp_value") is None else int(d.get("gp_value") or 0)),
+        identified=bool(d.get("identified", True)),
+        true_name=(None if d.get("true_name") is None else str(d.get("true_name") or "")),
+        template_id=(None if d.get("template_id") is None else str(d.get("template_id") or "")),
+        item_instance=(_dict_to_item_instance(inst) if isinstance(inst, dict) else None),
+        metadata=dict(d.get("metadata") or {}),
     )
 
 
@@ -692,6 +749,11 @@ def game_to_dict(game: Any) -> Dict[str, Any]:
             "gold": int(getattr(game, "gold", 0)),
             "party": party_to_dict(getattr(game, "party", Party())),
             "party_items": list(getattr(game, "party_items", []) or []),
+            "loot_pool": {
+                "coins_gp": int(getattr(getattr(game, "loot_pool", None), "coins_gp", 0) or 0),
+                "entries": [_loot_entry_to_dict(x) for x in (getattr(getattr(game, "loot_pool", None), "entries", []) or [])],
+                "stash": [_loot_entry_to_dict(x) for x in (getattr(getattr(game, "loot_pool", None), "stash", []) or [])],
+            },
             "torches": int(getattr(game, "torches", 0)),
             "rations": int(getattr(game, "rations", 0)),
             "arrows": int(getattr(game, "arrows", 0)),
@@ -1188,6 +1250,53 @@ def _migrate_12_to_13(data: Dict[str, Any]) -> Dict[str, Any]:
     data["version"] = 13
     return data
 
+
+def _migrate_13_to_14(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Seed identification knowledge fields for item instances."""
+
+    camp = data.get("campaign") or {}
+    party = (camp.get("party") or {}).get("members") or []
+
+    def _normalize_actor(m: dict) -> None:
+        if not isinstance(m, dict):
+            return
+        inv = m.get("inventory") if isinstance(m.get("inventory"), dict) else {}
+        items = inv.get("items") if isinstance(inv.get("items"), list) else []
+        norm_items = []
+        for it in items:
+            if not isinstance(it, dict):
+                continue
+            out = dict(it)
+            out["identified"] = bool(out.get("identified", True))
+            out["cursed_known"] = bool(out.get("cursed_known", False))
+            out["custom_label"] = None if out.get("custom_label") is None else str(out.get("custom_label") or "")
+            norm_items.append(out)
+        inv["items"] = norm_items
+        m["inventory"] = inv
+
+    if isinstance(party, list):
+        for m in party:
+            _normalize_actor(m)
+
+    ret = data.get("retainers") or {}
+    if isinstance(ret, dict):
+        for key in ("retainer_board", "retainer_roster", "active_retainers", "hired_retainers"):
+            for m in (ret.get(key) or []):
+                _normalize_actor(m)
+
+    dung = data.get("dungeon") or {}
+    rooms = dung.get("dungeon_rooms") if isinstance(dung, dict) else None
+    if isinstance(rooms, dict):
+        for room in rooms.values():
+            if not isinstance(room, dict):
+                continue
+            for m in (room.get("foes") or []):
+                _normalize_actor(m)
+
+    data["save_version"] = 14
+    data["version"] = 14
+    return data
+
 MIGRATIONS = {
     1: _migrate_1_to_2,
     2: _migrate_2_to_3,
@@ -1201,6 +1310,7 @@ MIGRATIONS = {
     10: _migrate_10_to_11,
     11: _migrate_11_to_12,
     12: _migrate_12_to_13,
+    13: _migrate_13_to_14,
 }
 
 
@@ -1398,6 +1508,19 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     except Exception:
         pass
     setattr(game, "party_items", list(camp.get("party_items", []) or []))
+    lp = camp.get("loot_pool") if isinstance(camp.get("loot_pool"), dict) else None
+    if lp is not None:
+        entries = [e for e in (_dict_to_loot_entry(x) for x in (lp.get("entries") or [])) if e is not None]
+        stash = [e for e in (_dict_to_loot_entry(x) for x in (lp.get("stash") or [])) if e is not None]
+        setattr(game, "loot_pool", create_loot_pool(coins_gp=int(lp.get("coins_gp", 0) or 0), entries=entries, stash=stash))
+    else:
+        # Legacy saves: hydrate loot pool from old party_items list.
+        legacy_entries = []
+        for idx, it in enumerate(list(camp.get("party_items", []) or []), start=1):
+            e = _dict_to_loot_entry({"entry_id": f"legacy-{idx:06d}", **(it if isinstance(it, dict) else {"name": str(it), "kind": "gear"})})
+            if e is not None:
+                legacy_entries.append(e)
+        setattr(game, "loot_pool", create_loot_pool(entries=legacy_entries))
     setattr(game, "torches", int(camp.get("torches", 0)))
     setattr(game, "rations", int(camp.get("rations", 0)))
     setattr(game, "arrows", int(camp.get("arrows", 0)))
@@ -1410,6 +1533,11 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     setattr(game, "throwing_spears", int(camp.get("throwing_spears", 0)))
     setattr(game, "terrain", camp.get("terrain", "clear"))
     setattr(game, "expeditions", int(camp.get("expeditions", 0)))
+    try:
+        if hasattr(game, "_sync_legacy_party_items_from_loot_pool"):
+            game._sync_legacy_party_items_from_loot_pool()
+    except Exception:
+        pass
 
     ret = data.get("retainers", {})
     setattr(game, "retainer_board", [dict_to_actor(r) for r in (ret.get("retainer_board") or [])])
