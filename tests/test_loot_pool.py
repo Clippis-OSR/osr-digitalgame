@@ -175,3 +175,30 @@ def test_room_treasure_taken_guard_prevents_double_coin_credit(monkeypatch):
 
     assert g.gold == 14
     assert len(calls) == 1
+
+
+def test_reward_intake_abandoned_camp_style_writes_loot_pool_first():
+    g = Game(HeadlessUI(), dice_seed=30140, wilderness_seed=30141)
+
+    added = g._ingest_reward_items_to_loot_pool(
+        [{"name": "Camp Dagger", "kind": "weapon", "gp_value": 2}],
+        source="wilderness_abandoned_camp",
+    )
+
+    assert len(added) == 1
+    assert len(g.loot_pool.entries) == 1
+    # Compatibility mirror still present, but source of truth is loot_pool.
+    assert len(g.party_items) == 1
+
+
+def test_sell_loot_still_works_for_loot_pool_reward_intake():
+    g = Game(HeadlessUI(), dice_seed=30150, wilderness_seed=30151)
+    g._ingest_reward_items_to_loot_pool(
+        [{"name": "Camp Jewel", "kind": "treasure", "gp_value": 50}],
+        source="wilderness_abandoned_camp",
+    )
+
+    g.sell_loot()
+
+    assert g.gold == 25
+    assert len(g.loot_pool.entries) == 0

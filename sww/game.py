@@ -7689,9 +7689,9 @@ class Game:
                             return
                 grant_coin_reward(self, gp, source="wilderness_abandoned_camp", destination=CoinDestination.TREASURY)
                 self.ui.log(f"You scavenge {gp} gp worth of coin and supplies.")
-                for it in items:
-                    self.party_items.append(it)
-                    self.ui.log(f"You find: {it['name']}.")
+                added_items = self._ingest_reward_items_to_loot_pool(items, source="wilderness_abandoned_camp")
+                for it in added_items:
+                    self.ui.log(f"You find: {it.get('name', 'item')}.")
                 if self.dice.in_6(3):
                     self.ui.log("Among the scraps you piece together a useful rumor.")
                     try:
@@ -10597,6 +10597,17 @@ class Game:
             self.ui.log("You find a brief staging moment to regroup and check routes.")
         else:
             self.ui.log("The room is calm enough for a quick breath before pressing on.")
+
+
+    def _ingest_reward_items_to_loot_pool(self, items: list[Any] | None = None, *, source: str = "reward") -> list[dict[str, Any]]:
+        """Route reward items into loot_pool, with explicit legacy mirror sync.
+
+        Compatibility note: `party_items` is still mirrored from loot_pool for
+        older menus, but reward intake should write loot_pool first.
+        """
+        _gp_pool, added = add_generated_treasure_to_pool(self.loot_pool, gp=0, items=list(items or []), identify_magic=False)
+        self._sync_legacy_party_items_from_loot_pool()
+        return loot_pool_entries_as_legacy_dicts(create_loot_pool(entries=list(added or [])))
 
     def _grant_room_loot(self, gp: int = 0, items: list[Any] | None = None, source: str = 'dungeon_feature') -> None:
         gp_i = int(gp or 0)
