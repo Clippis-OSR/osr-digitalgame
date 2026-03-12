@@ -245,6 +245,21 @@ def get_item_template(template_id: str) -> ItemTemplate:
     return _default_catalog().get_item_template(template_id)
 
 
+def find_template_id_by_name(name: str, *, preferred_categories: list[str] | None = None) -> str | None:
+    """Best-effort lookup by display name for migration bridges."""
+    nm = str(name or "").strip().lower()
+    if not nm:
+        return None
+    cats = [c.strip().lower() for c in (preferred_categories or []) if str(c).strip()]
+    for t in _default_catalog().all_templates():
+        if str(t.name).strip().lower() != nm:
+            continue
+        if cats and str(t.category).strip().lower() not in cats:
+            continue
+        return t.template_id
+    return None
+
+
 def template_weight_lb(template: ItemTemplate) -> float:
     return max(0.0, float(template.weight_lb or 0.0))
 

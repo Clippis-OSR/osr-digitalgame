@@ -17,6 +17,8 @@ from .treasure import TreasureGenerator
 from .data import load_json
 from .encounters import EncounterGenerator
 from .equipment import EquipmentDB
+from .inventory_service import add_item_to_actor
+from .item_templates import build_item_instance, find_template_id_by_name
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
@@ -5504,6 +5506,124 @@ class Game:
     # Town
     # -------------
 
+
+    def _template_id_for_equipment_name(self, name: str, *, preferred_categories: list[str]) -> str | None:
+        """Best-effort mapping from shop/loot display names to template ids."""
+        try:
+            return find_template_id_by_name(name, preferred_categories=preferred_categories)
+        except Exception:
+            return None
+
+    def _add_loot_item_to_actor_inventory(self, actor: Actor, loot_item: Any) -> bool:
+        """Assign one loot entry to actor inventory as ItemInstance.
+
+        TODO(inventory-ux): expose richer assignment UI (split stacks, choose equip).
+        """
+        if not isinstance(loot_item, dict):
+            loot_item = {"name": str(loot_item), "kind": "gear", "gp_value": None}
+
+        name = str(loot_item.get("true_name") or loot_item.get("name") or "Unknown Item")
+        kind = str(loot_item.get("kind") or "gear").strip().lower()
+        qty = int(loot_item.get("quantity", 1) or 1)
+
+        pref = [kind]
+        if kind == "relic":
+            pref = ["treasure", "gear"]
+        tid = self._template_id_for_equipment_name(name, preferred_categories=pref)
+        if tid is None:
+            # Fallback to generic category templates for incremental migration.
+            tid = "treasure.generic" if kind in {"gem", "jewelry", "treasure", "relic"} else "gear.backpack_30-pound_capacity"
+
+        try:
+            inst = build_item_instance(
+                tid,
+                quantity=max(1, qty),
+                identified=bool(loot_item.get("identified", True)),
+                metadata={
+                    "source_loot_name": name,
+                    "source_kind": kind,
+                    "gp_value": loot_item.get("gp_value"),
+                    "true_name": loot_item.get("true_name"),
+                },
+            )
+            # Preserve unknown display name when template fallback is generic.
+            if name and inst.name != name and tid in {"treasure.generic", "gear.backpack_30-pound_capacity"}:
+                inst.name = name
+                inst.category = "treasure" if kind in {"gem", "jewelry", "treasure", "relic"} else "gear"
+            res = add_item_to_actor(actor, inst)
+            return bool(res.ok)
+        except Exception:
+            return False
+
+    def assign_party_loot_to_character(self) -> None:
+        """Assign one party-loot entry to a selected living character inventory."""
+        if not self.party_items:
+            self.ui.log("No party loot to assign.")
+            return
+        living = self.party.living()
+        if not living:
+            self.ui.log("No living party members available.")
+            return
+
+        loot_labels = []
+        for it in self.party_items:
+            if isinstance(it, dict):
+                nm = str(it.get("name") or "Unknown")
+                kd = str(it.get("kind") or "item")
+                loot_labels.append(f"{nm} ({kd})")
+            else:
+                loot_labels.append(str(it))
+        li = self.ui.choose("Assign which loot item?", loot_labels + ["Back"])
+        if li == len(loot_labels):
+            return
+
+        who_labels = [a.name for a in living]
+        wi = self.ui.choose("Assign to who?", who_labels + ["Back"])
+        if wi == len(who_labels):
+            return
+
+        actor = living[wi]
+        picked = self.party_items[li]
+        ok = self._add_loot_item_to_actor_inventory(actor, picked)
+        if not ok:
+            self.ui.log("Could not assign item to inventory.")
+            return
+
+        self.party_items.pop(li)
+        self.ui.log(f"Assigned loot to {actor.name}.")
+
+    def _buy_item_for_actor(self, actor: Actor, *, name: str, kind: str, auto_equip: bool) -> bool:
+        """Create bought item instance in actor inventory and optionally auto-equip legacy fields."""
+        pref = ["weapon"] if kind == "weapon" else (["armor", "shield"] if kind == "armor" else [kind])
+        tid = self._template_id_for_equipment_name(name, preferred_categories=pref)
+        if not tid:
+            return False
+        try:
+            inst = build_item_instance(tid, quantity=1, identified=True, metadata={"source": "town_shop"})
+            r = add_item_to_actor(actor, inst)
+            if not r.ok:
+                return False
+            if auto_equip:
+                # Preserve current player-facing behavior: immediate replacement by name.
+                if kind == "weapon":
+                    actor.weapon = name
+                elif kind == "armor":
+                    if str(name).strip().lower() == "shield":
+                        actor.shield = True
+                        actor.shield_name = name
+                    else:
+                        actor.armor = name
+                actor.sync_legacy_equipment_to_new()
+                # Mark purchased item as currently equipped in inventory when it matches name/category.
+                try:
+                    if (inst.category == "weapon" and kind == "weapon") or (inst.category in {"armor", "shield"} and kind == "armor"):
+                        inst.equipped = True
+                except Exception:
+                    pass
+            return True
+        except Exception:
+            return False
+
     def town_arms_store(self):
         """Arms & armour store.
 
@@ -5551,8 +5671,12 @@ class Game:
                     self.ui.log("Not enough gold.")
                     continue
                 self.gold -= cost
-                actor.weapon = str(w.get("name"))
-                self.ui.log(f"{actor.name} equips {actor.weapon}.")
+                bought_name = str(w.get("name"))
+                if not self._buy_item_for_actor(actor, name=bought_name, kind="weapon", auto_equip=True):
+                    # Compatibility fallback (should be rare).
+                    actor.weapon = bought_name
+                    actor.sync_legacy_equipment_to_new()
+                self.ui.log(f"{actor.name} equips {bought_name}.")
 
             else:
                 armors = [a for a in (self.equipdb.armors or {}).values() if isinstance(a, dict) and a.get("cost_gp") is not None]
@@ -5567,8 +5691,15 @@ class Game:
                     self.ui.log("Not enough gold.")
                     continue
                 self.gold -= cost
-                actor.armor = str(a.get("name"))
-                self.ui.log(f"{actor.name} dons {actor.armor}.")
+                bought_name = str(a.get("name"))
+                if not self._buy_item_for_actor(actor, name=bought_name, kind="armor", auto_equip=True):
+                    if bought_name.strip().lower() == "shield":
+                        actor.shield = True
+                        actor.shield_name = bought_name
+                    else:
+                        actor.armor = bought_name
+                    actor.sync_legacy_equipment_to_new()
+                self.ui.log(f"{actor.name} dons {bought_name}.")
 
     def expedition_prep_snapshot(self) -> dict[str, Any]:
         """Deterministic town-prep surface for active objective planning."""
@@ -5823,6 +5954,7 @@ class Game:
                 "Train (level up if enough XP)",
                 "Prepare Spells",
                 "Sell loot",
+                "Assign loot to character",
                 "Enter Dungeon",
                 "Visit Arms & Armour Store",
                 "Manage Retainers",
@@ -5913,6 +6045,9 @@ class Game:
 
             elif sel_action == "Sell loot":
                 self.sell_loot()
+
+            elif sel_action == "Assign loot to character":
+                self.assign_party_loot_to_character()
 
             elif sel_action == "Enter Dungeon":
                 self._cmd_enter_dungeon()
