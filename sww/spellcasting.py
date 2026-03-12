@@ -414,6 +414,30 @@ def _damage_d6_per_level(dice: Any, caster_level: int, cap: int = 10) -> int:
     return sum(dice.d(6) for _ in range(n))
 
 
+def _party_item_spell_candidates(
+    game: Any,
+    *,
+    only_unidentified: bool = False,
+    only_cursed: bool = False,
+    ally_pool: Iterable[Any] | None = None,
+) -> list[tuple[Any, Any]]:
+    candidates: list[tuple[Any, Any]] = []
+    pool = list(ally_pool) if ally_pool is not None else list(getattr(game.party, "members", []) or [])
+    for actor in pool:
+        if not hasattr(actor, "inventory"):
+            continue
+        actor.ensure_inventory_initialized()
+        for item in (actor.inventory.items or []):
+            if only_unidentified and bool(getattr(item, "identified", True)):
+                continue
+            if only_cursed:
+                md = dict(getattr(item, "metadata", {}) or {})
+                if (not bool(md.get("cursed", False))) and (not bool(item_is_cursed(item))):
+                    continue
+            candidates.append((actor, item))
+    return candidates
+
+
 def apply_spell_in_combat(
     *,
     game: Any,
@@ -668,6 +692,40 @@ def apply_spell_in_combat(
         game.ui.log(f"Web entangles {hits} foe(s)!")
         return True
 
+    if s == "identify":
+        # Temporary simplification: in combat, Identify only reveals the target item's
+        # known name/state (not full effects/curses).
+        candidates = _party_item_spell_candidates(game, only_unidentified=True, ally_pool=allies)
+        if not candidates:
+            game.ui.log("No unidentified items to identify.")
+            return False
+        labels = [f"{getattr(a, 'name', '?')}: {getattr(i, 'name', 'Unknown item')}" for a, i in candidates]
+        j = game.ui.choose("Identify which item?", labels)
+        actor, item = candidates[j]
+        res = apply_identify_to_item(game.party, item.instance_id, reveal_curse=False, reveal_effects=False)
+        if not res.ok:
+            game.ui.log("Identify fails to reveal that item.")
+            return False
+        game.ui.log(f"{getattr(actor, 'name', 'Someone')}'s item is identified: {getattr(item, 'name', 'item')}.")
+        return True
+
+    if s == "remove curse":
+        # Temporary simplification: suppress sticky curse restriction on one item so
+        # normal unequip flow can proceed.
+        candidates = _party_item_spell_candidates(game, only_cursed=True, ally_pool=allies)
+        if not candidates:
+            game.ui.log("No cursed items are currently affecting the party.")
+            return False
+        labels = [f"{getattr(a, 'name', '?')}: {getattr(i, 'name', 'Unknown item')}" for a, i in candidates]
+        j = game.ui.choose("Remove Curse from which item?", labels)
+        actor, item = candidates[j]
+        res = apply_remove_curse_to_item(game.party, item.instance_id, suppress_sticky=True)
+        if not res.ok:
+            game.ui.log("The curse does not yield.")
+            return False
+        game.ui.log(f"A cleansing force loosens the curse on {getattr(actor, 'name', 'the wielder')}'s {getattr(item, 'name', 'item')}.")
+        return True
+
     # ---- Cleric staples ----
     if s == "cure disease":
         target = choose_ally("Cure Disease on who?")
@@ -793,15 +851,7 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
     if s == "identify":
         # Temporary simplification: Identify reveals item name and basic state,
         # but does not reveal curse status by default.
-        candidates: list[tuple[Any, Any]] = []
-        for actor in (game.party.members or []):
-            if not hasattr(actor, "inventory"):
-                continue
-            actor.ensure_inventory_initialized()
-            for item in (actor.inventory.items or []):
-                if bool(getattr(item, "identified", True)):
-                    continue
-                candidates.append((actor, item))
+        candidates = _party_item_spell_candidates(game, only_unidentified=True)
 
         if not candidates:
             game.ui.log("No unidentified items to identify.")
@@ -846,15 +896,7 @@ def apply_spell_out_of_combat(*, game: Any, caster: Any, spell_name: str, contex
     if s == "remove curse":
         # Temporary simplification: Remove Curse suppresses sticky-equip curse locks
         # on one item, allowing normal unequip. It does not rewrite template curse data.
-        candidates: list[tuple[Any, Any]] = []
-        for actor in (game.party.members or []):
-            if not hasattr(actor, "inventory"):
-                continue
-            actor.ensure_inventory_initialized()
-            for item in (actor.inventory.items or []):
-                md = dict(getattr(item, "metadata", {}) or {})
-                if bool(md.get("cursed", False)) or bool(item_is_cursed(item)):
-                    candidates.append((actor, item))
+        candidates = _party_item_spell_candidates(game, only_cursed=True)
 
         if candidates:
             labels = [f"{getattr(a, 'name', '?')}: {getattr(i, 'name', 'Unknown item')}" for a, i in candidates]
