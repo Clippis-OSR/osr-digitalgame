@@ -19,7 +19,11 @@ class ItemInstance:
     name: str
     category: str
     quantity: int = 1
+    # Identification is instance-level, not template-level:
+    # two copies of the same template may have different knowledge states in play.
     identified: bool = True
+    cursed_known: bool = False
+    custom_label: str | None = None
     equipped: bool = False
     magic_bonus: int = 0
     metadata: dict = field(default_factory=dict)

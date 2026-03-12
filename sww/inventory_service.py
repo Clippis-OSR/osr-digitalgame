@@ -14,6 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from .item_templates import get_item_template, item_known_name
 from .models import Actor, ItemInstance
 
 
@@ -222,7 +223,11 @@ def actor_equipped_weapon(actor: Actor) -> str | None:
     _ensure_actor_ready(actor)
     item = find_item_on_actor(actor, str(actor.equipment.main_hand or ""))
     if item is not None:
-        return item.name
+        try:
+            tmpl = get_item_template(item.template_id)
+        except Exception:
+            tmpl = None
+        return item_known_name(item, tmpl)
     return actor.equipment.main_hand or actor.weapon
 
 
@@ -230,7 +235,11 @@ def actor_equipped_armor(actor: Actor) -> str | None:
     _ensure_actor_ready(actor)
     item = find_item_on_actor(actor, str(actor.equipment.armor or ""))
     if item is not None:
-        return item.name
+        try:
+            tmpl = get_item_template(item.template_id)
+        except Exception:
+            tmpl = None
+        return item_known_name(item, tmpl)
     return actor.equipment.armor or actor.armor
 
 

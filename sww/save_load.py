@@ -26,7 +26,7 @@ from .events import (
 
 # Increment whenever the on-disk schema changes.
 # We write both "save_version" and the legacy "version" key for compatibility.
-SAVE_VERSION = 13
+SAVE_VERSION = 14
 
 class SaveSchemaError(ValueError):
     """Raised when a save file is missing required keys or has invalid types."""
@@ -310,6 +310,8 @@ def _item_instance_to_dict(item: Any) -> dict:
             "category": str(item.category or "misc"),
             "quantity": int(item.quantity or 1),
             "identified": bool(item.identified),
+            "cursed_known": bool(getattr(item, "cursed_known", False)),
+            "custom_label": (None if getattr(item, "custom_label", None) is None else str(getattr(item, "custom_label", ""))),
             "equipped": bool(item.equipped),
             "magic_bonus": int(item.magic_bonus or 0),
             "metadata": dict(item.metadata or {}),
@@ -322,6 +324,8 @@ def _item_instance_to_dict(item: Any) -> dict:
             "category": str(item.get("category") or item.get("kind") or "misc"),
             "quantity": int(item.get("quantity", 1) or 1),
             "identified": bool(item.get("identified", True)),
+            "cursed_known": bool(item.get("cursed_known", False)),
+            "custom_label": (None if item.get("custom_label") is None else str(item.get("custom_label") or "")),
             "equipped": bool(item.get("equipped", False)),
             "magic_bonus": int(item.get("magic_bonus", 0) or 0),
             "metadata": dict(item.get("metadata") or item.get("data") or {}),
@@ -333,6 +337,8 @@ def _item_instance_to_dict(item: Any) -> dict:
         "category": "misc",
         "quantity": 1,
         "identified": True,
+        "cursed_known": False,
+        "custom_label": None,
         "equipped": False,
         "magic_bonus": 0,
         "metadata": {},
@@ -349,6 +355,8 @@ def _dict_to_item_instance(d: Any) -> ItemInstance:
         category=str(d.get("category") or d.get("kind") or "misc"),
         quantity=int(d.get("quantity", 1) or 1),
         identified=bool(d.get("identified", True)),
+        cursed_known=bool(d.get("cursed_known", False)),
+        custom_label=(None if d.get("custom_label") is None else str(d.get("custom_label") or "")),
         equipped=bool(d.get("equipped", False)),
         magic_bonus=int(d.get("magic_bonus", 0) or 0),
         metadata=dict(d.get("metadata") or d.get("data") or {}),
@@ -1188,6 +1196,53 @@ def _migrate_12_to_13(data: Dict[str, Any]) -> Dict[str, Any]:
     data["version"] = 13
     return data
 
+
+def _migrate_13_to_14(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Seed identification knowledge fields for item instances."""
+
+    camp = data.get("campaign") or {}
+    party = (camp.get("party") or {}).get("members") or []
+
+    def _normalize_actor(m: dict) -> None:
+        if not isinstance(m, dict):
+            return
+        inv = m.get("inventory") if isinstance(m.get("inventory"), dict) else {}
+        items = inv.get("items") if isinstance(inv.get("items"), list) else []
+        norm_items = []
+        for it in items:
+            if not isinstance(it, dict):
+                continue
+            out = dict(it)
+            out["identified"] = bool(out.get("identified", True))
+            out["cursed_known"] = bool(out.get("cursed_known", False))
+            out["custom_label"] = None if out.get("custom_label") is None else str(out.get("custom_label") or "")
+            norm_items.append(out)
+        inv["items"] = norm_items
+        m["inventory"] = inv
+
+    if isinstance(party, list):
+        for m in party:
+            _normalize_actor(m)
+
+    ret = data.get("retainers") or {}
+    if isinstance(ret, dict):
+        for key in ("retainer_board", "retainer_roster", "active_retainers", "hired_retainers"):
+            for m in (ret.get(key) or []):
+                _normalize_actor(m)
+
+    dung = data.get("dungeon") or {}
+    rooms = dung.get("dungeon_rooms") if isinstance(dung, dict) else None
+    if isinstance(rooms, dict):
+        for room in rooms.values():
+            if not isinstance(room, dict):
+                continue
+            for m in (room.get("foes") or []):
+                _normalize_actor(m)
+
+    data["save_version"] = 14
+    data["version"] = 14
+    return data
+
 MIGRATIONS = {
     1: _migrate_1_to_2,
     2: _migrate_2_to_3,
@@ -1201,6 +1256,7 @@ MIGRATIONS = {
     10: _migrate_10_to_11,
     11: _migrate_11_to_12,
     12: _migrate_12_to_13,
+    13: _migrate_13_to_14,
 }
 
 

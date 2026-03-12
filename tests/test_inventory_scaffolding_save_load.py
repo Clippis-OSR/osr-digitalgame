@@ -87,7 +87,7 @@ def test_migrate_12_to_13_normalizes_inventory_item_keys_and_ammo_kind():
     out = migrate_save_data(save_v12)
     member = out["campaign"]["party"]["members"][0]
 
-    assert out["save_version"] == 13
+    assert out["save_version"] == 14
     assert member["inventory"]["items"][0]["template_id"] == "weapon.sword"
     assert member["inventory"]["items"][0]["category"] == "weapon"
     assert member["equipment"]["ammo_kind"] == "arrows"
@@ -117,3 +117,26 @@ def test_old_style_actor_payload_loads_with_initialized_inventory_and_equipment(
     assert out.weapon == "Sword"
     assert out.armor == "Leather"
     assert out.shield is True
+
+
+def test_item_identification_roundtrip_persists_instance_fields():
+    a = Actor(name="Mira", hp=5, hp_max=5, ac_desc=7, hd=1, save=15)
+    a.inventory.items = [
+        ItemInstance(
+            instance_id="itm-know-1",
+            template_id="ring.ring_protection_plus1",
+            name="Ring of Protection +1",
+            category="ring",
+            identified=False,
+            cursed_known=True,
+            custom_label="Band from the ruins",
+            quantity=1,
+        )
+    ]
+
+    payload = actor_to_dict(a)
+    out = actor_from_dict(payload)
+
+    assert out.inventory.items[0].identified is False
+    assert out.inventory.items[0].cursed_known is True
+    assert out.inventory.items[0].custom_label == "Band from the ruins"

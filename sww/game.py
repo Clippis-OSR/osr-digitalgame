@@ -19,7 +19,7 @@ from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
 from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
-from .item_templates import build_item_instance, find_template_id_by_name
+from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_known_name
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
@@ -11678,7 +11678,11 @@ class Game:
         try:
             it = find_item_on_actor(actor, r)
             if it is not None:
-                return str(getattr(it, "name", r) or r)
+                try:
+                    tmpl = get_item_template(str(getattr(it, "template_id", "") or ""))
+                except Exception:
+                    tmpl = None
+                return item_known_name(it, tmpl)
         except Exception:
             pass
         return r
