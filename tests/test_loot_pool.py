@@ -246,3 +246,29 @@ def test_sale_summary_shows_stash_source_and_coin_result():
     g.sell_loot()
 
     assert any("Sold Stash Gem (stash) for 20 gp to treasury." in ln for ln in g.ui.lines)
+
+
+def test_sell_loot_uses_centralized_coin_reward_service(monkeypatch):
+    import sww.game as game_mod
+
+    g = Game(HeadlessUI(), dice_seed=30220, wilderness_seed=30221)
+    add_generated_treasure_to_pool(
+        g.loot_pool,
+        gp=0,
+        items=[{"name": "Service Gem", "kind": "treasure", "gp_value": 30}],
+    )
+
+    calls = []
+    real = game_mod.grant_coin_reward
+
+    def _spy(game, amount_gp, **kwargs):
+        calls.append((int(amount_gp), dict(kwargs)))
+        return real(game, amount_gp, **kwargs)
+
+    monkeypatch.setattr(game_mod, "grant_coin_reward", _spy)
+
+    g.sell_loot()
+
+    assert len(calls) == 1
+    assert calls[0][0] == 15
+    assert calls[0][1].get("source") == "sell_loot"

@@ -9476,6 +9476,8 @@ class Game:
     def sell_loot(self):
         # Transitional compatibility: selling still consumes shared party loot pool.
         # TODO(inventory-migration): support selling directly from actor inventories.
+        # Compatibility note: sale proceeds still settle into shared treasury until
+        # actor/stash-specific coin ownership is fully migrated.
         from_legacy_compat = bool(self._ensure_loot_pool_hydrated_from_legacy())
         entries = list(getattr(self.loot_pool, "entries", []) or [])
         if not entries:
@@ -9504,8 +9506,16 @@ class Game:
             self.ui.log("Could not complete sale.")
             return
         self._sync_legacy_party_items_from_loot_pool()
-        self.gold += price
-        self.ui.log(f"Sold {sold_name} ({sold_from}) for {price} gp to treasury.")
+        coin_res = grant_coin_reward(
+            self,
+            price,
+            source="sell_loot",
+            destination=CoinDestination.TREASURY,
+        )
+        self.ui.log(
+            f"Sold {sold_name} ({sold_from}) for {price} gp to "
+            f"{self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}."
+        )
 
     # -------------
     # Expedition assembly
