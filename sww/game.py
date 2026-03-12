@@ -19,15 +19,7 @@ from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
 from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
-from .loot_pool import (
-    add_generated_treasure_to_pool,
-    assign_loot_to_actor,
-    create_loot_pool,
-    leave_loot_behind,
-    loot_pool_entries_as_legacy_dicts,
-    move_loot_to_party_stash,
-)
-from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_is_magic, item_known_name
+from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_known_name
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi

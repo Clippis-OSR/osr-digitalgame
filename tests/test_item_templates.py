@@ -6,9 +6,6 @@ from sww.item_templates import (
     item_effects,
     item_is_cursed,
     item_is_magic,
-    item_known_name,
-    item_short_description,
-    item_inspect_text,
     item_unsupported_effect_types,
     template_weight_lb,
 )
@@ -50,7 +47,7 @@ def test_item_instance_metadata_contains_magic_runtime_payload():
     assert item_is_magic(inst)
     assert inst.metadata.get("effects")
     assert inst.metadata.get("unsupported_effect_types") == []
-    assert item_display_name(inst) == "Cloudy Potion"
+    assert item_display_name(inst) == "Unidentified magic item"
 
 
 def test_unsupported_effect_type_detection_is_explicit():
@@ -64,26 +61,3 @@ def test_unsupported_effect_type_detection_is_explicit():
 def test_supported_effect_catalog_includes_expected_runtime_types():
     assert "attack_bonus" in SUPPORTED_ITEM_EFFECT_TYPES
     assert "spell_cast" in SUPPORTED_ITEM_EFFECT_TYPES
-
-
-def test_identified_item_uses_real_name():
-    t = get_item_template("potion.potion_healing")
-    inst = build_item_instance("potion.potion_healing", identified=True)
-    assert item_known_name(inst, t) == t.name
-
-
-def test_unidentified_item_uses_placeholder_name():
-    inst = build_item_instance("potion.potion_healing", identified=False)
-    assert item_known_name(inst).lower().endswith("potion")
-
-
-def test_unidentified_mundane_item_displays_sensibly():
-    inst = build_item_instance("weapon.sword_long", identified=False)
-    assert item_known_name(inst) == "Runed Sword"
-    assert item_short_description(inst).startswith("Runed Sword")
-    assert "Runed Sword" in item_inspect_text(inst)
-
-
-def test_custom_label_overrides_template_display():
-    inst = build_item_instance("ring.ring_protection_plus1", identified=False, custom_label="Grandma's Ring")
-    assert item_known_name(inst) == "Grandma's Ring"

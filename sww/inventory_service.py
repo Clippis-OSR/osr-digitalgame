@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .item_templates import get_item_template, item_effects, item_is_cursed, item_known_name
+from .item_templates import get_item_template, item_known_name
 from .models import Actor, ItemInstance
 
 
