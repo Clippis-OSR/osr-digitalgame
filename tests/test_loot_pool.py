@@ -291,3 +291,19 @@ def test_room_treasure_pending_item_can_be_assigned_to_specific_actor_inventory(
     assert len(actor.inventory.items) == 1
     assert str(actor.inventory.items[0].name) == "Room Spear"
     assert len(g.loot_pool.entries) == 0
+
+
+def test_unidentified_loot_assignment_to_actor_preserves_identified_state():
+    pool = create_loot_pool()
+    _, added = add_generated_treasure_to_pool(
+        pool,
+        items=[{"name": "Cloudy Potion", "true_name": "Potion of Healing", "kind": "potion"}],
+        identify_magic=False,
+    )
+    a = Actor(name="Vera", hp=4, hp_max=4, ac_desc=8, hd=1, save=15, is_pc=True)
+
+    ok = assign_loot_to_actor(pool, a, added[0].entry_id)
+
+    assert ok is True
+    assert len(a.inventory.items) == 1
+    assert a.inventory.items[0].identified is False

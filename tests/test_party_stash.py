@@ -85,3 +85,25 @@ def test_save_load_roundtrip_preserves_party_stash_contents():
     assert len(g2.party_stash.items) == 1
     assert g2.party_stash.items[0].instance_id == "stash-i4"
     assert g2.party_stash.items[0].identified is False
+
+
+def test_unidentified_item_moved_to_stash_remains_unidentified():
+    g = _new_game(9150)
+    actor = _actor("A")
+    g.party.members = [actor]
+    it = ItemInstance(
+        instance_id="stash-unid-1",
+        template_id="ring.ring_protection_plus1",
+        name="Ring of Protection +1",
+        category="ring",
+        quantity=1,
+        identified=False,
+        metadata={"unidentified_name": "Unidentified magic item", "value_gp": 100},
+    )
+    assert add_item_to_actor(actor, it).ok
+
+    res = move_item_actor_to_stash(actor, g, it.instance_id, in_town=True)
+
+    assert res.ok
+    assert len(g.party_stash.items) == 1
+    assert g.party_stash.items[0].identified is False

@@ -375,6 +375,38 @@ def item_display_name(
 
 
 
+def owned_item_display_name(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
+    """Display-safe name for an owned item instance.
+
+    This helper is ownership-flow oriented: when an instance is not identified,
+    do not leak its true template/item name.
+    """
+    t = template or _coerce_template(instance)
+    if bool(getattr(instance, "identified", True)):
+        return item_display_name(instance, t, identified=True)
+
+    md = dict(getattr(instance, "metadata", {}) or {})
+    hidden = str(md.get("unidentified_name") or "").strip()
+    if hidden:
+        return hidden
+    if t is not None:
+        return item_display_name(instance, t, identified=False)
+    return "Unidentified item"
+
+
+def owned_item_brief_label(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
+    """Concise owned-item label suitable for inventory/sell lists."""
+    name = owned_item_display_name(instance, template)
+    qty = max(1, int(getattr(instance, "quantity", 1) or 1))
+    flags: list[str] = []
+    if not bool(getattr(instance, "identified", True)):
+        flags.append("unidentified")
+    if bool(getattr(instance, "cursed_known", False)):
+        flags.append("curse known")
+    if qty > 1:
+        flags.append(f"x{qty}")
+    return f"{name} ({', '.join(flags)})" if flags else name
+
 
 def item_known_name(instance: ItemInstance, template: ItemTemplate | None = None) -> str:
     """Backward-compatible alias for known/displayed item name."""

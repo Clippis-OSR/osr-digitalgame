@@ -19,7 +19,7 @@ from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
 from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
-from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_known_name
+from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_known_name, owned_item_brief_label
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
@@ -9544,9 +9544,7 @@ class Game:
                 price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
                 if price <= 0:
                     continue
-                ident = "identified" if bool(getattr(item, "identified", True)) else "unidentified"
-                nm = str(getattr(item, "name", "Item") or "Item")
-                qtxt = f" x{qty}" if qty > 1 else ""
+                nm = owned_item_brief_label(item)
                 rows.append({
                     "source_kind": "actor",
                     "owner": str(getattr(actor, "name", "actor") or "actor"),
@@ -9555,7 +9553,7 @@ class Game:
                     "quantity": qty,
                     "identified": bool(getattr(item, "identified", True)),
                     "price_gp": int(price),
-                    "label": f"{nm} (actor:{getattr(actor, 'name', 'actor')}, {ident}){qtxt} sell {price} gp",
+                    "label": f"{nm} (actor:{getattr(actor, 'name', 'actor')}) sell {price} gp",
                 })
 
         stash_items = list(getattr(getattr(self, "party_stash", None), "items", []) or [])
@@ -9565,9 +9563,7 @@ class Game:
             price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
             if price <= 0:
                 continue
-            ident = "identified" if bool(getattr(item, "identified", True)) else "unidentified"
-            nm = str(getattr(item, "name", "Item") or "Item")
-            qtxt = f" x{qty}" if qty > 1 else ""
+            nm = owned_item_brief_label(item)
             rows.append({
                 "source_kind": "stash",
                 "owner": "stash",
@@ -9576,7 +9572,7 @@ class Game:
                 "quantity": qty,
                 "identified": bool(getattr(item, "identified", True)),
                 "price_gp": int(price),
-                "label": f"{nm} (stash, {ident}){qtxt} sell {price} gp",
+                "label": f"{nm} (stash) sell {price} gp",
             })
 
         if include_legacy_compat:
@@ -9610,7 +9606,7 @@ class Game:
         price = self._sale_price_gp(unit_value_gp=self._sale_unit_value_gp(item), quantity=qty)
         if price <= 0:
             return False
-        sold_name = str(getattr(item, "name", "item") or "item")
+        sold_name = owned_item_brief_label(item)
         removed = remove_item_from_actor(actor, instance_id, qty)
         if not bool(getattr(removed, "ok", False)):
             return False
@@ -9630,7 +9626,7 @@ class Game:
         price = self._sale_price_gp(unit_value_gp=self._sale_unit_value_gp(item), quantity=qty)
         if price <= 0:
             return False
-        sold_name = str(getattr(item, "name", "item") or "item")
+        sold_name = owned_item_brief_label(item)
         stash.items = [it for it in list(stash.items or []) if str(getattr(it, "instance_id", "") or "") != iid]
         coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
         self.ui.log(f"Sold {sold_name} (stash) for {price} gp to {self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
