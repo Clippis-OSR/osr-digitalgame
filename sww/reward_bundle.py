@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from .coin_rewards import grant_coin_reward
+from .coin_rewards import CoinDestination, grant_coin_reward
 from .loot_pool import LootPool, LootEntry, add_generated_treasure_to_pool
 
 
@@ -75,7 +75,7 @@ def apply_reward_bundle(
     *,
     bundle: RewardBundle,
     loot_pool: LootPool,
-    coin_policy: str = "treasury",
+    coin_destination: str = CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT,
     identify_magic: bool = False,
 ) -> RewardBundleApplyResult:
     """Apply a mixed reward through centralized coin + loot-pool item flows.
@@ -87,7 +87,7 @@ def apply_reward_bundle(
 
     coins_gp = _bundle_coins_to_gp_floor(bundle)
     if coins_gp > 0:
-        grant_coin_reward(game, coins_gp, source=str(bundle.source or "reward_bundle"), policy=str(coin_policy or "treasury"))
+        grant_coin_reward(game, coins_gp, source=str(bundle.source or "reward_bundle"), destination=str(coin_destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT))
 
     _gp_ignored, added = add_generated_treasure_to_pool(
         loot_pool,

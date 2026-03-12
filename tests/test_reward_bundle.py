@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 
 from sww.loot_pool import create_loot_pool
+from sww.coin_rewards import CoinDestination
 from sww.reward_bundle import (
     apply_reward_bundle,
     empty_reward_bundle,
@@ -29,7 +30,7 @@ def test_apply_reward_bundle_preserves_values_into_treasury_and_loot_pool():
     reward_bundle_add_coins(b, gp=4, sp=9, cp=99)  # 4 gp + 99 sp/cp -> 5 gp floor total
     reward_bundle_add_item(b, {"name": "Short bow", "kind": "weapon"})
 
-    result = apply_reward_bundle(game, bundle=b, loot_pool=pool, coin_policy="treasury")
+    result = apply_reward_bundle(game, bundle=b, loot_pool=pool, coin_destination=CoinDestination.TREASURY)
 
     assert result.coins_gp_awarded == 5
     assert game.gold == 10
@@ -55,7 +56,7 @@ def test_apply_reward_bundle_feeds_existing_item_and_coin_paths(monkeypatch):
 
     monkeypatch.setattr(reward_bundle_mod, "grant_coin_reward", _spy)
 
-    result = apply_reward_bundle(game, bundle=b, loot_pool=pool, coin_policy="treasury")
+    result = apply_reward_bundle(game, bundle=b, loot_pool=pool, coin_destination=CoinDestination.TREASURY)
 
     assert result.coins_gp_awarded == 12
     assert len(calls) == 1
