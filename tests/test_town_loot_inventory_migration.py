@@ -1,5 +1,5 @@
 from sww.game import Game
-from sww.models import Actor
+from sww.models import Actor, ItemInstance
 from sww.ui_headless import HeadlessUI
 
 
@@ -30,3 +30,81 @@ def test_assigning_loot_to_character_creates_item_instance():
 
     assert ok is True
     assert any(getattr(it, "name", "") == "Dagger" for it in (a.inventory.items or []))
+
+
+def test_sell_actor_owned_item_removes_from_inventory_and_awards_gold():
+    g = _game(4400)
+    a = Actor(name="Seller", hp=5, hp_max=5, ac_desc=9, hd=1, save=15, is_pc=True)
+    g.party.members = [a]
+    a.ensure_inventory_initialized()
+    a.inventory.items.append(
+        ItemInstance(
+            instance_id="actor-sell-1",
+            template_id="weapon.sword_long",
+            name="Sword, long",
+            category="weapon",
+            quantity=1,
+            identified=True,
+            metadata={"gp_value": 20},
+        )
+    )
+
+    g.sell_loot()
+
+    assert g.gold == 10
+    assert len(a.inventory.items) == 0
+
+
+def test_sell_stash_item_removes_from_stash_and_awards_gold():
+    g = _game(4410)
+    g.party.members = []
+    g.party_stash.items.append(
+        ItemInstance(
+            instance_id="stash-sell-1",
+            template_id="treasure.generic",
+            name="Stash Jewel",
+            category="treasure",
+            quantity=1,
+            identified=False,
+            metadata={"value_gp": 40},
+        )
+    )
+
+    g.sell_loot()
+
+    assert g.gold == 20
+    assert len(g.party_stash.items) == 0
+
+
+def test_sell_legacy_party_item_compatibility_path_still_works_explicitly():
+    g = _game(4420)
+    g.party.members = []
+    g._ingest_reward_items_to_loot_pool([{"name": "Legacy Gem", "kind": "treasure", "gp_value": 50}], source="legacy_test")
+    assert len(g.loot_pool.entries) == 1
+
+    ok = g.sell_legacy_party_item(g.loot_pool.entries[0].entry_id)
+
+    assert ok is True
+    assert g.gold == 25
+    assert len(g.loot_pool.entries) == 0
+
+
+def test_sell_actor_item_uses_treasury_destination():
+    g = _game(4430)
+    a = Actor(name="Seller", hp=5, hp_max=5, ac_desc=9, hd=1, save=15, is_pc=True)
+    g.party.members = [a]
+    a.ensure_inventory_initialized()
+    a.inventory.items.append(
+        ItemInstance(
+            instance_id="actor-sell-2",
+            template_id="weapon.dagger",
+            name="Dagger",
+            category="weapon",
+            quantity=1,
+            identified=True,
+            metadata={"gp_value": 6},
+        )
+    )
+
+    assert g.sell_actor_item(a, "actor-sell-2") is True
+    assert any("to treasury." in ln for ln in g.ui.lines)
