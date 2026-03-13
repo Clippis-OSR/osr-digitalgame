@@ -19,23 +19,19 @@ from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
 from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
-from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_is_magic, item_known_name, owned_item_brief_label
+from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_is_magic, item_known_name
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
 from .town_services import TownService, identify_cost_gp, identify_item_in_town
+from .town_inventory_service import TownInventoryService
 from .loot_pool import (
     add_generated_treasure_to_pool,
     create_loot_pool,
     loot_pool_entries_as_legacy_dicts,
 )
 from .coin_rewards import CoinDestination, grant_coin_reward
-from .ownership_service import (
-    move_item_loot_pool_to_actor,
-    move_item_loot_pool_to_stash,
-    remove_owned_item,
-)
 from .reward_bundle import apply_reward_bundle, empty_reward_bundle, reward_bundle_add_coins, reward_bundle_add_item
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
@@ -266,6 +262,7 @@ class Game:
         self.dungeon_system = DungeonSystem(self)
         self.combat_service = CombatService(self)
         self.town_service = TownService(self)
+        self.town_inventory_service = TownInventoryService(self)
 
         # Validation toggle (enabled in selftest)
         self.enable_validation = False
@@ -5706,17 +5703,11 @@ class Game:
             return "expedition pool"
         return d
 
+    def _grant_coin_reward(self, amount_gp: int, **kwargs: Any):
+        return grant_coin_reward(self, amount_gp, **kwargs)
+
     def _loot_sale_source_label(self, entry: Any, *, from_legacy_compat: bool) -> str:
-        md = dict(getattr(entry, "metadata", {}) or {})
-        owner = str(md.get("owner_actor") or "").strip()
-        if owner:
-            return f"actor:{owner}"
-        source = str(md.get("source") or "").strip().lower()
-        if source in {"stash", "party_stash"}:
-            return "stash"
-        if from_legacy_compat:
-            return "legacy compatibility pool"
-        return "expedition loot pool"
+        return str(self.town_inventory_service.loot_sale_source_label(entry, from_legacy_compat=from_legacy_compat))
 
     def _template_id_for_equipment_name(self, name: str, *, preferred_categories: list[str]) -> str | None:
         """Best-effort mapping from shop/loot display names to template ids."""
@@ -5848,71 +5839,7 @@ class Game:
             self.ui.log(line)
 
     def assign_party_loot_to_character(self) -> None:
-        """Assign one loot-pool entry to a selected living character inventory."""
-        self._ensure_loot_pool_hydrated_from_legacy()
-        entries = list(getattr(self.loot_pool, "entries", []) or [])
-        if not entries:
-            self.ui.log("No party loot to assign.")
-            return
-        living = self.party.living()
-        if not living:
-            self.ui.log("No living party members available.")
-            return
-
-        self.ui.log(f"Loot pool: {int(getattr(self.loot_pool, 'coins_gp', 0) or 0)} gp in coins, {len(entries)} item(s).")
-        who_preview = ", ".join([a.name for a in living[:3]]) + ("..." if len(living) > 3 else "")
-        loot_labels = []
-        for e in entries:
-            u = ("unidentified" if not bool(getattr(e, "identified", True)) else "identified")
-            qty = int(getattr(e, "quantity", 1) or 1)
-            qtxt = f" x{qty}" if qty > 1 else ""
-            loot_labels.append(f"{str(e.name or 'Unknown')} ({str(e.kind or 'item')}, {u}){qtxt} -> {who_preview}")
-        li = self.ui.choose("Assign which loot item?", loot_labels + ["Back"])
-        if li == len(loot_labels):
-            return
-
-        picked = entries[li]
-        dest_opts = ["Assign to party member"]
-        can_stash = str(getattr(getattr(self, "travel_state", None), "location", "town") or "town").strip().lower() == "town"
-        if can_stash:
-            dest_opts.append("Send to stash")
-        dest_opts.append("Leave behind")
-        dest_opts.append("Back")
-
-        di = self.ui.choose("Loot destination?", dest_opts)
-        if di == len(dest_opts) - 1:
-            return
-
-        if dest_opts[di] == "Assign to party member":
-            who_labels = [a.name for a in living]
-            wi = self.ui.choose("Assign to who?", who_labels + ["Back"])
-            if wi == len(who_labels):
-                return
-            actor = living[wi]
-            moved = move_item_loot_pool_to_actor(self.loot_pool, actor, picked.entry_id)
-            if not moved.ok:
-                self.ui.log("Could not assign item to inventory.")
-                return
-            self._sync_legacy_party_items_if_needed(reason="assign_loot_to_actor")
-            self.ui.log(f"Assigned {str(getattr(picked, 'name', 'loot') or 'loot')} to {actor.name}.")
-            return
-
-        if dest_opts[di] == "Send to stash":
-            moved = move_item_loot_pool_to_stash(self.loot_pool, self, picked.entry_id)
-            if not moved.ok:
-                self.ui.log("Could not move item to stash.")
-                return
-            self._sync_legacy_party_items_if_needed(reason="assign_loot_to_stash")
-            self.ui.log(f"Moved {str(getattr(picked, 'name', 'loot') or 'loot')} to stash.")
-            return
-
-        # Leave behind: explicit discard from pending shared loot pool.
-        removed = remove_owned_item(self, source_kind="legacy", reference_id=str(getattr(picked, "entry_id", "") or ""), quantity=max(1, int(getattr(picked, "quantity", 1) or 1)))
-        if not removed.ok:
-            self.ui.log("Could not leave item behind.")
-            return
-        self._sync_legacy_party_items_if_needed(reason="leave_loot_behind")
-        self.ui.log(f"Left {str(getattr(picked, 'name', 'loot') or 'loot')} behind.")
+        return self.town_inventory_service.assign_party_loot_to_character()
 
     def _buy_item_for_actor(self, actor: Actor, *, name: str, kind: str, auto_equip: bool) -> bool:
         return bool(self.town_service.buy_item_for_actor(actor, name=name, kind=kind, auto_equip=auto_equip))
@@ -9548,14 +9475,10 @@ class Game:
         self.ui.log(f"Prepared {len(caster.spells_prepared)} spell(s) for {caster.name}.")
 
     def _sale_unit_value_gp(self, item: Any) -> int:
-        md = dict(getattr(item, "metadata", {}) or {})
-        return max(0, int(md.get("value_gp", md.get("gp_value", 0)) or 0))
+        return int(self.town_inventory_service.sale_unit_value_gp(item))
 
     def _sale_price_gp(self, *, unit_value_gp: int, quantity: int) -> int:
-        gross = max(0, int(unit_value_gp or 0)) * max(1, int(quantity or 1))
-        if gross <= 0:
-            return 0
-        return max(1, int(gross * 0.5))
+        return int(self.town_inventory_service.sale_price_gp(unit_value_gp=unit_value_gp, quantity=quantity))
 
     def loot_source_fallback_order(self, *, intent: str = "loot_listing") -> list[str]:
         """Ordered source preference for transitional loot readers."""
@@ -9590,173 +9513,24 @@ class Game:
 
     def preferred_sellable_items(self, *, include_legacy_compat: bool = False) -> list[dict[str, Any]]:
         """Ownership-first read helper for sellable-item rows."""
-        rows: list[dict[str, Any]] = []
-        for src in self.loot_source_fallback_order(intent="sellable"):
-            if src == "actor_inventory":
-                for actor in list(getattr(getattr(self, "party", None), "members", []) or []):
-                    if actor is None:
-                        continue
-                    try:
-                        actor.ensure_inventory_initialized()
-                    except Exception:
-                        continue
-                    for item in list(getattr(getattr(actor, "inventory", None), "items", []) or []):
-                        qty = max(1, int(getattr(item, "quantity", 1) or 1))
-                        unit = self._sale_unit_value_gp(item)
-                        price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
-                        if price <= 0:
-                            continue
-                        nm = owned_item_brief_label(item)
-                        rows.append({
-                            "source_kind": "actor",
-                            "owner": str(getattr(actor, "name", "actor") or "actor"),
-                            "instance_id": str(getattr(item, "instance_id", "") or ""),
-                            "name": nm,
-                            "quantity": qty,
-                            "identified": bool(getattr(item, "identified", True)),
-                            "price_gp": int(price),
-                            "label": f"{nm} (actor:{getattr(actor, 'name', 'actor')}) sell {price} gp",
-                        })
-            elif src == "party_stash":
-                stash_items = list(getattr(getattr(self, "party_stash", None), "items", []) or [])
-                for item in stash_items:
-                    qty = max(1, int(getattr(item, "quantity", 1) or 1))
-                    unit = self._sale_unit_value_gp(item)
-                    price = self._sale_price_gp(unit_value_gp=unit, quantity=qty)
-                    if price <= 0:
-                        continue
-                    nm = owned_item_brief_label(item)
-                    rows.append({
-                        "source_kind": "stash",
-                        "owner": "stash",
-                        "instance_id": str(getattr(item, "instance_id", "") or ""),
-                        "name": nm,
-                        "quantity": qty,
-                        "identified": bool(getattr(item, "identified", True)),
-                        "price_gp": int(price),
-                        "label": f"{nm} (stash) sell {price} gp",
-                    })
-
-        if include_legacy_compat:
-            # Transitional compatibility fallback only: anonymous pending loot pool entries.
-            from_legacy_compat = bool(self._ensure_loot_pool_hydrated_from_legacy())
-            for e in list(getattr(self.loot_pool, "entries", []) or []):
-                val = int(getattr(e, "gp_value", 0) or 0)
-                if val <= 0:
-                    continue
-                qty = int(getattr(e, "quantity", 1) or 1)
-                price = self._sale_price_gp(unit_value_gp=val, quantity=qty)
-                u = ("unidentified" if not bool(getattr(e, "identified", True)) else "identified")
-                qtxt = f" x{qty}" if qty > 1 else ""
-                rows.append({
-                    "source_kind": "legacy",
-                    "owner": self._loot_sale_source_label(e, from_legacy_compat=from_legacy_compat),
-                    "entry_id": str(getattr(e, "entry_id", "") or ""),
-                    "name": str(getattr(e, "name", "loot") or "loot"),
-                    "quantity": qty,
-                    "identified": bool(getattr(e, "identified", True)),
-                    "price_gp": int(price),
-                    "label": f"{e.name} ({u}, legacy) {qtxt}sell {price} gp".replace("  ", " "),
-                })
-        return rows
+        return self.town_inventory_service.preferred_sellable_items(include_legacy_compat=include_legacy_compat)
 
     def list_sellable_items(self, *, include_legacy_compat: bool = False) -> list[dict[str, Any]]:
         """List sellable rows with explicit ownership source metadata."""
-        return self.preferred_sellable_items(include_legacy_compat=include_legacy_compat)
+        return self.town_inventory_service.list_sellable_items(include_legacy_compat=include_legacy_compat)
 
     def sell_actor_item(self, actor: Actor, instance_id: str, *, source: str = "sell_loot") -> bool:
-        item = find_item_on_actor(actor, instance_id)
-        if item is None:
-            return False
-        qty = max(1, int(getattr(item, "quantity", 1) or 1))
-        price = self._sale_price_gp(unit_value_gp=self._sale_unit_value_gp(item), quantity=qty)
-        if price <= 0:
-            return False
-        sold_name = owned_item_brief_label(item)
-        removed = remove_owned_item(self, source_kind="actor", reference_id=instance_id, actor=actor, quantity=qty)
-        if not bool(getattr(removed, "ok", False)):
-            return False
-        coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
-        self.ui.log(f"Sold {sold_name} (actor:{actor.name}) for {price} gp to {self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
-        return True
+        return bool(self.town_inventory_service.sell_actor_item(actor, instance_id, source=source))
 
     def sell_stash_item(self, instance_id: str, *, source: str = "sell_loot") -> bool:
-        stash = getattr(self, "party_stash", None)
-        if stash is None:
-            return False
-        iid = str(instance_id or "")
-        item = next((it for it in list(getattr(stash, "items", []) or []) if str(getattr(it, "instance_id", "") or "") == iid), None)
-        if item is None:
-            return False
-        qty = max(1, int(getattr(item, "quantity", 1) or 1))
-        price = self._sale_price_gp(unit_value_gp=self._sale_unit_value_gp(item), quantity=qty)
-        if price <= 0:
-            return False
-        sold_name = owned_item_brief_label(item)
-        removed = remove_owned_item(self, source_kind="stash", reference_id=iid, quantity=qty)
-        if not bool(getattr(removed, "ok", False)):
-            return False
-        coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
-        self.ui.log(f"Sold {sold_name} (stash) for {price} gp to {self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
-        return True
+        return bool(self.town_inventory_service.sell_stash_item(instance_id, source=source))
 
     def sell_legacy_party_item(self, entry_id: str, *, source: str = "sell_loot") -> bool:
-        """Transitional-only sale path for anonymous legacy pooled loot."""
-        entries = list(getattr(self.loot_pool, "entries", []) or [])
-        pick = next((e for e in entries if str(getattr(e, "entry_id", "") or "") == str(entry_id or "")), None)
-        if pick is None:
-            return False
-        qty = max(1, int(getattr(pick, "quantity", 1) or 1))
-        val = max(0, int(getattr(pick, "gp_value", 0) or 0))
-        price = self._sale_price_gp(unit_value_gp=val, quantity=qty)
-        if price <= 0:
-            return False
-        sold_name = str(getattr(pick, "name", "loot") or "loot")
-        sold_from = self._loot_sale_source_label(pick, from_legacy_compat=True)
-        removed = remove_owned_item(self, source_kind="legacy", reference_id=str(entry_id or ""), quantity=qty)
-        if not bool(getattr(removed, "ok", False)):
-            return False
-        # Transitional compatibility: keep legacy mirror coherent only when a
-        # legacy mirror is already active for current session/readers.
-        self._sync_legacy_party_items_if_needed(reason="sell_legacy_party_item")
-        coin_res = grant_coin_reward(self, price, source=source, destination=CoinDestination.TREASURY)
-        self.ui.log(f"Sold {sold_name} ({sold_from}) for {price} gp to {self._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
-        return True
+        return bool(self.town_inventory_service.sell_legacy_party_item(entry_id, source=source))
 
     def sell_loot(self):
         """Sell owned items first; use legacy pooled loot only via explicit fallback."""
-        sellables = self.list_sellable_items(include_legacy_compat=False)
-        using_legacy = False
-        if not sellables:
-            compat = self.list_sellable_items(include_legacy_compat=True)
-            compat = [r for r in compat if str(r.get("source_kind")) == "legacy"]
-            if not compat:
-                self.ui.log("You have no loot to sell.")
-                return
-            c = self.ui.choose("No owned sellables found. Use legacy pooled loot compatibility sale?", ["Yes", "No"])
-            if c != 0:
-                return
-            sellables = compat
-            using_legacy = True
-
-        labels = [str(r.get("label") or "Sell item") for r in sellables]
-        c = self.ui.choose("Sell which?", labels + ["Back"])
-        if c == len(labels):
-            return
-        row = dict(sellables[c] or {})
-        sk = str(row.get("source_kind") or "")
-        ok = False
-        if sk == "actor":
-            actor_name = str(row.get("owner") or "")
-            actor = next((a for a in list(getattr(getattr(self, "party", None), "members", []) or []) if str(getattr(a, "name", "") or "") == actor_name), None)
-            if actor is not None:
-                ok = self.sell_actor_item(actor, str(row.get("instance_id") or ""), source="sell_loot")
-        elif sk == "stash":
-            ok = self.sell_stash_item(str(row.get("instance_id") or ""), source="sell_loot")
-        elif sk == "legacy" and using_legacy:
-            ok = self.sell_legacy_party_item(str(row.get("entry_id") or ""), source="sell_loot")
-        if not ok:
-            self.ui.log("Could not complete sale.")
+        return self.town_inventory_service.sell_loot()
 
     # -------------
     # Expedition assembly
