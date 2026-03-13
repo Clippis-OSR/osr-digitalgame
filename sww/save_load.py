@@ -1715,6 +1715,7 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     setattr(game, "dungeon_turn", int(dung.get("dungeon_turn", 0)))
     setattr(game, "torch_turns_left", int(dung.get("torch_turns_left", 0)))
     setattr(game, "magical_light_turns", int(dung.get("magical_light_turns", 0)))
+    setattr(game, "light_on", bool(int(dung.get("torch_turns_left", 0) or 0) > 0 or int(dung.get("magical_light_turns", 0) or 0) > 0))
     setattr(game, "current_room_id", int(dung.get("current_room_id", 0)))
     rooms = dung.get("dungeon_rooms", {}) or {}
     # Normalize JSON object keys back to ints when possible.
