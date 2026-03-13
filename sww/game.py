@@ -35,6 +35,7 @@ from .coin_rewards import CoinDestination, grant_coin_reward
 from .reward_bundle import apply_reward_bundle, empty_reward_bundle, reward_bundle_add_coins, reward_bundle_add_item
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
+from .dungeon_traps import ensure_trap_state, mark_trap_state, trap_profile
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
 from .contracts import generate_contracts, Contract
 from .events import (
@@ -2886,7 +2887,7 @@ class Game:
                     pass
                 self.emit("room_resolved", room_id=int(self.current_room_id), room_type="treasure")
             elif room["type"] == "trap":
-                self._handle_room_trap(room)
+                self._handle_room_trap(room, source="disarm_failure")
                 try:
                     self._encounter_end_capture()
                 except Exception:
@@ -3138,6 +3139,8 @@ class Game:
             return CommandResult(status="info")
 
         d = room.get("_delta") if isinstance(room.get("_delta"), dict) else None
+        trap = ensure_trap_state(room)
+        profile = trap_profile(str(trap.get("kind") or "pit"))
 
         if room.get("trap_disarmed"):
             self.ui.log("You find no active traps.")
@@ -3159,11 +3162,12 @@ class Game:
                 chance_in_6 = max(1, min(5, (int(chance_pct) + 14) // 20))
             found = self.dice.in_6(chance_in_6)
             if found:
-                room["trap_found"] = True
+                mark_trap_state(room, found=True)
                 if d is not None:
                     d["trap_found"] = True
-                self.ui.log("You discover signs of a trap!")
-                self.emit("dungeon_trap_found", room_id=int(self.current_room_id))
+                    d["trap"] = dict(room.get("trap") or {})
+                self.ui.log(f"You discover signs of a {profile.name.lower()}!")
+                self.emit("dungeon_trap_found", room_id=int(self.current_room_id), trap_kind=str(trap.get("kind") or profile.kind))
             else:
                 self.ui.log("You find nothing suspicious.")
             try:
@@ -3183,12 +3187,13 @@ class Game:
         chance_pct = int(chance_pct)
         roll = self.dice.percent()
         if roll <= max(1, min(99, chance_pct)):
-            room["trap_disarmed"] = True
+            mark_trap_state(room, disarmed=True, disabled=True)
             room["cleared"] = True
             if d is not None:
                 d["trap_disarmed"] = True
                 d["cleared"] = True
-            self.ui.log(f"{thief.name} disarms the trap!")
+                d["trap"] = dict(room.get("trap") or {})
+            self.ui.log(f"{thief.name} disarms the {profile.name.lower()}.")
             self.emit("dungeon_trap_disarmed", room_id=int(self.current_room_id), by=str(thief.name))
             try:
                 self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
@@ -3346,12 +3351,10 @@ class Game:
         dest_room = self._ensure_room(dest)
         # Passive entry checks do not cost time: automatic trap/secret checks on first entry.
         self._passive_room_entry_checks(dest_room)
-        # P6.1.2.0: trap rooms can trigger on entry unless previously found/disarmed.
+        # Trap rooms deterministically trigger on blind entry unless already found/disabled.
         if (dest_room.get("type") == "trap" or dest_room.get("trap_desc")) and not dest_room.get("trap_disarmed"):
             if not dest_room.get("trap_found") and not dest_room.get("trap_triggered"):
-                # Light touch: 2-in-6 chance to trigger when you blunder in.
-                if self.dice.in_6(2):
-                    self._handle_room_trap(dest_room)
+                self._handle_room_trap(dest_room, source="entry")
         self.ui.log(f"You move to Room {dest}.")
         self.emit("dungeon_moved", src=int(src), dest=int(dest), exit_key=str(key))
         return CommandResult(status="ok")
@@ -10989,48 +10992,48 @@ class Game:
             pass
 
     
-    def _handle_room_trap(self, room: dict[str, Any]):
+    def _handle_room_trap(self, room: dict[str, Any], *, source: str = "unknown"):
         ctx = resolve_room_interaction_context(self, room)
+        trap = ensure_trap_state(room)
+        profile = trap_profile(str(trap.get("kind") or "pit"))
         if room.get("trap_disarmed") or bool(ctx.get("hazards_resolved")):
             self.ui.log("A disarmed trap lies here.")
             room["cleared"] = True
             return
 
-        trap_key = str(room.get("trap_desc") or room.get("trap_damage") or "trap").strip().lower().replace(" ", "_")
+        trap_key = str(trap.get("kind") or room.get("trap_desc") or room.get("trap_damage") or "trap").strip().lower().replace(" ", "_")
         if not self._mark_room_resolution_once(room, f"trap:{trap_key}", mode="trigger"):
-            room["trap_disarmed"] = True
+            mark_trap_state(room, disarmed=True, disabled=True)
             room["cleared"] = True
             return
 
-        # Mark as triggered/found so it can't repeatedly fire.
-        room["trap_triggered"] = True
-        room["trap_found"] = True
-
+        mark_trap_state(room, found=True, triggered=True, disabled=True)
         d = room.get("_delta") if isinstance(room.get("_delta"), dict) else None
         if d is not None:
             d["trap_triggered"] = True
             d["trap_found"] = True
+            d["trap"] = dict(room.get("trap") or {})
 
         self.ui.title("Trap!")
-        self.ui.log(room.get("trap_desc", "A hidden mechanism triggers!"))
+        self.ui.log(str(room.get("trap_desc") or profile.trigger_text))
 
-        # Dwarf stonework notice (careful movement).
         try:
             from .races import dwarf_trap_notice_in_6
             ch = int(dwarf_trap_notice_in_6(self.party, mode="careful"))
             if ch > 0 and self.dice.in_6(ch):
                 self.ui.log("A dwarf notices subtle stonework tells — you avoid the trap!")
-                room["trap_disarmed"] = True
+                mark_trap_state(room, disarmed=True, disabled=True)
                 room["cleared"] = True
                 if d is not None:
                     d["trap_disarmed"] = True
                     d["cleared"] = True
-                self.emit("dungeon_trap_spotted", room_id=int(room.get("id", -1)), by_race="Dwarf")
+                    d["trap"] = dict(room.get("trap") or {})
+                self.emit("dungeon_trap_spotted", room_id=int(room.get("id", -1)), by_race="Dwarf", trap_kind=str(trap.get("kind") or profile.kind))
                 return
         except Exception:
             pass
 
-        dmg_expr = str(room.get("trap_damage") or "1d6")
+        dmg_expr = str(trap.get("damage") or room.get("trap_damage") or profile.damage)
         try:
             dmg = int(self.dice.roll(dmg_expr).total)
         except Exception:
@@ -11042,23 +11045,32 @@ class Game:
             self._notify_damage(victim, dmg, damage_types={"physical"})
             self.ui.log(f"{victim.name} takes {dmg} damage!")
 
-        room["trap_disarmed"] = True
+        mark_trap_state(room, disarmed=True, disabled=True)
         room["cleared"] = True
         if d is not None:
             d["trap_disarmed"] = True
             d["cleared"] = True
+            d["trap"] = dict(room.get("trap") or {})
 
-        # Alarm/noise.
-        if bool(room.get('trap_alarm')) or "alarm" in str(room.get("trap_desc") or "").lower() or self.dice.in_6(2):
-            self.noise_level = min(5, self.noise_level + 2)
+        if int(profile.extra_turn_cost) > 0:
+            self.spend_dungeon_time(int(profile.extra_turn_cost), reason=f"trap:{profile.kind}")
+            self.ui.log("The trap slows your party's advance.")
+        if int(profile.light_loss) > 0 and int(getattr(self, "torch_turns_left", 0) or 0) > 0:
+            self.torch_turns_left = max(0, int(self.torch_turns_left) - int(profile.light_loss))
+            self.ui.log("Your light sputters in the chaos.")
+
+        if bool(trap.get("alarm", profile.alarm)) or "alarm" in str(room.get("trap_desc") or "").lower():
+            self.noise_level = min(5, self.noise_level + max(1, int(profile.noise)))
             self._propagate_dungeon_alarm(origin_room_id=int(room.get('id', self.current_room_id) or self.current_room_id), severity=1, reason='trap alarm')
             self.ui.log("The trap makes a terrible racket!")
 
-        # Persist trap state to delta (important if the trap triggers during movement).
+        self.emit("dungeon_trap_triggered", room_id=int(room.get("id", self.current_room_id) or self.current_room_id), trap_kind=str(trap.get("kind") or profile.kind), source=str(source), damage=int(dmg), victim=str(getattr(victim, "name", "")) if victim else None)
+
         try:
             self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
         except Exception:
             pass
+
 
     def _room_entry_signals(self, room: dict[str, Any]) -> list[str]:
         """Return 0-2 short, non-mechanical telegraph lines shown once on first entry.
@@ -11177,6 +11189,9 @@ class Game:
 
         # Passive trap detection before any trigger.
         has_trap = (room.get("type") == "trap") or bool(room.get("trap_desc")) or bool(room.get("trap_damage"))
+        if has_trap:
+            trap = ensure_trap_state(room)
+            profile = trap_profile(str(trap.get("kind") or "pit"))
         if has_trap and not room.get("trap_disarmed") and not room.get("trap_found"):
             found_by: list[str] = []
             for pc in self.party.pcs():
@@ -11198,12 +11213,14 @@ class Game:
                 if roll <= max(1, min(99, pct)):
                     found_by.append(str(getattr(pc, "name", "Someone")))
             if found_by:
-                room["trap_found"] = True
+                mark_trap_state(room, found=True)
                 if len(found_by) == 1:
                     self.ui.log(f"{found_by[0]} notices signs of a trap!")
+                    for line in list(trap.get("warning_signs") or profile.warning_signs):
+                        self.ui.log(str(line))
                 else:
                     self.ui.log("Your party notices signs of a trap!")
-                self.emit("dungeon_trap_found", room_id=rid)
+                self.emit("dungeon_trap_found", room_id=rid, trap_kind=str(trap.get("kind") or profile.kind))
 
 
         # Dwarf stonework trap noticing on first entry (no time cost).
@@ -11212,9 +11229,9 @@ class Game:
             if (room.get("type") == "trap" or room.get("trap_desc")) and not room.get("trap_found"):
                 ch = int(dwarf_trap_notice_in_6(self.party, mode="careful"))
                 if ch > 0 and self.dice.in_6(ch):
-                    room["trap_found"] = True
+                    mark_trap_state(room, found=True)
                     self.ui.log("A dwarf notices subtle stonework tells — there may be a trap here.")
-                    self.emit("dungeon_trap_found", room_id=rid, by_race="Dwarf")
+                    self.emit("dungeon_trap_found", room_id=rid, by_race="Dwarf", trap_kind=str(trap.get("kind") or profile.kind))
         except Exception:
             pass
 
@@ -11322,8 +11339,7 @@ class Game:
         # Keep UI-driven movement consistent with command-driven movement for traps.
         if (r2.get("type") == "trap" or r2.get("trap_desc")) and not r2.get("trap_disarmed"):
             if not r2.get("trap_found") and not r2.get("trap_triggered"):
-                if self.dice.in_6(2):
-                    self._handle_room_trap(r2)
+                self._handle_room_trap(r2, source="entry")
 
     # -------------
     # Dungeon generation + persistence
@@ -11600,6 +11616,7 @@ class Game:
             "trap_disarmed",
             "trap_found",
             "trap_triggered",
+            "trap_disabled",
             "secret_found",
             "entered",
             "event_done",
@@ -11614,6 +11631,12 @@ class Game:
 
         if isinstance(room.get("doors"), dict):
             rec["doors"] = dict(room.get("doors") or {})
+
+        if isinstance(room.get("trap"), dict) or isinstance(rec.get("trap"), dict):
+            trap = ensure_trap_state(room)
+            trap = mark_trap_state(room, found=bool(room.get("trap_found", trap.get("found", False))), triggered=bool(room.get("trap_triggered", trap.get("triggered", False))), disarmed=bool(room.get("trap_disarmed", trap.get("disarmed", False))), disabled=bool(room.get("trap_disarmed", False) or room.get("trap_triggered", False) or trap.get("disabled", False)))
+            rec["trap"] = dict(trap)
+            rec["trap_disabled"] = bool(trap.get("disabled", False))
 
         keys = room.get("resolution_keys", rec.get("resolution_keys", []))
         if isinstance(keys, (list, tuple, set)):
@@ -11685,6 +11708,7 @@ class Game:
                 drec.setdefault("trap_found", False)
                 drec.setdefault("trap_triggered", False)
                 drec.setdefault("trap_disarmed", False)
+                drec.setdefault("trap_disabled", bool(drec.get("trap_disarmed", False) or drec.get("trap_triggered", False)))
             drec.setdefault("secret_found", False)
 
             doors = drec.get("doors")
@@ -11732,6 +11756,9 @@ class Game:
                 room["trap_triggered"] = bool(drec.get("trap_triggered"))
             if "trap_disarmed" in drec:
                 room["trap_disarmed"] = bool(drec.get("trap_disarmed"))
+            if isinstance(drec.get("trap"), dict):
+                room["trap"] = dict(drec.get("trap") or {})
+                room["trap_kind"] = str(room["trap"].get("kind") or room.get("trap_kind") or "pit")
             for _k in ('event_done','feature_done','shrine_done','puzzle_done'):
                 if _k in drec:
                     room[_k] = bool(drec.get(_k))
@@ -11768,14 +11795,21 @@ class Game:
                     room.setdefault("trap_found", bool(drec.get("trap_found", False)))
                     room.setdefault("trap_triggered", bool(drec.get("trap_triggered", False)))
                     t = srec.get("trap") if isinstance(srec.get("trap"), dict) else {}
-                    kind = str((t or {}).get("trap_kind") or "trap").replace("_", " ")
-                    room["trap_desc"] = str((t or {}).get("desc") or f"A dangerous {kind}!")
+                    room.setdefault("trap", {})
+                    trap_kind = str((t or {}).get("trap_kind") or room.get("trap_kind") or "pit").strip().lower()
+                    profile = trap_profile(trap_kind)
+                    room["trap"]["kind"] = trap_kind
+                    room["trap_desc"] = str((t or {}).get("desc") or profile.trigger_text)
                     try:
                         room["trap_dc"] = int((t or {}).get("dc") or 10)
                     except Exception:
                         room["trap_dc"] = 10
-                    room["trap_damage"] = str((t or {}).get("damage") or "1d6")
-                    room["trap_alarm"] = bool((t or {}).get("alarm", False))
+                    room["trap_damage"] = str((t or {}).get("damage") or profile.damage)
+                    room["trap_alarm"] = bool((t or {}).get("alarm", profile.alarm))
+                    room["trap"]["warning_signs"] = list(profile.warning_signs)
+                    room["trap"]["damage"] = str(room["trap_damage"])
+                    room["trap"]["alarm"] = bool(room["trap_alarm"])
+                    ensure_trap_state(room)
 
                 if isinstance(srec.get('special_room'), dict):
                     room['special_room'] = dict(srec.get('special_room') or {})
@@ -11793,6 +11827,12 @@ class Game:
                     room['puzzle'] = dict(srec.get('puzzle') or {})
                     room.setdefault('puzzle_done', bool(drec.get('puzzle_done', False)))
                     room['title'] = str(room.get('title') or room['puzzle'].get('name') or room['type'].title())
+
+            if rtype == "trap":
+                ensure_trap_state(room)
+                mark_trap_state(room, found=bool(drec.get("trap_found", room.get("trap_found", False))), triggered=bool(drec.get("trap_triggered", room.get("trap_triggered", False))), disarmed=bool(drec.get("trap_disarmed", room.get("trap_disarmed", False))), disabled=bool(drec.get("trap_disabled", room.get("trap_disarmed", False) or room.get("trap_triggered", False))))
+                drec["trap"] = dict(room.get("trap") or {})
+                drec["trap_disabled"] = bool(room.get("trap", {}).get("disabled", False))
 
             # Persist delta defaults now that we have a complete room view.
             self._set_dungeon_delta_room(room_id, drec)
@@ -11881,13 +11921,15 @@ class Game:
                 foes = [self.encounters._mk_monster(m) for _ in range(1 + (1 if self.dice.in_6(3) else 0))]
             room["foes"] = foes
         elif rtype == "trap":
-            room["trap_desc"] = self.dice_rng.choice([
-                "A spray of darts!",
-                "A collapsing ceiling!",
-                "A pit opens beneath your feet!",
-                "A scything blade swings from the wall!",
-            ])
+            trap_kind = self.dice_rng.choice(["pit", "dart", "gas"])
+            profile = trap_profile(str(trap_kind))
+            room["trap_kind"] = str(trap_kind)
+            room["trap_desc"] = str(profile.trigger_text)
+            room["trap_damage"] = str(profile.damage)
+            room["trap_alarm"] = bool(profile.alarm)
             room["trap_disarmed"] = False
+            room["trap"] = {"kind": str(trap_kind), "warning_signs": list(profile.warning_signs), "damage": str(profile.damage), "alarm": bool(profile.alarm)}
+            ensure_trap_state(room)
         elif rtype == "treasure":
             room["treasure_taken"] = False
         else:
