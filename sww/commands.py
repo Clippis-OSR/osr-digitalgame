@@ -210,6 +210,11 @@ class DungeonSearchTraps(Command):
 
 
 @dataclass(frozen=True)
+class DungeonInteractTrap(Command):
+    pass
+
+
+@dataclass(frozen=True)
 class DungeonSneak(Command):
     pass
 

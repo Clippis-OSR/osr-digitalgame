@@ -75,6 +75,7 @@ from .commands import (
     DungeonListen,
     DungeonSearchSecret,
     DungeonSearchTraps,
+    DungeonInteractTrap,
     DungeonSneak,
     DungeonPrepareSpells,
     DungeonCastSpell,
@@ -3170,28 +3171,41 @@ class Game:
             self.emit("dungeon_search_traps", room_id=int(self.current_room_id), found=bool(found), disarmed=False, triggered=False, trap_kind=str(trap.get("kind") or profile.kind))
             return CommandResult(status="info")
 
-        # Discovered trap interaction layer: choose how to handle an identified hazard.
-        opts = [
-            "Disarm trap (Skilled)",
-            "Bypass carefully",
-            "Trigger intentionally",
-            "Back",
-        ]
-        choice = int(self.ui.choose(f"Discovered {profile.name}", opts))
+        return self._resolve_discovered_trap_interaction(room, source="search")
+
+    def _room_has_discovered_active_trap(self, room: dict[str, Any] | None = None) -> bool:
+        r = room if isinstance(room, dict) else self._ensure_room(self.current_room_id)
+        has_trap = (r.get("type") == "trap") or bool(r.get("trap_desc")) or bool(r.get("trap_damage"))
+        if not has_trap:
+            return False
+        trap = ensure_trap_state(r)
+        return bool(r.get("trap_found")) and not bool(r.get("trap_disarmed")) and not bool(trap.get("disabled", False))
+
+    def _resolve_discovered_trap_interaction(self, room: dict[str, Any], *, source: str) -> CommandResult:
+        trap = ensure_trap_state(room)
+        profile = trap_profile(str(trap.get("kind") or "pit"))
         trap_kind = str(trap.get("kind") or profile.kind)
+        d = room.get("_delta") if isinstance(room.get("_delta"), dict) else None
+
+        if not self._room_has_discovered_active_trap(room):
+            self.ui.log("No discovered active trap to interact with.")
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, source=str(source), choice="none", outcome="unavailable")
+            return CommandResult(status="error")
+
+        opts = ["Disarm trap (Skilled)", "Bypass carefully", "Trigger intentionally", "Back"]
+        choice = int(self.ui.choose(f"Discovered {profile.name}", opts))
 
         if choice == 3:
             self.ui.log("You leave the trap undisturbed.")
-            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="back")
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, source=str(source), choice="back")
             return CommandResult(status="info")
 
         if choice == 1:
-            # Bypass costs time and has a small deterministic mishap risk.
             self.spend_dungeon_time(1, reason="trap_bypass")
             bypass_risk = max(1, min(6, int(getattr(profile, "noise", 1) or 1)))
             if self.dice.in_6(bypass_risk):
                 self.ui.log("You misjudge the safe path!")
-                self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="bypass", outcome="failed")
+                self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, source=str(source), choice="bypass", outcome="failed")
                 self._handle_room_trap(room, source="bypass_failure")
                 return CommandResult(status="info")
             mark_trap_state(room, found=True)
@@ -3203,19 +3217,19 @@ class Game:
                 self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
             except Exception:
                 pass
-            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="bypass", outcome="safe")
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, source=str(source), choice="bypass", outcome="safe")
             return CommandResult(status="ok")
 
         if choice == 2:
             self.ui.log("You deliberately trigger the trap from a controlled position.")
-            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="trigger_intentional")
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, source=str(source), choice="trigger_intentional")
             self._handle_room_trap(room, source="intentional")
             return CommandResult(status="info")
 
         thief, chance_pct = self._best_skill_user('Find/Remove Traps')
         if not thief or int(chance_pct or 0) <= 0:
             self.ui.log("You have found a trap, but no one is trained to disarm it.")
-            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="disarm", outcome="unavailable")
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, source=str(source), choice="disarm", outcome="unavailable")
             return CommandResult(status="error")
 
         chance_pct = int(chance_pct)
@@ -3229,7 +3243,7 @@ class Game:
                 d["trap"] = dict(room.get("trap") or {})
             self.ui.log(f"{thief.name} disarms the {profile.name.lower()}.")
             self.emit("dungeon_trap_disarmed", room_id=int(self.current_room_id), by=str(thief.name), trap_kind=trap_kind)
-            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="disarm", outcome="success")
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, source=str(source), choice="disarm", outcome="success")
             try:
                 self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
             except Exception:
@@ -3238,10 +3252,17 @@ class Game:
 
         self.ui.log(f"{thief.name} fails to disarm the trap ({roll}/{chance_pct})!")
         self.noise_level = min(5, self.noise_level + 1)
-        self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="disarm", outcome="failed")
+        self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, source=str(source), choice="disarm", outcome="failed")
         self._handle_room_trap(room, source="disarm_failure")
-        self.emit("dungeon_search_traps", room_id=int(self.current_room_id), found=True, disarmed=False, triggered=True, trap_kind=trap_kind)
         return CommandResult(status="info")
+
+    def _cmd_dungeon_interact_trap(self) -> CommandResult:
+        blocked = self._dungeon_precision_action_requires_light(action="interact with trap")
+        if blocked is not None:
+            return blocked
+        room = self._ensure_room(self.current_room_id)
+        return self._resolve_discovered_trap_interaction(room, source="interact")
+
 
     def _cmd_dungeon_sneak(self) -> CommandResult:
         blocked = self._dungeon_precision_action_requires_light(action="sneak safely")
@@ -9578,6 +9599,24 @@ class Game:
     # Dungeon
     # -------------
 
+    def _dungeon_action_labels(self, room: dict[str, Any]) -> tuple[list[str], bool]:
+        discovered_active_trap = self._room_has_discovered_active_trap(room)
+        actions = [
+            "Resume board-native map view",
+            "View map / mini-board",
+            "Listen at doors",
+            "Search for secret door",
+            "Search for traps (Skilled)",
+        ]
+        if discovered_active_trap:
+            actions.append("Interact with discovered trap")
+        actions += [
+            "Sneak (Skilled)",
+            "Prepare spells (camp)",
+            "Cast a spell (camp)",
+        ]
+        return actions, bool(discovered_active_trap)
+
     def dungeon_loop(self):
         # Dungeon loop migrated to command-driven flow (Step 4 refactor).
         self.dispatch(EnterDungeon())
@@ -9614,16 +9653,7 @@ class Game:
 
             stairs = room.get("stairs") or {}
 
-            actions = [
-                "Resume board-native map view",
-                "View map / mini-board",
-                "Listen at doors",
-                "Search for secret door",
-                "Search for traps (Skilled)",
-                "Sneak (Skilled)",
-                "Prepare spells (camp)",
-                "Cast a spell (camp)",
-            ]
+            actions, discovered_active_trap = self._dungeon_action_labels(room)
             if stairs.get("up"):
                 actions.append("Use stairs up")
             if stairs.get("down"):
@@ -9650,15 +9680,17 @@ class Game:
                 self.dispatch(DungeonSearchSecret())
             elif i == 4:
                 self.dispatch(DungeonSearchTraps())
-            elif i == 5:
+            elif i == 5 and discovered_active_trap:
+                self.dispatch(DungeonInteractTrap())
+            elif i == (6 if discovered_active_trap else 5):
                 self.dispatch(DungeonSneak())
-            elif i == 6:
+            elif i == (7 if discovered_active_trap else 6):
                 self.dispatch(DungeonPrepareSpells())
-            elif i == 7:
+            elif i == (8 if discovered_active_trap else 7):
                 self.dispatch(DungeonCastSpell())
             else:
                 # Handle stairs if present
-                idx = 8
+                idx = (9 if discovered_active_trap else 8)
                 if stairs.get("up"):
                     if i == idx:
                         self.dispatch(DungeonUseStairs("up"))
