@@ -64,6 +64,7 @@ These artifacts are designed to support deterministic generation and save-game s
 
 ## Dev / tuning scripts
 
+- `PYTHONPATH=. python scripts/validate_noncombat_content_lint.py` — strict CI-style lint for built-in non-combat encounter content.
 - `python -m scripts.run_fixtures` — deterministic replay fixtures.
 - `python -m scripts.stress_test` — randomized stress sanity check.
 - `python -m scripts.xp_economy_report` — prints XP thresholds by class.
