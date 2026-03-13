@@ -100,3 +100,33 @@ def test_prep_minor_healing_shortcut_does_not_charge_when_uninjured():
 
     assert g.gold == 50
     assert any("No one needs healing right now." in ln for ln in g.ui.lines)
+
+
+def test_arms_store_purchase_surfaces_ac_and_encumbrance_feedback():
+    ui = _SeqUI([0, 0, 0, 2])
+    g = Game(ui, dice_seed=20040, wilderness_seed=20041)
+    g.gold = 100
+    g.party.members = [_pc()]
+
+    g.town_arms_store()
+
+    logs = "\n".join(g.ui.lines)
+    assert "Bought" in logs
+    assert "Auto-equip: yes" in logs
+    assert "Encumbrance:" in logs
+    assert any("Weapon role:" in ln or "Armor role:" in ln or "AC:" in ln for ln in g.ui.lines)
+
+
+def test_basic_resupply_logs_before_after_supply_counts():
+    g = Game(HeadlessUI(), dice_seed=20050, wilderness_seed=20051)
+    g.gold = 30
+    g.rations = 1
+    g.torches = 2
+    g.arrows = 3
+    g.bolts = 4
+
+    ok = g._town_buy_basic_resupply()
+
+    assert ok is True
+    assert any("rations 1->7" in ln for ln in g.ui.lines)
+    assert any("arrows 3->23" in ln for ln in g.ui.lines)

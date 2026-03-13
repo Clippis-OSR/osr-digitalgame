@@ -324,7 +324,7 @@ def test_preferred_loot_items_prefers_loot_pool_rows_first():
     assert "Legacy Should Not Win" not in names
 
 
-def test_encounter_recap_snapshot_falls_back_to_legacy_party_items_when_pool_unavailable():
+def test_encounter_recap_snapshot_does_not_fallback_to_legacy_party_items_when_pool_unavailable():
     g = Game(HeadlessUI(), dice_seed=30149, wilderness_seed=30150)
     g.loot_pool = None
     g.party_items = [{"name": "Legacy Fallback Item", "kind": "treasure", "gp_value": 5}]
@@ -332,7 +332,7 @@ def test_encounter_recap_snapshot_falls_back_to_legacy_party_items_when_pool_una
     g._encounter_begin_capture(context="test")
 
     names = [str((it or {}).get("name") or "") for it in list(getattr(g, "_encounter_start_items", []) or [])]
-    assert names == ["Legacy Fallback Item"]
+    assert names == []
 
 
 def test_encounter_begin_capture_uses_preferred_reward_summary_source_helper(monkeypatch):
@@ -615,8 +615,9 @@ def test_encounter_end_capture_handles_duplicate_unidentified_labels_by_entry_id
     assert items.count("Mysterious Potion") == 2
 
 
-def test_encounter_end_capture_legacy_fallback_only_when_loot_pool_unavailable():
-    # Explicit fallback path: no loot_pool state available.
+def test_encounter_end_capture_ignores_legacy_party_items_fallback_even_when_pool_unavailable():
+    # Migration-closure behavior: reward recap is ownership-first and does not
+    # diff legacy party_items even if loot_pool is unavailable.
     g_fallback = Game(HeadlessUI(), dice_seed=30280, wilderness_seed=30281)
     g_fallback.loot_pool = None
     g_fallback.party_items = [{"name": "Old Relic", "kind": "treasure"}]
@@ -627,7 +628,7 @@ def test_encounter_end_capture_legacy_fallback_only_when_loot_pool_unavailable()
 
     fallback_recap = _last_encounter_recap_event(g_fallback)
     fallback_items = list((fallback_recap.data or {}).get("items_gained", []) or [])
-    assert "New Relic" in fallback_items
+    assert fallback_items == []
 
     # When loot_pool is available, do not silently prefer legacy party_items diffs.
     g_primary = Game(HeadlessUI(), dice_seed=30282, wilderness_seed=30283)

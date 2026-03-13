@@ -13,3 +13,14 @@ def test_party_encumbrance_bridge_uses_new_actor_inventory_weights():
 
     assert hasattr(enc, "state")
     assert enc.state in {"heavy", "severe", "overloaded"}
+
+
+def test_party_encumbrance_ignores_stale_legacy_party_items_by_default():
+    g = Game(HeadlessUI(), dice_seed=9010, wilderness_seed=9011)
+    a = Actor(name="A", hp=5, hp_max=5, ac_desc=9, hd=1, save=15, is_pc=True)
+    g.party.members = [a]
+    g.party_items = [{"name": "Legacy Boulder", "kind": "gear", "quantity": 999, "weight_lb": 9999}]
+
+    enc = g.party_encumbrance()
+
+    assert enc.state == "unencumbered"
