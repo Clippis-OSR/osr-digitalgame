@@ -127,6 +127,66 @@ def test_noncombat_partial_state_persists_leave_return_and_save_load():
     assert (room2.get("noncombat_encounter") or {}).get("status") == "active"
 
 
+
+def test_noncombat_effects_are_typed_and_registry_dispatched():
+    g = _new_game(7005, scripted=True)
+    assert isinstance(g.ui, ScriptedUI)
+    rid = _find_room_for_noncombat(g)
+    room = g._ensure_room(rid)
+    room["noncombat_encounter"] = {
+        "id": f"nc:test:{rid}",
+        "archetype": "stranded_npc",
+        "status": "active",
+        "state": {},
+        "prompt": "A stranded delver waits.",
+        "choices": [
+            {
+                "id": "aid",
+                "label": "Aid",
+                "effects": [
+                    {"type": "ration", "delta": -1},
+                    {"type": "heal", "amount": 2},
+                    {"type": "mark", "key": "aided", "value": True},
+                ],
+                "resolve": True,
+            }
+        ],
+        "history": [],
+    }
+    g.rations = 3
+    g.party.members[0].hp = 5
+    g.ui.push(0)
+    assert g._cmd_dungeon_interact_encounter().ok
+    enc = room.get("noncombat_encounter") or {}
+    assert g.rations == 2
+    assert g.party.members[0].hp >= 7
+    assert (enc.get("state") or {}).get("aided") is True
+
+
+def test_legacy_string_effects_normalize_on_load_and_resolve():
+    g = _new_game(7006, scripted=True)
+    assert isinstance(g.ui, ScriptedUI)
+    rid = _find_room_for_noncombat(g)
+    room = g._ensure_room(rid)
+    room["noncombat_encounter"] = {
+        "id": f"nc:test:{rid}",
+        "archetype": "neutral_creature",
+        "status": "active",
+        "state": {},
+        "prompt": "Legacy shape encounter.",
+        "choices": [
+            {"id": "observe", "label": "Observe", "effects": ["mark:observed"], "resolve": False},
+        ],
+        "history": [],
+    }
+    g.ui.push(0)
+    assert g._cmd_dungeon_interact_encounter().ok
+    eff = ((room.get("noncombat_encounter") or {}).get("choices") or [])[0].get("effects")
+    assert isinstance(eff[0], dict)
+    assert eff[0].get("type") == "mark"
+    assert ((room.get("noncombat_encounter") or {}).get("state") or {}).get("observed") is True
+
+
 def test_noncombat_generation_deterministic_with_fixed_seed():
     def snapshot(seed: int) -> tuple[str, str]:
         g = _new_game(seed)
