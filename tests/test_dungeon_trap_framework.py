@@ -250,14 +250,14 @@ def test_discovered_trap_choice_flow_deterministic_fixed_seed():
 
 def test_dedicated_trap_action_visibility_and_unavailability_after_resolve():
     g, _rid, room = _setup_discovered_trap_game(1300, kind="pit")
-    actions, available = g._dungeon_action_labels(room)
+    actions, available, _active_noncombat = g._dungeon_action_labels(room)
     assert available is True
     assert "Interact with discovered trap" in actions
 
     room["trap_disarmed"] = True
     room["trap"]["disarmed"] = True
     room["trap"]["disabled"] = True
-    actions2, available2 = g._dungeon_action_labels(room)
+    actions2, available2, _active_noncombat2 = g._dungeon_action_labels(room)
     assert available2 is False
     assert "Interact with discovered trap" not in actions2
 
@@ -275,7 +275,7 @@ def test_dedicated_trap_action_routes_into_existing_choice_flow():
 
 def test_dedicated_trap_action_save_load_availability_continuity():
     g, rid, room = _setup_discovered_trap_game(1302, kind="pit")
-    actions, available = g._dungeon_action_labels(room)
+    actions, available, _active_noncombat = g._dungeon_action_labels(room)
     assert available is True
     assert "Interact with discovered trap" in actions
 
@@ -284,7 +284,7 @@ def test_dedicated_trap_action_save_load_availability_continuity():
     g2 = Game(HeadlessUI(), dice_seed=1302)
     apply_game_dict(g2, data)
     room2 = g2._ensure_room(rid)
-    actions2, available2 = g2._dungeon_action_labels(room2)
+    actions2, available2, _active_noncombat2 = g2._dungeon_action_labels(room2)
     assert available2 is True
     assert "Interact with discovered trap" in actions2
 
