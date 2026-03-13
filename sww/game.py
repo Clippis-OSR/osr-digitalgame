@@ -14486,97 +14486,115 @@ class Game:
             return
 
 
-    def _leave_combat_actor(self, actor: Actor, *, marker: str = "fled", remove_effects: tuple[str, ...] = ()) -> None:
-        """Shared non-death leave-combat cleanup seam.
+    def _combat_cleanup_pool(self, *, ctx: dict | None = None) -> list[Actor]:
+        """Best-effort actor pool for cleanup propagation hooks."""
+        ctx = dict(ctx or {})
+        pool: list[Actor] = []
+        try:
+            pool.extend(list(getattr(getattr(self, "party", None), "members", []) or []))
+        except Exception:
+            pass
+        try:
+            pool.extend(list(ctx.get("combat_foes") or []))
+        except Exception:
+            pass
+        try:
+            room = (getattr(self, "dungeon_rooms", {}) or {}).get(getattr(self, "current_room_id", 0), {})
+            if isinstance(room, dict):
+                pool.extend(list(room.get("foes") or []))
+        except Exception:
+            pass
 
-        Preserves existing semantics: mark effect-based exit state and remove
-        transient combat-only statuses.
+        seen: set[int] = set()
+        uniq: list[Actor] = []
+        for a in pool:
+            if a is None:
+                continue
+            oid = id(a)
+            if oid in seen:
+                continue
+            seen.add(oid)
+            uniq.append(a)
+        return uniq
+
+    def _process_combat_removal(
+        self,
+        actor: Actor,
+        *,
+        reason: str,
+        marker: str = "",
+        remove_effects: tuple[str, ...] = (),
+        ctx: dict | None = None,
+    ) -> None:
+        """Single authoritative combat removal pipeline.
+
+        Covers death and non-death leave-combat paths while preserving semantics.
         """
         if actor is None:
             return
-        effects = list(getattr(actor, "effects", []) or [])
-        for key in tuple(remove_effects or ()):
-            effects = [e for e in effects if str(e) != str(key)]
-        mk = str(marker or "").strip()
-        if mk and mk not in effects:
-            effects.append(mk)
-        actor.effects = effects
+
+        # Idempotence guard per actor/reason.
+        key = "_combat_removal_reasons"
+        seen = getattr(actor, key, None)
+        if not isinstance(seen, set):
+            seen = set()
+            setattr(actor, key, seen)
+        if reason in seen:
+            return
+        seen.add(reason)
+
+        # 1) Death detection (informational check for routing correctness).
+        is_dead = False
+        try:
+            is_dead = int(getattr(actor, "hp", 0) or 0) <= 0
+        except Exception:
+            is_dead = False
+
+        # 2) Status/actor cleanup first.
         cleanup_actor_battle_status(actor)
 
-    def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
-        try:
-            if int(getattr(target, "hp", 0) or 0) <= 0:
-                cleanup_actor_battle_status(target)
-        except Exception:
-            pass
+        # 3) Non-death removal marker updates.
+        if marker:
+            effects = list(getattr(actor, "effects", []) or [])
+            for key in tuple(remove_effects or ()):
+                effects = [e for e in effects if str(e) != str(key)]
+            mk = str(marker or "").strip()
+            if mk and mk not in effects:
+                effects.append(mk)
+            actor.effects = effects
+
+        # 4) Event emission + aftermath hooks in stable order.
+        if reason == "death":
+            try:
+                self.emit("actor_died", name=getattr(actor, "name", "?"), monster_id=str(getattr(actor, "monster_id", "") or ""))
+            except Exception:
+                pass
+            try:
+                self.effects_mgr.cleanup_on_death(actor, pool=self._combat_cleanup_pool(ctx=ctx))
+            except Exception:
+                pass
+        else:
+            # No existing public leave event contract; keep behavior-neutral.
+            _ = is_dead
 
     def _leave_combat_actor(self, actor: Actor, *, marker: str = "fled", remove_effects: tuple[str, ...] = ()) -> None:
-        """Shared non-death leave-combat cleanup seam.
-
-        Preserves existing semantics: mark effect-based exit state and remove
-        transient combat-only statuses.
-        """
-        if actor is None:
-            return
-        effects = list(getattr(actor, "effects", []) or [])
-        for key in tuple(remove_effects or ()):
-            effects = [e for e in effects if str(e) != str(key)]
-        mk = str(marker or "").strip()
-        if mk and mk not in effects:
-            effects.append(mk)
-        actor.effects = effects
-        self._cleanup_combat_actor_state(actor)
+        """Shared non-death leave-combat cleanup seam."""
+        self._process_combat_removal(
+            actor,
+            reason="leave_combat",
+            marker=marker,
+            remove_effects=remove_effects,
+            ctx=None,
+        )
 
     def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
-        """Hardening: centralized death cleanup.
-
-        Removes sticky control effects (grapple/engulf/swallow) so combat state
-        cannot remain "stuck" after a death.
-        """
+        """Centralized death cleanup pipeline entrypoint."""
         try:
-            if int(getattr(target, "hp", 0) or 0) <= 0:
-                self._cleanup_combat_actor_state(target)
-        except Exception:
-            pass
-
-        ctx = dict(ctx or {})
-        try:
-            # Build a best-effort actor pool for cleanup.
-            pool: list[Actor] = []
-            try:
-                pool.extend(list(getattr(getattr(self, "party", None), "members", []) or []))
-            except Exception:
-                pass
-            try:
-                pool.extend(list(ctx.get("combat_foes") or []))
-            except Exception:
-                pass
-            try:
-                room = (getattr(self, "dungeon_rooms", {}) or {}).get(getattr(self, "current_room_id", 0), {})
-                if isinstance(room, dict):
-                    pool.extend(list(room.get("foes") or []))
-            except Exception:
-                pass
-
-            # De-dupe by object id.
-            seen = set()
-            uniq: list[Actor] = []
-            for a in pool:
-                if a is None:
-                    continue
-                oid = id(a)
-                if oid in seen:
-                    continue
-                seen.add(oid)
-                uniq.append(a)
-
-            self.effects_mgr.cleanup_on_death(target, pool=uniq)
-            try:
-                self.emit("actor_died", name=getattr(target, "name", "?"), monster_id=str(getattr(target, "monster_id", "") or ""))
-            except Exception:
-                pass
+            if int(getattr(target, "hp", 0) or 0) > 0:
+                return
         except Exception:
             return
+        self._process_combat_removal(target, reason="death", ctx=dict(ctx or {}))
 
     def _monster_on_hit_specials(self, attacker: Actor, defender: Actor, *, round_no: int = 1, attack_roll: int | None = None, attack_total: int | None = None, attack_need: int | None = None) -> None:
         """Resolve structured (or heuristic) monster on-hit specials."""
