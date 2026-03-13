@@ -40,6 +40,7 @@ from .dungeon_noncombat import (
     choose_archetype as choose_noncombat_archetype,
     build_encounter as build_noncombat_encounter,
     normalize_encounter as normalize_noncombat_encounter,
+    lint_encounter_effects as lint_noncombat_encounter_effects,
 )
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
 from .contracts import generate_contracts, Contract
@@ -3278,12 +3279,14 @@ class Game:
         if isinstance(existing, dict):
             norm = normalize_noncombat_encounter(existing)
             room["noncombat_encounter"] = norm
+            self._emit_noncombat_lint_issues(room=room, encounter=norm)
             return norm
         d = room.get("_delta") if isinstance(room.get("_delta"), dict) else None
         if isinstance(d, dict) and isinstance(d.get("noncombat_encounter"), dict):
             norm = normalize_noncombat_encounter(d.get("noncombat_encounter") or {})
             room["noncombat_encounter"] = dict(norm)
             d["noncombat_encounter"] = dict(norm)
+            self._emit_noncombat_lint_issues(room=room, encounter=norm)
             return room.get("noncombat_encounter")
         ctx = resolve_room_interaction_context(self, room)
         profile = self._resolve_room_scene_profile(room, ctx) or {}
@@ -3297,7 +3300,19 @@ class Game:
         room["noncombat_encounter"] = dict(enc)
         if isinstance(d, dict):
             d["noncombat_encounter"] = dict(enc)
+        self._emit_noncombat_lint_issues(room=room, encounter=enc)
         return room.get("noncombat_encounter")
+
+    def _emit_noncombat_lint_issues(self, *, room: dict[str, Any], encounter: dict[str, Any]) -> None:
+        issues = list(lint_noncombat_encounter_effects(encounter) or [])
+        if not issues:
+            return
+        self.emit(
+            "dungeon_noncombat_effect_lint",
+            room_id=int(room.get("id", self.current_room_id) or self.current_room_id),
+            encounter_id=str(encounter.get("id") or ""),
+            issues=list(issues),
+        )
 
     def _noncombat_effect_registry(self) -> dict[str, Any]:
         return {
@@ -3432,6 +3447,7 @@ class Game:
             return CommandResult(status="info")
         enc = normalize_noncombat_encounter(enc)
         room["noncombat_encounter"] = enc
+        self._emit_noncombat_lint_issues(room=room, encounter=enc)
         if str(enc.get("status") or "active") != "active":
             self.ui.log("This encounter has already been resolved.")
             return CommandResult(status="info")

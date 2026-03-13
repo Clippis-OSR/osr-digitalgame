@@ -3,6 +3,7 @@ from sww.models import Actor, Stats
 from sww.scripted_ui import ScriptedUI
 from sww.ui_headless import HeadlessUI
 from sww.save_load import game_to_dict, apply_game_dict
+from sww.dungeon_noncombat import build_encounter, lint_encounter_effects
 
 
 def _new_game(seed: int = 7001, scripted: bool = False) -> Game:
@@ -126,6 +127,72 @@ def test_noncombat_partial_state_persists_leave_return_and_save_load():
     assert ((room2.get("noncombat_encounter") or {}).get("state") or {}).get("observed") is True
     assert (room2.get("noncombat_encounter") or {}).get("status") == "active"
 
+
+
+
+def test_builtin_archetype_effects_lint_clean():
+    g = _new_game(7007)
+    rid = _find_room_for_noncombat(g)
+    room = g._ensure_room(rid)
+    # Validate canonical archetype templates directly.
+    for archetype in ("stranded_npc", "neutral_creature", "omen_echo", "environmental_scene"):
+        enc = build_encounter(archetype, room=room, ctx={"room_id": rid, "depth": int(room.get("depth", 1) or 1)})
+        issues = lint_encounter_effects(enc)
+        assert issues == []
+
+
+def test_unknown_effect_type_is_flagged_by_lint():
+    enc = {
+        "choices": [
+            {"effects": [{"type": "mystery_effect", "x": 1}]},
+        ]
+    }
+    issues = lint_encounter_effects(enc)
+    assert any(i.get("code") == "unknown_effect_type" for i in issues)
+
+
+def test_malformed_known_effect_is_flagged_by_lint():
+    enc = {
+        "choices": [
+            {"effects": [{"type": "heal", "amount": "two"}]},
+        ]
+    }
+    issues = lint_encounter_effects(enc)
+    assert any(i.get("code") == "malformed_param_type" for i in issues)
+
+
+def test_legacy_string_effect_lints_warning_but_remains_runtime_safe():
+    enc = {
+        "choices": [
+            {"effects": ["mark:observed"]},
+        ]
+    }
+    issues = lint_encounter_effects(enc)
+    assert any(i.get("code") == "legacy_effect_string" for i in issues)
+
+
+
+def test_invalid_effect_slips_through_runtime_with_noop_safety_and_lint_event():
+    g = _new_game(7008, scripted=True)
+    assert isinstance(g.ui, ScriptedUI)
+    rid = _find_room_for_noncombat(g)
+    room = g._ensure_room(rid)
+    room["noncombat_encounter"] = {
+        "id": f"nc:test:{rid}",
+        "archetype": "neutral_creature",
+        "status": "active",
+        "state": {},
+        "prompt": "Invalid effect safety.",
+        "choices": [
+            {"id": "x", "label": "Do", "effects": [{"type": "unknown_x", "foo": 1}], "resolve": True},
+        ],
+        "history": [],
+    }
+    g.ui.push(0)
+    res = g._cmd_dungeon_interact_encounter()
+    assert res.ok
+    assert (room.get("noncombat_encounter") or {}).get("status") == "resolved"
+    assert any(str(getattr(evt, "name", "")) == "dungeon_noncombat_effect_lint" for evt in (getattr(g.events, "events", []) or []))
 
 
 def test_noncombat_effects_are_typed_and_registry_dispatched():
