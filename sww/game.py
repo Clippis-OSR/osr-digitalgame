@@ -19,7 +19,7 @@ from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
 from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
-from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_known_name, owned_item_brief_label
+from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_is_magic, item_known_name, owned_item_brief_label
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
