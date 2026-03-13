@@ -8707,6 +8707,34 @@ class Game:
             self._active_objective_hud(),
         ]
 
+    def _dungeon_pressure_summary(self) -> str:
+        """Compact, deterministic dungeon pressure readout for exploration UI."""
+        torch_turns = int(getattr(self, "torch_turns_left", 0) or 0)
+        magic_turns = int(getattr(self, "magical_light_turns", 0) or 0)
+        reserve_torches = int(getattr(self, "torches", 0) or 0)
+        noise = int(getattr(self, "noise_level", 0) or 0)
+        lvl = int(getattr(self, "dungeon_level", 1) or 1)
+        alarm = int((getattr(self, 'dungeon_alarm_by_level', {}) or {}).get(lvl, 0) or 0)
+
+        if torch_turns > 0 and magic_turns > 0:
+            light_txt = f"Light torch {torch_turns}t + magic {magic_turns}t"
+        elif torch_turns > 0:
+            light_txt = f"Light torch {torch_turns}t"
+        elif magic_turns > 0:
+            light_txt = f"Light magic {magic_turns}t"
+        else:
+            light_txt = "Light DARK"
+
+        risk_mod = int(self._wandering_noise_mod())
+        base = int(getattr(self, "wandering_chance", 1) or 1)
+        chance_cap = 5 if alarm >= 4 else 4
+        wander_in_6 = min(chance_cap, max(1, base + risk_mod))
+
+        return (
+            f"Pressure: {light_txt} | Spare torches {reserve_torches} | Noise {noise}/5"
+            f" | Alarm {alarm}/5 | Wander {wander_in_6}/6 (mod +{risk_mod})"
+        )
+
     def _dungeon_hud_lines(self) -> list[str]:
         lvl = int(getattr(self, "dungeon_level", 1) or 1)
         rid = int(getattr(self, "current_room_id", 0) or 0)
@@ -8717,7 +8745,7 @@ class Game:
             f"Day {int(getattr(self, 'campaign_day', 1) or 1)} — {self._watch_name()} | Dungeon L{lvl} | Room {rid} | {room_kind.title()}",
             self._party_hud_summary(),
             f"Supplies: {int(getattr(self, 'gold', 0) or 0)} gp | Rations {int(getattr(self, 'rations', 0) or 0)} | Torches {int(getattr(self, 'torches', 0) or 0)}",
-            self._light_hud_summary() + f" | Noise {int(getattr(self, 'noise_level', 0) or 0)}/5" + f" | Alarm {alarm}/5",
+            self._dungeon_pressure_summary(),
             self._active_objective_hud(),
         ]
 
@@ -10043,7 +10071,7 @@ class Game:
                 pass
             lvl = int(getattr(self, "dungeon_level", 1) or 1)
             alarm = int((getattr(self, "dungeon_alarm_by_level", {}) or {}).get(lvl, 0))
-            self.ui.log(f"Turn {self.dungeon_turn} | Torch: {self.torch_turns_left} turns | Noise: {self.noise_level}/5 | Dungeon Level: {lvl}/{int(getattr(self, 'max_dungeon_levels', 1))} | Alarm: {alarm}/5")
+            self.ui.log(f"Turn {self.dungeon_turn} | {self._dungeon_pressure_summary()}")
             self.ui.log(f"Room {self.current_room_id}: {room['type']} | Visited {room.get('visited', 0)}x")
             if room.get("cleared"):
                 self.ui.log("This room seems quiet (cleared).")

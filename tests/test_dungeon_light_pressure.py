@@ -67,3 +67,56 @@ def test_save_load_preserves_dungeon_light_pressure_state():
     assert g2.torches == 1
     assert g2.torch_turns_left == 2
     assert g2.light_on is True
+
+
+def test_dungeon_pressure_summary_surfaces_lit_state_fields():
+    g = _new_game(seed=12040)
+    g.light_on = True
+    g.torches = 4
+    g.torch_turns_left = 2
+    g.magical_light_turns = 0
+    g.noise_level = 1
+    g.wandering_chance = 1
+    g.dungeon_alarm_by_level[g.dungeon_level] = 0
+
+    line = g._dungeon_pressure_summary()
+
+    assert "Pressure:" in line
+    assert "Light torch 2t" in line
+    assert "Spare torches 4" in line
+    assert "Noise 1/5" in line
+    assert "Wander 1/6" in line
+
+
+def test_dungeon_pressure_summary_surfaces_dark_state_explicitly():
+    g = _new_game(seed=12050)
+    g.light_on = False
+    g.torch_turns_left = 0
+    g.magical_light_turns = 0
+    g.torches = 0
+    g.noise_level = 0
+
+    line = g._dungeon_pressure_summary()
+
+    assert "Light DARK" in line
+    assert "Spare torches 0" in line
+
+
+def test_dungeon_pressure_summary_after_save_load_continuity():
+    g = _new_game(seed=12060)
+    g.dungeon_turn = 4
+    g.torches = 1
+    g.torch_turns_left = 1
+    g.magical_light_turns = 0
+    g.light_on = True
+    g.noise_level = 2
+
+    payload = game_to_dict(g)
+
+    g2 = _new_game(seed=12061)
+    apply_game_dict(g2, payload)
+
+    line = g2._dungeon_pressure_summary()
+    assert "Light torch 1t" in line
+    assert "Spare torches 1" in line
+    assert "Noise 2/5" in line
