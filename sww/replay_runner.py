@@ -80,7 +80,7 @@ def run_replay(
     meta = rep.get("meta") if isinstance(rep.get("meta"), dict) else {}
     if meta.get("disable_wilderness_encounters"):
         try:
-            setattr(game, "_wilderness_encounter_check", lambda hx: None)
+            setattr(game, "_wilderness_encounter_check", lambda hx, encounter_mod=0: None)
         except Exception:
             pass
 

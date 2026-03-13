@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional, Protocol, Iterable
 
 from .models import Actor, mod_ability
 from . import rules
+from .status_service import StatusService
 
 
 # --- Hooks --------------------------------------------------------------------
@@ -190,8 +191,7 @@ class EffectsManager:
             insts[instance_id] = inst
 
         # Remove legacy poison blob now that it's migrated.
-        st.pop("poison", None)
-        a.status = st
+        StatusService.clear_status(a, "poison")
 
     # ---- API ----
 

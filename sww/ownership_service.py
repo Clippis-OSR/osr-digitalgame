@@ -224,3 +224,77 @@ def owned_item_location(game: Any, instance_id: str) -> OwnershipLocation | None
             if inst is not None and str(getattr(inst, "instance_id", "")) == iid:
                 return OwnershipLocation(location="loot_pool", owner="loot_pool", entry_id=str(getattr(e, "entry_id", "")))
     return None
+
+
+def _equipment_instance_refs(actor: Actor) -> list[str]:
+    eq = getattr(actor, "equipment", None)
+    if eq is None:
+        return []
+    refs: list[str] = []
+    for slot in ("armor", "shield", "main_hand", "off_hand", "missile_weapon", "ammo_kind"):
+        v = getattr(eq, slot, None)
+        if v:
+            refs.append(str(v))
+    refs.extend([str(x) for x in list(getattr(eq, "worn_misc", []) or []) if str(x)])
+    return refs
+
+
+def ownership_invariant_violations(game: Any) -> list[str]:
+    """Return ownership/equipment invariant violations.
+
+    Invariants:
+    - each concrete item instance appears in exactly one owner location
+      (actor inventory, party stash, or loot_pool entries item_instance)
+    - equipped instance-id references resolve to items owned by that actor
+    """
+    owners: dict[str, list[str]] = {}
+
+    def _mark(iid: str, where: str) -> None:
+        owners.setdefault(str(iid), []).append(str(where))
+
+    party = list(getattr(getattr(game, "party", None), "members", []) or [])
+    for actor in party:
+        an = str(getattr(actor, "name", "actor") or "actor")
+        for it in list(getattr(getattr(actor, "inventory", None), "items", []) or []):
+            iid = str(getattr(it, "instance_id", "") or "")
+            if iid:
+                _mark(iid, f"actor:{an}")
+
+    stash = getattr(game, "party_stash", None)
+    for it in list(getattr(stash, "items", []) or []):
+        iid = str(getattr(it, "instance_id", "") or "")
+        if iid:
+            _mark(iid, "stash")
+
+    pool = getattr(game, "loot_pool", None)
+    for e in list(getattr(pool, "entries", []) or []):
+        it = getattr(e, "item_instance", None)
+        iid = str(getattr(it, "instance_id", "") or "") if it is not None else ""
+        if iid:
+            _mark(iid, f"loot_pool:{str(getattr(e, 'entry_id', '') or '')}")
+
+    problems: list[str] = []
+    for iid, locs in owners.items():
+        uniq = sorted(set(locs))
+        if len(uniq) > 1:
+            problems.append(f"item {iid} has multiple owners: {', '.join(uniq)}")
+
+    # Equipped item ownership: only enforce for equipment refs that resolve to
+    # concrete instance ids present somewhere in ownership graph.
+    known_ids = set(owners.keys())
+    for actor in party:
+        an = str(getattr(actor, "name", "actor") or "actor")
+        actor_item_ids = {
+            str(getattr(it, "instance_id", "") or "")
+            for it in list(getattr(getattr(actor, "inventory", None), "items", []) or [])
+            if str(getattr(it, "instance_id", "") or "")
+        }
+        for ref in _equipment_instance_refs(actor):
+            if ref in known_ids and ref not in actor_item_ids:
+                problems.append(f"equipped item {ref} is not owned by actor:{an}")
+
+    return problems
+
+
+def ownership_invariants_hold(game: Any) -> bool:
+    return len(ownership_invariant_violations(game)) == 0

@@ -26,7 +26,7 @@ def test_add_and_remove_item():
     assert find_item_on_actor(a, "i1").quantity == 1
 
 
-def test_equip_and_unequip_item_syncs_legacy_fields():
+def test_equip_and_unequip_item_keeps_runtime_state_in_new_equipment_only():
     a = _actor("A")
     it = ItemInstance(instance_id="i1", template_id="weapon.sword", name="Sword", category="weapon")
     add_item_to_actor(a, it)
@@ -35,8 +35,8 @@ def test_equip_and_unequip_item_syncs_legacy_fields():
     assert eq.ok
     assert a.equipment.main_hand == "i1"
     assert actor_equipped_weapon(a) == "Sword"
-    # transitional legacy sync
-    assert a.weapon == "i1"
+    # legacy mirror is no longer auto-synced at runtime
+    assert a.weapon is None
 
     uq = unequip_item_on_actor(a, "main_hand")
     assert uq.ok

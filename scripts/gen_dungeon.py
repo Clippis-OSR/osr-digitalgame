@@ -8,7 +8,8 @@ from pathlib import Path
 # Ensure repo root (p44/) is on sys.path when running as a script.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from sww.dungeon_gen.generate import generate_blueprint, generate_level, write_artifacts, write_level_artifacts
+from sww.dungeon_gen.pipeline import run_canonical_blueprint_stage, run_canonical_level_pipeline
+from sww.dungeon_gen.generate import write_artifacts, write_level_artifacts
 
 
 def main() -> int:
@@ -30,7 +31,7 @@ def main() -> int:
     basename = f"{args.level_id}_d{args.depth}_seed_{args.seed}"
 
     if args.blueprint_only:
-        art = generate_blueprint(
+        art = run_canonical_blueprint_stage(
             level_id=args.level_id,
             seed=str(args.seed),
             width=args.width,
@@ -43,7 +44,7 @@ def main() -> int:
         print(f"Blueprint sha256: {art.blueprint.sha256()}")
         return 0
 
-    art2 = generate_level(
+    art2 = run_canonical_level_pipeline(
         level_id=args.level_id,
         seed=str(args.seed),
         width=args.width,

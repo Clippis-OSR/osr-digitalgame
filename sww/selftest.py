@@ -833,7 +833,7 @@ def _test_strict_replay_roundtrip(game) -> None:
     g1.dispatch(AcceptContract(cid=cid))
 
     # Disable random wilderness encounters to keep this as a command-layer replay test.
-    g1._wilderness_encounter_check = lambda hx: None
+    g1._wilderness_encounter_check = lambda hx, encounter_mod=0: None
 
     g1.dispatch(TravelToHex(q=int(tgt[0]), r=int(tgt[1])))
     g1.dispatch(InvestigateCurrentLocation())
@@ -1966,7 +1966,7 @@ def _test_scripted_playthrough() -> None:
         pass
 
     # Disable wilderness encounters for this scripted navigation test.
-    g._wilderness_encounter_check = lambda hx: None
+    g._wilderness_encounter_check = lambda hx, encounter_mod=0: None
 
     # 1) Gather a rumor (town action)
     g.gather_rumors()
