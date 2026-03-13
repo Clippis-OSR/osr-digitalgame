@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
 from .data import load_json
+from .dungeon_gen.pipeline import run_canonical_level_pipeline
 from .dungeon_themes import dungeon_role_defaults, pick_theme_by_index
 
 import hashlib
@@ -282,420 +283,176 @@ def stable_int_seed(base_seed: int, dungeon_id: str) -> int:
     return int(h, 16)
 
 
-def generate_blueprint(dungeon_id: str, seed: int, room_count: int = 18) -> DungeonBlueprint:
-    """Generate a minimal deterministic dungeon blueprint with stairs + depth.
-
-    P6.1.1: adds multi-floor support:
-    - Rooms are identified by integer ids starting at 1.
-    - Edges are undirected connections between rooms.
-    - Each room has:
-        - depth: BFS distance from the start
-        - floor: 0..(floors-1) derived from depth bands
-    - Stairs are represented as normal edges plus tags:
-        - stairs_down on the higher floor room
-        - stairs_up on the lower floor room
-    """
-    rng = random.Random(int(seed))
-    room_count = int(max(6, min(80, room_count)))
-    start = 1
-    rooms = {i: {"id": i, "tags": [], "depth": 0, "floor": 0} for i in range(1, room_count + 1)}
-    rooms[start]["tags"].append("start")
-
-    # Base connectivity: a randomized tree (connect each room i to some prior room).
-    edges: list[tuple[int, int]] = []
-    tree_edges: set[tuple[int, int]] = set()
-    extra_edges: list[tuple[int, int]] = []
-
-    adj: dict[int, set[int]] = {i: set() for i in rooms}
-    for i in range(2, room_count + 1):
-        j = rng.randint(1, i - 1)
-        e = (min(j, i), max(j, i))
-        edges.append((j, i))
-        tree_edges.add(e)
-        adj[j].add(i); adj[i].add(j)
-
-    # Add a few extra loops to avoid pure tree feel.
-    extra = max(1, room_count // 6)
-    attempts = 0
-    while extra > 0 and attempts < room_count * 12:
-        a = rng.randint(1, room_count)
-        b = rng.randint(1, room_count)
-        attempts += 1
-        if a == b:
-            continue
-        if b in adj[a]:
-            continue
-        if a == start and len(adj[a]) >= 4:
-            continue
-        edges.append((a, b))
-        extra_edges.append((a, b))
-        adj[a].add(b); adj[b].add(a)
-        extra -= 1
-
-    # Compute depth via BFS from start.
-    depth: dict[int, int] = {start: 0}
-    q = deque([start])
-    while q:
-        u = q.popleft()
-        for v in adj[u]:
-            if v not in depth:
-                depth[v] = depth[u] + 1
-                q.append(v)
-    for i in rooms:
-        rooms[i]["depth"] = int(depth.get(i, 0))
-
-    max_depth = max(depth.values()) if depth else 0
-
-    # Determine number of floors.
-    # (MVP heuristic: 2 floors for small dungeons, 3 for mid, 4 for large.)
-    if room_count < 14:
-        floors = 2
-    elif room_count < 32:
-        floors = 3
+def _legacy_blueprint_from_canonical(*, dungeon_id: str, seed: int, room_count: int) -> dict[str, Any]:
+    """Build legacy dungeon_instance blueprint shape from canonical pipeline output."""
+    rc = int(max(6, min(80, room_count)))
+    if rc < 14:
+        width, height = 50, 36
+    elif rc < 32:
+        width, height = 60, 45
     else:
-        floors = 4
+        width, height = 80, 60
+    depth = max(1, min(4, int(math.ceil(rc / 12.0))))
 
-    # Assign floor by depth bands.
-    depth_band = max(1, int(math.ceil((max_depth + 1) / max(1, floors))))
-    for i in rooms:
-        d = int(rooms[i]["depth"])
-        f = int(min(floors - 1, d // depth_band))
-        rooms[i]["floor"] = f
+    art = run_canonical_level_pipeline(
+        level_id=str(dungeon_id),
+        seed=str(int(seed)),
+        width=width,
+        height=height,
+        depth=depth,
+    )
+    bp = art.blueprint
 
-    # Add stairs edges between consecutive floors.
-    # Ensure at least one connection between each floor band.
-    def _pick_room_on_floor(ff: int, exclude: set[int]) -> Optional[int]:
-        cand = [rid for rid, rr in rooms.items() if int(rr.get("floor", 0)) == ff and rid not in exclude]
-        if not cand:
-            return None
-        # Prefer deeper rooms within the floor for stairs down.
-        cand.sort(key=lambda rid: int(rooms[rid].get("depth", 0)), reverse=True)
-        topk = cand[: max(1, len(cand) // 2)]
-        return rng.choice(topk)
+    ordered = sorted(tuple(bp.rooms), key=lambda r: str(r.room_id))
+    room_num_by_id = {str(r.room_id): i + 1 for i, r in enumerate(ordered)}
 
-    used: set[int] = set()
-    for f in range(0, floors - 1):
-        a = _pick_room_on_floor(f, used)
-        b = _pick_room_on_floor(f + 1, used)
-        if a is None or b is None:
-            continue
-        if b not in adj[a]:
-            edges.append((a, b))
-            adj[a].add(b); adj[b].add(a)
-        if "stairs_down" not in rooms[a]["tags"]:
-            rooms[a]["tags"].append("stairs_down")
-        if "stairs_up" not in rooms[b]["tags"]:
-            rooms[b]["tags"].append("stairs_up")
-        used.add(a); used.add(b)
+    raw_depth = {str(r.room_id): int(getattr(r, "depth_hint", 0) or 0) for r in ordered}
+    min_depth = min(raw_depth.values()) if raw_depth else 0
 
-    # Recompute depth (stairs can shorten paths).
-    depth = {start: 0}
-    q = deque([start])
-    while q:
-        u = q.popleft()
-        for v in adj[u]:
-            if v not in depth:
-                depth[v] = depth[u] + 1
-                q.append(v)
-    for i in rooms:
-        rooms[i]["depth"] = int(depth.get(i, 0))
-    max_depth = max(depth.values()) if depth else 0
-
-    # Tag rooms with a dungeon-wide context first, then derive legacy content tags from roles.
-    theme = _pick_dungeon_theme(rng)
-    furthest = max(depth.items(), key=lambda kv: kv[1])[0] if depth else start
-    rooms[furthest]["tags"].append("boss")
-
-    # Pick a treasury room near the boss (deep and not boss/start).
-    deep_rooms = [i for i in rooms if i not in (start, furthest) and rooms[i]["depth"] >= max_depth - 1]
-    treasury_room: Optional[int] = None
-    if deep_rooms and rng.random() < 0.6:
-        treasury_room = rng.choice(deep_rooms)
-        rooms[treasury_room]["tags"].append("treasury")
-    elif deep_rooms:
-        treasury_room = rng.choice(deep_rooms)
-        rooms[treasury_room]["tags"].append("treasure")
-
-    defaults = dungeon_role_defaults()
-    assignments, role_counts = _quota_assignments(rooms=rooms, adj=adj, depth=depth, start=start, boss_room=furthest, treasury_room=treasury_room, defaults=defaults)
-    target_fracs = dict(defaults.get("target_fractions") or {})
-    max_fracs = dict(defaults.get("max_fraction") or {})
-    theme_mods = {str(k): float(v) for k, v in (theme.get("role_weight_modifiers") or {}).items()}
-    preferred_neighbors = {str(k): [str(v) for v in vals] for k, vals in (theme.get("adjacency_bias") or {}).items() if isinstance(vals, list)}
-
-    for i in sorted(rooms):
-        if i in assignments:
-            role = assignments[i]
-        else:
-            depth_i = int(rooms[i].get("depth", 0) or 0)
-            degree = _room_neighbors(adj, i)
-            frac = 0.0 if max_depth <= 0 else min(1.0, float(depth_i) / float(max_depth))
-            weights = dict(_ROLE_BASE_WEIGHTS)
-            if degree >= 3:
-                weights["transit"] += 2.0
-                weights["guard"] += 0.8
-            if degree <= 1:
-                weights["lair"] += 1.0
-                weights["treasure"] += 0.7
-                weights["clue"] += 0.5
-            if frac >= 0.55:
-                weights["guard"] += 0.7
-                weights["lair"] += 0.9
-                weights["hazard"] += 0.9
-                weights["treasure"] += 0.6
-                weights["transit"] = max(0.9, weights["transit"] - 0.8)
-            if frac <= 0.25:
-                weights["transit"] += 1.2
-                weights["clue"] += 0.4
-                weights["hazard"] = max(0.5, weights["hazard"] - 0.3)
-            for role_name, mod in theme_mods.items():
-                if role_name in weights:
-                    weights[role_name] += float(mod)
-            neighbor_roles = [assignments.get(nb) for nb in sorted(adj.get(i, set())) if assignments.get(nb)]
-            for role_name, wanted in preferred_neighbors.items():
-                if role_name in weights and any(nb in wanted for nb in neighbor_roles):
-                    weights[role_name] += 1.15
-            if neighbor_roles:
-                if "treasury" in neighbor_roles or "boss" in neighbor_roles:
-                    weights["guard"] += 1.2
-                    weights["clue"] += 0.4
-                if "hazard" in neighbor_roles:
-                    weights["lair"] += 0.5
-                    weights["hazard"] += 0.4
-            for role_name, target_frac in target_fracs.items():
-                target = max(1, int(round(len(rooms) * float(target_frac))))
-                current = int(role_counts.get(role_name, 0) or 0)
-                if role_name in weights and current < target:
-                    weights[role_name] += 0.75 * (target - current)
-                elif role_name in weights and current > target:
-                    weights[role_name] = max(0.2, weights[role_name] - 0.5 * (current - target))
-            for role_name, frac_cap in max_fracs.items():
-                cap = max(1, int(round(len(rooms) * float(frac_cap))))
-                if role_name in weights and int(role_counts.get(role_name, 0) or 0) >= cap:
-                    weights[role_name] = 0.0
-            total = sum(max(0.0, float(v)) for v in weights.values())
-            if total <= 0:
-                role = "transit"
-            else:
-                roll = rng.random() * total
-                upto = 0.0
-                role = "transit"
-                for role_name, weight in sorted(weights.items()):
-                    upto += max(0.0, float(weight))
-                    if roll <= upto:
-                        role = str(role_name)
-                        break
-            assignments[i] = role
-            role_counts[role] = int(role_counts.get(role, 0) or 0) + 1
-
-        rooms[i]["role"] = role
-        tags = list(rooms[i].get("tags") or [])
-        for tag in _role_to_legacy_tags(role):
-            if tag not in tags:
-                tags.append(tag)
+    rooms: dict[str, dict[str, Any]] = {}
+    role_counts: dict[str, int] = {}
+    for r in ordered:
+        rid = room_num_by_id[str(r.room_id)]
+        role = str(getattr(r, "role", "") or "transit").strip().lower() or "transit"
+        role_counts[role] = int(role_counts.get(role, 0) or 0) + 1
+        tags = [str(t) for t in (getattr(r, "tags", ()) or ()) if str(t).strip()]
         role_tag = f"role:{role}"
         if role_tag not in tags:
             tags.append(role_tag)
-        theme_tag = f"theme:{theme.get('theme_id')}"
-        if theme_tag not in tags:
-            tags.append(theme_tag)
-        faction_tag = f"faction:{theme.get('faction')}"
-        if faction_tag not in tags:
-            tags.append(faction_tag)
-        rooms[i]["tags"] = tags
-        rooms[i]["theme_id"] = str(theme.get("theme_id") or "")
-        rooms[i]["faction"] = str(theme.get("faction") or "")
+        if role == "entrance" and "start" not in tags:
+            tags.append("start")
+        if role == "boss" and "boss" not in tags:
+            tags.append("boss")
+        if role in {"treasury", "treasure"} and "treasury" not in tags:
+            tags.append("treasury")
+        tags.extend(t for t in _role_to_legacy_tags(role) if t not in tags)
+        rooms[str(rid)] = {
+            "id": int(rid),
+            "tags": tags,
+            "depth": max(0, int(raw_depth.get(str(r.room_id), 0) - min_depth)),
+            "floor": 0,
+            "role": role,
+            "theme_id": str(getattr(r, "theme_id", "") or ""),
+            "faction": str(getattr(r, "faction", "") or ""),
+        }
 
-    # Early breadth-first rooms should read as transit/guard more often; force the first
-    # non-start room into a transit path if the weighted picker produced no transit at all.
-    if role_counts.get("transit", 0) <= 0:
-        fallback = next((rid for rid in sorted(rooms) if rid not in (start, furthest, treasury_room)), None)
-        if fallback is not None:
-            rooms[fallback]["role"] = "transit"
-            rooms[fallback]["tags"] = [t for t in rooms[fallback]["tags"] if t not in {"monster", "trap", "treasure", "role:guard", "role:lair", "role:hazard", "role:treasure", "role:clue", "role:shrine"}]
-            rooms[fallback]["tags"].append("empty")
-            rooms[fallback]["tags"].append("role:transit")
-            role_counts["transit"] = 1
+    node_kind: dict[str, str] = {}
+    node_to_room: dict[str, str] = {}
+    for n in (bp.connectivity.nodes or ()):
+        node_id = str(getattr(n, "node_id", ""))
+        kind = str(getattr(n, "kind", ""))
+        node_kind[node_id] = kind
+        if kind == "room":
+            node_to_room[node_id] = str(getattr(n, "ref_id", ""))
 
-    def _best_path(target: int) -> list[int]:
-        q = deque([start])
-        prev = {int(start): None}
+    graph: dict[str, set[str]] = {}
+    for e in (bp.connectivity.edges or ()):
+        via = str(getattr(e, "via", ""))
+        if via not in {"door", "corridor"}:
+            continue
+        a = str(getattr(e, "a", ""))
+        b = str(getattr(e, "b", ""))
+        if not a or not b:
+            continue
+        graph.setdefault(a, set()).add(b)
+        graph.setdefault(b, set()).add(a)
+
+    edge_pairs: set[tuple[int, int]] = set()
+    adjacency: dict[int, set[int]] = {int(v): set() for v in room_num_by_id.values()}
+    seen: set[str] = set()
+    for nid, kind in node_kind.items():
+        if nid in seen or kind != "corridor":
+            continue
+        comp = []
+        q = deque([nid])
+        seen.add(nid)
         while q:
             cur = q.popleft()
-            if cur == target:
-                break
-            for nb in sorted(adj.get(cur, set())):
-                if nb in prev:
+            comp.append(cur)
+            for nb in graph.get(cur, set()):
+                if nb in seen:
                     continue
+                if node_kind.get(nb) == "corridor":
+                    seen.add(nb)
+                    q.append(nb)
+        room_refs: set[str] = set()
+        for c in comp:
+            for nb in graph.get(c, set()):
+                rr = node_to_room.get(nb)
+                if rr:
+                    room_refs.add(rr)
+        refs = sorted(room_refs)
+        for i in range(len(refs)):
+            for j in range(i + 1, len(refs)):
+                a = int(room_num_by_id.get(refs[i], 0) or 0)
+                b = int(room_num_by_id.get(refs[j], 0) or 0)
+                if a <= 0 or b <= 0 or a == b:
+                    continue
+                lo, hi = (a, b) if a < b else (b, a)
+                edge_pairs.add((lo, hi))
+                adjacency.setdefault(lo, set()).add(hi)
+                adjacency.setdefault(hi, set()).add(lo)
+
+    edges = [{"a": a, "b": b, "locked": False, "secret": False} for (a, b) in sorted(edge_pairs)]
+
+    start_room_id = next((rid for rid, rr in rooms.items() if str(rr.get("role")) == "entrance"), None)
+    if not start_room_id:
+        start_room_id = str(min((int(k) for k in rooms.keys()), default=1))
+    start = int(start_room_id)
+
+    def _bfs_path(goal: int) -> list[int]:
+        if goal <= 0 or goal == start:
+            return [start]
+        seen = {start}
+        prev: dict[int, int | None] = {start: None}
+        q = deque([start])
+        while q:
+            cur = q.popleft()
+            for nb in sorted(adjacency.get(cur, set())):
+                if nb in seen:
+                    continue
+                seen.add(nb)
                 prev[nb] = cur
+                if nb == goal:
+                    out = [goal]
+                    while out[-1] != start:
+                        p = prev.get(out[-1])
+                        if p is None:
+                            return []
+                        out.append(p)
+                    out.reverse()
+                    return out
                 q.append(nb)
-        if target not in prev:
-            return [int(start)]
-        out = [int(target)]
-        while out[-1] != int(start):
-            parent = prev.get(out[-1])
-            if parent is None:
-                break
-            out.append(parent)
-        out.reverse()
-        return out
+        return []
 
-    boss_path = _best_path(furthest)
-    treasury_path = _best_path(treasury_room) if treasury_room is not None else []
-    boss_gate_room = int(boss_path[-2]) if len(boss_path) >= 2 else int(furthest)
-    treasury_gate_room = int(treasury_path[-2]) if len(treasury_path) >= 2 else (int(treasury_room) if treasury_room is not None else int(furthest))
+    boss_room = next((int(k) for k, rr in rooms.items() if str(rr.get("role")) == "boss"), 0)
+    treasury_room = next((int(k) for k, rr in rooms.items() if str(rr.get("role")) == "treasury"), 0)
 
-    def _choose_key_room(path: list[int], gate_room: int | None) -> int | None:
-        pool = [rid for rid in path[:-1] if rid not in {start, furthest, treasury_room, gate_room}]
-        if not pool:
-            pool = [rid for rid in path if rid not in {start, furthest, treasury_room, gate_room}]
-        return pool[max(0, len(pool)//2 - 1)] if pool else None
-
-    def _choose_bypass_room(path: list[int], anchors: list[int]) -> int | None:
-        path_set = set(path)
-        side = []
-        for anchor in anchors:
-            for nb in sorted(adj.get(anchor, set())):
-                if nb not in path_set and nb != start:
-                    side.append(nb)
-        if not side:
-            for rid in path[max(1, len(path)//2 - 1):]:
-                for nb in sorted(adj.get(rid, set())):
-                    if nb not in path_set and nb != start:
-                        side.append(nb)
-        side = sorted(set(side), key=lambda rid: (depth.get(rid, 0), len(adj.get(rid, set())), rid), reverse=True)
-        return side[0] if side else None
-
-    boss_key_room = _choose_key_room(boss_path, boss_gate_room)
-    treasury_key_room = _choose_key_room(treasury_path, treasury_gate_room) if treasury_room is not None else None
-    boss_bypass_room = _choose_bypass_room(boss_path, [boss_gate_room, furthest])
-    treasury_bypass_room = _choose_bypass_room(treasury_path, [treasury_gate_room, treasury_room]) if treasury_room is not None else None
-
-    # Build edge records with deterministic locked-door flags (P6.1.4.3).
-    edge_recs = []
-    eligible_idx = []
-    for (a, b) in edges:
-        a = int(a); b = int(b)
-        stairs_edge = int(rooms[a].get("floor", 0)) != int(rooms[b].get("floor", 0))
-        # Avoid locking stairs and doors connected directly to the start for MVP fairness.
-        locked = False
-        if not stairs_edge and a != start and b != start:
-            tags_a = {t.lower() for t in (rooms[a].get("tags") or [])}
-            tags_b = {t.lower() for t in (rooms[b].get("tags") or [])}
-            high_value = bool({"treasure","treasury","boss"} & (tags_a | tags_b))
-            p_lock = 0.20 if high_value else 0.10
-            if rng.random() < p_lock:
-                locked = True
-            eligible_idx.append(len(edge_recs))
-        edge_recs.append({"a": a, "b": b, "locked": bool(locked), "secret": False})
-
-    # Ensure at least one locked door exists when possible so lockplay is testable.
-    if eligible_idx and not any(er.get("locked") for er in edge_recs):
-        pick = rng.choice(eligible_idx)
-        edge_recs[pick]["locked"] = True
-
-
-    
-    # Mark a few extra-loop edges as secret doors (P6.1.4.5).
-    # We ONLY pick from extra loop edges so secrets never block required progress.
-    try:
-        extra_norm = {(min(a, b), max(a, b)) for (a, b) in (extra_edges or [])}
-    except Exception:
-        extra_norm = set()
-
-    secret_candidates: list[int] = []
-    for idx, er in enumerate(edge_recs):
-        try:
-            a = int(er.get("a")); b = int(er.get("b"))
-            e = (min(a, b), max(a, b))
-            if e not in extra_norm:
-                continue
-            # Avoid stairs and doors connected directly to the start (fairness).
-            if a == start or b == start:
-                continue
-            if int(rooms[a].get("floor", 0)) != int(rooms[b].get("floor", 0)):
-                continue
-            secret_candidates.append(idx)
-        except Exception:
-            continue
-
-    # Choose 1..floors secret doors if possible (small but meaningful).
-    if secret_candidates:
-        want = max(1, min(len(secret_candidates), int(max(1, floors))))
-        picks = rng.sample(secret_candidates, k=want) if len(secret_candidates) >= want else list(secret_candidates)
-        for pi in picks:
-            edge_recs[pi]["secret"] = True
-            # Secret doors are hidden, not barred: do not also lock them.
-            edge_recs[pi]["locked"] = False
-
-    gates: dict[str, dict[str, Any]] = {}
-    used_gate_edges: set[int] = set()
-
-    def _pick_edge_for_room(room_id: int | None, *, require_secret: bool = False) -> int | None:
-        if room_id is None:
-            return None
-        cand: list[int] = []
-        for idx, er in enumerate(edge_recs):
-            if idx in used_gate_edges:
-                continue
-            if int(er.get("a", -1)) != int(room_id) and int(er.get("b", -1)) != int(room_id):
-                continue
-            if require_secret and not bool(er.get("secret")):
-                continue
-            cand.append(idx)
-        if not cand and require_secret:
-            cand = _pick_edge_for_room(room_id, require_secret=False) or []
-            if isinstance(cand, int):
-                cand = [cand]
-        if isinstance(cand, list) and cand:
-            cand = sorted(cand, key=lambda i: (not bool(edge_recs[i].get("secret")), not bool(edge_recs[i].get("locked")), i))
-            return cand[0]
-        return None
-
-    for name, room_id, key_room, bypass_room in (
-        ("treasury_gate", (treasury_gate_room if treasury_room is not None else None), treasury_key_room, treasury_bypass_room),
-        ("boss_gate", boss_gate_room, boss_key_room, boss_bypass_room),
-    ):
-        idx = _pick_edge_for_room(room_id)
-        if idx is not None:
-            edge_recs[idx]["locked"] = True
-            edge_recs[idx]["gate"] = name
-            edge_recs[idx]["key_id"] = f"{name}_key"
-            used_gate_edges.add(idx)
-            gates[name] = {"edge_index": int(idx), "room_id": int(room_id or 0), "key_room_id": int(key_room or 0), "key_id": f"{name}_key"}
-        if bypass_room is not None:
-            bidx = _pick_edge_for_room(bypass_room, require_secret=True)
-            if bidx is not None:
-                edge_recs[bidx]["secret"] = True
-                edge_recs[bidx]["locked"] = False
-                edge_recs[bidx]["bypass_for"] = name
-                used_gate_edges.add(bidx)
-                gates[f"{name}_bypass"] = {"edge_index": int(bidx), "room_id": int(bypass_room), "bypass_for": name}
-
-    bp = {
-        "version": 3,
+    return {
+        "version": 4,
         "dungeon_id": str(dungeon_id),
         "seed": int(seed),
         "start_room_id": int(start),
-        "floors": int(floors),
-        "theme": {
-            "theme_id": str(theme.get("theme_id") or ""),
-            "name": str(theme.get("name") or "Dungeon"),
-            "faction": str(theme.get("faction") or "unknown"),
-            "secondary_faction": str(theme.get("secondary_faction") or "unknown"),
-            "monster_keywords": list(theme.get("monster_keywords") or []),
-            "hazards": list(theme.get("hazards") or []),
-            "shrines": list(theme.get("shrines") or []),
-        },
+        "floors": 1,
+        "theme": dict(art.stocking.get("theme") or {}),
         "role_counts": role_counts,
-        "boss_path": boss_path,
-        "treasury_path": treasury_path,
-        "gates": gates,
-        "rooms": {str(i): rooms[i] for i in rooms},
-        "edges": edge_recs,
+        "boss_path": _bfs_path(boss_room) if boss_room else [],
+        "treasury_path": _bfs_path(treasury_room) if treasury_room else [],
+        "gates": {},
+        "rooms": rooms,
+        "edges": edges,
     }
-    return DungeonBlueprint(data=bp)
 
+
+def generate_blueprint(dungeon_id: str, seed: int, room_count: int = 18) -> DungeonBlueprint:
+    """Generate legacy-shaped blueprint by adapting canonical pipeline output."""
+    return DungeonBlueprint(
+        data=_legacy_blueprint_from_canonical(
+            dungeon_id=str(dungeon_id),
+            seed=int(seed),
+            room_count=int(room_count),
+        )
+    )
 
 
 def _stable_room_seed(seed: int, dungeon_id: str, purpose: str, room_id: int) -> int:
@@ -1114,4 +871,3 @@ def ensure_instance(existing: Optional[DungeonInstance], dungeon_id: str, base_s
         inst.delta.data["version"] = 1
 
     return inst
-
