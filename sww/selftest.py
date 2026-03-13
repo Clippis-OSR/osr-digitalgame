@@ -2099,6 +2099,7 @@ def _test_grapple_engulf_swallow(game) -> None:
             "save_on_apply": False,
             "damage_per_round": "1d1",
             "damage_type": "acid",
+            "inside_to_hit_mod": 20,
             "cut_out_damage": 1,
         },
         round_no=1,
