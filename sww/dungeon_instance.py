@@ -444,6 +444,20 @@ def _legacy_blueprint_from_canonical(*, dungeon_id: str, seed: int, room_count: 
             tags.append("stairs_down")
             rooms[stairs_room]["tags"] = tags
 
+        # Legacy bridge: expose at least one floor-1 landing with stairs_up so
+        # runtime stairs traversal can move level 1 -> level 2 -> level 1.
+        # Prefer a deterministic non-start room to avoid changing the entrance room identity.
+        landing_id = next((rid for rid in sorted(int(k) for k in rooms.keys()) if int(rid) != int(start)), int(start))
+        lkey = str(int(landing_id))
+        lrec = rooms.get(lkey)
+        if isinstance(lrec, dict):
+            lrec["floor"] = 1
+            ltags = list(lrec.get("tags") or [])
+            if "stairs_up" not in ltags:
+                ltags.append("stairs_up")
+            lrec["tags"] = ltags
+            rooms[lkey] = lrec
+
     return {
         "version": 4,
         "dungeon_id": str(dungeon_id),
