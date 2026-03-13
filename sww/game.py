@@ -56,7 +56,7 @@ from .validation import validate_state
 from .monster_ai import coerce_profile, choose_target, party_role
 from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat
 from .combat_legality import theater_target_is_valid
-from .status_lifecycle import tick_round_statuses, cleanup_actor_battle_status
+from .status_lifecycle import tick_round_statuses
 from .ai_capabilities import detect_capabilities, choose_attack_mode
 from .commands import (
     Command,
@@ -93,6 +93,7 @@ from .commands import (
 from .systems.contracts_system import ContractsSystem
 from .systems.wilderness_system import WildernessSystem
 from .systems.dungeon_system import DungeonSystem
+from .combat_service import CombatService
 
 
 # -----------------------------
@@ -263,6 +264,7 @@ class Game:
         self.contracts_system = ContractsSystem(self)
         self.wilderness_system = WildernessSystem(self)
         self.dungeon_system = DungeonSystem(self)
+        self.combat_service = CombatService(self)
 
         # Validation toggle (enabled in selftest)
         self.enable_validation = False
@@ -14486,36 +14488,15 @@ class Game:
             return
 
 
-    def _combat_cleanup_pool(self, *, ctx: dict | None = None) -> list[Actor]:
-        """Best-effort actor pool for cleanup propagation hooks."""
-        ctx = dict(ctx or {})
-        pool: list[Actor] = []
-        try:
-            pool.extend(list(getattr(getattr(self, "party", None), "members", []) or []))
-        except Exception:
-            pass
-        try:
-            pool.extend(list(ctx.get("combat_foes") or []))
-        except Exception:
-            pass
-        try:
-            room = (getattr(self, "dungeon_rooms", {}) or {}).get(getattr(self, "current_room_id", 0), {})
-            if isinstance(room, dict):
-                pool.extend(list(room.get("foes") or []))
-        except Exception:
-            pass
+    def _combat_svc(self) -> CombatService:
+        svc = getattr(self, "combat_service", None)
+        if svc is None:
+            svc = CombatService(self)
+            self.combat_service = svc
+        return svc
 
-        seen: set[int] = set()
-        uniq: list[Actor] = []
-        for a in pool:
-            if a is None:
-                continue
-            oid = id(a)
-            if oid in seen:
-                continue
-            seen.add(oid)
-            uniq.append(a)
-        return uniq
+    def _combat_cleanup_pool(self, *, ctx: dict | None = None) -> list[Actor]:
+        return self._combat_svc().cleanup_pool(ctx=ctx)
 
     def _process_combat_removal(
         self,
@@ -14526,75 +14507,21 @@ class Game:
         remove_effects: tuple[str, ...] = (),
         ctx: dict | None = None,
     ) -> None:
-        """Single authoritative combat removal pipeline.
-
-        Covers death and non-death leave-combat paths while preserving semantics.
-        """
-        if actor is None:
-            return
-
-        # Idempotence guard per actor/reason.
-        key = "_combat_removal_reasons"
-        seen = getattr(actor, key, None)
-        if not isinstance(seen, set):
-            seen = set()
-            setattr(actor, key, seen)
-        if reason in seen:
-            return
-        seen.add(reason)
-
-        # 1) Death detection (informational check for routing correctness).
-        is_dead = False
-        try:
-            is_dead = int(getattr(actor, "hp", 0) or 0) <= 0
-        except Exception:
-            is_dead = False
-
-        # 2) Status/actor cleanup first.
-        cleanup_actor_battle_status(actor)
-
-        # 3) Non-death removal marker updates.
-        if marker:
-            effects = list(getattr(actor, "effects", []) or [])
-            for key in tuple(remove_effects or ()):
-                effects = [e for e in effects if str(e) != str(key)]
-            mk = str(marker or "").strip()
-            if mk and mk not in effects:
-                effects.append(mk)
-            actor.effects = effects
-
-        # 4) Event emission + aftermath hooks in stable order.
-        if reason == "death":
-            try:
-                self.emit("actor_died", name=getattr(actor, "name", "?"), monster_id=str(getattr(actor, "monster_id", "") or ""))
-            except Exception:
-                pass
-            try:
-                self.effects_mgr.cleanup_on_death(actor, pool=self._combat_cleanup_pool(ctx=ctx))
-            except Exception:
-                pass
-        else:
-            # No existing public leave event contract; keep behavior-neutral.
-            _ = is_dead
+        self._combat_svc().process_removal(
+            actor,
+            reason=reason,
+            marker=marker,
+            remove_effects=remove_effects,
+            ctx=ctx,
+        )
 
     def _leave_combat_actor(self, actor: Actor, *, marker: str = "fled", remove_effects: tuple[str, ...] = ()) -> None:
         """Shared non-death leave-combat cleanup seam."""
-        self._process_combat_removal(
-            actor,
-            reason="leave_combat",
-            marker=marker,
-            remove_effects=remove_effects,
-            ctx=None,
-        )
+        self._combat_svc().leave_combat_actor(actor, marker=marker, remove_effects=remove_effects)
 
     def _notify_death(self, target: Actor, *, ctx: dict | None = None) -> None:
         """Centralized death cleanup pipeline entrypoint."""
-        try:
-            if int(getattr(target, "hp", 0) or 0) > 0:
-                return
-        except Exception:
-            return
-        self._process_combat_removal(target, reason="death", ctx=dict(ctx or {}))
+        self._combat_svc().notify_death(target, ctx=ctx)
 
     def _monster_on_hit_specials(self, attacker: Actor, defender: Actor, *, round_no: int = 1, attack_roll: int | None = None, attack_total: int | None = None, attack_need: int | None = None) -> None:
         """Resolve structured (or heuristic) monster on-hit specials."""
