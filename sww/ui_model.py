@@ -4,7 +4,8 @@ from dataclasses import dataclass
 
 from .grid_state import GridBattleState
 from .pathing import bfs_movement_range, bfs_shortest_path
-from .targeting import valid_melee_targets, valid_missile_targets, spell_aoe_preview_tiles
+from .targeting import spell_aoe_preview_tiles
+from .targeting_service import TargetingService
 
 
 @dataclass
@@ -58,10 +59,10 @@ def compute_ui_model(
 
         living = {uid: (u.side, u.pos) for uid, u in state.living_units().items()}
         if action_id == "MELEE":
-            valid_targets = {tid for tid in valid_melee_targets(sel.unit_id, sel.pos, sel.side, living)
+            valid_targets = {tid for tid in TargetingService.melee_target_ids(attacker_id=sel.unit_id, attacker_pos=sel.pos, attacker_side=sel.side, living=living)
                              if not (getattr(state.units.get(tid), 'hidden', False) and state.units.get(tid).side != sel.side)}
         elif action_id == "MISSILE":
-            valid_targets = {tid for tid in valid_missile_targets(state.gm, sel.unit_id, sel.pos, sel.side, living, lit_tiles=lit_tiles)
+            valid_targets = {tid for tid in TargetingService.missile_target_ids(gm=state.gm, attacker_id=sel.unit_id, attacker_pos=sel.pos, attacker_side=sel.side, living=living, lit_tiles=lit_tiles)
                              if not (getattr(state.units.get(tid), 'hidden', False) and state.units.get(tid).side != sel.side)}
 
 
