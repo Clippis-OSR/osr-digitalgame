@@ -5972,6 +5972,29 @@ class Game:
             return False
         try:
             inst = build_item_instance(tid, quantity=1, identified=True, metadata={"source": "town_shop"})
+            # Transitional compatibility: shop-bought items get stable human-readable
+            # ids so legacy-mirror assertions and ownership-first refs agree.
+            base_id = str(name or tid)
+            taken: set[str] = set()
+            try:
+                for m in list(getattr(getattr(self, "party", None), "members", []) or []):
+                    inv = list(getattr(getattr(m, "inventory", None), "items", []) or [])
+                    for it in inv:
+                        taken.add(str(getattr(it, "instance_id", "") or ""))
+                for it in list(getattr(getattr(self, "party_stash", None), "items", []) or []):
+                    taken.add(str(getattr(it, "instance_id", "") or ""))
+                for e in list(getattr(getattr(self, "loot_pool", None), "entries", []) or []):
+                    ii = getattr(e, "item_instance", None)
+                    if ii is not None:
+                        taken.add(str(getattr(ii, "instance_id", "") or ""))
+            except Exception:
+                pass
+            cand = base_id
+            idx = 2
+            while cand in taken:
+                cand = f"{base_id} #{idx}"
+                idx += 1
+            inst.instance_id = cand
             r = add_item_to_actor(actor, inst)
             if not r.ok:
                 return False
@@ -10244,6 +10267,18 @@ class Game:
                         st.pop(k, None)
 
 
+    def action_block_reason(self, actor: Actor, *, for_casting: bool = False) -> str | None:
+        """Return a short reason when actor cannot act/cast this turn."""
+        st = status_dict(actor)
+        if any(k in st for k in ("held", "paralyzed", "asleep", "stone", "petrified")):
+            return "incapacitated"
+        if bool(st.get("fled")) or bool(st.get("surrendered")):
+            return "not_fighting"
+        if for_casting and bool(st.get("silenced")):
+            return "silenced"
+        return None
+
+
     def _wandering_noise_mod(self) -> int:
         """Noise modifier to wandering checks (max +2).
 
@@ -13710,7 +13745,7 @@ class Game:
                                 continue
 
                             # P2.2/A2: centralized status effects can prevent actions.
-                            block_reason = action_block_reason(actor, for_casting=False)
+                            block_reason = self.action_block_reason(actor, for_casting=False)
                             if block_reason is not None:
                                 self.ui.log(f"{actor.name} cannot act ({block_reason}).")
                                 continue
@@ -13897,7 +13932,7 @@ class Game:
                                 continue
 
                             # P2.2/A2: centralized status effects can prevent actions.
-                            block_reason = action_block_reason(actor, for_casting=False)
+                            block_reason = self.action_block_reason(actor, for_casting=False)
                             if block_reason is not None and plan.get("type") not in ("escape", "inside_attack"):
                                 self.ui.log(f"{actor.name} cannot act ({block_reason}).")
                                 if melee_diag is not None:
@@ -15734,7 +15769,7 @@ class Game:
                 pass
 
             # P2.2/A2: centralized status/effect blockers for spellcasting.
-            block_reason = action_block_reason(caster, for_casting=True)
+            block_reason = self.action_block_reason(caster, for_casting=True)
             if block_reason is not None:
                 self.ui.log(f"{caster.name} cannot cast due to {block_reason}!")
                 clear_status(caster, "casting")
