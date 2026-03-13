@@ -2128,6 +2128,7 @@ class Game:
             wps_eff = max(1, int(wps) + int(wps_mod))
 
             self._consume_rations(1)
+            self._consume_travel_light(int(wps_eff))
             self._advance_watch(int(wps_eff))
             self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
             self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
@@ -2188,6 +2189,7 @@ class Game:
         wps_eff = max(1, int(wps) + int(wps_mod))
 
         self._consume_rations(1)
+        self._consume_travel_light(int(wps_eff))
         self._advance_watch(int(wps_eff))
         self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
         self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
@@ -2263,6 +2265,7 @@ class Game:
             wps_eff = max(1, int(wps) + int(wps_mod))
 
             self._consume_rations(1)
+            self._consume_travel_light(int(wps_eff))
             self._advance_watch(int(wps_eff))
             self._advance_wilderness_clock(travel_turns=1, watch_turns=int(wps_eff), encounter_ticks=1)
             self.travel_state.route_progress = int(getattr(self.travel_state, "route_progress", 0)) + 1
@@ -6468,15 +6471,56 @@ class Game:
             return
         if self.rations >= need:
             self.rations -= need
+            self.emit("supplies_consumed", resource="rations", amount=int(need), remaining=int(self.rations), reason="travel")
             return
         # Moderate/forgiving: if you run out, you still travel but suffer minor damage.
         short = need - self.rations
+        consumed = int(self.rations)
         self.rations = 0
         self.ui.log("You are out of rations!")
+        self.emit("supply_shortage", resource="rations", needed=int(need), consumed=int(consumed), short=int(short), remaining=0)
         for _ in range(short):
             victim = self.dice_rng.choice(self.party.living()) if self.party.living() else None
             if victim:
                 victim.hp = max(-1, victim.hp - 1)
+
+    def _consume_travel_light(self, watch_turns: int) -> None:
+        """Consume torches when traveling through evening/night watches.
+
+        First-pass expedition pressure rule: each two night watches of travel
+        consume one torch. If no torch is available, the party continues but
+        suffers minor attrition from stumbling travel.
+        """
+        watches = max(0, int(watch_turns or 0))
+        if watches <= 0:
+            return
+        start_watch = int(getattr(self, "day_watch", 0) or 0) % int(self.WATCHES_PER_DAY)
+        night_watches = 0
+        for i in range(watches):
+            cur = (start_watch + i) % int(self.WATCHES_PER_DAY)
+            if cur >= 4:  # evening/night
+                night_watches += 1
+        torches_needed = (night_watches + 1) // 2
+        if torches_needed <= 0:
+            return
+
+        available = int(getattr(self, "torches", 0) or 0)
+        if available >= torches_needed:
+            self.torches = int(available - torches_needed)
+            self.ui.log(f"Travel light consumed: -{torches_needed} torch{'es' if torches_needed != 1 else ''}.")
+            self.emit("supplies_consumed", resource="torches", amount=int(torches_needed), remaining=int(self.torches), reason="night_travel")
+            return
+
+        short = int(torches_needed - available)
+        if available > 0:
+            self.ui.log(f"Travel light consumed: -{available} torch{'es' if available != 1 else ''}.")
+        self.torches = 0
+        self.ui.log("You run out of torches while traveling in darkness!")
+        self.emit("supply_shortage", resource="torches", needed=int(torches_needed), consumed=int(available), short=int(short), remaining=0)
+        for _ in range(short):
+            victim = self.dice_rng.choice(self.party.living()) if self.party.living() else None
+            if victim is not None:
+                victim.hp = max(-1, int(getattr(victim, "hp", 0) or 0) - 1)
 
     def _ensure_canonical_dungeon_entrance(self) -> dict[str, Any]:
         """Ensure a stable canonical dungeon entrance POI exists near town.
