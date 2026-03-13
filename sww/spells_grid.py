@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .grid_map import GridMap, bresenham_line, has_line_of_sight, manhattan
+from .status_service import StatusService
 
 
 @dataclass(frozen=True)
@@ -114,9 +115,7 @@ def apply_spell(game: Any, gm: GridMap, caster: Any, spell_name: str, targets: l
             if hd > hd_budget:
                 continue
             hd_budget -= hd
-            st = getattr(t, "status", {}) or {}
-            st["asleep"] = max(int(st.get("asleep", 0) or 0), 6)
-            t.status = st
+            StatusService.apply_status(t, "asleep", 6, mode="max")
             out["slept"].append(getattr(t, "name", "?"))
             affected += 1
             if hd_budget <= 0:

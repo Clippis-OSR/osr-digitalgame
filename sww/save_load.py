@@ -17,6 +17,7 @@ from .models import (
 )
 from .travel_state import TravelState
 from .loot_pool import LootEntry, create_loot_pool
+from .ownership_service import ownership_invariant_violations
 from .events import (
     normalize_player_event,
     append_player_event,
@@ -681,8 +682,6 @@ def dict_to_actor(d: dict) -> Actor:
         a.ensure_equipment_initialized()
     if hasattr(a, "sync_legacy_equipment_to_new"):
         a.sync_legacy_equipment_to_new()
-    if hasattr(a, "sync_new_equipment_to_legacy"):
-        a.sync_new_equipment_to_legacy()
 
     # Attach PC extras if needed
     if is_pc:
@@ -1594,6 +1593,12 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     except Exception:
         pass
 
+    # Ownership-first migration guardrails: keep runtime-valid ownership/equipment state.
+    try:
+        setattr(game, "ownership_invariant_violations", list(ownership_invariant_violations(game)))
+    except Exception:
+        setattr(game, "ownership_invariant_violations", [])
+
     ret = data.get("retainers", {})
     setattr(game, "retainer_board", [dict_to_actor(r) for r in (ret.get("retainer_board") or [])])
     setattr(game, "retainer_roster", [dict_to_actor(r) for r in (ret.get("retainer_roster") or [])])
@@ -1851,11 +1856,6 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     setattr(game, "rumors", project_rumors_from_events(event_history))
     setattr(game, "dungeon_clues", project_clues_from_events(event_history))
     setattr(game, "district_notes", project_district_notes_from_events(event_history))
-    try:
-        if hasattr(game, "_ensure_minimal_rumor_surface"):
-            game._ensure_minimal_rumor_surface()
-    except Exception:
-        pass
 
     fac = data.get("factions", {}) or {}
     fac_list = list(fac.get("factions", []) or [])
@@ -1907,32 +1907,32 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
     setattr(game, "blessed_until_day", int(boons.get("blessed_until_day", 0)))
     setattr(game, "guild_favor_until_day", int(boons.get("guild_favor_until_day", 0)))
 
-    # ---- P6.0.0.1: post-load state validation (hard fail only in STRICT_CONTENT) ----
-    try:
-        from .validation import validate_state
+    # ---- P6.0.0.1: post-load state validation ----
+    # Keep load-path deterministic/non-mutating by default. Validation runs only
+    # when STRICT_CONTENT is enabled.
+    strict = str(os.environ.get("STRICT_CONTENT", "")).strip().lower() in ("1", "true", "yes", "on")
+    if strict:
+        try:
+            from .validation import validate_state
 
-        issues = validate_state(game) or []
-        errs = [x for x in issues if getattr(x, "severity", "") == "error"]
-        warns = [x for x in issues if getattr(x, "severity", "") != "error"]
+            issues = validate_state(game) or []
+            errs = [x for x in issues if getattr(x, "severity", "") == "error"]
+            warns = [x for x in issues if getattr(x, "severity", "") != "error"]
 
-        # Attach for UI/debug purposes.
-        setattr(
-            game,
-            "validation_warnings",
-            [getattr(x, "message", str(x)) for x in (errs + warns)],
-        )
-
-        # STRICT_CONTENT acts as our "fail-fast" toggle for load integrity.
-        strict = str(os.environ.get("STRICT_CONTENT", "")).strip().lower() in ("1", "true", "yes", "on")
-        if strict and errs:
-            raise ValueError(
-                "Save validation failed (STRICT_CONTENT):\n" + "\n".join(getattr(x, "message", str(x)) for x in errs)
+            setattr(
+                game,
+                "validation_warnings",
+                [getattr(x, "message", str(x)) for x in (errs + warns)],
             )
-    except Exception:
-        # Be conservative: only fail hard if STRICT_CONTENT is set.
-        strict = str(os.environ.get("STRICT_CONTENT", "")).strip().lower() in ("1", "true", "yes", "on")
-        if strict:
+
+            if errs:
+                raise ValueError(
+                    "Save validation failed (STRICT_CONTENT):\n" + "\n".join(getattr(x, "message", str(x)) for x in errs)
+                )
+        except Exception:
             raise
+    else:
+        setattr(game, "validation_warnings", [])
 
 
 def save_game(game: Any, filepath: str) -> str:

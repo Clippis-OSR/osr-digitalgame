@@ -46,7 +46,7 @@ def run_contract_navigation(game, max_steps: int = 80) -> None:
     # Disable encounter noise for QA navigation runs if caller hasn't already.
     if hasattr(game, '_wilderness_encounter_check'):
         try:
-            game._wilderness_encounter_check = lambda hx: None
+            game._wilderness_encounter_check = lambda hx, encounter_mod=0: None
         except Exception:
             pass
 

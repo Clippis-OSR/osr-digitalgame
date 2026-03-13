@@ -13,11 +13,11 @@ def _in_battle(game: Any) -> bool:
     return bool(getattr(game, "_battle_buffer_active", False))
 
 
-def _be(game: Any, kind: str, **data: Any) -> None:
+def _be(game: Any, event_kind: str, **data: Any) -> None:
     be = getattr(game, "battle_evt", None)
     if callable(be):
         try:
-            be(kind, **data)
+            be(event_kind, **data)
         except Exception:
             pass
 

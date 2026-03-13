@@ -80,7 +80,7 @@ def run_replay(
     meta = rep.get("meta") if isinstance(rep.get("meta"), dict) else {}
     if meta.get("disable_wilderness_encounters"):
         try:
-            setattr(game, "_wilderness_encounter_check", lambda hx: None)
+            setattr(game, "_wilderness_encounter_check", lambda hx, encounter_mod=0: None)
         except Exception:
             pass
 
@@ -102,13 +102,21 @@ def run_replay(
             if temple_events:
                 game.temple_rng = ReplayRandom(temple_events, channel="temple", log_fn=getattr(game, "_log_rng", None))
             game.wilderness_rng = ReplayRandom(wild_events, channel="wilderness", log_fn=getattr(game, "_log_rng", None))
+            game.wilderness_encounter_seed = int(wild_seed) + 17
+            game.wilderness_encounter_rng = ReplayRandom(wild_events, channel="wilderness_encounter", log_fn=getattr(game, "_log_rng", None))
         else:
             game.dice_rng = LoggedRandom(dice_seed, channel="dice", log_fn=getattr(game, "_log_rng", None))
             game.levelup_rng = LoggedRandom(int(dice_seed) + 1, channel="levelup", log_fn=getattr(game, "_log_rng", None))
             game.temple_rng = LoggedRandom(int(dice_seed) + 2, channel="temple", log_fn=getattr(game, "_log_rng", None))
             game.wilderness_rng = LoggedRandom(wild_seed, channel="wilderness", log_fn=getattr(game, "_log_rng", None))
+            game.wilderness_encounter_seed = int(wild_seed) + 17
+            game.wilderness_encounter_rng = LoggedRandom(int(game.wilderness_encounter_seed), channel="wilderness_encounter", log_fn=getattr(game, "_log_rng", None))
 
         game.dice = Dice(rng=game.dice_rng)
+        try:
+            game.wilderness_dice = Dice(rng=getattr(game, "wilderness_encounter_rng", None) or getattr(game, "wilderness_rng", None) or game.dice_rng)
+        except Exception:
+            pass
         try:
             game.levelup_dice = Dice(rng=getattr(game, 'levelup_rng', None) or LoggedRandom(int(dice_seed) + 1, channel="levelup", log_fn=getattr(game, "_log_rng", None)))
         except Exception:
@@ -154,7 +162,7 @@ def run_replay(
     except Exception:
         pass
 
-        setattr(game, "_replay_mode", True)
+    setattr(game, "_replay_mode", True)
     cmd_i = -1
     try:
         for cmd_i, entry in enumerate(cmds):

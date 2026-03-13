@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .combat_rules import is_active_hostile_target
-from .targeting import valid_melee_targets, valid_missile_targets, is_valid_melee_pair, is_valid_missile_pair
+from .targeting_service import TargetingService
 
 
 def theater_target_is_valid(target: Any, enemies: list[Any]) -> bool:
@@ -11,7 +10,7 @@ def theater_target_is_valid(target: Any, enemies: list[Any]) -> bool:
 
     Delegates to existing combat_rules behavior to preserve semantics.
     """
-    return is_active_hostile_target(target, enemies)
+    return TargetingService.theater_target_is_valid(target, enemies)
 
 
 def grid_target_is_attackable(
@@ -29,14 +28,14 @@ def grid_target_is_attackable(
     """Read-only grid attack legality seam for planning/command building."""
     m = str(mode or "").strip().lower()
     if m == "melee":
-        return str(target_id) in valid_melee_targets(attacker_id, attacker_pos, attacker_side, living)
+        return str(target_id) in TargetingService.melee_target_ids(attacker_id=attacker_id, attacker_pos=attacker_pos, attacker_side=attacker_side, living=living)
     if m == "missile":
-        return str(target_id) in valid_missile_targets(
-            gm,
-            attacker_id,
-            attacker_pos,
-            attacker_side,
-            living,
+        return str(target_id) in TargetingService.missile_target_ids(
+            gm=gm,
+            attacker_id=attacker_id,
+            attacker_pos=attacker_pos,
+            attacker_side=attacker_side,
+            living=living,
             max_tiles=max_tiles,
             lit_tiles=lit_tiles,
         )
@@ -47,7 +46,7 @@ def grid_pair_is_attack_legal(*, gm, attacker_pos: tuple[int, int], target_pos: 
     """Read-only grid legality seam for execution-time pair checks."""
     m = str(mode or "").strip().lower()
     if m == "melee":
-        return is_valid_melee_pair(attacker_pos, target_pos)
+        return TargetingService.melee_pair_is_legal(attacker_pos=attacker_pos, target_pos=target_pos)
     if m == "missile":
-        return is_valid_missile_pair(gm, attacker_pos, target_pos, max_tiles=max_tiles, lit_tiles=lit_tiles)
+        return TargetingService.missile_pair_is_legal(gm=gm, attacker_pos=attacker_pos, target_pos=target_pos, max_tiles=max_tiles, lit_tiles=lit_tiles)
     return False

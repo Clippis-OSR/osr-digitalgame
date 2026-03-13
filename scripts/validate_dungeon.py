@@ -7,7 +7,7 @@ import sys
 # Ensure repo root (p44/) is on sys.path when running as a script.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from sww.dungeon_gen.generate import generate_blueprint, generate_level
+from sww.dungeon_gen.pipeline import run_canonical_blueprint_stage, run_canonical_level_pipeline
 from sww.dungeon_gen.blueprint import stable_hash_dict
 from sww.dungeon_gen.cl_compile import compile_files
 
@@ -39,8 +39,8 @@ def main() -> int:
     failed = 0
     for i in range(args.runs):
         seed = str(1000 + i)
-        a1 = generate_blueprint(level_id="level_1", seed=seed, width=args.width, height=args.height, depth=args.depth)
-        a2 = generate_blueprint(level_id="level_1", seed=seed, width=args.width, height=args.height, depth=args.depth)
+        a1 = run_canonical_blueprint_stage(level_id="level_1", seed=seed, width=args.width, height=args.height, depth=args.depth)
+        a2 = run_canonical_blueprint_stage(level_id="level_1", seed=seed, width=args.width, height=args.height, depth=args.depth)
         if a1.report.get("validation", {}).get("passed") is not True:
             failed += 1
             print(f"FAIL seed={seed} validation")
@@ -50,8 +50,8 @@ def main() -> int:
             print(f"FAIL seed={seed} nondeterministic hash")
 
         # Stocking determinism (P4.9.2)
-        l1 = generate_level(level_id="level_1", seed=seed, width=args.width, height=args.height, depth=args.depth)
-        l2 = generate_level(level_id="level_1", seed=seed, width=args.width, height=args.height, depth=args.depth)
+        l1 = run_canonical_level_pipeline(level_id="level_1", seed=seed, width=args.width, height=args.height, depth=args.depth)
+        l2 = run_canonical_level_pipeline(level_id="level_1", seed=seed, width=args.width, height=args.height, depth=args.depth)
         h1 = stable_hash_dict(l1.stocking)
         h2 = stable_hash_dict(l2.stocking)
         if h1 != h2:
