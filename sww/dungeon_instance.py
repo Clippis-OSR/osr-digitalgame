@@ -394,16 +394,6 @@ def _legacy_blueprint_from_canonical(*, dungeon_id: str, seed: int, room_count: 
                 adjacency.setdefault(hi, set()).add(lo)
 
     edges = [{"a": a, "b": b, "locked": False, "secret": False} for (a, b) in sorted(edge_pairs)]
-    gates: dict[str, dict[str, Any]] = {}
-    if len(edges) >= 1:
-        gate_idx = min(len(edges) - 1, max(0, len(edges) // 2))
-        edges[gate_idx]["locked"] = True
-        gates["boss_gate"] = {
-            "edge_index": int(gate_idx),
-            "room_id": int(edges[gate_idx].get("b") or 0),
-            "key_room_id": 0,
-            "key_id": "boss_gate_key",
-        }
 
     start_room_id = next((rid for rid, rr in rooms.items() if str(rr.get("role")) == "entrance"), None)
     if not start_room_id:
@@ -437,38 +427,18 @@ def _legacy_blueprint_from_canonical(*, dungeon_id: str, seed: int, room_count: 
 
     boss_room = next((int(k) for k, rr in rooms.items() if str(rr.get("role")) == "boss"), 0)
     treasury_room = next((int(k) for k, rr in rooms.items() if str(rr.get("role")) == "treasury"), 0)
-    if int(max(1, depth)) > 1:
-        stairs_room = str(start)
-        tags = list((rooms.get(stairs_room, {}) or {}).get("tags") or [])
-        if "stairs_down" not in tags:
-            tags.append("stairs_down")
-            rooms[stairs_room]["tags"] = tags
-
-        # Legacy bridge: expose at least one floor-1 landing with stairs_up so
-        # runtime stairs traversal can move level 1 -> level 2 -> level 1.
-        # Prefer a deterministic non-start room to avoid changing the entrance room identity.
-        landing_id = next((rid for rid in sorted(int(k) for k in rooms.keys()) if int(rid) != int(start)), int(start))
-        lkey = str(int(landing_id))
-        lrec = rooms.get(lkey)
-        if isinstance(lrec, dict):
-            lrec["floor"] = 1
-            ltags = list(lrec.get("tags") or [])
-            if "stairs_up" not in ltags:
-                ltags.append("stairs_up")
-            lrec["tags"] = ltags
-            rooms[lkey] = lrec
 
     return {
         "version": 4,
         "dungeon_id": str(dungeon_id),
         "seed": int(seed),
         "start_room_id": int(start),
-        "floors": int(max(1, depth)),
+        "floors": 1,
         "theme": dict(art.stocking.get("theme") or {}),
         "role_counts": role_counts,
         "boss_path": _bfs_path(boss_room) if boss_room else [],
         "treasury_path": _bfs_path(treasury_room) if treasury_room else [],
-        "gates": gates,
+        "gates": {},
         "rooms": rooms,
         "edges": edges,
     }

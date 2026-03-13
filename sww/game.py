@@ -56,7 +56,7 @@ from .validation import validate_state
 from .monster_ai import coerce_profile, choose_target, party_role
 from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat
 from .combat_legality import theater_target_is_valid
-from .status_lifecycle import tick_round_statuses, apply_status, clear_status, status_dict
+from .status_lifecycle import tick_round_statuses
 from .ai_capabilities import detect_capabilities, choose_attack_mode
 from .commands import (
     Command,
@@ -6003,31 +6003,6 @@ class Game:
                 if not er.ok:
                     # Keep preexisting behavior: purchase still succeeds even if auto-equip fails.
                     return True
-                # Transitional bridge: keep legacy equipment fields aligned for
-                # call sites still asserting/displaying legacy names.
-                if kind == "weapon":
-                    actor.weapon = str(name)
-                    try:
-                        actor.ensure_equipment_initialized()
-                        actor.equipment.main_hand = str(name)
-                    except Exception:
-                        pass
-                elif kind == "armor":
-                    if "shield" in str(name).lower():
-                        actor.shield = True
-                        actor.shield_name = str(name)
-                        try:
-                            actor.ensure_equipment_initialized()
-                            actor.equipment.shield = str(name)
-                        except Exception:
-                            pass
-                    else:
-                        actor.armor = str(name)
-                        try:
-                            actor.ensure_equipment_initialized()
-                            actor.equipment.armor = str(name)
-                        except Exception:
-                            pass
             return True
         except Exception:
             return False
