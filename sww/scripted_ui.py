@@ -124,6 +124,10 @@ class ScriptedUI(UI):
         return idx
 
 
+    def remaining_actions(self) -> list[Any]:
+        """Return unconsumed scripted actions for save/load replay-equivalence splits."""
+        return list(self._q)
+
     def hr(self):
         if self.echo:
             super().hr()

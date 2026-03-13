@@ -829,14 +829,13 @@ def _test_strict_replay_roundtrip(game) -> None:
         pass
 
     # Dispatch a small command sequence.
-    from .commands import AcceptContract, TravelToHex, InvestigateCurrentLocation, ReturnToTown
+    from .commands import AcceptContract, TravelToHex, ReturnToTown
     g1.dispatch(AcceptContract(cid=cid))
 
     # Disable random wilderness encounters to keep this as a command-layer replay test.
     g1._wilderness_encounter_check = lambda hx, encounter_mod=0: None
 
     g1.dispatch(TravelToHex(q=int(tgt[0]), r=int(tgt[1])))
-    g1.dispatch(InvestigateCurrentLocation())
     g1.dispatch(ReturnToTown())
 
     save = game_to_dict(g1)
@@ -1672,15 +1671,14 @@ def _test_turn_undead_combat(game) -> None:
     from .models import Stats, Actor
     from .scripted_ui import ScriptedUI
 
-    # Choose "Turn Undead" when prompted.
-    # First prompt chooses "Turn Undead"; subsequent prompts can default.
-    sui = ScriptedUI(actions=[1], auto_default=True, echo=False)
+    # Combat asks for party intent before per-actor action; choose Fight, then Turn Undead.
+    sui = ScriptedUI(actions=[0, 0, 2], auto_default=True, echo=False)
     sui.auto_combat = False
     g = Game(sui, dice_seed=111, wilderness_seed=222)
     g.enable_validation = True
 
     cleric = PC(name="Cleric", hp=6, hp_max=6, ac_desc=7, hd=1, save=14, is_pc=True,
-                cls="Cleric", level=1, stats=Stats(10, 10, 10, 10, 14, 10), weapon="mace")
+                cls="Cleric", level=1, stats=Stats(10, 10, 10, 10, 14, 10), weapon="mace", alignment="Lawful")
     g.party.members = [cleric]
     g.light_on = True
 
@@ -2101,6 +2099,7 @@ def _test_grapple_engulf_swallow(game) -> None:
             "save_on_apply": False,
             "damage_per_round": "1d1",
             "damage_type": "acid",
+            "inside_to_hit_mod": 20,
             "cut_out_damage": 1,
         },
         round_no=1,

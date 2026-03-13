@@ -6664,6 +6664,7 @@ class Game:
 
         discovered = bool(existing.get("discovered", False))
         resolved = bool(existing.get("resolved", False))
+        rumored = bool(existing.get("rumored", False))
 
         if str(existing.get("id") or "") == canonical_id:
             discovered = bool(existing.get("discovered", False))
@@ -6676,6 +6677,7 @@ class Game:
             "notes": "A known stair descending into the depths near town.",
             "discovered": discovered,
             "resolved": resolved,
+            "rumored": rumored,
             "canonical": True,
         }
         self.world_hexes[hx.key()] = hx.to_dict()
