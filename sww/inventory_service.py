@@ -360,7 +360,6 @@ def remove_item_from_actor(actor: Actor, instance_id: str, quantity: int = 1) ->
         _unequip_instance_any_slot(actor, item.instance_id)
         actor.inventory.items = [it for it in actor.inventory.items if str(it.instance_id) != str(item.instance_id)]
 
-    actor.sync_new_equipment_to_legacy()
     return InventoryServiceResult(ok=True, item=item, quantity_changed=-q)
 
 
@@ -408,7 +407,6 @@ def equip_item_on_actor(actor: Actor, instance_id: str) -> InventoryServiceResul
         setattr(eq, slot, iid)
 
     item.equipped = True
-    actor.sync_new_equipment_to_legacy()
     return InventoryServiceResult(ok=True, item=item, quantity_changed=0)
 
 
@@ -446,7 +444,6 @@ def unequip_item_on_actor(actor: Actor, slot_name: str) -> InventoryServiceResul
     if item is not None:
         item.equipped = False
 
-    actor.sync_new_equipment_to_legacy()
     return InventoryServiceResult(ok=True, item=item, quantity_changed=0)
 
 

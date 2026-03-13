@@ -11,8 +11,9 @@ from .grid_map import GridMap, has_line_of_sight, manhattan
 from .grid_state import GridBattleState, UnitState
 from .battle_events import BattleEvent, evt
 from .commands import CmdAttack, CmdCastSpell, CmdDoorAction, CmdDungeonAction, CmdEndTurn, CmdHide, CmdMove, CmdTakeCover, CmdThrowItem, CmdParley, Command
-from .targeting import is_valid_melee_pair, is_valid_missile_pair, adjacent as positions_adjacent
+from .targeting import adjacent as positions_adjacent
 from .combat_legality import grid_pair_is_attack_legal
+from .targeting_service import TargetingService
 
 
 @dataclass
@@ -101,11 +102,11 @@ class GridBattle:
         return True
 
     def adjacent(self, a: GridEntity, b: GridEntity) -> bool:
-        return is_valid_melee_pair(a.pos, b.pos)
+        return TargetingService.melee_pair_is_legal(attacker_pos=a.pos, target_pos=b.pos)
 
     def in_missile_range(self, a: GridEntity, b: GridEntity) -> bool:
         # Prototype: 12 tiles max (~60ft) if LOS.
-        return is_valid_missile_pair(self.map, a.pos, b.pos, max_tiles=12, lit_tiles=None)
+        return TargetingService.missile_pair_is_legal(gm=self.map, attacker_pos=a.pos, target_pos=b.pos, max_tiles=12, lit_tiles=None)
 
     def cover_penalty_to_hit(self, target: GridEntity) -> int:
         # If actor used Take Cover we store cover in status as -2/-4.
@@ -137,7 +138,7 @@ class GridBattle:
             return False
         if getattr(a.actor, "hp", 0) <= 0 or getattr(t.actor, "hp", 0) <= 0:
             return False
-        if a.side == t.side:
+        if not TargetingService.is_enemy_target(attacker_side=a.side, target_side=t.side, attacker_id=attacker_id, target_id=target_id):
             return False
 
         kind = "melee" if mode == "melee" else "missile"
