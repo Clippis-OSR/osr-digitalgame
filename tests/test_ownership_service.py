@@ -9,6 +9,7 @@ from sww.ownership_service import (
     move_item_stash_to_actor,
     owned_item_location,
     remove_owned_item,
+    ownership_invariant_violations,
 )
 from sww.ui_headless import HeadlessUI
 
@@ -92,3 +93,65 @@ def test_owned_item_location_reports_actor_and_stash_locations():
     assert loc_actor.owner == "Pax"
     assert loc_stash is not None
     assert loc_stash.location == "stash"
+
+
+
+def test_ownership_invariants_hold_across_transfers_and_equipment():
+    from sww.inventory_service import equip_item_on_actor, unequip_item_on_actor
+
+    g = _game(12060)
+    actor = _actor("Quinn")
+    g.party.members = [actor]
+
+    it = build_item_instance("weapon.sword_long", quantity=2, identified=True)
+    assert add_item_to_actor(actor, it).ok
+    assert equip_item_on_actor(actor, it.instance_id).ok
+    assert ownership_invariant_violations(g) == []
+
+    moved = move_item_actor_to_stash(actor, g, it.instance_id, quantity=1, in_town=True)
+    assert moved.ok
+    assert ownership_invariant_violations(g) == []
+
+    back = move_item_stash_to_actor(g, actor, str(getattr(moved.item, "instance_id", it.instance_id)), quantity=1, in_town=True)
+    assert back.ok
+    uq = unequip_item_on_actor(actor, "main_hand")
+    assert uq.ok
+    assert ownership_invariant_violations(g) == []
+
+
+def test_save_load_preserves_instance_equipment_ownership_invariants():
+    from sww.inventory_service import equip_item_on_actor
+    from sww.save_load import game_to_dict, apply_game_dict
+
+    g = _game(12070)
+    actor = _actor("Rhea")
+    g.party.members = [actor]
+
+    it = build_item_instance("weapon.sword_long", quantity=1, identified=True)
+    assert add_item_to_actor(actor, it).ok
+    assert equip_item_on_actor(actor, it.instance_id).ok
+
+    data = game_to_dict(g)
+    g2 = _game(12071)
+    apply_game_dict(g2, data)
+
+    actor2 = next((a for a in g2.party.members if a.name == "Rhea"), None)
+    assert actor2 is not None
+    assert str(getattr(actor2.equipment, "main_hand", ""))
+    assert ownership_invariant_violations(g2) == []
+
+
+
+def test_town_purchase_auto_equip_uses_ownership_first_equipment_refs():
+    g = _game(12080)
+    actor = _actor("Tess")
+    g.party.members = [actor]
+
+    ok = g._buy_item_for_actor(actor, name="Dagger", kind="weapon", auto_equip=True)
+
+    assert ok is True
+    assert len(actor.inventory.items) >= 1
+    eq_ref = str(getattr(actor.equipment, "main_hand", "") or "")
+    assert eq_ref
+    assert any(str(getattr(it, "instance_id", "")) == eq_ref for it in (actor.inventory.items or []))
+    assert ownership_invariant_violations(g) == []

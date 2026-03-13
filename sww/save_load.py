@@ -17,6 +17,7 @@ from .models import (
 )
 from .travel_state import TravelState
 from .loot_pool import LootEntry, create_loot_pool
+from .ownership_service import ownership_invariant_violations
 from .events import (
     normalize_player_event,
     append_player_event,
@@ -1593,6 +1594,12 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
             game._sync_legacy_party_items_from_loot_pool()
     except Exception:
         pass
+
+    # Ownership-first migration guardrails: keep runtime-valid ownership/equipment state.
+    try:
+        setattr(game, "ownership_invariant_violations", list(ownership_invariant_violations(game)))
+    except Exception:
+        setattr(game, "ownership_invariant_violations", [])
 
     ret = data.get("retainers", {})
     setattr(game, "retainer_board", [dict_to_actor(r) for r in (ret.get("retainer_board") or [])])

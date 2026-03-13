@@ -18,7 +18,7 @@ from .data import load_json
 from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
-from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
+from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor, equip_item_on_actor
 from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_is_magic, item_known_name, owned_item_brief_label
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
@@ -5853,7 +5853,11 @@ class Game:
         self.ui.log(f"Left {str(getattr(picked, 'name', 'loot') or 'loot')} behind.")
 
     def _buy_item_for_actor(self, actor: Actor, *, name: str, kind: str, auto_equip: bool) -> bool:
-        """Create bought item instance in actor inventory and optionally auto-equip legacy fields."""
+        """Create bought item instance in actor inventory and optionally equip it.
+
+        Ownership-first runtime path: equip via item instance ownership (inventory/equipment)
+        instead of mutating legacy actor.weapon/armor fields directly.
+        """
         pref = ["weapon"] if kind == "weapon" else (["armor", "shield"] if kind == "armor" else [kind])
         tid = self._template_id_for_equipment_name(name, preferred_categories=pref)
         if not tid:
@@ -5864,22 +5868,10 @@ class Game:
             if not r.ok:
                 return False
             if auto_equip:
-                # Preserve current player-facing behavior: immediate replacement by name.
-                if kind == "weapon":
-                    actor.weapon = name
-                elif kind == "armor":
-                    if str(name).strip().lower() == "shield":
-                        actor.shield = True
-                        actor.shield_name = name
-                    else:
-                        actor.armor = name
-                actor.sync_legacy_equipment_to_new()
-                # Mark purchased item as currently equipped in inventory when it matches name/category.
-                try:
-                    if (inst.category == "weapon" and kind == "weapon") or (inst.category in {"armor", "shield"} and kind == "armor"):
-                        inst.equipped = True
-                except Exception:
-                    pass
+                er = equip_item_on_actor(actor, inst.instance_id)
+                if not er.ok:
+                    # Keep preexisting behavior: purchase still succeeds even if auto-equip fails.
+                    return True
             return True
         except Exception:
             return False
