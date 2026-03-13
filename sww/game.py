@@ -5791,9 +5791,9 @@ class Game:
     def party_encumbrance(self):
         """Transitional party encumbrance accessor used by dungeon/wilderness systems.
 
-        Compatibility note: this still accepts/weights legacy shared party pools
-        (`party_items`, global ammo attrs, town supplies) while per-character
-        ownership migration is ongoing.
+        Migration-closure note: runtime encumbrance is ownership-first and does
+        not read legacy `party_items` by default. Legacy mirror weighting can be
+        re-enabled only through explicit compatibility mode.
         """
         try:
             ammo = {
@@ -5808,13 +5808,19 @@ class Game:
             }
         except Exception:
             ammo = {}
+        legacy_party_items: list[dict[str, Any]] = []
+        # Compatibility-only seam: disabled by default so stale legacy mirrors
+        # never become runtime truth.
+        if str(os.environ.get("LEGACY_PARTY_ITEMS_RUNTIME", "") or "").strip().lower() in {"1", "true", "yes", "on"}:
+            legacy_party_items = list(getattr(self, "party_items", []) or [])
+
         return compute_party_encumbrance(
             members=list(getattr(getattr(self, "party", None), "members", []) or []),
             gp=int(getattr(self, "gold", 0) or 0),
             rations=int(getattr(self, "rations", 0) or 0),
             torches=int(getattr(self, "torches", 0) or 0),
             ammo=ammo,
-            party_items=list(getattr(self, "party_items", []) or []),
+            party_items=legacy_party_items,
             equipdb=getattr(self, "equipdb", None),
             strip_plus_suffix=getattr(self, "_strip_plus_suffix", None),
         )
