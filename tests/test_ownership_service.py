@@ -155,3 +155,21 @@ def test_town_purchase_auto_equip_uses_ownership_first_equipment_refs():
     assert eq_ref
     assert any(str(getattr(it, "instance_id", "")) == eq_ref for it in (actor.inventory.items or []))
     assert ownership_invariant_violations(g) == []
+
+
+
+def test_effective_weapon_does_not_prefer_stale_legacy_mirror():
+    g = _game(12090)
+    actor = _actor("Vale")
+    g.party.members = [actor]
+
+    it = build_item_instance("weapon.sword_long", quantity=1, identified=True)
+    assert add_item_to_actor(actor, it).ok
+    from sww.inventory_service import equip_item_on_actor
+    assert equip_item_on_actor(actor, it.instance_id).ok
+
+    # Simulate stale legacy mirror from older/non-migrated paths.
+    actor.weapon = "Club"
+
+    assert g.effective_melee_weapon(actor) != "Club"
+    assert g.effective_melee_weapon(actor)

@@ -682,8 +682,6 @@ def dict_to_actor(d: dict) -> Actor:
         a.ensure_equipment_initialized()
     if hasattr(a, "sync_legacy_equipment_to_new"):
         a.sync_legacy_equipment_to_new()
-    if hasattr(a, "sync_new_equipment_to_legacy"):
-        a.sync_new_equipment_to_legacy()
 
     # Attach PC extras if needed
     if is_pc:
