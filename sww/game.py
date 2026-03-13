@@ -9428,13 +9428,17 @@ class Game:
         """Ordered source preference for transitional loot readers."""
         mode = str(intent or "").strip().lower()
         if mode == "reward_summary":
-            return ["loot_pool", "legacy_party_items"]
+            return ["loot_pool"]
         if mode == "sellable":
-            return ["actor_inventory", "party_stash", "loot_pool", "legacy_party_items"]
-        return ["loot_pool", "party_stash", "actor_inventory", "legacy_party_items"]
+            return ["actor_inventory", "party_stash", "loot_pool"]
+        return ["loot_pool", "party_stash", "actor_inventory"]
 
     def preferred_loot_items(self, *, intent: str = "loot_listing") -> list[dict[str, Any]]:
-        """Read helper for loot/treasure listing rows with explicit fallback order."""
+        """Ownership-first read helper for loot/treasure listing rows.
+
+        Migration-closure note: this reader intentionally avoids direct
+        `party_items` legacy mirror fallback at runtime.
+        """
         for src in self.loot_source_fallback_order(intent=intent):
             if src == "loot_pool":
                 try:
@@ -9443,12 +9447,6 @@ class Game:
                         return list(loot_pool_entries_as_legacy_dicts(lp) or [])
                 except Exception:
                     pass
-            if src == "legacy_party_items":
-                # Compatibility fallback only.
-                try:
-                    return list(getattr(self, "party_items", []) or [])
-                except Exception:
-                    return []
         return []
 
     def preferred_reward_summary_source(self) -> list[dict[str, Any]]:
