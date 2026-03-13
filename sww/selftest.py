@@ -1671,15 +1671,14 @@ def _test_turn_undead_combat(game) -> None:
     from .models import Stats, Actor
     from .scripted_ui import ScriptedUI
 
-    # Choose "Turn Undead" when prompted.
-    # First prompt chooses "Turn Undead"; subsequent prompts can default.
-    sui = ScriptedUI(actions=[1], auto_default=True, echo=False)
+    # Combat asks for party intent before per-actor action; choose Fight, then Turn Undead.
+    sui = ScriptedUI(actions=[0, 0, 2], auto_default=True, echo=False)
     sui.auto_combat = False
     g = Game(sui, dice_seed=111, wilderness_seed=222)
     g.enable_validation = True
 
     cleric = PC(name="Cleric", hp=6, hp_max=6, ac_desc=7, hd=1, save=14, is_pc=True,
-                cls="Cleric", level=1, stats=Stats(10, 10, 10, 10, 14, 10), weapon="mace")
+                cls="Cleric", level=1, stats=Stats(10, 10, 10, 10, 14, 10), weapon="mace", alignment="Lawful")
     g.party.members = [cleric]
     g.light_on = True
 
