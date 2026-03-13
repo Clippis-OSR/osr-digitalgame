@@ -2494,6 +2494,8 @@ class Game:
         )
         self.travel_state.location = "town"
         self.travel_state.route_progress = 0
+        self._resolve_retainer_upkeep()
+        self._cleanup_retainer_state()
         returned_evt = self._append_player_event(
             "expedition.returned",
             category="expedition",
@@ -2652,6 +2654,8 @@ class Game:
     # -----------------
 
     def _cmd_enter_dungeon(self) -> CommandResult:
+        # Expedition party is PCs plus assigned active retainers.
+        self.assemble_expedition_party()
         # Minimal deterministic overworld leg: town <-> canonical dungeon entrance.
         if tuple(getattr(self, "party_hex", TOWN_HEX)) == TOWN_HEX:
             self.party_hex = tuple(DUNGEON_ENTRANCE_HEX)
@@ -5483,45 +5487,152 @@ class Game:
     # Retainers
     # -------------
 
+    def _retainer_templates(self) -> list[dict[str, Any]]:
+        return [
+            {"role": "torchbearer", "title": "Torchbearer", "hire_cost": 8, "wage_gp": 2, "morale": 7, "ac": 9, "hd": 1, "hp_die": 4, "treasure_share": 1},
+            {"role": "porter", "title": "Porter", "hire_cost": 10, "wage_gp": 3, "morale": 7, "ac": 9, "hd": 1, "hp_die": 6, "treasure_share": 1},
+            {"role": "man_at_arms", "title": "Man-at-Arms", "hire_cost": 15, "wage_gp": 5, "morale": 8, "ac": 7, "hd": 1, "hp_die": 8, "treasure_share": 1},
+        ]
+
+    def _retainer_role(self, a: Actor) -> str:
+        st = dict(getattr(a, "status", {}) or {})
+        role = str(st.get("retainer_role") or "").strip().lower()
+        if role:
+            return role
+        for tag in list(getattr(a, "tags", []) or []):
+            s = str(tag)
+            if s.startswith("retainer_role:"):
+                return s.split(":", 1)[1].strip().lower()
+        return "retainer"
+
+    def _new_retainer_from_template(self, idx: int, *, wage_mult: float = 1.0) -> Actor:
+        tpl = self._retainer_templates()[int(idx) % len(self._retainer_templates())]
+        hp = max(1, int(self.dice.d(int(tpl.get("hp_die", 6) or 6))))
+        serial = int(self.campaign_day) * 10 + int(idx) + 1
+        title = str(tpl.get("title") or "Retainer")
+        a = Actor(
+            name=f"{title} {serial}",
+            hp=hp,
+            hp_max=hp,
+            ac_desc=int(tpl.get("ac", 8) or 8),
+            hd=int(tpl.get("hd", 1) or 1),
+            save=15,
+            morale=int(tpl.get("morale", 7) or 7),
+            alignment="Neutrality",
+            is_pc=False,
+        )
+        a.is_retainer = True
+        a.loyalty = int(tpl.get("morale", 7) or 7) + self.dice_rng.randint(-1, 1)
+        a.wage_gp = max(1, int(int(tpl.get("wage_gp", 2) or 2) * float(wage_mult)))
+        a.treasure_share = int(tpl.get("treasure_share", 1) or 1)
+        a.status = dict(getattr(a, "status", {}) or {})
+        a.status["retainer_role"] = str(tpl.get("role") or "retainer")
+        a.status["retainer_hire_cost"] = int(tpl.get("hire_cost", 8) or 8)
+        a.tags = list(getattr(a, "tags", []) or [])
+        role_tag = f"retainer_role:{a.status['retainer_role']}"
+        if role_tag not in a.tags:
+            a.tags.append(role_tag)
+        return a
+
+    def _cleanup_retainer_state(self) -> None:
+        dead_names = {str(r.name) for r in list(getattr(self, "retainer_roster", []) or []) if int(getattr(r, "hp", 0) or 0) <= 0}
+        if dead_names:
+            self.ui.log("Some retainers were lost during the expedition.")
+        def _alive(xs: list[Actor]) -> list[Actor]:
+            return [r for r in (xs or []) if int(getattr(r, "hp", 0) or 0) > 0]
+        self.retainer_roster = _alive(list(getattr(self, "retainer_roster", []) or []))
+        self.hired_retainers = _alive(list(getattr(self, "hired_retainers", []) or []))
+        self.active_retainers = _alive(list(getattr(self, "active_retainers", []) or []))
+
+    def _resolve_retainer_upkeep(self) -> None:
+        """Pay active retainers after expedition; morale check may trigger departure."""
+        if not getattr(self, "hired_retainers", None):
+            return
+        leaving: list[Actor] = []
+        for r in list(getattr(self, "hired_retainers", []) or []):
+            if int(getattr(r, "hp", 0) or 0) <= 0:
+                leaving.append(r)
+                continue
+            owed = max(0, int(getattr(r, "wage_gp", 0) or 0))
+            if owed <= 0:
+                continue
+            if int(getattr(self, "gold", 0) or 0) >= owed:
+                self.gold -= owed
+                self.ui.log(f"Paid {r.name} {owed} gp upkeep.")
+                continue
+            stands = morale_check(self.dice, r, mod=2)
+            if not stands:
+                self.ui.log(f"{r.name} leaves over unpaid upkeep.")
+                leaving.append(r)
+            else:
+                self.ui.log(f"{r.name} grumbles but stays despite unpaid upkeep.")
+        if leaving:
+            leave_names = {str(r.name) for r in leaving}
+            self.hired_retainers = [r for r in (self.hired_retainers or []) if str(r.name) not in leave_names]
+            self.active_retainers = [r for r in (self.active_retainers or []) if str(r.name) not in leave_names]
+            self.retainer_roster = [r for r in (self.retainer_roster or []) if str(r.name) not in leave_names]
+            self.party.members = [m for m in (self.party.members or []) if str(getattr(m, "name", "")) not in leave_names]
+
     def generate_retainer_board(self, force: bool = False):
         if not force and (self.campaign_day - self.last_board_day) < 7:
             return
         self.retainer_board = []
-        # Town guild reputation affects how easy it is to hire help.
         guild_id = self._town_guild_id()
         guild_rep = self.faction_rep(guild_id)
         n = 6
         wage_mult = 1.0
-        # Guild favor (earned via services) provides a small boost.
         if getattr(self, 'guild_favor_until_day', 0) >= self.campaign_day:
             n += 2
             wage_mult *= 0.9
         if guild_rep <= -60:
             n = 3
             wage_mult = 1.5
+        templates = self._retainer_templates()
         for i in range(n):
-            lvl = 1
-            hp = max(1, self.dice.d(6))
-            a = Actor(
-                name=f"Retainer{i+1}",
-                hp=hp,
-                hp_max=hp,
-                ac_desc=8,
-                hd=lvl,
-                save=15,
-                morale=7,
-                alignment="Neutrality",
-                is_pc=False,
-            )
-            a.is_retainer = True
-            a.loyalty = 7 + self.dice_rng.randint(-2, 2)
-            a.wage_gp = int((5 + self.dice_rng.randint(0, 10)) * wage_mult)
-            a.treasure_share = 1
-            self.retainer_board.append(a)
+            self.retainer_board.append(self._new_retainer_from_template(i % len(templates), wage_mult=wage_mult))
         self.last_board_day = self.campaign_day
+
+    def _hire_retainer_from_board(self, index: int) -> bool:
+        if index < 0 or index >= len(self.retainer_board):
+            return False
+        r = self.retainer_board[index]
+        fee = int((getattr(r, "status", {}) or {}).get("retainer_hire_cost", 0) or 0)
+        if int(getattr(self, "gold", 0) or 0) < fee:
+            self.ui.log(f"You need {fee} gp to hire {r.name}.")
+            return False
+        self.gold -= fee
+        self.retainer_board.pop(index)
+        self.hired_retainers.append(r)
+        self.retainer_roster.append(r)
+        self.ui.log(f"Hired {r.name} for {fee} gp.")
+        return True
+
+    def _assign_hired_retainer(self, index: int) -> bool:
+        available = [r for r in (self.hired_retainers or []) if not bool(getattr(r, "on_expedition", False))]
+        if index < 0 or index >= len(available):
+            return False
+        if len(self.active_retainers) >= self.MAX_RETAINERS:
+            self.ui.log("Max retainers already assigned.")
+            return False
+        r = available[index]
+        r.on_expedition = True
+        if r not in self.active_retainers:
+            self.active_retainers.append(r)
+        self.ui.log(f"Assigned {r.name} to expedition.")
+        return True
+
+    def _dismiss_active_retainer(self, index: int) -> bool:
+        if index < 0 or index >= len(self.active_retainers):
+            return False
+        r = self.active_retainers.pop(index)
+        r.on_expedition = False
+        self.party.members = [m for m in (self.party.members or []) if str(getattr(m, "name", "")) != str(r.name)]
+        self.ui.log(f"Removed {r.name} from expedition.")
+        return True
 
     def manage_retainers(self):
         while True:
+            self._cleanup_retainer_state()
             self.ui.hr()
             self.ui.log(f"Hired retainers: {len(self.hired_retainers)} | Active: {len(self.active_retainers)}")
             i = self.ui.choose("Retainers", [
@@ -5529,41 +5640,36 @@ class Game:
                 "Hire",
                 "Assign to expedition",
                 "Dismiss from expedition",
-                "Promote retainer to PC",
                 "Back",
             ])
             if i == 0:
                 self.generate_retainer_board()
                 for r in self.retainer_board:
-                    self.ui.log(f"- {r.name} | HP {r.hp}/{r.hp_max} | Loyalty {r.loyalty} | Wage {r.wage_gp} gp")
+                    role = self._retainer_role(r)
+                    fee = int((getattr(r, "status", {}) or {}).get("retainer_hire_cost", 0) or 0)
+                    self.ui.log(f"- {r.name} ({role}) | HP {r.hp}/{r.hp_max} | Loyalty {r.loyalty} | Hire {fee} gp | Upkeep {r.wage_gp} gp")
             elif i == 1:
                 self.generate_retainer_board()
-                labels = [f"{r.name} (L{r.loyalty} Wage {r.wage_gp})" for r in self.retainer_board]
+                labels = [
+                    f"{r.name} ({self._retainer_role(r)}) Hire {int((getattr(r, 'status', {}) or {}).get('retainer_hire_cost', 0) or 0)} gp, Upkeep {r.wage_gp} gp"
+                    for r in self.retainer_board
+                ]
                 j = self.ui.choose("Hire which?", labels + ["Back"])
                 if j == len(labels):
                     continue
-                r = self.retainer_board.pop(j)
-                self.hired_retainers.append(r)
-                self.retainer_roster.append(r)
-                self.ui.log(f"Hired {r.name}.")
+                self._hire_retainer_from_board(j)
             elif i == 2:
-                if len(self.active_retainers) >= self.MAX_RETAINERS:
-                    self.ui.log("Max retainers already assigned.")
-                    continue
                 if not self.hired_retainers:
                     self.ui.log("No hired retainers.")
                     continue
-                labels = [f"{r.name} (L{r.loyalty})" for r in self.hired_retainers if not r.on_expedition]
+                labels = [f"{r.name} ({self._retainer_role(r)})" for r in self.hired_retainers if not r.on_expedition]
                 if not labels:
                     self.ui.log("No available hired retainers to assign.")
                     continue
                 j = self.ui.choose("Assign which?", labels + ["Back"])
                 if j == len(labels):
                     continue
-                r = [r for r in self.hired_retainers if not r.on_expedition][j]
-                r.on_expedition = True
-                self.active_retainers.append(r)
-                self.ui.log(f"Assigned {r.name} to expedition.")
+                self._assign_hired_retainer(j)
             elif i == 3:
                 if not self.active_retainers:
                     self.ui.log("No active retainers.")
@@ -5572,11 +5678,10 @@ class Game:
                 j = self.ui.choose("Dismiss which?", labels + ["Back"])
                 if j == len(labels):
                     continue
-                r = self.active_retainers.pop(j)
-                r.on_expedition = False
-                self.ui.log(f"Removed {r.name} from expedition.")
+                self._dismiss_active_retainer(j)
             else:
                 return
+
 
     # -------------
     # Town
