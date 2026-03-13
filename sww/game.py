@@ -12360,7 +12360,6 @@ class Game:
                 pass
             combat_start_gold: int = int(getattr(self, 'gold', 0) or 0)
             combat_start_loot_entry_ids: set[str] = set()
-            combat_start_items_count: int = 0
             try:
                 combat_start_loot_entry_ids = {
                     str(getattr(e, 'entry_id', '') or '')
@@ -12369,12 +12368,6 @@ class Game:
                 }
             except Exception:
                 combat_start_loot_entry_ids = set()
-            # Transitional fallback snapshot for any legacy paths still writing
-            # directly to party_items during migration.
-            try:
-                combat_start_items_count = int(len(list(getattr(self, 'party_items', []) or [])))
-            except Exception:
-                combat_start_items_count = 0
             # XP earned during this combat (for summary/journal).
             try:
                 self._battle_xp_earned = 0
@@ -13849,15 +13842,6 @@ class Game:
                         loot_items = self._combat_loot_item_names_delta(combat_start_loot_entry_ids)
                     except Exception:
                         loot_items = []
-                    if not loot_items:
-                        # Transitional fallback: some legacy paths may still append
-                        # directly into party_items until fully migrated.
-                        try:
-                            cur_items = list(getattr(self, 'party_items', []) or [])
-                            if int(combat_start_items_count) >= 0 and len(cur_items) >= int(combat_start_items_count):
-                                loot_items = [str(getattr(x, 'get', lambda k, d=None: None)('name') or x) for x in cur_items[int(combat_start_items_count):]]
-                        except Exception:
-                            loot_items = []
 
                     sevt = self.battle_evt(
                         "COMBAT_SUMMARY",
