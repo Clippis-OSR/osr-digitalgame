@@ -123,12 +123,26 @@ def _ensure_str(parent: dict, key: str, path: str, default: str = "", strict: bo
 
 def _serialize_rng_states(game: Any) -> dict[str, Any]:
     out: dict[str, Any] = {}
-    for attr in ("dice_rng", "levelup_rng", "temple_rng", "wilderness_rng", "wilderness_encounter_rng"):
+    # Persist a stable key-set so save->load->save snapshots stay equivalent
+    # even when load-path creates additional RNG channels.
+    seed_map = {
+        "dice_rng": int(getattr(game, "dice_seed", 0) or 0),
+        "levelup_rng": int(getattr(game, "dice_seed", 0) or 0) + 1,
+        "temple_rng": int(getattr(game, "dice_seed", 0) or 0) + 2,
+        "wilderness_rng": int(getattr(game, "wilderness_seed", 0) or 0),
+        "wilderness_encounter_rng": int(getattr(game, "wilderness_seed", 0) or 0) + 17,
+    }
+    for attr, seed in seed_map.items():
         rng = getattr(game, attr, None)
-        if rng is None or not hasattr(rng, "export_state"):
-            continue
+        if rng is not None and hasattr(rng, "export_state"):
+            try:
+                out[attr] = rng.export_state()
+                continue
+            except Exception:
+                pass
         try:
-            out[attr] = rng.export_state()
+            from .rng import LoggedRandom
+            out[attr] = LoggedRandom(int(seed), channel=str(attr).replace("_rng", "")).export_state()
         except Exception:
             continue
     return out
@@ -743,10 +757,16 @@ def game_to_dict(game: Any) -> Dict[str, Any]:
         return out
 
     # Replay + content-lock information (P3.6). These are safe to persist.
+    # Always persist RNG runtime states alongside the replay payload so save/load
+    # equivalence can resume from the exact RNG cursor at split boundaries.
+    rng_states = _serialize_rng_states(game)
     try:
         replay_dict = getattr(getattr(game, "replay", None), "to_dict", lambda: None)()
     except Exception:
         replay_dict = None
+    if isinstance(replay_dict, dict):
+        replay_dict = dict(replay_dict)
+        replay_dict["rng_states"] = dict(rng_states)
     try:
         content = getattr(game, "content", None)
         content_hashes = dict(getattr(content, "content_hashes", {}) or {}) if content is not None else {}
@@ -768,7 +788,7 @@ def game_to_dict(game: Any) -> Dict[str, Any]:
         "replay": replay_dict or {
             "dice_seed": int(getattr(game, "dice_seed", 0) or 0),
             "wilderness_seed": int(getattr(game, "wilderness_seed", 0) or 0),
-            "rng_states": _serialize_rng_states(game),
+            "rng_states": dict(rng_states),
             "commands": [],
             "rng_events": [],
             "ai_events": [],
@@ -1469,6 +1489,18 @@ def apply_game_dict(game: Any, data: Dict[str, Any]) -> None:
                 pass
             try:
                 game.temple_dice = Dice(rng=game.temple_rng)
+            except Exception:
+                pass
+            # Rebind subsystems that capture Dice at Game.__init__ so loaded
+            # games continue from restored RNG streams (save/load equivalence).
+            try:
+                if hasattr(game, "treasure") and getattr(game.treasure, "dice", None) is not None:
+                    game.treasure.dice = game.dice
+            except Exception:
+                pass
+            try:
+                if hasattr(game, "encounters") and getattr(game.encounters, "dice", None) is not None:
+                    game.encounters.dice = game.dice
             except Exception:
                 pass
 
