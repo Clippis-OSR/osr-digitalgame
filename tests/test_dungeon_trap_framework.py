@@ -287,3 +287,35 @@ def test_dedicated_trap_action_save_load_availability_continuity():
     actions2, available2 = g2._dungeon_action_labels(room2)
     assert available2 is True
     assert "Interact with discovered trap" in actions2
+
+
+def test_hazard_hint_visible_for_discovered_active_trap():
+    g, _rid, room = _setup_discovered_trap_game(1400, kind="pit")
+    assert g._dungeon_hazard_hint(room) == "Known hazard here."
+
+
+def test_hazard_hint_absent_when_trap_undiscovered():
+    g, _rid, room = _setup_discovered_trap_game(1401, kind="pit")
+    room["trap_found"] = False
+    room["trap"]["found"] = False
+    assert g._dungeon_hazard_hint(room) is None
+
+
+def test_hazard_hint_absent_after_trap_resolved():
+    g, _rid, room = _setup_discovered_trap_game(1402, kind="pit")
+    room["trap_disarmed"] = True
+    room["trap"]["disarmed"] = True
+    room["trap"]["disabled"] = True
+    assert g._dungeon_hazard_hint(room) is None
+
+
+def test_hazard_hint_save_load_continuity_discovered_active():
+    g, rid, room = _setup_discovered_trap_game(1403, kind="pit")
+    assert g._dungeon_hazard_hint(room) == "Known hazard here."
+    g._sync_room_to_delta(rid, room)
+
+    data = game_to_dict(g)
+    g2 = Game(HeadlessUI(), dice_seed=1403)
+    apply_game_dict(g2, data)
+    room2 = g2._ensure_room(rid)
+    assert g2._dungeon_hazard_hint(room2) == "Known hazard here."

@@ -9599,6 +9599,11 @@ class Game:
     # Dungeon
     # -------------
 
+    def _dungeon_hazard_hint(self, room: dict[str, Any]) -> str | None:
+        if self._room_has_discovered_active_trap(room):
+            return "Known hazard here."
+        return None
+
     def _dungeon_action_labels(self, room: dict[str, Any]) -> tuple[list[str], bool]:
         discovered_active_trap = self._room_has_discovered_active_trap(room)
         actions = [
@@ -9637,6 +9642,9 @@ class Game:
             alarm = int((getattr(self, "dungeon_alarm_by_level", {}) or {}).get(lvl, 0))
             self.ui.log(f"Turn {self.dungeon_turn} | {self._dungeon_pressure_summary()}")
             self.ui.log(f"Room {self.current_room_id}: {room['type']} | Visited {room.get('visited', 0)}x")
+            hint = self._dungeon_hazard_hint(room)
+            if hint:
+                self.ui.log(hint)
             if room.get("cleared"):
                 self.ui.log("This room seems quiet (cleared).")
 
