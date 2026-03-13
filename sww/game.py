@@ -3131,7 +3131,6 @@ class Game:
             return blocked
         room = self._ensure_room(self.current_room_id)
 
-        # Only meaningful if the room has a trap spec.
         has_trap = (room.get("type") == "trap") or bool(room.get("trap_desc")) or bool(room.get("trap_damage"))
         if not has_trap:
             self.ui.log("You find no traps.")
@@ -3144,21 +3143,13 @@ class Game:
 
         if room.get("trap_disarmed"):
             self.ui.log("You find no active traps.")
-            self.emit(
-                "dungeon_search_traps",
-                room_id=int(self.current_room_id),
-                found=bool(room.get("trap_found")),
-                disarmed=True,
-                triggered=bool(room.get("trap_triggered")),
-            )
+            self.emit("dungeon_search_traps", room_id=int(self.current_room_id), found=bool(room.get("trap_found")), disarmed=True, triggered=bool(room.get("trap_triggered")), trap_kind=str(trap.get("kind") or profile.kind))
             return CommandResult(status="info")
 
-        # Phase 1: detect (find) the trap.
         if not room.get("trap_found"):
             best, chance_pct = self._best_skill_user('Find/Remove Traps')
             chance_in_6 = 1
             if best and chance_pct > 0:
-                # Map percent to in-6 roughly.
                 chance_in_6 = max(1, min(5, (int(chance_pct) + 14) // 20))
             found = self.dice.in_6(chance_in_6)
             if found:
@@ -3167,6 +3158,8 @@ class Game:
                     d["trap_found"] = True
                     d["trap"] = dict(room.get("trap") or {})
                 self.ui.log(f"You discover signs of a {profile.name.lower()}!")
+                for line in list(trap.get("warning_signs") or profile.warning_signs):
+                    self.ui.log(str(line))
                 self.emit("dungeon_trap_found", room_id=int(self.current_room_id), trap_kind=str(trap.get("kind") or profile.kind))
             else:
                 self.ui.log("You find nothing suspicious.")
@@ -3174,14 +3167,55 @@ class Game:
                 self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
             except Exception:
                 pass
-            self.emit("dungeon_search_traps", room_id=int(self.current_room_id), found=bool(found), disarmed=False, triggered=False)
+            self.emit("dungeon_search_traps", room_id=int(self.current_room_id), found=bool(found), disarmed=False, triggered=False, trap_kind=str(trap.get("kind") or profile.kind))
             return CommandResult(status="info")
 
-        # Phase 2: attempt to disarm (requires a Find/Remove Traps % skill user).
+        # Discovered trap interaction layer: choose how to handle an identified hazard.
+        opts = [
+            "Disarm trap (Skilled)",
+            "Bypass carefully",
+            "Trigger intentionally",
+            "Back",
+        ]
+        choice = int(self.ui.choose(f"Discovered {profile.name}", opts))
+        trap_kind = str(trap.get("kind") or profile.kind)
+
+        if choice == 3:
+            self.ui.log("You leave the trap undisturbed.")
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="back")
+            return CommandResult(status="info")
+
+        if choice == 1:
+            # Bypass costs time and has a small deterministic mishap risk.
+            self.spend_dungeon_time(1, reason="trap_bypass")
+            bypass_risk = max(1, min(6, int(getattr(profile, "noise", 1) or 1)))
+            if self.dice.in_6(bypass_risk):
+                self.ui.log("You misjudge the safe path!")
+                self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="bypass", outcome="failed")
+                self._handle_room_trap(room, source="bypass_failure")
+                return CommandResult(status="info")
+            mark_trap_state(room, found=True)
+            if d is not None:
+                d["trap_found"] = True
+                d["trap"] = dict(room.get("trap") or {})
+            self.ui.log("You guide the party around the trap for now.")
+            try:
+                self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
+            except Exception:
+                pass
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="bypass", outcome="safe")
+            return CommandResult(status="ok")
+
+        if choice == 2:
+            self.ui.log("You deliberately trigger the trap from a controlled position.")
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="trigger_intentional")
+            self._handle_room_trap(room, source="intentional")
+            return CommandResult(status="info")
+
         thief, chance_pct = self._best_skill_user('Find/Remove Traps')
         if not thief or int(chance_pct or 0) <= 0:
             self.ui.log("You have found a trap, but no one is trained to disarm it.")
-            self.emit("dungeon_search_traps", room_id=int(self.current_room_id), found=True, disarmed=False, triggered=False)
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="disarm", outcome="unavailable")
             return CommandResult(status="error")
 
         chance_pct = int(chance_pct)
@@ -3194,7 +3228,8 @@ class Game:
                 d["cleared"] = True
                 d["trap"] = dict(room.get("trap") or {})
             self.ui.log(f"{thief.name} disarms the {profile.name.lower()}.")
-            self.emit("dungeon_trap_disarmed", room_id=int(self.current_room_id), by=str(thief.name))
+            self.emit("dungeon_trap_disarmed", room_id=int(self.current_room_id), by=str(thief.name), trap_kind=trap_kind)
+            self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="disarm", outcome="success")
             try:
                 self._sync_room_to_delta(int(room.get("id", self.current_room_id)), room)
             except Exception:
@@ -3203,8 +3238,9 @@ class Game:
 
         self.ui.log(f"{thief.name} fails to disarm the trap ({roll}/{chance_pct})!")
         self.noise_level = min(5, self.noise_level + 1)
-        self._handle_room_trap(room)
-        self.emit("dungeon_search_traps", room_id=int(self.current_room_id), found=True, disarmed=False, triggered=True)
+        self.emit("dungeon_trap_choice", room_id=int(self.current_room_id), trap_kind=trap_kind, choice="disarm", outcome="failed")
+        self._handle_room_trap(room, source="disarm_failure")
+        self.emit("dungeon_search_traps", room_id=int(self.current_room_id), found=True, disarmed=False, triggered=True, trap_kind=trap_kind)
         return CommandResult(status="info")
 
     def _cmd_dungeon_sneak(self) -> CommandResult:
