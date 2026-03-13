@@ -9,6 +9,7 @@ from ..commands import (
     DungeonSearchSecret,
     DungeonSearchTraps,
     DungeonInteractTrap,
+    DungeonInteractEncounter,
     DungeonSneak,
     DungeonPrepareSpells,
     DungeonCastSpell,
@@ -58,6 +59,9 @@ class DungeonSystem:
 
         if isinstance(cmd, DungeonInteractTrap):
             return g._cmd_dungeon_interact_trap()
+
+        if isinstance(cmd, DungeonInteractEncounter):
+            return g._cmd_dungeon_interact_encounter()
 
         if isinstance(cmd, DungeonSneak):
             return g._cmd_dungeon_sneak()

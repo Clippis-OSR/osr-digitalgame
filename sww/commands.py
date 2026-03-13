@@ -215,6 +215,11 @@ class DungeonInteractTrap(Command):
 
 
 @dataclass(frozen=True)
+class DungeonInteractEncounter(Command):
+    pass
+
+
+@dataclass(frozen=True)
 class DungeonSneak(Command):
     pass
 

@@ -36,6 +36,7 @@ from .reward_bundle import apply_reward_bundle, empty_reward_bundle, reward_bund
 from .wilderness_context import resolve_travel_context, first_time_poi_resolution_key
 from .dungeon_context import resolve_room_interaction_context, first_time_room_resolution_key
 from .dungeon_traps import ensure_trap_state, mark_trap_state, trap_profile
+from .dungeon_noncombat import choose_archetype as choose_noncombat_archetype, build_encounter as build_noncombat_encounter
 from .factions import generate_static_core_factions, assign_territories, generate_static_conflict_clocks, clamp_rep
 from .contracts import generate_contracts, Contract
 from .events import (
@@ -76,6 +77,7 @@ from .commands import (
     DungeonSearchSecret,
     DungeonSearchTraps,
     DungeonInteractTrap,
+    DungeonInteractEncounter,
     DungeonSneak,
     DungeonPrepareSpells,
     DungeonCastSpell,
@@ -3262,6 +3264,156 @@ class Game:
             return blocked
         room = self._ensure_room(self.current_room_id)
         return self._resolve_discovered_trap_interaction(room, source="interact")
+
+    def _ensure_room_noncombat_encounter(self, room: dict[str, Any]) -> dict[str, Any] | None:
+        if not isinstance(room, dict):
+            return None
+        if room.get("foes") or room.get("trap_triggered"):
+            return None
+        existing = room.get("noncombat_encounter")
+        if isinstance(existing, dict):
+            return existing
+        d = room.get("_delta") if isinstance(room.get("_delta"), dict) else None
+        if isinstance(d, dict) and isinstance(d.get("noncombat_encounter"), dict):
+            room["noncombat_encounter"] = dict(d.get("noncombat_encounter") or {})
+            return room.get("noncombat_encounter")
+        ctx = resolve_room_interaction_context(self, room)
+        profile = self._resolve_room_scene_profile(room, ctx) or {}
+        kind = str(profile.get("kind") or "rest")
+        if kind in {"hazard", "secret"}:
+            return None
+        role = str(profile.get("role") or "")
+        ctx["scene_kind"] = kind
+        archetype = choose_noncombat_archetype(room=room, ctx=ctx, role=role, world_seed=int(getattr(self, "world_seed", 0) or 0))
+        enc = build_noncombat_encounter(str(archetype), room=room, ctx=ctx)
+        room["noncombat_encounter"] = dict(enc)
+        if isinstance(d, dict):
+            d["noncombat_encounter"] = dict(enc)
+        return room.get("noncombat_encounter")
+
+    def _resolve_noncombat_effects(self, *, room: dict[str, Any], encounter: dict[str, Any], effects: list[str], choice_id: str) -> list[str]:
+        notes: list[str] = []
+        rid = int(room.get("id", self.current_room_id) or self.current_room_id)
+        lvl = int(getattr(self, "dungeon_level", 1) or 1)
+        for raw in (effects or []):
+            eff = str(raw or "").strip().lower()
+            if not eff:
+                continue
+            if eff == "ration:-1":
+                before = int(getattr(self, "rations", 0) or 0)
+                self.rations = max(0, before - 1)
+                if before > 0:
+                    notes.append("You spend 1 ration to stabilize the survivor.")
+                else:
+                    notes.append("You have no rations to share, but still render aid.")
+            elif eff == "heal:2":
+                injured = [pc for pc in self.party.living() if int(getattr(pc, "hp", 0) or 0) < int(getattr(pc, "hp_max", 0) or 0)]
+                if injured:
+                    pc = injured[0]
+                    pc.hp = min(pc.hp_max, int(pc.hp) + 2)
+                    notes.append(f"{pc.name} recovers 2 HP while tending the encounter.")
+            elif eff == "clue:stable_routes":
+                self._record_dungeon_clue("The rescued delver marks stable side-passages nearby.", source="noncombat", room_id=rid, level=lvl)
+                notes.append("You gain a practical route warning.")
+            elif eff == "clue:hidden_route":
+                self._record_dungeon_clue("The witness points out cracked stone concealing a bypass.", source="noncombat", room_id=rid, level=lvl)
+                notes.append("You gain a clue about a hidden bypass.")
+            elif eff == "clue:creature_path":
+                self._record_dungeon_clue("Tracks suggest which corridors the local creature avoids.", source="noncombat", room_id=rid, level=lvl)
+                notes.append("You read the creature's movements for safer travel.")
+            elif eff == "clue:deeper_defense":
+                self._record_dungeon_clue("The omen hints where deeper defenders gather.", source="noncombat", room_id=rid, level=lvl)
+                notes.append("The omen leaves a useful warning.")
+            elif eff == "loot:item:annotated omen notes":
+                self._grant_room_loot(gp=0, items=["Annotated omen notes"], source="noncombat")
+                notes.append("You preserve the omen as annotated notes.")
+            elif eff == "loot:gp:8":
+                self._grant_room_loot(gp=8, items=[], source="noncombat")
+                notes.append("You recover a small cache while scavenging.")
+            elif eff == "light:+2":
+                self.magical_light_turns = max(int(getattr(self, "magical_light_turns", 0) or 0), 2)
+                self.light_on = True
+                notes.append("The encounter leaves behind a brief magical glow.")
+            elif eff == "noise:+1":
+                self.noise_level = min(5, int(getattr(self, "noise_level", 0) or 0) + 1)
+                notes.append("Your actions make enough noise to carry.")
+            elif eff == "noise:+0":
+                notes.append("You withdraw without drawing extra noise.")
+            elif eff == "mark:observed":
+                state = encounter.setdefault("state", {}) if isinstance(encounter, dict) else {}
+                state["observed"] = True
+                notes.append("You watch long enough to understand its behavior.")
+            elif eff == "check:wis":
+                best_wis = 0
+                for pc in self.party.living():
+                    st = getattr(pc, "stats", None)
+                    try:
+                        best_wis = max(best_wis, int(getattr(st, "WIS", 0) or 0))
+                    except Exception:
+                        pass
+                odds = max(1, min(5, 2 + max(0, mod_ability(best_wis))))
+                if self.dice.in_6(odds):
+                    notes.append("Your calm posture avoids provoking the creature.")
+                else:
+                    self.noise_level = min(5, int(getattr(self, "noise_level", 0) or 0) + 1)
+                    notes.append("The creature startles and the exchange grows tense.")
+            elif eff == "check:str":
+                best_str = 0
+                for pc in self.party.living():
+                    st = getattr(pc, "stats", None)
+                    try:
+                        best_str = max(best_str, int(getattr(st, "STR", 0) or 0))
+                    except Exception:
+                        pass
+                odds = max(1, min(5, 2 + max(0, mod_ability(best_str))))
+                if self.dice.in_6(odds):
+                    notes.append("You clear enough rubble to make movement safer.")
+                else:
+                    notes.append("The blockage only partly yields under your effort.")
+            elif eff == "resolve:hazard":
+                room["hazard_resolved"] = True
+                notes.append("This room's immediate hazard pressure is eased.")
+        self.emit("dungeon_noncombat_choice", room_id=rid, encounter_id=str(encounter.get("id") or ""), archetype=str(encounter.get("archetype") or ""), choice=str(choice_id), notes=list(notes))
+        return notes
+
+    def _resolve_noncombat_encounter(self, room: dict[str, Any], *, source: str) -> CommandResult:
+        enc = self._ensure_room_noncombat_encounter(room)
+        if not isinstance(enc, dict):
+            self.ui.log("No non-combat encounter needs attention here.")
+            return CommandResult(status="info")
+        if str(enc.get("status") or "active") != "active":
+            self.ui.log("This encounter has already been resolved.")
+            return CommandResult(status="info")
+        choices = [c for c in (enc.get("choices") or []) if isinstance(c, dict)]
+        if not choices:
+            self.ui.log("Nothing actionable remains in this encounter.")
+            return CommandResult(status="info")
+        self.ui.log(str(enc.get("prompt") or "Something unusual here invites caution."))
+        labels = [str(c.get("label") or c.get("id") or "Option") for c in choices]
+        pick = self.ui.choose("Non-combat encounter", labels)
+        chosen = choices[pick]
+        choice_id = str(chosen.get("id") or f"choice_{pick}")
+        notes = self._resolve_noncombat_effects(room=room, encounter=enc, effects=list(chosen.get("effects") or []), choice_id=choice_id)
+        hist = enc.setdefault("history", [])
+        if isinstance(hist, list):
+            hist.append({"source": str(source), "choice": choice_id, "notes": list(notes)})
+        if bool(chosen.get("resolve", True)):
+            enc["status"] = "resolved"
+        if isinstance(room.get("_delta"), dict):
+            room["_delta"]["noncombat_encounter"] = dict(enc)
+        self._sync_room_to_delta(int(room.get("id", self.current_room_id) or self.current_room_id), room)
+        for line in notes:
+            self.ui.log(line)
+        if str(enc.get("status") or "") == "resolved":
+            self.ui.log("The situation settles; no further non-combat choices remain.")
+        return CommandResult(status="ok")
+
+    def _cmd_dungeon_interact_encounter(self) -> CommandResult:
+        blocked = self._dungeon_precision_action_requires_light(action="interact with encounter")
+        if blocked is not None:
+            return blocked
+        room = self._ensure_room(self.current_room_id)
+        return self._resolve_noncombat_encounter(room, source="action")
 
 
     def _cmd_dungeon_sneak(self) -> CommandResult:
@@ -9602,10 +9754,15 @@ class Game:
     def _dungeon_hazard_hint(self, room: dict[str, Any]) -> str | None:
         if self._room_has_discovered_active_trap(room):
             return "Known hazard here."
+        enc = self._ensure_room_noncombat_encounter(room)
+        if isinstance(enc, dict) and str(enc.get("status") or "active") == "active":
+            return "Non-combat encounter present."
         return None
 
-    def _dungeon_action_labels(self, room: dict[str, Any]) -> tuple[list[str], bool]:
+    def _dungeon_action_labels(self, room: dict[str, Any]) -> tuple[list[str], bool, bool]:
         discovered_active_trap = self._room_has_discovered_active_trap(room)
+        enc = self._ensure_room_noncombat_encounter(room)
+        active_noncombat = isinstance(enc, dict) and str(enc.get("status") or "active") == "active"
         actions = [
             "Resume board-native map view",
             "View map / mini-board",
@@ -9615,12 +9772,14 @@ class Game:
         ]
         if discovered_active_trap:
             actions.append("Interact with discovered trap")
+        if active_noncombat:
+            actions.append("Interact with non-combat encounter")
         actions += [
             "Sneak (Skilled)",
             "Prepare spells (camp)",
             "Cast a spell (camp)",
         ]
-        return actions, bool(discovered_active_trap)
+        return actions, bool(discovered_active_trap), bool(active_noncombat)
 
     def dungeon_loop(self):
         # Dungeon loop migrated to command-driven flow (Step 4 refactor).
@@ -9661,7 +9820,7 @@ class Game:
 
             stairs = room.get("stairs") or {}
 
-            actions, discovered_active_trap = self._dungeon_action_labels(room)
+            actions, discovered_active_trap, active_noncombat = self._dungeon_action_labels(room)
             if stairs.get("up"):
                 actions.append("Use stairs up")
             if stairs.get("down"):
@@ -9690,15 +9849,17 @@ class Game:
                 self.dispatch(DungeonSearchTraps())
             elif i == 5 and discovered_active_trap:
                 self.dispatch(DungeonInteractTrap())
-            elif i == (6 if discovered_active_trap else 5):
+            elif i == (5 + (1 if discovered_active_trap else 0)) and active_noncombat:
+                self.dispatch(DungeonInteractEncounter())
+            elif i == (6 + (1 if discovered_active_trap else 0) + (1 if active_noncombat else 0)):
                 self.dispatch(DungeonSneak())
-            elif i == (7 if discovered_active_trap else 6):
+            elif i == (7 + (1 if discovered_active_trap else 0) + (1 if active_noncombat else 0)):
                 self.dispatch(DungeonPrepareSpells())
-            elif i == (8 if discovered_active_trap else 7):
+            elif i == (8 + (1 if discovered_active_trap else 0) + (1 if active_noncombat else 0)):
                 self.dispatch(DungeonCastSpell())
             else:
                 # Handle stairs if present
-                idx = (9 if discovered_active_trap else 8)
+                idx = 8 + (1 if discovered_active_trap else 0) + (1 if active_noncombat else 0)
                 if stairs.get("up"):
                     if i == idx:
                         self.dispatch(DungeonUseStairs("up"))
@@ -10706,44 +10867,15 @@ class Game:
                 self._record_dungeon_clue("A concealed route branches from this room.", source="secret_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
             return
 
-        if kind == "lore":
-            target = "deeper defenses" if "clue_target:boss" in set(ctx.get("room_tags") or []) else "hidden caches"
-            if not self._mark_room_resolution_once(room, f"lore:{target}", mode="scene"):
-                return
-            c = self.ui.choose("Lore scene", ["Study inscriptions", "Take charcoal rubbing", "Ignore and move on"])
-            if c == 2:
-                return
-            clue = f"Old markings hint at {target} beyond this level."
-            self._record_dungeon_clue(clue, source="lore_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
-            if c == 1:
-                self._grant_room_loot(gp=6, items=["Rubbing of warning sigils"], source="lore_scene")
+        enc = self._ensure_room_noncombat_encounter(room)
+        if not isinstance(enc, dict):
             return
-
-        if kind == "occupant":
-            if not self._mark_room_resolution_once(room, "passive-occupant", mode="scene"):
-                return
-            self.ui.log("A wary non-hostile occupant freezes in the torchlight.")
-            c = self.ui.choose("Occupant reaction", ["Offer aid", "Ask for warning", "Drive them off", "Leave quietly"])
-            if c == 0:
-                injured = [pc for pc in self.party.living() if pc.hp < pc.hp_max]
-                if injured:
-                    pc = injured[0]
-                    pc.hp = min(pc.hp_max, pc.hp + 2)
-                    self.ui.log(f"{pc.name} is steadied with rough field dressing (+2 HP).")
-                self._record_dungeon_clue("A survivor warns of unstable floors nearby.", source="occupant_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
-            elif c == 1:
-                self._record_dungeon_clue("A frightened delver mentions a hidden bypass behind cracked stone.", source="occupant_scene", room_id=rid, level=int(getattr(self, "dungeon_level", 1) or 1))
-            elif c == 2:
-                self.noise_level = min(5, int(getattr(self, "noise_level", 0) or 0) + 1)
-                self.ui.log("Your threats echo through the halls.")
+        announce_key = f"noncombat-intro:{str(enc.get('id') or 'encounter')}"
+        if not self._mark_room_resolution_once(room, announce_key, mode="scene"):
             return
-
-        if not self._mark_room_resolution_once(room, "staging-room", mode="scene"):
-            return
-        if bool(ctx.get("party_ready", True)):
-            self.ui.log("You find a brief staging moment to regroup and check routes.")
-        else:
-            self.ui.log("The room is calm enough for a quick breath before pressing on.")
+        prompt = str(enc.get("prompt") or "A non-combat situation here might be worth handling.")
+        self.ui.log(prompt)
+        self.ui.log("Use 'Interact with non-combat encounter' for explicit choices.")
 
 
     def _ingest_reward_items_to_loot_pool(
@@ -11714,6 +11846,9 @@ class Game:
             rec["trap"] = dict(trap)
             rec["trap_disabled"] = bool(trap.get("disabled", False))
 
+        if isinstance(room.get("noncombat_encounter"), dict) or isinstance(rec.get("noncombat_encounter"), dict):
+            rec["noncombat_encounter"] = dict(room.get("noncombat_encounter") or rec.get("noncombat_encounter") or {})
+
         keys = room.get("resolution_keys", rec.get("resolution_keys", []))
         if isinstance(keys, (list, tuple, set)):
             rec["resolution_keys"] = sorted({str(x) for x in keys if str(x).strip()})
@@ -11835,6 +11970,8 @@ class Game:
             if isinstance(drec.get("trap"), dict):
                 room["trap"] = dict(drec.get("trap") or {})
                 room["trap_kind"] = str(room["trap"].get("kind") or room.get("trap_kind") or "pit")
+            if isinstance(drec.get("noncombat_encounter"), dict):
+                room["noncombat_encounter"] = dict(drec.get("noncombat_encounter") or {})
             for _k in ('event_done','feature_done','shrine_done','puzzle_done'):
                 if _k in drec:
                     room[_k] = bool(drec.get(_k))
