@@ -3,7 +3,12 @@ from sww.models import Actor, Stats
 from sww.scripted_ui import ScriptedUI
 from sww.ui_headless import HeadlessUI
 from sww.save_load import game_to_dict, apply_game_dict
-from sww.dungeon_noncombat import build_encounter, lint_encounter_effects
+from sww.dungeon_noncombat import (
+    build_encounter,
+    lint_encounter_effects,
+    lint_authored_noncombat_content_for_ci,
+    filter_ci_fatal_lint_issues,
+)
 
 
 def _new_game(seed: int = 7001, scripted: bool = False) -> Game:
@@ -149,6 +154,7 @@ def test_unknown_effect_type_is_flagged_by_lint():
     }
     issues = lint_encounter_effects(enc)
     assert any(i.get("code") == "unknown_effect_type" for i in issues)
+    assert filter_ci_fatal_lint_issues(issues)
 
 
 def test_malformed_known_effect_is_flagged_by_lint():
@@ -159,6 +165,18 @@ def test_malformed_known_effect_is_flagged_by_lint():
     }
     issues = lint_encounter_effects(enc)
     assert any(i.get("code") == "malformed_param_type" for i in issues)
+    assert filter_ci_fatal_lint_issues(issues)
+
+
+def test_missing_required_param_is_flagged_by_lint_and_ci_fatal_filter():
+    enc = {
+        "choices": [
+            {"effects": [{"type": "heal"}]},
+        ]
+    }
+    issues = lint_encounter_effects(enc)
+    assert any(i.get("code") == "missing_required_param" for i in issues)
+    assert filter_ci_fatal_lint_issues(issues)
 
 
 def test_legacy_string_effect_lints_warning_but_remains_runtime_safe():
@@ -169,6 +187,11 @@ def test_legacy_string_effect_lints_warning_but_remains_runtime_safe():
     }
     issues = lint_encounter_effects(enc)
     assert any(i.get("code") == "legacy_effect_string" for i in issues)
+    assert filter_ci_fatal_lint_issues(issues) == []
+
+
+def test_ci_facing_builtin_content_lint_passes_clean():
+    assert lint_authored_noncombat_content_for_ci() == []
 
 
 

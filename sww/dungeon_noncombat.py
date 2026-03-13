@@ -6,6 +6,19 @@ from typing import Any
 Effect = dict[str, Any]
 LintIssue = dict[str, Any]
 
+BUILTIN_NONCOMBAT_ARCHETYPES: tuple[str, ...] = (
+    "stranded_npc",
+    "neutral_creature",
+    "omen_echo",
+    "environmental_scene",
+)
+
+CI_FATAL_LINT_CODES: tuple[str, ...] = (
+    "unknown_effect_type",
+    "missing_required_param",
+    "malformed_param_type",
+)
+
 
 _EFFECT_REQUIRED_FIELDS: dict[str, dict[str, type | tuple[type, ...]]] = {
     "ration": {"delta": int},
@@ -109,6 +122,34 @@ def lint_encounter_effects(encounter: dict[str, Any] | None) -> list[LintIssue]:
         for ei, eff in enumerate(effects):
             issues.extend(validate_effect(eff, path=f"choices[{ci}].effects[{ei}]"))
     return issues
+
+
+def filter_ci_fatal_lint_issues(
+    issues: list[LintIssue] | None,
+    *,
+    fatal_codes: set[str] | None = None,
+) -> list[LintIssue]:
+    allowed = set(fatal_codes or set(CI_FATAL_LINT_CODES))
+    return [dict(i) for i in (issues or []) if str((i or {}).get("code") or "") in allowed]
+
+
+def lint_authored_noncombat_content_for_ci() -> list[LintIssue]:
+    """Return CI-fatal lint issues for built-in authored non-combat encounter content.
+
+    Boundary: this scans built-in encounter templates only. Runtime legacy-shape
+    compatibility data is intentionally not treated as authored CI-fatal content.
+    """
+    out: list[LintIssue] = []
+    room = {"id": 1, "depth": 1}
+    ctx = {"room_id": 1, "depth": 1}
+    for archetype in BUILTIN_NONCOMBAT_ARCHETYPES:
+        enc = build_encounter(archetype, room=room, ctx=ctx)
+        issues = lint_encounter_effects(enc)
+        for issue in filter_ci_fatal_lint_issues(issues):
+            rec = dict(issue)
+            rec["archetype"] = str(archetype)
+            out.append(rec)
+    return out
 
 
 def normalize_encounter(encounter: dict[str, Any] | None) -> dict[str, Any]:
