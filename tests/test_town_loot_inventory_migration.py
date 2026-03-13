@@ -164,3 +164,15 @@ def test_sell_stash_item_message_names_source_and_destination():
 
     assert g.sell_stash_item("stash-sell-2") is True
     assert any("(stash)" in ln and "to treasury" in ln for ln in g.ui.lines)
+
+
+def test_legacy_party_items_hydration_and_sync_bridge_remain_functional():
+    g = _game(4470)
+    g.party_items = [{"name": "Legacy Cache", "kind": "treasure", "gp_value": 22, "identified": True}]
+
+    hydrated = g._ensure_loot_pool_hydrated_from_legacy()
+
+    assert hydrated is True
+    assert len(g.loot_pool.entries) == 1
+    assert any(str(e.name or "") == "Legacy Cache" for e in g.loot_pool.entries)
+    assert g._sync_legacy_party_items_if_needed(reason="test_bridge") is True

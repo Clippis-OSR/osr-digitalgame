@@ -18,8 +18,8 @@ from .data import load_json
 from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
-from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
-from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_is_magic, item_known_name
+from .inventory_service import find_item_on_actor, remove_item_from_actor
+from .item_templates import find_template_id_by_name, get_item_template, item_display_name, item_effects, item_is_magic, item_known_name
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
@@ -5641,22 +5641,11 @@ class Game:
 
     def _sync_legacy_party_items_from_loot_pool(self) -> None:
         """Compatibility bridge while town/inventory UI still reads `party_items`."""
-        try:
-            self.party_items = loot_pool_entries_as_legacy_dicts(self.loot_pool)
-        except Exception:
-            pass
+        return self.town_inventory_service.sync_legacy_party_items_from_loot_pool()
 
     def _ensure_loot_pool_hydrated_from_legacy(self) -> bool:
         """Backfill loot pool from legacy `party_items` when needed."""
-        entries = list(getattr(getattr(self, "loot_pool", None), "entries", []) or [])
-        if entries:
-            return False
-        legacy = list(getattr(self, "party_items", []) or [])
-        if not legacy:
-            return False
-        add_generated_treasure_to_pool(self.loot_pool, gp=0, items=legacy, identify_magic=False)
-        self._sync_legacy_party_items_from_loot_pool()
-        return True
+        return bool(self.town_inventory_service.ensure_loot_pool_hydrated_from_legacy())
 
 
     def _reward_source_uses_legacy_party_items_mirror(self, source: str) -> bool:
@@ -5686,14 +5675,7 @@ class Game:
         play (non-empty). Ownership-first readers no longer need eager writeback
         on every loot-pool mutation.
         """
-        try:
-            has_legacy_rows = bool(list(getattr(self, "party_items", []) or []))
-        except Exception:
-            has_legacy_rows = False
-        if not has_legacy_rows:
-            return False
-        self._sync_legacy_party_items_from_loot_pool()
-        return True
+        return bool(self.town_inventory_service.sync_legacy_party_items_if_needed(reason=reason))
 
     def _coin_destination_label(self, destination: str) -> str:
         d = str(destination or CoinDestination.IMMEDIATE_COMPATIBILITY_DEFAULT)
@@ -5717,45 +5699,7 @@ class Game:
             return None
 
     def _add_loot_item_to_actor_inventory(self, actor: Actor, loot_item: Any) -> bool:
-        """Assign one loot entry to actor inventory as ItemInstance.
-
-        TODO(inventory-ux): expose richer assignment UI (split stacks, choose equip).
-        """
-        if not isinstance(loot_item, dict):
-            loot_item = {"name": str(loot_item), "kind": "gear", "gp_value": None}
-
-        name = str(loot_item.get("true_name") or loot_item.get("name") or "Unknown Item")
-        kind = str(loot_item.get("kind") or "gear").strip().lower()
-        qty = int(loot_item.get("quantity", 1) or 1)
-
-        pref = [kind]
-        if kind == "relic":
-            pref = ["treasure", "gear"]
-        tid = self._template_id_for_equipment_name(name, preferred_categories=pref)
-        if tid is None:
-            # Fallback to generic category templates for incremental migration.
-            tid = "treasure.generic" if kind in {"gem", "jewelry", "treasure", "relic"} else "gear.backpack_30-pound_capacity"
-
-        try:
-            inst = build_item_instance(
-                tid,
-                quantity=max(1, qty),
-                identified=bool(loot_item.get("identified", True)),
-                metadata={
-                    "source_loot_name": name,
-                    "source_kind": kind,
-                    "gp_value": loot_item.get("gp_value"),
-                    "true_name": loot_item.get("true_name"),
-                },
-            )
-            # Preserve unknown display name when template fallback is generic.
-            if name and inst.name != name and tid in {"treasure.generic", "gear.backpack_30-pound_capacity"}:
-                inst.name = name
-                inst.category = "treasure" if kind in {"gem", "jewelry", "treasure", "relic"} else "gear"
-            res = add_item_to_actor(actor, inst)
-            return bool(res.ok)
-        except Exception:
-            return False
+        return bool(self.town_inventory_service.add_loot_item_to_actor_inventory(actor, loot_item))
 
     def _ui_item_line(self, actor: Actor, item: Any, *, include_weight: bool = True) -> str:
         """Compact inventory line: name, quantity, equip, and optional weight."""

@@ -9,8 +9,9 @@ from __future__ import annotations
 from typing import Any
 
 from .coin_rewards import CoinDestination
-from .inventory_service import find_item_on_actor
-from .item_templates import owned_item_brief_label
+from .inventory_service import add_item_to_actor, find_item_on_actor
+from .item_templates import build_item_instance, owned_item_brief_label
+from .loot_pool import add_generated_treasure_to_pool, loot_pool_entries_as_legacy_dicts
 from .ownership_service import move_item_loot_pool_to_actor, move_item_loot_pool_to_stash, remove_owned_item
 
 
@@ -27,6 +28,72 @@ class TownInventoryService:
         if gross <= 0:
             return 0
         return max(1, int(gross * 0.5))
+
+    def sync_legacy_party_items_from_loot_pool(self) -> None:
+        """Compatibility bridge while transitional town UI still reads `party_items`."""
+        try:
+            self.g.party_items = loot_pool_entries_as_legacy_dicts(self.g.loot_pool)
+        except Exception:
+            pass
+
+    def ensure_loot_pool_hydrated_from_legacy(self) -> bool:
+        """Backfill ownership-first loot pool from legacy `party_items` when needed."""
+        entries = list(getattr(getattr(self.g, "loot_pool", None), "entries", []) or [])
+        if entries:
+            return False
+        legacy = list(getattr(self.g, "party_items", []) or [])
+        if not legacy:
+            return False
+        add_generated_treasure_to_pool(self.g.loot_pool, gp=0, items=legacy, identify_magic=False)
+        self.g._sync_legacy_party_items_from_loot_pool()
+        return True
+
+    def sync_legacy_party_items_if_needed(self, *, reason: str = "") -> bool:
+        """Narrow transitional sync for readers that still require legacy mirror rows."""
+        try:
+            has_legacy_rows = bool(list(getattr(self.g, "party_items", []) or []))
+        except Exception:
+            has_legacy_rows = False
+        if not has_legacy_rows:
+            return False
+        self.g._sync_legacy_party_items_from_loot_pool()
+        return True
+
+    def add_loot_item_to_actor_inventory(self, actor: Any, loot_item: Any) -> bool:
+        """Assign one loot-style item row to actor inventory as ItemInstance."""
+        if not isinstance(loot_item, dict):
+            loot_item = {"name": str(loot_item), "kind": "gear", "gp_value": None}
+
+        name = str(loot_item.get("true_name") or loot_item.get("name") or "Unknown Item")
+        kind = str(loot_item.get("kind") or "gear").strip().lower()
+        qty = int(loot_item.get("quantity", 1) or 1)
+
+        pref = [kind]
+        if kind == "relic":
+            pref = ["treasure", "gear"]
+        tid = self.g._template_id_for_equipment_name(name, preferred_categories=pref)
+        if tid is None:
+            tid = "treasure.generic" if kind in {"gem", "jewelry", "treasure", "relic"} else "gear.backpack_30-pound_capacity"
+
+        try:
+            inst = build_item_instance(
+                tid,
+                quantity=max(1, qty),
+                identified=bool(loot_item.get("identified", True)),
+                metadata={
+                    "source_loot_name": name,
+                    "source_kind": kind,
+                    "gp_value": loot_item.get("gp_value"),
+                    "true_name": loot_item.get("true_name"),
+                },
+            )
+            if name and inst.name != name and tid in {"treasure.generic", "gear.backpack_30-pound_capacity"}:
+                inst.name = name
+                inst.category = "treasure" if kind in {"gem", "jewelry", "treasure", "relic"} else "gear"
+            res = add_item_to_actor(actor, inst)
+            return bool(res.ok)
+        except Exception:
+            return False
 
     def loot_sale_source_label(self, entry: Any, *, from_legacy_compat: bool) -> str:
         md = dict(getattr(entry, "metadata", {}) or {})
@@ -89,7 +156,7 @@ class TownInventoryService:
                     })
 
         if include_legacy_compat:
-            from_legacy_compat = bool(self.g._ensure_loot_pool_hydrated_from_legacy())
+            from_legacy_compat = bool(self.ensure_loot_pool_hydrated_from_legacy())
             for e in list(getattr(self.g.loot_pool, "entries", []) or []):
                 val = int(getattr(e, "gp_value", 0) or 0)
                 if val <= 0:
@@ -164,7 +231,7 @@ class TownInventoryService:
         removed = remove_owned_item(self.g, source_kind="legacy", reference_id=str(entry_id or ""), quantity=qty)
         if not bool(getattr(removed, "ok", False)):
             return False
-        self.g._sync_legacy_party_items_if_needed(reason="sell_legacy_party_item")
+        self.sync_legacy_party_items_if_needed(reason="sell_legacy_party_item")
         coin_res = self.g._grant_coin_reward(price, source=source, destination=CoinDestination.TREASURY)
         self.g.ui.log(f"Sold {sold_name} ({sold_from}) for {price} gp to {self.g._coin_destination_label(str(getattr(coin_res, 'destination', '') or ''))}.")
         return True
@@ -204,7 +271,7 @@ class TownInventoryService:
             self.g.ui.log("Could not complete sale.")
 
     def assign_party_loot_to_character(self) -> None:
-        self.g._ensure_loot_pool_hydrated_from_legacy()
+        self.ensure_loot_pool_hydrated_from_legacy()
         entries = list(getattr(self.g.loot_pool, "entries", []) or [])
         if not entries:
             self.g.ui.log("No party loot to assign.")
@@ -249,7 +316,7 @@ class TownInventoryService:
             if not moved.ok:
                 self.g.ui.log("Could not assign item to actor inventory.")
                 return
-            self.g._sync_legacy_party_items_if_needed(reason="assign_loot_to_actor")
+            self.sync_legacy_party_items_if_needed(reason="assign_loot_to_actor")
             moved_item = getattr(moved, "item", None)
             auto_equipped = bool(getattr(moved_item, "equipped", False)) if moved_item is not None else False
             equip_note = "auto-equipped" if auto_equipped else "added to inventory"
@@ -261,7 +328,7 @@ class TownInventoryService:
             if not moved.ok:
                 self.g.ui.log("Could not move item to stash.")
                 return
-            self.g._sync_legacy_party_items_if_needed(reason="assign_loot_to_stash")
+            self.sync_legacy_party_items_if_needed(reason="assign_loot_to_stash")
             self.g.ui.log(f"Routed {picked_name} to shared stash.")
             return
 
@@ -274,5 +341,5 @@ class TownInventoryService:
         if not removed.ok:
             self.g.ui.log("Could not leave item behind.")
             return
-        self.g._sync_legacy_party_items_if_needed(reason="leave_loot_behind")
+        self.sync_legacy_party_items_if_needed(reason="leave_loot_behind")
         self.g.ui.log(f"Left {picked_name} behind (removed from loot pool).")
