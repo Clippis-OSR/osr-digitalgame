@@ -115,6 +115,7 @@ class Game:
 
     # Exploration pacing
     TORCH_TURNS = 6  # 1 torch = 6 dungeon turns (10-minute turns)
+    LOW_LIGHT_WARNING_TURNS = 2
 
     # Wilderness pacing (B/X-ish)
     # 6-mile hex; we model travel in 4-hour watches (6 watches per day)
@@ -2906,6 +2907,10 @@ class Game:
         return CommandResult(status="ok")
 
     def _cmd_dungeon_listen(self) -> CommandResult:
+        blocked = self._dungeon_precision_action_requires_light(action="listen at doors")
+        if blocked is not None:
+            return blocked
+
         """Listen at a closed door.
 
         This is a *turn action* in the dungeon loop (the loop already consumes one turn
@@ -3067,6 +3072,9 @@ class Game:
         return 6, lvl
 
     def _cmd_dungeon_search_secret(self) -> CommandResult:
+        blocked = self._dungeon_precision_action_requires_light(action="search for secret doors")
+        if blocked is not None:
+            return blocked
         room = self._ensure_room(self.current_room_id)
 
         rid = int(self.current_room_id)
@@ -3117,6 +3125,9 @@ class Game:
 
     
     def _cmd_dungeon_search_traps(self) -> CommandResult:
+        blocked = self._dungeon_precision_action_requires_light(action="search for traps")
+        if blocked is not None:
+            return blocked
         room = self._ensure_room(self.current_room_id)
 
         # Only meaningful if the room has a trap spec.
@@ -3192,6 +3203,9 @@ class Game:
         return CommandResult(status="info")
 
     def _cmd_dungeon_sneak(self) -> CommandResult:
+        blocked = self._dungeon_precision_action_requires_light(action="sneak safely")
+        if blocked is not None:
+            return blocked
         # Use the best party member with both Move Silently and Hide in Shadows skills.
         best_pc = None
         best_ms = 0
@@ -8334,6 +8348,34 @@ class Game:
             self._active_objective_hud(),
         ]
 
+    def _dungeon_pressure_summary(self) -> str:
+        """Compact, deterministic dungeon pressure readout for exploration UI."""
+        torch_turns = int(getattr(self, "torch_turns_left", 0) or 0)
+        magic_turns = int(getattr(self, "magical_light_turns", 0) or 0)
+        reserve_torches = int(getattr(self, "torches", 0) or 0)
+        noise = int(getattr(self, "noise_level", 0) or 0)
+        lvl = int(getattr(self, "dungeon_level", 1) or 1)
+        alarm = int((getattr(self, 'dungeon_alarm_by_level', {}) or {}).get(lvl, 0) or 0)
+
+        if torch_turns > 0 and magic_turns > 0:
+            light_txt = f"Light torch {torch_turns}t + magic {magic_turns}t"
+        elif torch_turns > 0:
+            light_txt = f"Light torch {torch_turns}t"
+        elif magic_turns > 0:
+            light_txt = f"Light magic {magic_turns}t"
+        else:
+            light_txt = "Light DARK"
+
+        risk_mod = int(self._wandering_noise_mod())
+        base = int(getattr(self, "wandering_chance", 1) or 1)
+        chance_cap = 5 if alarm >= 4 else 4
+        wander_in_6 = min(chance_cap, max(1, base + risk_mod))
+
+        return (
+            f"Pressure: {light_txt} | Spare torches {reserve_torches} | Noise {noise}/5"
+            f" | Alarm {alarm}/5 | Wander {wander_in_6}/6 (mod +{risk_mod})"
+        )
+
     def _dungeon_hud_lines(self) -> list[str]:
         lvl = int(getattr(self, "dungeon_level", 1) or 1)
         rid = int(getattr(self, "current_room_id", 0) or 0)
@@ -8344,7 +8386,7 @@ class Game:
             f"Day {int(getattr(self, 'campaign_day', 1) or 1)} — {self._watch_name()} | Dungeon L{lvl} | Room {rid} | {room_kind.title()}",
             self._party_hud_summary(),
             f"Supplies: {int(getattr(self, 'gold', 0) or 0)} gp | Rations {int(getattr(self, 'rations', 0) or 0)} | Torches {int(getattr(self, 'torches', 0) or 0)}",
-            self._light_hud_summary() + f" | Noise {int(getattr(self, 'noise_level', 0) or 0)}/5" + f" | Alarm {alarm}/5",
+            self._dungeon_pressure_summary(),
             self._active_objective_hud(),
         ]
 
@@ -9515,7 +9557,7 @@ class Game:
                 pass
             lvl = int(getattr(self, "dungeon_level", 1) or 1)
             alarm = int((getattr(self, "dungeon_alarm_by_level", {}) or {}).get(lvl, 0))
-            self.ui.log(f"Turn {self.dungeon_turn} | Torch: {self.torch_turns_left} turns | Noise: {self.noise_level}/5 | Dungeon Level: {lvl}/{int(getattr(self, 'max_dungeon_levels', 1))} | Alarm: {alarm}/5")
+            self.ui.log(f"Turn {self.dungeon_turn} | {self._dungeon_pressure_summary()}")
             self.ui.log(f"Room {self.current_room_id}: {room['type']} | Visited {room.get('visited', 0)}x")
             if room.get("cleared"):
                 self.ui.log("This room seems quiet (cleared).")
@@ -9640,6 +9682,8 @@ class Game:
         self.torch_turns_left = self.TORCH_TURNS
         self.light_on = True
         self.ui.log("You light a torch.")
+        if int(self.torches) <= 1:
+            self.ui.log(f"Warning: only {int(self.torches)} spare torch{'es' if int(self.torches) != 1 else ''} left.")
 
     def spend_dungeon_time(self, turns: int, *, reason: str) -> None:
         """Spend dungeon time in 10-minute turns.
@@ -9703,16 +9747,24 @@ class Game:
             if self.torch_turns_left <= 0:
                 self.torch_turns_left = 0
                 self.ui.log("Your torch sputters out.")
+            elif int(self.torch_turns_left) <= int(self.LOW_LIGHT_WARNING_TURNS):
+                self.ui.log(f"Warning: torchlight is running low ({int(self.torch_turns_left)} turn{'s' if int(self.torch_turns_left) != 1 else ''} left).")
 
         if int(getattr(self, "magical_light_turns", 0) or 0) > 0:
             self.magical_light_turns -= 1
             if self.magical_light_turns <= 0:
                 self.magical_light_turns = 0
                 self.ui.log("The magical light fades.")
+            elif int(self.magical_light_turns) <= int(self.LOW_LIGHT_WARNING_TURNS):
+                self.ui.log(f"Warning: magical light is running low ({int(self.magical_light_turns)} turn{'s' if int(self.magical_light_turns) != 1 else ''} left).")
 
         self.light_on = bool(self.torch_turns_left > 0 or self.magical_light_turns > 0)
         if was_lit and not self.light_on:
             self.ui.log("Darkness!")
+        if not self.light_on:
+            self.noise_level = min(5, int(getattr(self, "noise_level", 0) or 0) + 1)
+            self.ui.log("You fumble in darkness; noise and risk rise.")
+            self.emit("dungeon_darkness_pressure", dungeon_turn=int(self.dungeon_turn), noise_level=int(self.noise_level))
         # Noise decay (deterministic): noise points fall by 1 per turn.
         if self.noise_level > 0:
             self.noise_level -= 1
@@ -9784,7 +9836,17 @@ class Game:
             pressure = max(pressure, 1)
         if alarm >= 4:
             pressure = min(2, pressure + 1)
+        if not bool(getattr(self, "light_on", False)):
+            pressure = min(2, pressure + 1)
         return pressure
+
+    def _dungeon_precision_action_requires_light(self, *, action: str) -> CommandResult | None:
+        if bool(getattr(self, "light_on", False)):
+            return None
+        msg = f"Too dark to {str(action)}. Light a torch or cast Light first."
+        self.ui.log(msg)
+        self.emit("dungeon_action_blocked_darkness", action=str(action), room_id=int(getattr(self, "current_room_id", 0) or 0))
+        return CommandResult(status="error", messages=("darkness",))
 
     def _check_wandering_monster(self) -> bool:
         """Return True if a wandering monster is triggered this turn.
