@@ -18,13 +18,13 @@ from .data import load_json
 from .encounters import EncounterGenerator
 from .encumbrance import compute_party_encumbrance
 from .equipment import EquipmentDB
-from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor, equip_item_on_actor
+from .inventory_service import add_item_to_actor, find_item_on_actor, remove_item_from_actor
 from .item_templates import build_item_instance, find_template_id_by_name, get_item_template, item_display_name, item_effects, item_is_magic, item_known_name, owned_item_brief_label
 from .ports import UIProtocol
 from .save_load import save_game, load_game, read_save_metadata
 from .wilderness import ensure_hex, neighbors, hex_distance, force_poi
 from .travel_state import TravelState, TOWN_HEX, DUNGEON_ENTRANCE_HEX
-from .town_services import identify_cost_gp, identify_item_in_town
+from .town_services import TownService, identify_cost_gp, identify_item_in_town
 from .loot_pool import (
     add_generated_treasure_to_pool,
     create_loot_pool,
@@ -56,7 +56,7 @@ from .validation import validate_state
 from .monster_ai import coerce_profile, choose_target, party_role
 from .combat_rules import shooting_into_melee_penalty, foe_frontage_limit, is_melee_engaged, apply_forced_retreat
 from .combat_legality import theater_target_is_valid
-from .status_lifecycle import tick_round_statuses
+from .status_lifecycle import apply_status, clear_status, status_dict, tick_round_statuses
 from .ai_capabilities import detect_capabilities, choose_attack_mode
 from .commands import (
     Command,
@@ -265,6 +265,7 @@ class Game:
         self.wilderness_system = WildernessSystem(self)
         self.dungeon_system = DungeonSystem(self)
         self.combat_service = CombatService(self)
+        self.town_service = TownService(self)
 
         # Validation toggle (enabled in selftest)
         self.enable_validation = False
@@ -3507,7 +3508,9 @@ class Game:
             if not stairs.get("down"):
                 return CommandResult(status="error", messages=("No stairs down here.",))
             if int(self.dungeon_level) >= int(self.max_dungeon_levels):
-                return CommandResult(status="error", messages=("These stairs descend into collapsed rubble.",))
+                # Dynamic-floor safety: if authored room data still presents stairs down,
+                # extend depth instead of hard-failing with collapsed-rubble text.
+                self.max_dungeon_levels = int(self.dungeon_level) + 1
             self.dungeon_level = int(self.dungeon_level) + 1
         elif direction == "up":
             if not stairs.get("up"):
@@ -5631,56 +5634,7 @@ class Game:
         return True
 
     def manage_retainers(self):
-        while True:
-            self._cleanup_retainer_state()
-            self.ui.hr()
-            self.ui.log(f"Hired retainers: {len(self.hired_retainers)} | Active: {len(self.active_retainers)}")
-            i = self.ui.choose("Retainers", [
-                "View hiring board",
-                "Hire",
-                "Assign to expedition",
-                "Dismiss from expedition",
-                "Back",
-            ])
-            if i == 0:
-                self.generate_retainer_board()
-                for r in self.retainer_board:
-                    role = self._retainer_role(r)
-                    fee = int((getattr(r, "status", {}) or {}).get("retainer_hire_cost", 0) or 0)
-                    self.ui.log(f"- {r.name} ({role}) | HP {r.hp}/{r.hp_max} | Loyalty {r.loyalty} | Hire {fee} gp | Upkeep {r.wage_gp} gp")
-            elif i == 1:
-                self.generate_retainer_board()
-                labels = [
-                    f"{r.name} ({self._retainer_role(r)}) Hire {int((getattr(r, 'status', {}) or {}).get('retainer_hire_cost', 0) or 0)} gp, Upkeep {r.wage_gp} gp"
-                    for r in self.retainer_board
-                ]
-                j = self.ui.choose("Hire which?", labels + ["Back"])
-                if j == len(labels):
-                    continue
-                self._hire_retainer_from_board(j)
-            elif i == 2:
-                if not self.hired_retainers:
-                    self.ui.log("No hired retainers.")
-                    continue
-                labels = [f"{r.name} ({self._retainer_role(r)})" for r in self.hired_retainers if not r.on_expedition]
-                if not labels:
-                    self.ui.log("No available hired retainers to assign.")
-                    continue
-                j = self.ui.choose("Assign which?", labels + ["Back"])
-                if j == len(labels):
-                    continue
-                self._assign_hired_retainer(j)
-            elif i == 3:
-                if not self.active_retainers:
-                    self.ui.log("No active retainers.")
-                    continue
-                labels = [f"{r.name}" for r in self.active_retainers]
-                j = self.ui.choose("Dismiss which?", labels + ["Back"])
-                if j == len(labels):
-                    continue
-                self._dismiss_active_retainer(j)
-            else:
-                return
+        return self.town_service.manage_retainers()
 
 
     # -------------
@@ -5961,51 +5915,7 @@ class Game:
         self.ui.log(f"Left {str(getattr(picked, 'name', 'loot') or 'loot')} behind.")
 
     def _buy_item_for_actor(self, actor: Actor, *, name: str, kind: str, auto_equip: bool) -> bool:
-        """Create bought item instance in actor inventory and optionally equip it.
-
-        Ownership-first runtime path: equip via item instance ownership (inventory/equipment)
-        instead of mutating legacy actor.weapon/armor fields directly.
-        """
-        pref = ["weapon"] if kind == "weapon" else (["armor", "shield"] if kind == "armor" else [kind])
-        tid = self._template_id_for_equipment_name(name, preferred_categories=pref)
-        if not tid:
-            return False
-        try:
-            inst = build_item_instance(tid, quantity=1, identified=True, metadata={"source": "town_shop"})
-            # Transitional compatibility: shop-bought items get stable human-readable
-            # ids so legacy-mirror assertions and ownership-first refs agree.
-            base_id = str(name or tid)
-            taken: set[str] = set()
-            try:
-                for m in list(getattr(getattr(self, "party", None), "members", []) or []):
-                    inv = list(getattr(getattr(m, "inventory", None), "items", []) or [])
-                    for it in inv:
-                        taken.add(str(getattr(it, "instance_id", "") or ""))
-                for it in list(getattr(getattr(self, "party_stash", None), "items", []) or []):
-                    taken.add(str(getattr(it, "instance_id", "") or ""))
-                for e in list(getattr(getattr(self, "loot_pool", None), "entries", []) or []):
-                    ii = getattr(e, "item_instance", None)
-                    if ii is not None:
-                        taken.add(str(getattr(ii, "instance_id", "") or ""))
-            except Exception:
-                pass
-            cand = base_id
-            idx = 2
-            while cand in taken:
-                cand = f"{base_id} #{idx}"
-                idx += 1
-            inst.instance_id = cand
-            r = add_item_to_actor(actor, inst)
-            if not r.ok:
-                return False
-            if auto_equip:
-                er = equip_item_on_actor(actor, inst.instance_id)
-                if not er.ok:
-                    # Keep preexisting behavior: purchase still succeeds even if auto-equip fails.
-                    return True
-            return True
-        except Exception:
-            return False
+        return bool(self.town_service.buy_item_for_actor(actor, name=name, kind=kind, auto_equip=auto_equip))
 
     def party_encumbrance(self):
         """Transitional party encumbrance accessor used by dungeon/wilderness systems.
@@ -6039,81 +5949,7 @@ class Game:
         )
 
     def town_arms_store(self):
-        """Arms & armour store.
-
-        Uses EquipmentDB prices from:
-          - data/armor_table_24.json
-          - data/weapons_melee.json
-          - data/weapons_missile.json
-
-        Purchases directly replace the selected party member's weapon/armor.
-        """
-        while True:
-            self.ui.hr()
-            self.ui.log(f"Gold: {self.gold} gp")
-            mode = self.ui.choose("Arms & Armour", ["Buy weapon", "Buy armor", "Back"])
-            if mode == 2:
-                return
-
-            living = self.party.living()
-            if not living:
-                self.ui.log("No one in the party can use equipment right now.")
-                return
-
-            labels = []
-            for a in living:
-                w = self.effective_melee_weapon(a) or self.effective_missile_weapon(a) or "None"
-                ar = self.effective_armor(a) or "None"
-                labels.append(f"{a.name}  (Weapon: {w} | Armor: {ar})")
-            who = self.ui.choose("Who will use it?", labels + ["Back"])
-            if who == len(living):
-                continue
-            actor = living[who]
-
-            if mode == 0:
-                # EquipmentDB stores raw JSON rows keyed by name.
-                weapons = list((self.equipdb.melee or {}).values()) + list((self.equipdb.missile or {}).values())
-                weapons = [w for w in weapons if isinstance(w, dict) and w.get("cost_gp") is not None]
-                weapons.sort(key=lambda w: (float(w.get("cost_gp", 0) or 0), str(w.get("name", "")).lower()))
-                opts = [f"{w.get('name')} — {w.get('cost_gp')} gp" for w in weapons]
-                sel = self.ui.choose("Buy weapon", opts + ["Back"])
-                if sel == len(weapons):
-                    continue
-                w = weapons[sel]
-                cost = int(float(w.get("cost_gp", 0) or 0))
-                if self.gold < cost:
-                    self.ui.log("Not enough gold.")
-                    continue
-                self.gold -= cost
-                bought_name = str(w.get("name"))
-                if not self._buy_item_for_actor(actor, name=bought_name, kind="weapon", auto_equip=True):
-                    # Compatibility fallback (should be rare).
-                    actor.weapon = bought_name
-                    actor.sync_legacy_equipment_to_new()
-                self.ui.log(f"{actor.name} equips {bought_name}.")
-
-            else:
-                armors = [a for a in (self.equipdb.armors or {}).values() if isinstance(a, dict) and a.get("cost_gp") is not None]
-                armors.sort(key=lambda a: (float(a.get("cost_gp", 0) or 0), str(a.get("name", "")).lower()))
-                opts = [f"{a.get('name')} — {a.get('cost_gp')} gp (AC mod {a.get('ac_mod_desc')})" for a in armors]
-                sel = self.ui.choose("Buy armor", opts + ["Back"])
-                if sel == len(armors):
-                    continue
-                a = armors[sel]
-                cost = int(float(a.get("cost_gp", 0) or 0))
-                if self.gold < cost:
-                    self.ui.log("Not enough gold.")
-                    continue
-                self.gold -= cost
-                bought_name = str(a.get("name"))
-                if not self._buy_item_for_actor(actor, name=bought_name, kind="armor", auto_equip=True):
-                    if bought_name.strip().lower() == "shield":
-                        actor.shield = True
-                        actor.shield_name = bought_name
-                    else:
-                        actor.armor = bought_name
-                    actor.sync_legacy_equipment_to_new()
-                self.ui.log(f"{actor.name} dons {bought_name}.")
+        return self.town_service.town_arms_store()
 
     def expedition_prep_snapshot(self) -> dict[str, Any]:
         """Deterministic town-prep surface for active objective planning."""
@@ -6176,17 +6012,7 @@ class Game:
         }
 
     def _town_buy_basic_resupply(self) -> bool:
-        cost = 16
-        if self.gold < cost:
-            self.ui.log(f"Not enough gold. Need {cost} gp.")
-            return False
-        self.gold -= cost
-        self.rations = int(getattr(self, "rations", 0) or 0) + 6
-        self.torches = int(getattr(self, "torches", 0) or 0) + 4
-        self.arrows = int(getattr(self, "arrows", 0) or 0) + 20
-        self.bolts = int(getattr(self, "bolts", 0) or 0) + 20
-        self.ui.log("Purchased basic delve kit: +6 rations, +4 torches, +20 arrows, +20 bolts.")
-        return True
+        return bool(self.town_service.town_buy_basic_resupply())
 
     def _town_minor_healing_rite(self, *, cost: int = 8, pool: int = 8, label: str = "Temple rites mend wounds") -> bool:
         injured = [m for m in self.party.living() if int(getattr(m, "hp", 0) or 0) < int(getattr(m, "hp_max", 0) or 0)]
@@ -6240,56 +6066,7 @@ class Game:
         self.ui.log(f"Temple recovery completed. (Healed {total_missing} HP total.)")
 
     def _town_identify_items(self) -> None:
-        # Identification is instance-targeted: each owned copy can be known differently.
-        # TODO(town-services): support sages/guild perks and class-based discounts.
-        unknown: list[tuple[Actor, Any, int]] = []
-        for actor in (self.party.living() or []):
-            actor.ensure_inventory_initialized()
-            for item in (actor.inventory.items or []):
-                if bool(getattr(item, "identified", True)):
-                    continue
-                if not bool(item_is_magic(item)):
-                    continue
-                unknown.append((actor, item, int(identify_cost_gp(item))))
-
-        if not unknown:
-            self.ui.log("No unidentified magic items in character inventories.")
-            return
-
-        total_cost = sum(c for _, _, c in unknown)
-        c = self.ui.choose("Sage Appraisal", [f"Identify one item", f"Identify all ({total_cost} gp)", "Back"])
-        if c == 2:
-            return
-
-        if c == 1:
-            if self.gold < total_cost:
-                self.ui.log(f"Cannot identify all: need {total_cost} gp, have {self.gold} gp.")
-                return
-            identified_n = 0
-            for actor, item, _cost in unknown:
-                res = identify_item_in_town(actor, item.instance_id, party_gold=self.gold, reveal_curse=False, reveal_charges=False)
-                if not res.ok:
-                    continue
-                self.gold = int(res.party_gold_after)
-                identified_n += 1
-            self.ui.log(f"The sage identifies {identified_n} item(s).")
-            return
-
-        labels = [f"{a.name}: {self._ui_item_line(a, it, include_weight=False)} ({cost} gp)" for a, it, cost in unknown]
-        j = self.ui.choose("Identify which item?", labels + ["Back"])
-        if j == len(labels):
-            return
-        actor, item, _cost = unknown[j]
-        res = identify_item_in_town(actor, item.instance_id, party_gold=self.gold, reveal_curse=False, reveal_charges=False)
-        if not res.ok:
-            if str(res.error or "") == "not enough gold":
-                need = int(identify_cost_gp(item))
-                self.ui.log(f"Cannot identify {getattr(item, 'name', 'item')}: need {need} gp, have {self.gold} gp.")
-            else:
-                self.ui.log("Could not identify that item right now.")
-            return
-        self.gold = int(res.party_gold_after)
-        self.ui.log(f"Identified: {getattr(res.item, 'name', 'Unknown Item')}.")
+        return self.town_service.town_identify_items()
 
     def _town_lodging_service(self) -> None:
         opts = [
@@ -6319,20 +6096,7 @@ class Game:
         self.ui.log(f"You settle in for the night. (-{cost} gp, healed {healed} HP total)")
 
     def _town_services_menu(self) -> None:
-        while True:
-            self.ui.hr()
-            self.ui.log(f"Gold: {self.gold} gp")
-            c = self.ui.choose("Town Services", ["Temple healing", "Sage identification", "Buy basic delve kit (16 gp)", "Lodging", "Back"])
-            if c == 4:
-                return
-            if c == 0:
-                self._town_temple_healing()
-            elif c == 1:
-                self._town_identify_items()
-            elif c == 2:
-                self._town_buy_basic_resupply()
-            elif c == 3:
-                self._town_lodging_service()
+        return self.town_service.town_services_menu()
 
     def _town_prepare_expedition(self) -> None:
         snap = self.expedition_prep_snapshot()
